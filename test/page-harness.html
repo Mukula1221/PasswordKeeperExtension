@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>popup / options 測試</title></head>
+<body>
+  <script src="shim.js"></script>
+  <script src="../src/background/crypto.js"></script>
+  <script src="../src/background/background.js"></script>
+  <script>
+    // 用 ?page=popup、options、unlock 把正式頁面的 HTML 載進來，配假的 chrome API 跑一遍
+    (async () => {
+      const page = new URLSearchParams(location.search).get('page') || 'popup';
+      if (page === 'unlock' || page === 'popup') {
+        window.close = () => { window.__pkClosed = (window.__pkClosed || 0) + 1; };
+      }
+      if (page === 'unlock' || page === 'options') {
+        // 測試頁沒辦法真的跳系統驗證，讓它馬上失敗，看頁面怎麼處理
+        navigator.credentials.get = async () => { throw new DOMException('cancelled', 'NotAllowedError'); };
+        navigator.credentials.create = async () => { throw new DOMException('cancelled', 'NotAllowedError'); };
+      }
+      window.__pkManifestVersion = (await (await fetch('../manifest.json')).json()).version;
+      const html = await (await fetch('../' + page + '.html')).text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      document.title = doc.title;
+      for (const link of doc.querySelectorAll('link[rel=stylesheet]')) {
+        const l = document.createElement('link');
+        l.rel = 'stylesheet';
+        l.href = '../' + link.getAttribute('href');
+        document.head.appendChild(l);
+      }
+      for (const st of doc.querySelectorAll('style')) document.head.appendChild(st.cloneNode(true));
+      const scripts = Array.from(doc.querySelectorAll('script[src]')).map((s) => s.getAttribute('src'));
+      for (const s of doc.body.querySelectorAll('script')) s.remove();
+      for (const img of doc.body.querySelectorAll('img')) img.setAttribute('src', '../' + img.getAttribute('src'));
+      document.body.appendChild(document.createRange().createContextualFragment(doc.body.innerHTML));
+      for (const src of scripts) {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = '../' + src;
+          s.onload = resolve;
+          s.onerror = reject;
+          document.body.appendChild(s);
+        });
+      }
+    })();
+  </script>
+</body></html>

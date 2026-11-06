@@ -1,0 +1,2141 @@
+{
+  "locale_code": {
+    "message": "ja"
+  },
+  "lang_tag": {
+    "message": "ja"
+  },
+  "ext_name": {
+    "message": "パスワードキーパー"
+  },
+  "ext_description": {
+    "message": "ブラウザーのパスワード管理が使えないときに、ログイン情報を保存して自動入力します。データはこのパソコンにだけ保存されます。"
+  },
+  "cmd_fill_login": {
+    "message": "このサイトのユーザー名とパスワードをログイン欄に入力"
+  },
+  "common_cancelled": {
+    "message": "キャンセルしました",
+    "description": "Download or save dialog was cancelled. background.js returns it as an error and options.js compares against it."
+  },
+  "pop_lock_now_title": {
+    "message": "今すぐロックします。もう一度使うには認証が必要です。",
+    "description": "Tooltip of the lock button in the popup header."
+  },
+  "pop_lock_now": {
+    "message": "ロック",
+    "description": "Lock button in the popup header, next to a lock icon."
+  },
+  "pop_search_placeholder": {
+    "message": "全サイトのアカウントを検索、Enter で開く",
+    "description": "Search box at the top of the popup. Enter opens the site of the first result. The popup is 360px wide, so keep it short."
+  },
+  "pop_locked_title": {
+    "message": "ロック中"
+  },
+  "pop_locked_hint": {
+    "message": "自動入力やパスワードの表示には認証が必要です。"
+  },
+  "pop_add_title": {
+    "message": "このサイトのアカウントを追加"
+  },
+  "pop_username": {
+    "message": "ユーザー名",
+    "description": "Field label in the add account form."
+  },
+  "pop_password": {
+    "message": "パスワード",
+    "description": "Field label in the add account form."
+  },
+  "pop_show": {
+    "message": "表示",
+    "description": "Button inside the password field. Shows the password as text."
+  },
+  "pop_hide": {
+    "message": "非表示",
+    "description": "Same button as pop_show after the password is shown. It sits inside the field, so keep it short."
+  },
+  "pop_cancel": {
+    "message": "キャンセル"
+  },
+  "pop_save": {
+    "message": "保存"
+  },
+  "pop_generate": {
+    "message": "パスワードを生成",
+    "description": "Button that opens the password generator, and the title of that panel."
+  },
+  "pop_regen_title": {
+    "message": "別のパスワードを生成"
+  },
+  "pop_regen": {
+    "message": "再生成",
+    "description": "Small button next to the generated password."
+  },
+  "pop_gen_length": {
+    "message": "文字数",
+    "description": "Reads as 'Length [min] to [max]'."
+  },
+  "pop_gen_to": {
+    "message": "～",
+    "description": "Between the min and max length inputs: 'Length [min] to [max]'."
+  },
+  "pop_gen_upper": {
+    "message": "大文字",
+    "description": "Checkbox: use uppercase letters."
+  },
+  "pop_gen_lower": {
+    "message": "小文字",
+    "description": "Checkbox: use lowercase letters."
+  },
+  "pop_gen_digits": {
+    "message": "数字",
+    "description": "Checkbox: use digits."
+  },
+  "pop_gen_symbols": {
+    "message": "記号",
+    "description": "Checkbox: use symbols."
+  },
+  "pop_gen_symbol_set": {
+    "message": "使用できる記号",
+    "description": "Field listing which symbols the generator may use."
+  },
+  "pop_gen_close": {
+    "message": "閉じる",
+    "description": "Collapses the password generator panel."
+  },
+  "pop_copy": {
+    "message": "コピー",
+    "description": "Copies the generated password."
+  },
+  "pop_gen_fill": {
+    "message": "ページに入力",
+    "description": "Fills the generated password into the password field on the current web page."
+  },
+  "pop_add_account": {
+    "message": "＋ アカウントを追加"
+  },
+  "pop_this_site": {
+    "message": "このサイト",
+    "description": "Heading above the settings that only apply to the current site."
+  },
+  "pop_autofill_title": {
+    "message": "ログインページを開いたときにユーザー名とパスワードを入力します"
+  },
+  "pop_autofill": {
+    "message": "自動入力",
+    "description": "Checkbox under 'This site'."
+  },
+  "pop_autofill_master_off": {
+    "message": "（マスタースイッチがオフ）",
+    "description": "Shown next to 'Autofill' when autofill is turned off for all sites on the manager page."
+  },
+  "pop_autosubmit": {
+    "message": "自動入力後にログイン",
+    "description": "Checkbox under 'This site'."
+  },
+  "pop_autosubmit_tip": {
+    "message": "自動入力が成功し、ページにログインフォームが 1 つしかないときだけ押します",
+    "description": "Help text of the '?' next to 'Sign in after autofill'."
+  },
+  "pop_pick_title": {
+    "message": "次からこのページを開くと、選んだボタンを自動でクリックします"
+  },
+  "pop_pick": {
+    "message": "自動クリックするボタンを選ぶ",
+    "description": "Closes the popup and lets the user click a button on the web page."
+  },
+  "pop_pick_count_title": {
+    "message": "管理ページで自動クリックを確認"
+  },
+  "pop_manage": {
+    "message": "すべてのパスワードを管理",
+    "description": "Popup footer link. Opens the manager page."
+  },
+  "pop_no_response": {
+    "message": "拡張機能から応答がありません"
+  },
+  "pop_page_unavailable": {
+    "message": "このページでは使えません"
+  },
+  "pop_page_not_ready": {
+    "message": "このページにはまだパスワードキーパーが読み込まれていません。ページを再読み込みしてもう一度お試しください。",
+    "description": "Tabs opened before the extension was installed or reloaded can't talk to it until they are reloaded."
+  },
+  "pop_page_no_response": {
+    "message": "ページから応答がありません"
+  },
+  "pop_password_copied": {
+    "message": "パスワードをコピーしました"
+  },
+  "pop_copy_failed": {
+    "message": "コピーできませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "pop_load_failed": {
+    "message": "読み込めませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "pop_empty": {
+    "message": "このサイトにはまだアカウントが保存されていません。一度ログインすると、保存するかどうか確認します。"
+  },
+  "pop_no_username": {
+    "message": "（ユーザー名なし、パスワードのみ）",
+    "description": "Shown in the account list instead of an empty username."
+  },
+  "pop_fill": {
+    "message": "入力",
+    "description": "Fills this account into the sign-in form on the page."
+  },
+  "pop_copy_password": {
+    "message": "パスワードをコピー"
+  },
+  "pop_account_count_one": {
+    "message": "$1 件のアカウント",
+    "description": "Popup footer. $1 = number of saved accounts for this site."
+  },
+  "pop_account_count_other": {
+    "message": "$1 件のアカウント",
+    "description": "Popup footer. $1 = number of saved accounts for this site."
+  },
+  "pop_page_rule_count_one": {
+    "message": "このページに $1 件",
+    "description": "Link next to 'Pick a button to auto-click'. $1 = number of auto-click rules for this page. Both buttons share one row, so keep it short."
+  },
+  "pop_page_rule_count_other": {
+    "message": "このページに $1 件",
+    "description": "Link next to 'Pick a button to auto-click'. $1 = number of auto-click rules for this page. Both buttons share one row, so keep it short."
+  },
+  "pop_password_required": {
+    "message": "パスワードを入力してください"
+  },
+  "pop_updated": {
+    "message": "更新しました",
+    "description": "The username already existed, so its password was updated."
+  },
+  "pop_added": {
+    "message": "追加しました"
+  },
+  "pop_setting_failed": {
+    "message": "設定できませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "pop_autofill_on": {
+    "message": "このサイトの自動入力をオンにしました"
+  },
+  "pop_autofill_off": {
+    "message": "このサイトの自動入力をオフにしました"
+  },
+  "pop_autosubmit_on": {
+    "message": "今後、$1 では自動入力のあとに自動でログインします",
+    "description": "$1 = site host name, e.g. example.com."
+  },
+  "pop_autosubmit_off": {
+    "message": "このサイトの自動ログインをオフにしました"
+  },
+  "pop_search_none": {
+    "message": "「$1」に一致するアカウントはありません",
+    "description": "$1 = what the user typed in the search box."
+  },
+  "pop_search_no_username": {
+    "message": "（ユーザー名なし）",
+    "description": "Shown in search results instead of an empty username."
+  },
+  "pop_open": {
+    "message": "開く",
+    "description": "Opens the site of this search result in a new tab."
+  },
+  "pop_unlock_with": {
+    "message": "$1 でロック解除",
+    "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "pop_copied": {
+    "message": "コピーしました"
+  },
+  "pop_gen_filled": {
+    "message": "ページのパスワード欄に入力しました。送信後に「保存」を押してください。",
+    "description": "'Save' is the button on the save-password prompt shown after the form is submitted."
+  },
+  "pop_backup_days_one": {
+    "message": "$1 日間バックアップしていません。ここをクリックして管理ページでバックアップしてください。",
+    "description": "Backup reminder bar in the popup. $1 = days since the last backup."
+  },
+  "pop_backup_days_other": {
+    "message": "$1 日間バックアップしていません。ここをクリックして管理ページでバックアップしてください。",
+    "description": "Backup reminder bar in the popup. $1 = days since the last backup."
+  },
+  "pop_backup_never": {
+    "message": "まだバックアップしていないため、パスワードはこのブラウザーにしかありません。ここをクリックして管理ページでバックアップしてください。",
+    "description": "Backup reminder bar in the popup."
+  },
+  "pop_unsupported_page": {
+    "message": "このページでは使えません。http と https のページだけに対応しています。",
+    "description": "Shown under the popup title on browser pages such as the new tab page."
+  },
+  "unl_title": {
+    "message": "パスワードキーパーのロック解除",
+    "description": "Title of the separate unlock window."
+  },
+  "unl_not_shown": {
+    "message": "自動で表示されませんか？",
+    "description": "Followed directly by the unl_retry link, with nothing in between. Keep the trailing space in languages that use spaces."
+  },
+  "unl_retry": {
+    "message": "ここをクリックしてもう一度開く",
+    "description": "Link that asks for system verification again, e.g. when the Windows Hello dialog opened behind other windows."
+  },
+  "unl_done": {
+    "message": "ロックを解除しました"
+  },
+  "unl_cancel": {
+    "message": "キャンセル"
+  },
+  "unl_try_again": {
+    "message": "再試行",
+    "description": "Shown only after verification was canceled or timed out."
+  },
+  "unl_wait_title": {
+    "message": "表示されたウィンドウで $1 の認証を完了してください",
+    "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "wa_no_response": {
+    "message": "拡張機能から応答がありません"
+  },
+  "wa_cancelled": {
+    "message": "認証がキャンセルされたか、タイムアウトしました"
+  },
+  "wa_blocked": {
+    "message": "ブラウザーがこの拡張機能にシステム認証の使用を許可していません"
+  },
+  "wa_security_key_or_phone": {
+    "message": "セキュリティキーまたはスマートフォン",
+    "description": "What to verify with on systems without Windows Hello or Touch ID. Always inserted mid-sentence as $1 (e.g. 'Unlock with $1'), so English keeps it lowercase with an article."
+  },
+  "wa_unsupported": {
+    "message": "このブラウザーはシステム認証に対応していません"
+  },
+  "wa_no_public_key": {
+    "message": "ブラウザーから公開鍵が提供されなかったため、このパソコンでは使えません"
+  },
+  "wa_not_set_up": {
+    "message": "システム認証がまだ設定されていません"
+  },
+  "opt_page_title": {
+    "message": "パスワードキーパー – パスワードの管理",
+    "description": "Browser tab title of the manager page."
+  },
+  "opt_header_note": {
+    "message": "パスワードはこのパソコンのブラウザーにだけ保存され、どこにもアップロードされません。"
+  },
+  "opt_header_version_title": {
+    "message": "バージョン履歴を見る",
+    "description": "Tooltip of the version number in the page header."
+  },
+  "opt_lock_title": {
+    "message": "本人確認",
+    "description": "Heading of the screen shown while App lock is on."
+  },
+  "opt_lock_help": {
+    "message": "認証すると、パスワードと設定が表示されます。"
+  },
+  "opt_verify_with": {
+    "message": "$1 で認証",
+    "description": "Button on the lock screen. $1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "opt_lock_broken": {
+    "message": "ロックの設定が壊れています。システム認証のキーが見つかりません。拡張機能を削除して再インストールし、バックアップからインポートしてください。"
+  },
+  "opt_no_response": {
+    "message": "拡張機能から応答がありません"
+  },
+  "opt_load_failed": {
+    "message": "読み込めませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_tab_passwords": {
+    "message": "パスワード"
+  },
+  "opt_tab_backup": {
+    "message": "バックアップ"
+  },
+  "opt_tab_settings": {
+    "message": "設定"
+  },
+  "opt_tab_trash": {
+    "message": "ごみ箱"
+  },
+  "opt_tab_help": {
+    "message": "ヘルプ"
+  },
+  "opt_tab_versions": {
+    "message": "バージョン"
+  },
+  "opt_add_button": {
+    "message": "＋ 追加",
+    "description": "Adds a password on the Passwords tab, or an auto-click rule on the Settings tab."
+  },
+  "opt_cancel": {
+    "message": "キャンセル"
+  },
+  "opt_save": {
+    "message": "保存"
+  },
+  "opt_ok": {
+    "message": "OK"
+  },
+  "opt_apply": {
+    "message": "適用"
+  },
+  "opt_got_it": {
+    "message": "OK",
+    "description": "Closes an information dialog."
+  },
+  "opt_edit": {
+    "message": "編集"
+  },
+  "opt_delete": {
+    "message": "削除"
+  },
+  "opt_show": {
+    "message": "表示",
+    "description": "Shows the password as text."
+  },
+  "opt_hide": {
+    "message": "非表示",
+    "description": "Hides the password again."
+  },
+  "opt_copy": {
+    "message": "コピー"
+  },
+  "opt_copied": {
+    "message": "コピーしました"
+  },
+  "opt_copy_failed": {
+    "message": "コピーできませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_password_copied": {
+    "message": "パスワードをコピーしました"
+  },
+  "opt_added": {
+    "message": "追加しました"
+  },
+  "opt_updated": {
+    "message": "更新しました"
+  },
+  "opt_setting_failed": {
+    "message": "設定できませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_delete_failed": {
+    "message": "削除できませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_select_all": {
+    "message": "すべて選択"
+  },
+  "opt_seconds_unit": {
+    "message": "秒",
+    "description": "Unit after a number input."
+  },
+  "opt_no_username": {
+    "message": "（ユーザー名なし）",
+    "description": "Shown instead of an empty username."
+  },
+  "opt_account_label": {
+    "message": "$1　$2",
+    "description": "One saved account in a list. $1 = site, $2 = username. Only the separator between them is translated."
+  },
+  "opt_list_sep": {
+    "message": "、",
+    "description": "Separator between items of a list inside a sentence."
+  },
+  "opt_note_sep": {
+    "message": "。",
+    "description": "Separator between two notes shown after a CSV export."
+  },
+  "opt_search_placeholder": {
+    "message": "サイト、ユーザー名、メモを検索"
+  },
+  "opt_export_selected_title": {
+    "message": "左のチェックボックスで選んだ項目を、同僚に渡す暗号化ファイルとしてエクスポートします"
+  },
+  "opt_export_selected": {
+    "message": "選択した項目をエクスポート（暗号化）"
+  },
+  "opt_export_selected_n_one": {
+    "message": "選択した $1 件をエクスポート（暗号化）",
+    "description": "$1 = number of checked entries."
+  },
+  "opt_export_selected_n_other": {
+    "message": "選択した $1 件をエクスポート（暗号化）",
+    "description": "$1 = number of checked entries."
+  },
+  "opt_check_all_title": {
+    "message": "表示中の項目をすべて選択"
+  },
+  "opt_col_site": {
+    "message": "サイト",
+    "description": "Table column."
+  },
+  "opt_col_username": {
+    "message": "ユーザー名",
+    "description": "Table column."
+  },
+  "opt_col_password": {
+    "message": "パスワード",
+    "description": "Table column."
+  },
+  "opt_col_last_used": {
+    "message": "最終使用",
+    "description": "Table column: when the password was last filled in."
+  },
+  "opt_empty": {
+    "message": "まだパスワードがありません。サイトに一度ログインすると、画面の右上で保存するかどうか確認されます。"
+  },
+  "opt_history_toggle": {
+    "message": "以前のパスワード ($1)",
+    "description": "Expands the previous passwords of an account. $1 = how many."
+  },
+  "opt_history_replaced_at": {
+    "message": "$1 に変更",
+    "description": "$1 = date and time the password was replaced."
+  },
+  "opt_confirm_delete": {
+    "message": "$1 の「$2」を削除しますか？",
+    "description": "$1 = site, $2 = username."
+  },
+  "opt_moved_to_trash_one": {
+    "message": "ごみ箱に移動しました。$1 日以内なら復元できます",
+    "description": "$1 = days items stay in the Trash."
+  },
+  "opt_moved_to_trash_other": {
+    "message": "ごみ箱に移動しました。$1 日以内なら復元できます",
+    "description": "$1 = days items stay in the Trash."
+  },
+  "opt_search_no_match": {
+    "message": "「$1」に一致する項目はありません",
+    "description": "$1 = search text."
+  },
+  "opt_health_show": {
+    "message": "詳細を見る"
+  },
+  "opt_health_hide": {
+    "message": "閉じる"
+  },
+  "opt_health_ok": {
+    "message": "パスワード診断：使い回しや弱いパスワードはなく、すべて 1 年以内に変更されています。"
+  },
+  "opt_health_summary_one": {
+    "message": "パスワード診断：使い回し $1 組、弱い $2 件、1 年以上未変更 $3 件。",
+    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  },
+  "opt_health_summary_other": {
+    "message": "パスワード診断：使い回し $1 組、弱い $2 件、1 年以上未変更 $3 件。",
+    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  },
+  "opt_health_reused": {
+    "message": "使い回し：$1 組目のパスワードが $2 か所で使われています",
+    "description": "$1 = group number, $2 = accounts using it (always 2 or more)."
+  },
+  "opt_health_weak_short_one": {
+    "message": "弱い：$1 文字しかありません",
+    "description": "$1 = password length."
+  },
+  "opt_health_weak_short_other": {
+    "message": "弱い：$1 文字しかありません",
+    "description": "$1 = password length."
+  },
+  "opt_health_weak_classes": {
+    "message": "弱い：1 種類の文字しか使っていません"
+  },
+  "opt_health_old": {
+    "message": "長期間未変更：最終変更 $1",
+    "description": "$1 = date and time."
+  },
+  "opt_trash_title": {
+    "message": "ごみ箱"
+  },
+  "opt_trash_days_before": {
+    "message": "削除したアカウントをここに",
+    "description": "Before the days input: 'Keep deleted accounts here for [30] days, then remove them automatically'."
+  },
+  "opt_trash_days_after": {
+    "message": "日間保管し、その後自動で消去",
+    "description": "After the days input. See opt_trash_days_before."
+  },
+  "opt_trash_restore_selected": {
+    "message": "選択した項目を復元"
+  },
+  "opt_trash_purge_selected": {
+    "message": "選択した項目を完全に削除"
+  },
+  "opt_trash_restore_selected_n_one": {
+    "message": "選択した $1 件を復元",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_restore_selected_n_other": {
+    "message": "選択した $1 件を復元",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_purge_selected_n_one": {
+    "message": "選択した $1 件を完全に削除",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_purge_selected_n_other": {
+    "message": "選択した $1 件を完全に削除",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_empty": {
+    "message": "ごみ箱は空です。"
+  },
+  "opt_trash_purge_all": {
+    "message": "ごみ箱を空にする"
+  },
+  "opt_trash_load_failed": {
+    "message": "ごみ箱を読み込めませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_trash_item_info_one": {
+    "message": "$2 に削除、$1 日後に自動で消去",
+    "description": "$1 = days left, $2 = date and time it was deleted."
+  },
+  "opt_trash_item_info_other": {
+    "message": "$2 に削除、$1 日後に自動で消去",
+    "description": "$1 = days left, $2 = date and time it was deleted."
+  },
+  "opt_restore": {
+    "message": "復元"
+  },
+  "opt_restored": {
+    "message": "復元しました"
+  },
+  "opt_restore_failed": {
+    "message": "復元できませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_restored_n_one": {
+    "message": "$1 件を復元しました"
+  },
+  "opt_restored_n_other": {
+    "message": "$1 件を復元しました"
+  },
+  "opt_restored_skipped_title": {
+    "message": "$1 件を復元、$2 件は復元できませんでした",
+    "description": "$1 = restored accounts, $2 = accounts skipped because the site already has the same username."
+  },
+  "opt_restored_skipped_text": {
+    "message": "次のサイトには同じアカウントがすでにあります："
+  },
+  "opt_purge": {
+    "message": "完全に削除"
+  },
+  "opt_confirm_purge": {
+    "message": "$1 の「$2」を完全に削除しますか？削除すると元に戻せません。",
+    "description": "$1 = site, $2 = username."
+  },
+  "opt_confirm_purge_selected_one": {
+    "message": "選択した $1 件を完全に削除しますか？削除すると元に戻せません。"
+  },
+  "opt_confirm_purge_selected_other": {
+    "message": "選択した $1 件を完全に削除しますか？削除すると元に戻せません。"
+  },
+  "opt_purged_n_one": {
+    "message": "$1 件を完全に削除しました"
+  },
+  "opt_purged_n_other": {
+    "message": "$1 件を完全に削除しました"
+  },
+  "opt_confirm_purge_all_one": {
+    "message": "ごみ箱を空にしますか？中の $1 件が完全に削除されます。"
+  },
+  "opt_confirm_purge_all_other": {
+    "message": "ごみ箱を空にしますか？中の $1 件が完全に削除されます。"
+  },
+  "opt_trash_emptied": {
+    "message": "ごみ箱を空にしました"
+  },
+  "opt_trash_days_invalid": {
+    "message": "日数は 1～365 の整数で入力してください"
+  },
+  "opt_trash_days_title_one": {
+    "message": "$1 日に変更",
+    "description": "Dialog title when shortening the Trash days. $1 = new number of days."
+  },
+  "opt_trash_days_title_other": {
+    "message": "$1 日に変更",
+    "description": "Dialog title when shortening the Trash days. $1 = new number of days."
+  },
+  "opt_trash_days_expiring_one": {
+    "message": "次の $1 件はすぐに完全に削除されます："
+  },
+  "opt_trash_days_expiring_other": {
+    "message": "次の $1 件はすぐに完全に削除されます："
+  },
+  "opt_trash_age_one": {
+    "message": "$1 日経過",
+    "description": "$1 = days since it was deleted."
+  },
+  "opt_trash_age_other": {
+    "message": "$1 日経過",
+    "description": "$1 = days since it was deleted."
+  },
+  "opt_confirm_delete_button": {
+    "message": "削除する",
+    "description": "Confirms deleting the listed accounts."
+  },
+  "opt_trash_days_set_one": {
+    "message": "$1 日に変更しました"
+  },
+  "opt_trash_days_set_other": {
+    "message": "$1 日に変更しました"
+  },
+  "opt_trash_days_set_purged_one": {
+    "message": "$1 日に変更し、$2 件を削除しました",
+    "description": "$1 = new number of days, $2 = accounts deleted because they were older."
+  },
+  "opt_trash_days_set_purged_other": {
+    "message": "$1 日に変更し、$2 件を削除しました",
+    "description": "$1 = new number of days, $2 = accounts deleted because they were older."
+  },
+  "opt_block_backup": {
+    "message": "バックアップ",
+    "description": "Section title on the Backup tab."
+  },
+  "opt_export_backup": {
+    "message": "暗号化バックアップをエクスポート"
+  },
+  "opt_import_backup": {
+    "message": "暗号化バックアップをインポート"
+  },
+  "opt_export_csv": {
+    "message": "CSV をエクスポート"
+  },
+  "opt_import_csv": {
+    "message": "CSV をインポート"
+  },
+  "opt_backup_help": {
+    "message": "暗号化バックアップをおすすめします。バックアップ用パスワードを忘れると開けません。"
+  },
+  "opt_backup_tip": {
+    "message": "エクスポートすると「名前を付けて保存」が開き、保存先を選べます。\nCSV は暗号化されていないため、開くとパスワードが見えます。安全な場所に保管してください。\nCSV の形式は Chrome、Edge でエクスポートしたものと同じです。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_move_title": {
+    "message": "ブラウザーとのパスワードの移行"
+  },
+  "opt_move_help": {
+    "message": "CSV ファイルを使って、ブラウザーに組み込まれたパスワード管理との間でパスワードを移します。自動では同期されません。終わったら CSV ファイルを削除し、Windows のごみ箱も空にしてください。"
+  },
+  "opt_move_in_title": {
+    "message": "ブラウザーのパスワードを取り込む"
+  },
+  "opt_move_in_1a": {
+    "message": "ブラウザーのパスワードページを開きます。アドレスバーに Chrome は",
+    "description": "One sentence split around three addresses: [1a] chrome://password-manager/settings[1b] edge://settings/passwords[1c] about:logins[1d]. A space follows 1a, 1b and 1c."
+  },
+  "opt_move_in_1b": {
+    "message": "、Edge は",
+    "description": "See opt_move_in_1a. Comes right after the Chrome address."
+  },
+  "opt_move_in_1c": {
+    "message": "、Firefox は",
+    "description": "See opt_move_in_1a. Comes right after the Edge address."
+  },
+  "opt_move_in_1d": {
+    "message": "と入力します。",
+    "description": "See opt_move_in_1a. Comes right after the Firefox address."
+  },
+  "opt_move_in_2": {
+    "message": "「パスワードをエクスポート」を探して、CSV ファイルとして保存します。先に Windows のパスワードや PIN を求められることがあります。",
+    "description": "'Export passwords' is the browser's own button name."
+  },
+  "opt_move_in_3": {
+    "message": "ここに戻って上の「CSV をインポート」を押し、そのファイルを選びます。Chrome、Edge、Firefox、Safari でエクスポートしたファイルに対応しています。"
+  },
+  "opt_move_out_title": {
+    "message": "ここのパスワードをブラウザーに戻す"
+  },
+  "opt_move_out_1": {
+    "message": "上の「CSV をエクスポート」を押して保存します。Chrome と Edge は一度に 3000 件までしか受け付けないため、3000 件を超えると複数のファイルに分かれます。"
+  },
+  "opt_move_out_2": {
+    "message": "ブラウザーのパスワードページ（URL は上と同じ）を開き、「パスワードをインポート」を探して、保存したファイルを選びます。",
+    "description": "'Import passwords' is the browser's own button name."
+  },
+  "opt_move_out_3": {
+    "message": "同じサイト・同じユーザー名でパスワードだけ異なるものがブラウザーにすでにある場合、新しいバージョンの Chrome では一覧が表示され、置き換えるかどうかを選べます。確認されない場合は、ブラウザーにもともとあるパスワードが残ります。"
+  },
+  "opt_move_what_title": {
+    "message": "移行したときの動作"
+  },
+  "opt_move_what_1": {
+    "message": "同じサイト・同じユーザー名のものは 1 つにまとめられ、重複しません。パスワードが異なる場合はファイルのものに置き換わり、元のパスワードは「以前のパスワード」に残ります。"
+  },
+  "opt_move_what_2": {
+    "message": "ファイルのパスワードが、ここで変更済みの古いパスワードの場合は、ここのパスワードが残り、上書きされません。"
+  },
+  "opt_move_what_3": {
+    "message": "ファイルにメモがなくても、ここで書いたメモは消えません。"
+  },
+  "opt_move_what_4a": {
+    "message": "スマートフォンアプリのパスワード（",
+    "description": "Split around the address android://: [4a]android:// [4b]."
+  },
+  "opt_move_what_4b": {
+    "message": "で始まるもの）やサイト以外の項目はインポートされず、「スキップ」に数えられます。",
+    "description": "See opt_move_what_4a. 'skipped' is the count in the import result."
+  },
+  "opt_move_what_5": {
+    "message": "会社でブラウザーのパスワード管理が無効にされている場合、ブラウザー側でエクスポートやインポートが見つからないことがあります。"
+  },
+  "opt_block_auto_backup": {
+    "message": "自動バックアップ",
+    "description": "Section title."
+  },
+  "opt_ab_run_now": {
+    "message": "今すぐバックアップ"
+  },
+  "opt_ab_run_now_tip": {
+    "message": "「3. 保存先」のフォルダーにすぐ 1 つ保存します。自動バックアップがオフでも使えます。\nパスワードに変更がなくても保存します。\n先にバックアップ用パスワードを設定する必要があります。",
+    "description": "'3. Save to' must match opt_ab_step_folder."
+  },
+  "opt_ab_help": {
+    "message": "暗号化バックアップを定期的に「ダウンロード」フォルダーの中に保存します。1～4 の順に設定してください。"
+  },
+  "opt_ab_help_tip": {
+    "message": "毎日または毎週、指定した時刻に 1 つ保存します。パスワードに変更がなければ保存しません。\n時刻を過ぎていた場合は、次にブラウザーを開いたときに実行します。"
+  },
+  "opt_ab_step_password": {
+    "message": "1. バックアップ用パスワード"
+  },
+  "opt_ab_password_tip": {
+    "message": "自動バックアップはすべてこのパスワードで暗号化されます。\nパスワードは拡張機能内に保存されます。このパソコンを使える人はバックアップファイルを開けますが、ファイルだけを手に入れた人は開けません。"
+  },
+  "opt_ab_set_password": {
+    "message": "パスワードを設定"
+  },
+  "opt_ab_change_password": {
+    "message": "パスワードを変更"
+  },
+  "opt_ab_pw_set": {
+    "message": "設定済み",
+    "description": "Status of the auto backup password."
+  },
+  "opt_ab_pw_unset": {
+    "message": "未設定",
+    "description": "Status of the auto backup password."
+  },
+  "opt_ab_step_when": {
+    "message": "2. タイミング"
+  },
+  "opt_ab_every_day": {
+    "message": "毎日"
+  },
+  "opt_ab_every_week": {
+    "message": "毎週"
+  },
+  "opt_weekday_mon": {
+    "message": "月曜日"
+  },
+  "opt_weekday_tue": {
+    "message": "火曜日"
+  },
+  "opt_weekday_wed": {
+    "message": "水曜日"
+  },
+  "opt_weekday_thu": {
+    "message": "木曜日"
+  },
+  "opt_weekday_fri": {
+    "message": "金曜日"
+  },
+  "opt_weekday_sat": {
+    "message": "土曜日"
+  },
+  "opt_weekday_sun": {
+    "message": "日曜日"
+  },
+  "opt_ab_step_folder": {
+    "message": "3. 保存先"
+  },
+  "opt_ab_folder_prefix": {
+    "message": "ダウンロード \\",
+    "description": "Shown before the subfolder name input. Means the Downloads folder."
+  },
+  "opt_ab_step_switch": {
+    "message": "4. オン/オフ"
+  },
+  "opt_ab_enable": {
+    "message": "自動バックアップを有効にする"
+  },
+  "opt_reminder_title": {
+    "message": "リマインダー"
+  },
+  "opt_reminder_before": {
+    "message": "バックアップしないまま",
+    "description": "Before the days input: 'Remind me in the popup after [30] days without a backup'."
+  },
+  "opt_reminder_after": {
+    "message": "日たったらポップアップで知らせる",
+    "description": "After the days input. See opt_reminder_before."
+  },
+  "opt_reminder_tip": {
+    "message": "その期間にパスワードの変更がなければ知らせません。\n0 にするとオフになります。"
+  },
+  "opt_ab_next": {
+    "message": "次回のバックアップ：$1",
+    "description": "$1 = date, weekday and time."
+  },
+  "opt_ab_last_failed": {
+    "message": "前回は失敗しました（$1）：$2",
+    "description": "$1 = date and time, $2 = error message."
+  },
+  "opt_ab_need_password": {
+    "message": "有効にしたり今すぐバックアップしたりするには、先にバックアップ用パスワードを設定してください。"
+  },
+  "opt_ab_not_enabled": {
+    "message": "有効になっていません。"
+  },
+  "opt_ab_last_check": {
+    "message": "前回の確認：$1。",
+    "description": "$1 = date and time."
+  },
+  "opt_ab_last_check_result": {
+    "message": "前回の確認：$1、$2。",
+    "description": "$1 = date and time, $2 = opt_ab_result_saved, opt_ab_result_unchanged or opt_ab_result_empty."
+  },
+  "opt_ab_result_saved": {
+    "message": "保存しました",
+    "description": "Result of the last auto backup check. See opt_ab_last_check_result."
+  },
+  "opt_ab_result_unchanged": {
+    "message": "パスワードに変更がないため保存しませんでした",
+    "description": "See opt_ab_last_check_result."
+  },
+  "opt_ab_result_empty": {
+    "message": "バックアップするパスワードがありません",
+    "description": "See opt_ab_last_check_result."
+  },
+  "opt_ab_waiting_first": {
+    "message": "有効です。まだ最初の予定時刻になっていません。"
+  },
+  "opt_wd_sun": {
+    "message": "日",
+    "description": "Short weekday in the next backup time. See opt_date_weekday_time."
+  },
+  "opt_wd_mon": {
+    "message": "月",
+    "description": "Short weekday."
+  },
+  "opt_wd_tue": {
+    "message": "火",
+    "description": "Short weekday."
+  },
+  "opt_wd_wed": {
+    "message": "水",
+    "description": "Short weekday."
+  },
+  "opt_wd_thu": {
+    "message": "木",
+    "description": "Short weekday."
+  },
+  "opt_wd_fri": {
+    "message": "金",
+    "description": "Short weekday."
+  },
+  "opt_wd_sat": {
+    "message": "土",
+    "description": "Short weekday."
+  },
+  "opt_date_weekday_time": {
+    "message": "$1（$2）$3",
+    "description": "$1 = date, $2 = short weekday, $3 = time."
+  },
+  "opt_ab_folder_changed": {
+    "message": "自動バックアップの保存先を「ダウンロード\\$1」に変更しました",
+    "description": "$1 = subfolder name inside the Downloads folder."
+  },
+  "opt_ab_pw_title": {
+    "message": "自動バックアップ用パスワード"
+  },
+  "opt_ab_pw_hint": {
+    "message": "自動バックアップのファイルはすべてこのパスワードで暗号化されます。このパスワードは拡張機能内に保存されます。"
+  },
+  "opt_ab_pw_saved": {
+    "message": "自動バックアップ用パスワードを設定しました"
+  },
+  "opt_backup_failed": {
+    "message": "バックアップできませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_backed_up_to": {
+    "message": "$1 にバックアップしました",
+    "description": "$1 = file path."
+  },
+  "opt_nothing_to_back_up": {
+    "message": "バックアップするものがありません"
+  },
+  "opt_backup_status_failed": {
+    "message": "バックアップの状態を読み込めませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_backup_status_empty": {
+    "message": "まだパスワードがないため、バックアップは不要です。"
+  },
+  "opt_backup_status_never": {
+    "message": "まだバックアップしていません。パスワードはこのブラウザーにしかないため、拡張機能を削除したり閲覧データを消去したりすると失われます。"
+  },
+  "opt_backup_status_last_one": {
+    "message": "前回のバックアップ：$2（$1 日前）",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_last_other": {
+    "message": "前回のバックアップ：$2（$1 日前）",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_due_one": {
+    "message": "前回のバックアップ：$2（$1 日前）。その後パスワードが変更されたので、もう一度バックアップしてください。",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_due_other": {
+    "message": "前回のバックアップ：$2（$1 日前）。その後パスワードが変更されたので、もう一度バックアップしてください。",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_import_done": {
+    "message": "インポート完了：追加 $1、更新 $2、スキップ $3"
+  },
+  "opt_import_why_same": {
+    "message": "パスワードが同じ $1",
+    "description": "Reason some entries were skipped. $1 = how many."
+  },
+  "opt_import_why_older": {
+    "message": "ファイルのパスワードの方が古い $1",
+    "description": "Reason some entries were skipped. $1 = how many."
+  },
+  "opt_import_why_invalid": {
+    "message": "サイト以外かパスワードなし $1",
+    "description": "Reason some entries were skipped. $1 = how many."
+  },
+  "opt_import_reasons": {
+    "message": "（$1）",
+    "description": "Wraps the skip reasons joined with opt_list_sep. Goes right after the skipped count in opt_import_result."
+  },
+  "opt_import_rules_one": {
+    "message": "、自動クリックのルールを $1 件追加",
+    "description": "Optional part of opt_import_result."
+  },
+  "opt_import_rules_other": {
+    "message": "、自動クリックのルールを $1 件追加",
+    "description": "Optional part of opt_import_result."
+  },
+  "opt_import_result": {
+    "message": "$1：追加 $2、更新 $3、スキップ $4",
+    "description": "$1 = what was imported (opt_import_what_*), $2-$4 = counts, $5 = opt_import_reasons or empty, $6 = opt_import_rules or empty."
+  },
+  "opt_import_result_end": {
+    "message": "。",
+    "description": "Ends the import result sentence, after the optional skip reasons and auto-click rule count."
+  },
+  "opt_import_no_data": {
+    "message": "このファイルにはデータがありません"
+  },
+  "opt_import_bad_header": {
+    "message": "この CSV の列を読み取れません。1 行目に url と password が必要です",
+    "description": "url and password are CSV column names. Do not translate them."
+  },
+  "opt_import_failed": {
+    "message": "インポートできませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_import_what_csv_one": {
+    "message": "CSV をインポート（全 $1 件）",
+    "description": "Start of opt_import_result. $1 = rows in the file."
+  },
+  "opt_import_what_csv_other": {
+    "message": "CSV をインポート（全 $1 件）",
+    "description": "Start of opt_import_result. $1 = rows in the file."
+  },
+  "opt_import_what_csv_from_one": {
+    "message": "$2 形式の CSV をインポート（全 $1 件）",
+    "description": "Start of opt_import_result. $1 = rows in the file, $2 = 'Chrome / Edge', 'Firefox' or 'Safari'."
+  },
+  "opt_import_what_csv_from_other": {
+    "message": "$2 形式の CSV をインポート（全 $1 件）",
+    "description": "Start of opt_import_result. $1 = rows in the file, $2 = 'Chrome / Edge', 'Firefox' or 'Safari'."
+  },
+  "opt_import_what_backup": {
+    "message": "暗号化バックアップ $1 をインポート",
+    "description": "Start of opt_import_result. $1 = file name."
+  },
+  "opt_save_failed": {
+    "message": "ファイルを保存できませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_saved_to": {
+    "message": "$1 に保存しました",
+    "description": "$1 = file path."
+  },
+  "opt_export_nothing": {
+    "message": "エクスポートするデータがありません"
+  },
+  "opt_export_failed": {
+    "message": "エクスポートできませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_csv_filename": {
+    "message": "パスワードキーパー-バックアップ-$1",
+    "description": "File name of the CSV export, without the extension. $1 = date like 20261106, maybe followed by -2. Do not use \\ / : * ? \" < > |."
+  },
+  "opt_backup_filename": {
+    "message": "パスワードキーパー-暗号化バックアップ-$1",
+    "description": "File name of the encrypted backup, without the extension. $1 = date like 20261106. Do not use \\ / : * ? \" < > |."
+  },
+  "opt_share_filename": {
+    "message": "パスワードキーパー-共有-$1",
+    "description": "File name when exporting checked entries for someone else, without the extension. $1 = date like 20261106. Do not use \\ / : * ? \" < > |."
+  },
+  "opt_csv_split_note": {
+    "message": "Chrome と Edge は一度に 3000 件までしかインポートできないため、$1 個のファイルに分けました。1 つずつインポートしてください",
+    "description": "Shown inside opt_csv_export_notes. $1 = number of files (always 2 or more)."
+  },
+  "opt_csv_long_note_one": {
+    "message": "$1 件は URL、ユーザー名、パスワード、メモのいずれかが長すぎるため、Chrome と Edge ではインポート時にスキップされます",
+    "description": "Shown inside opt_csv_export_notes."
+  },
+  "opt_csv_long_note_other": {
+    "message": "$1 件は URL、ユーザー名、パスワード、メモのいずれかが長すぎるため、Chrome と Edge ではインポート時にスキップされます",
+    "description": "Shown inside opt_csv_export_notes."
+  },
+  "opt_csv_export_notes": {
+    "message": "CSV のエクスポート：$1。",
+    "description": "$1 = notes joined with opt_note_sep."
+  },
+  "opt_backup_password": {
+    "message": "バックアップ用パスワード"
+  },
+  "opt_pw_again": {
+    "message": "もう一度入力"
+  },
+  "opt_pw_required": {
+    "message": "パスワードを入力してください"
+  },
+  "opt_pw_too_short_one": {
+    "message": "$1 文字以上にしてください"
+  },
+  "opt_pw_too_short_other": {
+    "message": "$1 文字以上にしてください"
+  },
+  "opt_pw_mismatch": {
+    "message": "入力した 2 つが一致しません"
+  },
+  "opt_pw_backup_title": {
+    "message": "バックアップ用パスワードを設定"
+  },
+  "opt_pw_backup_hint": {
+    "message": "このパスワードはバックアップファイルを開くときだけ使います。忘れると元に戻せません。"
+  },
+  "opt_pw_share_title": {
+    "message": "このファイルのパスワードを設定"
+  },
+  "opt_pw_share_hint_one": {
+    "message": "選択した $1 件だけが含まれます。パスワードはファイルとは別に相手に伝えてください。"
+  },
+  "opt_pw_share_hint_other": {
+    "message": "選択した $1 件だけが含まれます。パスワードはファイルとは別に相手に伝えてください。"
+  },
+  "opt_pw_import_title": {
+    "message": "バックアップ用パスワードを入力"
+  },
+  "opt_pw_import_hint": {
+    "message": "このファイルをエクスポートしたときに設定したパスワードを入力してください。"
+  },
+  "opt_block_log": {
+    "message": "バックアップ履歴",
+    "description": "Section title."
+  },
+  "opt_log_help": {
+    "message": "バックアップごとの保存先がここに記録されます。"
+  },
+  "opt_log_tip": {
+    "message": "最大 100 件まで残します。\n「今すぐバックアップ」は手動に含まれます。\n保存先を変えても古いファイルは元の場所に残るので、手動で削除してください。"
+  },
+  "opt_log_cat_all": {
+    "message": "すべて",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_cat_auto": {
+    "message": "自動",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_cat_manual": {
+    "message": "手動",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_cat_location": {
+    "message": "保存先の変更",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_delete_selected": {
+    "message": "選択した履歴を削除"
+  },
+  "opt_log_delete_selected_n_one": {
+    "message": "選択した $1 件の履歴を削除"
+  },
+  "opt_log_delete_selected_n_other": {
+    "message": "選択した $1 件の履歴を削除"
+  },
+  "opt_log_col_time": {
+    "message": "日時",
+    "description": "Table column."
+  },
+  "opt_log_col_kind": {
+    "message": "種類",
+    "description": "Table column: how the backup was made."
+  },
+  "opt_log_col_location": {
+    "message": "保存先",
+    "description": "Table column: file path."
+  },
+  "opt_log_col_count": {
+    "message": "件数",
+    "description": "Table column: how many accounts the backup has."
+  },
+  "opt_log_empty": {
+    "message": "バックアップ履歴はまだありません。"
+  },
+  "opt_log_empty_filtered": {
+    "message": "この種類の履歴はありません。"
+  },
+  "opt_log_count_one": {
+    "message": "（$1 件）",
+    "description": "Shown next to the section title."
+  },
+  "opt_log_count_other": {
+    "message": "（$1 件）",
+    "description": "Shown next to the section title."
+  },
+  "opt_kind_auto": {
+    "message": "自動バックアップ",
+    "description": "How a backup was made, in the history table."
+  },
+  "opt_kind_now": {
+    "message": "今すぐバックアップ",
+    "description": "How a backup was made. Same name as the 'Back up now' button."
+  },
+  "opt_kind_manual": {
+    "message": "暗号化バックアップのエクスポート",
+    "description": "How a backup was made."
+  },
+  "opt_kind_csv": {
+    "message": "CSV のエクスポート",
+    "description": "How a backup was made."
+  },
+  "opt_kind_selected": {
+    "message": "選択した項目のエクスポート",
+    "description": "Export of only the checked entries."
+  },
+  "opt_kind_location": {
+    "message": "保存先の変更",
+    "description": "Record of the auto backup folder being changed."
+  },
+  "opt_files_not_deleted_one": {
+    "message": "$1 個のバックアップファイルを削除できませんでした"
+  },
+  "opt_files_not_deleted_other": {
+    "message": "$1 個のバックアップファイルを削除できませんでした"
+  },
+  "opt_delete_yourself": {
+    "message": "手動で削除してください：",
+    "description": "Followed by a list of file paths."
+  },
+  "opt_delete_record_only": {
+    "message": "履歴だけ削除"
+  },
+  "opt_delete_both": {
+    "message": "両方とも削除",
+    "description": "Deletes the history record and the backup file."
+  },
+  "opt_confirm_delete_location_log": {
+    "message": "この「保存先の変更」の履歴を削除しますか？"
+  },
+  "opt_delete_log": {
+    "message": "履歴を削除",
+    "description": "Dialog title and button."
+  },
+  "opt_delete_files_too": {
+    "message": "パソコン上のバックアップファイルも削除しますか？"
+  },
+  "opt_file_may_remain": {
+    "message": "バックアップファイルが残っている可能性があります。手動で削除してください：",
+    "description": "Followed by the file path."
+  },
+  "opt_deleted_log_and_file": {
+    "message": "履歴とバックアップファイルを削除しました"
+  },
+  "opt_deleted_log": {
+    "message": "履歴を削除しました"
+  },
+  "opt_delete_logs_title_one": {
+    "message": "$1 件の履歴を削除"
+  },
+  "opt_delete_logs_title_other": {
+    "message": "$1 件の履歴を削除"
+  },
+  "opt_confirm_delete_location_logs_one": {
+    "message": "選択した $1 件の「保存先の変更」の履歴を削除しますか？"
+  },
+  "opt_confirm_delete_location_logs_other": {
+    "message": "選択した $1 件の「保存先の変更」の履歴を削除しますか？"
+  },
+  "opt_deleted_logs_one": {
+    "message": "$1 件の履歴を削除しました"
+  },
+  "opt_deleted_logs_other": {
+    "message": "$1 件の履歴を削除しました"
+  },
+  "opt_files_kept": {
+    "message": "バックアップファイルは削除していません。手動で削除してください：",
+    "description": "Followed by a list of file paths."
+  },
+  "opt_deleted_logs_files_one": {
+    "message": "$1 件の履歴と $2 個のバックアップファイルを削除しました",
+    "description": "$1 = records deleted, $2 = backup files deleted."
+  },
+  "opt_deleted_logs_files_other": {
+    "message": "$1 件の履歴と $2 個のバックアップファイルを削除しました",
+    "description": "$1 = records deleted, $2 = backup files deleted."
+  },
+  "opt_copy_locations": {
+    "message": "場所をコピー",
+    "description": "Copies the listed file paths."
+  },
+  "opt_block_lock": {
+    "message": "アプリロック",
+    "description": "Section title, followed by 'On' or 'Off'."
+  },
+  "opt_lock_block_help": {
+    "message": "席を離れている間、ほかの人にパスワードを見られないようにします。ロック後はシステム認証を通さないと使えません。"
+  },
+  "opt_lock_block_tip": {
+    "message": "ポップアップ、管理ページ、Web ページでの自動入力、ショートカット キー、ブラウザーの認証ダイアログは、すべて先に認証が必要です。\nWindows は Windows Hello、Mac は Touch ID、その他のシステムはセキュリティキーまたはスマートフォンを使います。予備の PIN はありません。\n管理ページは開くたびに認証が必要です。\nロックしてもディスク上のデータは暗号化されません。\n拡張機能のフォルダーを移動したら、もう一度有効にしてください。"
+  },
+  "opt_lock_enable": {
+    "message": "有効にする",
+    "description": "Checkbox label before the page knows which verification method is used."
+  },
+  "opt_lock_enable_with": {
+    "message": "有効にする（$1 で認証）",
+    "description": "Checkbox label. $1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "opt_lock_state_on": {
+    "message": "オン",
+    "description": "Shown next to the App lock section title."
+  },
+  "opt_lock_state_off": {
+    "message": "オフ",
+    "description": "Shown next to the App lock section title."
+  },
+  "opt_lock_when_title": {
+    "message": "自動でロックするタイミング"
+  },
+  "opt_lock_idle_before": {
+    "message": "操作しない状態が",
+    "description": "Before the minutes input: 'Lock after [15] minutes of inactivity'."
+  },
+  "opt_lock_idle_after": {
+    "message": "分続いたらロック",
+    "description": "After the minutes input. See opt_lock_idle_before."
+  },
+  "opt_lock_on_startup": {
+    "message": "ブラウザーの再起動時にロック"
+  },
+  "opt_lock_manual_help": {
+    "message": "ポップアップ右上の「ロック」でいつでも手動でロックできます。"
+  },
+  "opt_lock_unsupported": {
+    "message": "このブラウザーはシステム認証に対応していないため、アプリロックを使えません。"
+  },
+  "opt_lock_info_on": {
+    "message": "有効です。ロック中は $1 で認証すると使えます。",
+    "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "opt_lock_info_off": {
+    "message": "無効です。有効にするときに $1 の認証が 1 回表示されます。",
+    "description": "$1 = 'Windows Hello' or 'Touch ID'."
+  },
+  "opt_lock_info_no_platform": {
+    "message": "このパソコンには内蔵の認証器がありません。有効にするときに、セキュリティキーとスマートフォンのどちらを使うかブラウザーが確認します。"
+  },
+  "opt_lock_turned_on": {
+    "message": "アプリロックを有効にしました"
+  },
+  "opt_lock_turned_off": {
+    "message": "アプリロックを無効にしました"
+  },
+  "opt_lock_enable_failed": {
+    "message": "有効にできませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_lock_disable_failed": {
+    "message": "無効にできませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_block_fill": {
+    "message": "自動入力",
+    "description": "Section title on the Settings tab. Holds the autofill master switch, per-site autofill settings and never-ask sites."
+  },
+  "opt_autofill_master": {
+    "message": "ログインページを開いたときにユーザー名とパスワードを自動入力（マスタースイッチ）"
+  },
+  "opt_sites_title": {
+    "message": "サイト別設定"
+  },
+  "opt_site_master_off": {
+    "message": "マスタースイッチがオフのため、どのサイトでも自動入力しません。"
+  },
+  "opt_site_search_placeholder": {
+    "message": "サイトを検索"
+  },
+  "opt_site_col_accounts": {
+    "message": "アカウント",
+    "description": "Table column: number of saved accounts for the site."
+  },
+  "opt_site_col_fill": {
+    "message": "自動入力",
+    "description": "Table column."
+  },
+  "opt_site_col_submit": {
+    "message": "自動入力後にログイン",
+    "description": "Table column."
+  },
+  "opt_site_select_all_title": {
+    "message": "表示中のサイトをすべてオン"
+  },
+  "opt_site_clear_all": {
+    "message": "すべて解除"
+  },
+  "opt_site_clear_all_title": {
+    "message": "表示中のサイトをすべてオフ"
+  },
+  "opt_site_submit_tip": {
+    "message": "自動入力に成功し、ページにログインフォームが 1 つしかないときだけ押します。\n次に押せるまでの時間は、自動クリックの既定の間隔に従います。"
+  },
+  "opt_site_empty": {
+    "message": "まだアカウントを保存していません。"
+  },
+  "opt_site_search_no_match": {
+    "message": "「$1」に一致するサイトはありません",
+    "description": "$1 = search text."
+  },
+  "opt_site_dirty_one": {
+    "message": "未適用のサイトが $1 件あります",
+    "description": "Changes wait until the user clicks 'Apply'."
+  },
+  "opt_site_dirty_other": {
+    "message": "未適用のサイトが $1 件あります",
+    "description": "Changes wait until the user clicks 'Apply'."
+  },
+  "opt_apply_failed": {
+    "message": "適用できませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_site_applied_one": {
+    "message": "$1 件のサイトに適用しました"
+  },
+  "opt_site_applied_other": {
+    "message": "$1 件のサイトに適用しました"
+  },
+  "opt_never_title": {
+    "message": "保存を確認しないサイト"
+  },
+  "opt_never_empty": {
+    "message": "まだありません。保存の確認で「このサイトでは確認しない」を押すと、ここに表示されます。",
+    "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
+  },
+  "opt_remove": {
+    "message": "削除",
+    "description": "Tooltip of the x that removes a site from the never-ask list."
+  },
+  "opt_remove_failed": {
+    "message": "削除できませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_block_click": {
+    "message": "自動クリック",
+    "description": "Section title."
+  },
+  "opt_click_help": {
+    "message": "指定したページを開いたときに、自動でボタンをクリックします。"
+  },
+  "opt_click_tip": {
+    "message": "同じページに複数のルールがある場合は順番にクリックし、前のルールが終わってから次に進みます。\n各ルールは最大 15 秒待ちます。"
+  },
+  "opt_click_timing_title": {
+    "message": "時間の設定"
+  },
+  "opt_click_interval_label": {
+    "message": "既定の間隔"
+  },
+  "opt_click_interval_help": {
+    "message": "クリックした後、次にクリックできるまでの時間です。"
+  },
+  "opt_click_interval_tip": {
+    "message": "ルールごとに間隔を設定できます。設定していないルールはこの値を使います。\n「自動入力後にログイン」もこの値を使います。\n時間が過ぎても自動ではクリックしません。ページを開き直すか移動したときにクリックします。"
+  },
+  "opt_logout_pause_label": {
+    "message": "ログアウト後の一時停止"
+  },
+  "opt_logout_pause_help": {
+    "message": "ログアウトした後、自動クリックを再開するまでの時間です。"
+  },
+  "opt_logout_pause_tip": {
+    "message": "ログアウトしたタブの同じサイトにだけ適用されます。\n0 にすると一時停止しません。"
+  },
+  "opt_rule_sites_title": {
+    "message": "サイト別のルール"
+  },
+  "opt_rule_empty": {
+    "message": "まだルールがありません。自動クリックしたいページでポップアップの「自動クリックするボタンを選ぶ」を押すか、「＋ 追加」を押して自分で入力してください。",
+    "description": "'+ Add' must match opt_add_button."
+  },
+  "opt_rule_dialog_title": {
+    "message": "自動クリックのルールを追加"
+  },
+  "opt_when_after_fill": {
+    "message": "自動入力が終わったら",
+    "description": "Option of 'When to click'. Also named in opt_rule_tip_when."
+  },
+  "opt_when_on_load": {
+    "message": "ページを開いたらすぐ",
+    "description": "Option of 'When to click'. Also named in opt_rule_tip_when."
+  },
+  "opt_missing_skip": {
+    "message": "スキップして次のルールへ",
+    "description": "Option of 'If the button doesn't appear'."
+  },
+  "opt_missing_stop": {
+    "message": "停止して以降はクリックしない",
+    "description": "Option of 'If the button doesn't appear'."
+  },
+  "opt_missing_last_title": {
+    "message": "この後にルールはありません",
+    "description": "Tooltip when the option does not matter for the last rule."
+  },
+  "opt_rule_field_host": {
+    "message": "サイト",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_path": {
+    "message": "パス",
+    "description": "Field name of an auto-click rule: the URL path such as /login, or * for the whole site."
+  },
+  "opt_rule_field_selector": {
+    "message": "セレクター",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_text": {
+    "message": "ボタンの文字",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_when": {
+    "message": "クリックするタイミング",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_interval": {
+    "message": "間隔（秒）",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_missing": {
+    "message": "ボタンが見つからないとき",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_tip_host": {
+    "message": "自動クリックするサイト。例：example.com.tw\nURL 全体を貼り付けると、サイトとパスに自動で分けます。"
+  },
+  "opt_rule_tip_path": {
+    "message": "このパスのページでだけクリックします。例：/login\n* は任意の文字を表します。サイト全体なら * と入力します。"
+  },
+  "opt_rule_tip_selector": {
+    "message": "クリックするボタンを指定する書き方（CSS セレクター）。例：#login\n書き方がわからない場合は、ページ上でボタンを選ぶと自動で作成されます。"
+  },
+  "opt_rule_tip_selector_edit": {
+    "message": "$1\n変更するとボタンの文字は消去されます。",
+    "description": "$1 = opt_rule_tip_selector. Shown on an existing rule."
+  },
+  "opt_rule_tip_text": {
+    "message": "ボタンの文字がこれと同じときだけクリックします。\n空欄ならセレクターだけで判断します。\nセレクターでボタンが見つからないときは、この文字で探します。"
+  },
+  "opt_rule_tip_when": {
+    "message": "自動入力の後：アカウントの保存が必要です。ユーザー名とパスワードが入力され、フォームに空欄がないときにクリックします。\nページを開いたらすぐ：ボタンが表示されたらすぐクリックします。アカウントの保存は不要です。",
+    "description": "Option names must match opt_when_after_fill and opt_when_on_load."
+  },
+  "opt_rule_tip_interval": {
+    "message": "クリックした後、次にクリックできるまでの時間です。\n空欄なら既定の間隔を使います。"
+  },
+  "opt_rule_tip_missing": {
+    "message": "このルールの番になってから最大 15 秒待ちます。\nスキップ：次のルールに進みます。\n停止：以降はクリックせず、ページが変わるとやり直します。"
+  },
+  "opt_rule_note_no_account": {
+    "message": "アカウント未保存のためクリックしません"
+  },
+  "opt_rule_note_fill_off": {
+    "message": "自動入力がオフのためクリックしません"
+  },
+  "opt_selector_empty": {
+    "message": "セレクターを入力してください"
+  },
+  "opt_selector_invalid": {
+    "message": "セレクターの書き方が正しくありません"
+  },
+  "opt_reorder_failed": {
+    "message": "順序を変更できませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_rule_no": {
+    "message": "ルール $1",
+    "description": "$1 = position of the rule on its site."
+  },
+  "opt_move_up": {
+    "message": "上へ移動"
+  },
+  "opt_move_down": {
+    "message": "下へ移動"
+  },
+  "opt_rule_enabled": {
+    "message": "有効",
+    "description": "Checkbox on each rule."
+  },
+  "opt_confirm_delete_rule": {
+    "message": "$1 のこの自動クリックルールを削除しますか？",
+    "description": "$1 = site."
+  },
+  "opt_rule_text_cleared": {
+    "message": "ボタンの文字を消去しました。今後はセレクターだけで判断します"
+  },
+  "opt_interval_placeholder": {
+    "message": "既定 $1",
+    "description": "Placeholder of a small number input. $1 = default interval in seconds."
+  },
+  "opt_rule_count_one": {
+    "message": "$1 件",
+    "description": "Shown next to the site name."
+  },
+  "opt_rule_count_other": {
+    "message": "$1 件",
+    "description": "Shown next to the site name."
+  },
+  "opt_rule_count_off_one": {
+    "message": "$1 件、うち $2 件はオフ",
+    "description": "$1 = rules for the site, $2 = rules turned off."
+  },
+  "opt_rule_count_off_other": {
+    "message": "$1 件、うち $2 件はオフ",
+    "description": "$1 = rules for the site, $2 = rules turned off."
+  },
+  "opt_rule_path_placeholder": {
+    "message": "/login（サイト全体なら *）"
+  },
+  "opt_rule_host_invalid": {
+    "message": "サイトの形式が正しくありません"
+  },
+  "opt_rule_host_empty": {
+    "message": "サイトを入力してください"
+  },
+  "opt_rule_path_empty": {
+    "message": "パスを入力してください。サイト全体なら * と入力します。"
+  },
+  "opt_rule_interval_invalid": {
+    "message": "間隔は 1～86400 の整数で入力してください"
+  },
+  "opt_block_danger": {
+    "message": "危険な操作",
+    "description": "Section title."
+  },
+  "opt_delete_all": {
+    "message": "すべてのパスワードを削除"
+  },
+  "opt_delete_all_help_before": {
+    "message": "すべていったんごみ箱に移り、",
+    "description": "Before the number of days: 'Everything goes to the Trash first and can be restored within [30] days.' Keep the trailing space in languages that use spaces."
+  },
+  "opt_delete_all_help_after": {
+    "message": "日以内なら復元できます。",
+    "description": "After the number of days. See opt_delete_all_help_before."
+  },
+  "opt_no_passwords": {
+    "message": "パスワードがありません"
+  },
+  "opt_confirm_delete_all_one": {
+    "message": "$1 件のパスワードをすべてごみ箱に移動しますか？$2 日以内なら復元できます。",
+    "description": "$1 = number of passwords, $2 = days items stay in the Trash."
+  },
+  "opt_confirm_delete_all_other": {
+    "message": "$1 件のパスワードをすべてごみ箱に移動しますか？$2 日以内なら復元できます。",
+    "description": "$1 = number of passwords, $2 = days items stay in the Trash."
+  },
+  "opt_all_moved_to_trash": {
+    "message": "すべてごみ箱に移動しました"
+  },
+  "opt_help_title": {
+    "message": "使い方"
+  },
+  "opt_help_1": {
+    "message": "どこかのサイトに一度ログインすると、画面の右上に「このパスワードを保存しますか？」と表示されます。",
+    "description": "The quoted text is the save prompt shown on web pages (content.js). Keep it the same as that prompt."
+  },
+  "opt_help_2": {
+    "message": "次に同じサイトを開くと、ユーザー名とパスワードが自動で入力されます。複数のアカウントを保存している場合は、ユーザー名の欄をクリックすると一覧が表示されます。上下キーで選び、Enter で入力します。"
+  },
+  "opt_help_3": {
+    "message": "Ctrl+Shift+L（Mac は Command+Shift+L）を押すと、今のサイトのユーザー名とパスワードをすぐに入力します。ショートカットは拡張機能ページの「キーボード ショートカット」で変更できます。",
+    "description": "'Keyboard shortcuts' is the browser's own page name."
+  },
+  "opt_help_4": {
+    "message": "ツールバーの青い鍵のアイコンから、今のサイトに保存したアカウントの確認、手動での入力、パスワードのコピー、強力なパスワードの生成ができます。ポップアップ上部の検索ボックスではすべてのサイトのアカウントを検索でき、Enter でそのサイトを開きます。"
+  },
+  "opt_help_5": {
+    "message": "登録やパスワードの変更のときに新しいパスワードの欄をクリックすると、「強力なパスワードを生成」が表示されます。押すと、新しいパスワードと確認用の欄の両方に入力されます。",
+    "description": "The quoted text is an item shown on web pages (content.js). Keep it the same as that item."
+  },
+  "opt_help_6": {
+    "message": "ボタンを自動でクリックしたいときは、ポップアップの「自動クリックするボタンを選ぶ」を押して、ページ上でそのボタンを選びます。以後そのページを開くと自動でクリックされます。「設定」タブの「自動クリック」で手動の追加や調整もできます。"
+  },
+  "opt_help_7": {
+    "message": "パスワードを変更したアカウントは、表のパスワード欄にある「以前のパスワード」を展開できます。削除したアカウントはまずごみ箱に移り、既定では 30 日間保管されます。日数は「ごみ箱」タブで変更できます。"
+  },
+  "opt_help_8": {
+    "message": "「設定」タブの「アプリロック」を有効にすると、このパソコンのシステム認証（Windows Hello、Touch ID）を通さないと拡張機能全体が使えなくなります。操作しない状態が続いたとき、ブラウザーを再起動したとき、ポップアップで「ロック」を押したときにロックされます。"
+  },
+  "opt_help_9": {
+    "message": "定期的にバックアップするか、自動バックアップを有効にしてください。拡張機能の削除、閲覧データの消去、フォルダーの移動をすると、パスワードは失われます。"
+  },
+  "opt_browser_hint": {
+    "message": "今使っているのは $1 です。拡張機能ページは $2 です。プログラムを更新したら、そこで「再読み込み」を押してください。",
+    "description": "$1 = 'Edge' or 'Chrome', $2 = edge://extensions or chrome://extensions. 'Reload' is the browser's own button name."
+  },
+  "opt_versions_title": {
+    "message": "バージョン履歴"
+  },
+  "opt_version_now": {
+    "message": "現在のバージョンは $1 です。プログラムを更新したら、拡張機能ページで「再読み込み」を押してください。",
+    "description": "$1 = version number like 1.12.0."
+  },
+  "opt_version_current": {
+    "message": "現在のバージョン",
+    "description": "Badge next to the installed version in the list."
+  },
+  "opt_version_note": {
+    "message": "注意：$1",
+    "description": "$1 = one note of a version from changelog.js."
+  },
+  "opt_dialog_add_title": {
+    "message": "パスワードを追加"
+  },
+  "opt_dialog_edit_title": {
+    "message": "パスワードを編集"
+  },
+  "opt_field_url": {
+    "message": "サイトの URL"
+  },
+  "opt_field_username": {
+    "message": "ユーザー名"
+  },
+  "opt_field_password": {
+    "message": "パスワード"
+  },
+  "opt_field_note": {
+    "message": "メモ"
+  },
+  "opt_url_empty": {
+    "message": "サイトの URL を入力してください"
+  },
+  "opt_password_empty": {
+    "message": "パスワードを入力してください"
+  },
+  "cs_err_ext_reloaded": {
+    "message": "拡張機能が再読み込みされました。このページを更新してください。",
+    "description": "Error when the extension was reloaded or updated while this page stayed open. Usually shown after \"Couldn't save: \"."
+  },
+  "cs_err_no_response": {
+    "message": "拡張機能から応答がありません",
+    "description": "Error when the extension's background service worker didn't answer. Usually shown after \"Couldn't save: \"."
+  },
+  "cs_save": {
+    "message": "保存",
+    "description": "Button on the save-password card and on the auto-click confirmation card."
+  },
+  "cs_cancel": {
+    "message": "キャンセル",
+    "description": "Button on the auto-click confirmation card."
+  },
+  "cs_banner_save_title": {
+    "message": "このパスワードを保存しますか？",
+    "description": "Title of the card shown on the web page after signing in."
+  },
+  "cs_banner_update_title": {
+    "message": "このアカウントのパスワードを更新しますか？",
+    "description": "Title of the same card when the site already has this account saved with a different password."
+  },
+  "cs_banner_username": {
+    "message": "ユーザー名"
+  },
+  "cs_banner_password": {
+    "message": "パスワード"
+  },
+  "cs_banner_show": {
+    "message": "表示",
+    "description": "Small button inside the password box that reveals the password. Keep it short."
+  },
+  "cs_banner_hide": {
+    "message": "非表示",
+    "description": "Same button after the password is revealed. Keep it short."
+  },
+  "cs_banner_never": {
+    "message": "このサイトでは確認しない",
+    "description": "Link-style button on the save-password card. Stops asking to save passwords on this site."
+  },
+  "cs_banner_no": {
+    "message": "今はしない",
+    "description": "Closes the save-password card without saving."
+  },
+  "cs_banner_update": {
+    "message": "更新"
+  },
+  "cs_banner_never_done": {
+    "message": "$1 では今後確認しません。管理ページで元に戻せます。",
+    "description": "$1 is the site's host name, for example accounts.example.com."
+  },
+  "cs_save_failed": {
+    "message": "保存できませんでした：$1",
+    "description": "$1 is the error message."
+  },
+  "cs_password_updated": {
+    "message": "パスワードを更新しました"
+  },
+  "cs_password_saved": {
+    "message": "パスワードを保存しました"
+  },
+  "cs_generate_failed": {
+    "message": "パスワードを生成できませんでした：$1",
+    "description": "$1 is the error message."
+  },
+  "cs_generate_no_field": {
+    "message": "入力できる新しいパスワード欄が見つかりません"
+  },
+  "cs_generate_filled_copied": {
+    "message": "生成したパスワードを入力し、クリップボードにもコピーしました。送信後に「保存」を押してください。",
+    "description": "\"Save\" is the button on the save-password card that appears after the form is submitted."
+  },
+  "cs_generate_filled": {
+    "message": "生成したパスワードを入力しました。送信後に「保存」を押してください。",
+    "description": "Same as cs_generate_filled_copied, when copying to the clipboard wasn't allowed."
+  },
+  "cs_dropdown_locked": {
+    "message": "ロック中です。ツールバーの鍵のアイコンをクリックして認証すると、自動入力されます。",
+    "description": "Shown under a sign-in field while App lock is locked."
+  },
+  "cs_dropdown_choose_account": {
+    "message": "$1 — 入力するアカウントを選択",
+    "description": "Header of the account list under a sign-in field. $1 is the extension name (Password Keeper)."
+  },
+  "cs_dropdown_generate": {
+    "message": "強力なパスワードを生成",
+    "description": "Item in the list under a new-password field."
+  },
+  "cs_dropdown_generate_hint": {
+    "message": "新しいパスワード欄と確認欄に入力します。オプションはツールバーのポップアップにあります。",
+    "description": "Second line under \"Generate a strong password\". Options means the password generator options."
+  },
+  "cs_dropdown_no_username": {
+    "message": "（ユーザー名なし、パスワードのみ）",
+    "description": "Shown in the account list for a saved login without a username."
+  },
+  "cs_click_cooldown": {
+    "message": "直前に自動クリックしたため、今回はクリックしません。"
+  },
+  "cs_click_after_logout": {
+    "message": "ログアウトした直後のため、今回は自動クリックしません。"
+  },
+  "cs_click_missed_stop": {
+    "message": "「$1」をクリックできなかったため、以降はクリックしません。",
+    "description": "$1 is the button text (up to 20 characters). The rule is set to stop when its button is missing, so the rules after it on this page are skipped."
+  },
+  "cs_click_button_fallback": {
+    "message": "ボタン",
+    "description": "Used as $1 in the auto-click messages when the button has no text."
+  },
+  "cs_click_done": {
+    "message": "「$1」を自動クリックしました",
+    "description": "$1 is the button text (up to 20 characters)."
+  },
+  "cs_click_not_found": {
+    "message": "自動クリックするボタンが見つかりません"
+  },
+  "cs_click_empty_field": {
+    "message": "フォームに未入力の欄があるため、今回は自動クリックしませんでした。"
+  },
+  "cs_pick_hint": {
+    "message": "自動クリックするボタンをクリックしてください。Esc キーでキャンセルします。",
+    "description": "Hint at the top of the web page while picking a button to auto-click."
+  },
+  "cs_pick_untrusted_frame": {
+    "message": "ここは別のサイトから埋め込まれているため、自動クリックできません",
+    "description": "The picked button is inside a frame embedded from a different site."
+  },
+  "cs_pick_card_failed": {
+    "message": "確認画面を開けませんでした：$1",
+    "description": "$1 is the error message."
+  },
+  "cs_pick_title": {
+    "message": "これを自動クリックしますか？",
+    "description": "Title of the card shown after picking a button to auto-click."
+  },
+  "cs_pick_button": {
+    "message": "ボタン",
+    "description": "Label above the picked button's text."
+  },
+  "cs_pick_no_text": {
+    "message": "（テキストなし）",
+    "description": "Shown when the picked button has no text."
+  },
+  "cs_pick_when": {
+    "message": "クリックするタイミング"
+  },
+  "cs_pick_note_no_account": {
+    "message": "このサイトにはまだアカウントが保存されていません。保存するとクリックされます。"
+  },
+  "cs_pick_note_autofill_off": {
+    "message": "このサイトの自動入力はオフです。オンにするとクリックされます。"
+  },
+  "cs_pick_after_fill": {
+    "message": "自動入力が終わったら",
+    "description": "Option for when to click: after the username and password are autofilled."
+  },
+  "cs_pick_on_load": {
+    "message": "ページを開いたらすぐ",
+    "description": "Option for when to click."
+  },
+  "cs_pick_saved": {
+    "message": "保存しました。次回このページを開くと自動クリックします。"
+  },
+  "cs_fill_no_fields": {
+    "message": "このページにログイン欄が見つかりません",
+    "description": "Shown in the popup when \"Fill\" can't find a sign-in form on the page."
+  },
+  "cs_fill_failed": {
+    "message": "入力できませんでした",
+    "description": "Shown in the popup when filling the page failed."
+  },
+  "bg_vault_unreadable": {
+    "message": "パスワードのデータを復号できません。保存領域が壊れている可能性があります。管理ページですべてのデータを消去して、やり直すことができます。"
+  },
+  "bg_url_scheme_unsupported": {
+    "message": "保存できるのは http または https で始まるサイトだけです"
+  },
+  "bg_site_required": {
+    "message": "サイトを入力してください"
+  },
+  "bg_duplicate_account": {
+    "message": "このサイトにはこのユーザー名がすでに保存されています"
+  },
+  "bg_webauthn_data_unreadable": {
+    "message": "認証データを読み取れません"
+  },
+  "bg_webauthn_wrong_type": {
+    "message": "認証の種類が正しくありません"
+  },
+  "bg_webauthn_wrong_origin": {
+    "message": "この拡張機能からの認証ではありません"
+  },
+  "bg_webauthn_expired": {
+    "message": "認証の有効期限が切れました。もう一度お試しください。"
+  },
+  "bg_webauthn_not_set_up": {
+    "message": "システム認証がまだ設定されていません"
+  },
+  "bg_webauthn_unknown_key": {
+    "message": "この拡張機能に登録されたキーではありません",
+    "description": "The key is the passkey created for app lock (Windows Hello, Touch ID, a security key or phone)."
+  },
+  "bg_webauthn_no_user_verification": {
+    "message": "本人確認（PIN、指紋、顔）が行われていません"
+  },
+  "bg_webauthn_bad_signature": {
+    "message": "署名の検証に失敗しました"
+  },
+  "bg_gen_symbols_empty": {
+    "message": "記号が選択されていますが、使用できる記号が空です",
+    "description": "Password generator in the popup: the symbols checkbox is on but the allowed symbols field is empty."
+  },
+  "bg_gen_no_charset": {
+    "message": "文字の種類を 1 つ以上選んでください"
+  },
+  "bg_gen_too_short": {
+    "message": "文字数が少なすぎて、選んだ種類の文字をすべて入れられません"
+  },
+  "bg_backup_password_too_short": {
+    "message": "バックアップ用パスワードは 8 文字以上にしてください"
+  },
+  "bg_none_selected": {
+    "message": "アカウントが選択されていません"
+  },
+  "bg_not_backup_file": {
+    "message": "パスワードキーパーのバックアップ ファイルではありません"
+  },
+  "bg_wrong_password_or_damaged": {
+    "message": "パスワードが違うか、ファイルが壊れています"
+  },
+  "bg_file_untracked": {
+    "message": "ダウンロード履歴が削除されています",
+    "description": "Shown under a file location in the backup history: the file can't be deleted from here because the browser's download history was cleared."
+  },
+  "bg_file_missing": {
+    "message": "ファイルが見つかりません",
+    "description": "Shown under a file location in the backup history: the file was moved or deleted."
+  },
+  "bg_file_delete_failed": {
+    "message": "削除できませんでした：$1",
+    "description": "$1 is the browser's error message."
+  },
+  "bg_download_not_found": {
+    "message": "ダウンロード項目が見つかりません"
+  },
+  "bg_download_interrupted": {
+    "message": "ダウンロードが中断されたか、キャンセルされました"
+  },
+  "bg_download_interrupted_reason": {
+    "message": "ダウンロードが中断されたか、キャンセルされました（$1）",
+    "description": "$1 is the browser's reason code, like USER_CANCELED."
+  },
+  "bg_download_failed": {
+    "message": "ダウンロードに失敗しました：$1",
+    "description": "$1 is the browser's error message."
+  },
+  "bg_time_format": {
+    "message": "時刻は 12:00 のように入力してください"
+  },
+  "bg_weekday_invalid": {
+    "message": "曜日が正しくありません"
+  },
+  "bg_backup_location_changed": {
+    "message": "自動バックアップの保存先を「$1」から「$2」に変更しました。以前のファイルは元の場所に残っています。",
+    "description": "Saved in the backup history when the auto backup folder changes, in the language in use at that time. $1 is the old folder, $2 is the new folder."
+  },
+  "bg_enable_needs_password": {
+    "message": "有効にする前に、自動バックアップ用のパスワードを設定してください"
+  },
+  "bg_auto_backup_no_password": {
+    "message": "自動バックアップ用のパスワードがまだ設定されていません",
+    "description": "Also saved as the last auto backup error, in the language in use at that time."
+  },
+  "bg_backup_file_auto": {
+    "message": "パスワードキーパー-自動バックアップ-$1",
+    "description": "File name, without the .pkbak extension, of a scheduled auto backup. $1 is the date and time, like 20261106-1200. Don't use these characters: \\ / : * ? \" < > |"
+  },
+  "bg_backup_file_now": {
+    "message": "パスワードキーパー-今すぐバックアップ-$1",
+    "description": "File name, without the .pkbak extension, of a backup made with \"Back up now\". $1 is the date and time, like 20261106-1200. Don't use these characters: \\ / : * ? \" < > |"
+  },
+  "bg_badge_locked": {
+    "message": "ロック",
+    "description": "Badge text on the toolbar icon while the extension is locked. The badge fits only about 4 characters."
+  },
+  "bg_rule_path_required": {
+    "message": "パスを入力してください。サイト全体なら * と入力します。"
+  },
+  "bg_rule_url_invalid": {
+    "message": "パスの形式が正しくありません"
+  },
+  "bg_seconds_range": {
+    "message": "$1は $2～$3 の整数にしてください",
+    "description": "$1 is a field name (bg_label_interval or bg_label_pause). $2 and $3 are the minimum and maximum number of seconds."
+  },
+  "bg_label_interval": {
+    "message": "間隔",
+    "description": "Field name used as $1 in bg_seconds_range: seconds to wait before auto-clicking the same button again."
+  },
+  "bg_label_pause": {
+    "message": "ログアウト後の一時停止",
+    "description": "Field name used as $1 in bg_seconds_range: the \"pause after sign-out\" seconds on the manager page."
+  },
+  "bg_rule_no_button": {
+    "message": "ボタンが選択されていません"
+  },
+  "bg_duplicate_click_rule": {
+    "message": "このパスには同じセレクターのルールがすでにあります"
+  },
+  "bg_selector_required": {
+    "message": "セレクターを入力してください"
+  },
+  "bg_autofill_off_for_site": {
+    "message": "このサイトの自動入力はオフになっています。先にオンにしてください。"
+  },
+  "bg_site_invalid": {
+    "message": "サイトの形式が正しくありません"
+  },
+  "bg_rules_changed": {
+    "message": "ルールが変更されました。このページを再読み込みしてください。"
+  },
+  "bg_lock_not_enabled": {
+    "message": "アプリロックが有効になっていません"
+  },
+  "bg_key_data_incomplete": {
+    "message": "キーのデータが不完全です"
+  },
+  "bg_trash_not_found": {
+    "message": "この項目はごみ箱にありません"
+  },
+  "bg_restore_duplicate": {
+    "message": "このサイトにはこのユーザー名がすでに保存されています。先にそちらを削除してから復元してください。"
+  },
+  "bg_trash_days_range": {
+    "message": "日数は 1～365 の範囲で指定してください"
+  },
+  "bg_log_not_found": {
+    "message": "この履歴が見つかりません。すでに削除された可能性があります。"
+  },
+  "bg_locked": {
+    "message": "ロック中です。ツールバーの鍵のアイコンから認証してください。",
+    "description": "The lock icon is this extension's icon on the browser toolbar."
+  },
+  "bg_unknown_message": {
+    "message": "不明なメッセージ：$1",
+    "description": "$1 is an internal message type. Only shown when something inside the extension goes wrong."
+  },
+  "bg_der_not_signature": {
+    "message": "DER 署名ではありません"
+  },
+  "bg_der_bad_format": {
+    "message": "DER の形式が正しくありません"
+  },
+  "bg_unsupported_sig_alg": {
+    "message": "サポートされていない署名アルゴリズムです：$1",
+    "description": "$1 is the algorithm number, like -8."
+  },
+  "lang_name_zh_TW": {
+    "message": "繁體中文",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_en": {
+    "message": "English",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_ja": {
+    "message": "日本語",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "opt_lang_label": {
+    "message": "表示言語"
+  },
+  "opt_lang_auto": {
+    "message": "ブラウザーに合わせる（$1）",
+    "description": "Language menu option that follows the browser. $1 is the language the browser picked, e.g. English."
+  },
+  "opt_lang_failed": {
+    "message": "言語を変更できませんでした：$1"
+  },
+  "bg_language_invalid": {
+    "message": "この言語には対応していません"
+  }
+}

@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>註冊測試</title></head>
+<body>
+  <h1>註冊（兩個密碼欄）</h1>
+  <form id="f">
+    <label>帳號 <input id="u" name="email" type="email" autocomplete="username"></label>
+    <label>新密碼 <input id="p1" name="newpw" type="password" autocomplete="new-password"></label>
+    <label>確認密碼 <input id="p2" name="confirm" type="password" autocomplete="new-password"></label>
+    <button type="submit">註冊</button>
+  </form>
+  <script src="shim.js"></script>
+  <script src="../src/background/crypto.js"></script>
+  <script src="../src/background/background.js"></script>
+  <script src="../src/content/content.js"></script>
+  <script>
+    document.getElementById('f').addEventListener('submit', (e) => { e.preventDefault(); location.href = 'done.html'; });
+  </script>
+</body></html>

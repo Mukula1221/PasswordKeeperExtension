@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="opt_page_title">密碼小管家 – 管理密碼</title>
+  <link rel="stylesheet" href="../shared/ui.css">
+  <style>
+    .page { max-width: 900px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+    .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+    .tab { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; padding: 8px 14px; font-size: 14px; color: var(--muted); }
+    .tab:hover { background: transparent; color: var(--text); }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+    .tab .count { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 999px; background: #e5e7eb; color: var(--text); font-size: 11px; font-weight: 600; text-align: center; margin-left: 2px; }
+    .tab .count:empty { display: none; }
+    .tabpane { display: flex; flex-direction: column; gap: 14px; }
+    .toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .toolbar input[type="search"] { flex: 1; min-width: 200px; }
+    .help { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .card .help { margin-top: 4px; }
+    .card h3 { font-size: 13px; margin: 14px 0 6px; color: var(--text); }
+    .card .row.wrap { margin-top: 8px; }
+    .row.wrap label.inline { white-space: nowrap; }
+    .form { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    /* 語言選單放在頁首版本號左邊；視窗太窄時整排換行，不要把標題擠扁 */
+    .header { flex-wrap: wrap; }
+    .header label.lang-pick { display: inline-flex; align-items: center; gap: 6px; margin: 0 12px 0 0; font-size: 13px; color: var(--muted); }
+    .lang-pick select { font: inherit; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text); cursor: pointer; }
+    .form-row { display: grid; grid-template-columns: 110px 1fr; gap: 10px; align-items: center; }
+    /* 英文、日文的欄位名稱比較長，110px 會擠成兩行 */
+    html:not(:lang(zh)) .form-row { grid-template-columns: 150px 1fr; }
+    .form-label { font-size: 13px; color: var(--muted); }
+    .form-field { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    /* 「下載 \」和子資料夾輸入框要在同一排；ui.css 的 input[type=text] 是 100% 寬，這裡要壓過它 */
+    .form-field.nowrap { flex-wrap: nowrap; }
+    .form-field .prefix { white-space: nowrap; }
+    .form-field input.folder { width: auto; flex: 0 1 260px; min-width: 120px; }
+    .strip { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); padding: 0 2px; }
+    .strip.warn { color: #92400e; }
+    .strip.ok { color: #15803d; }
+    .sep { width: 1px; height: 22px; background: var(--border); margin: 0 4px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 13px; }
+    th { background: #f3f4f6; font-weight: 600; color: var(--muted); font-size: 12px; }
+    tr:last-child td { border-bottom: 0; }
+    td.site a { text-decoration: none; word-break: break-all; }
+    td.pwcell { font-family: Consolas, "Courier New", monospace; white-space: nowrap; }
+    td.ops { white-space: nowrap; text-align: right; }
+    th.chk, td.chk { width: 28px; padding-right: 0; }
+    tr.hist td { background: #f9fafb; font-size: 12px; padding-left: 38px; }
+    tr.hist .old { display: flex; gap: 8px; align-items: center; padding: 3px 0; font-family: Consolas, "Courier New", monospace; }
+    dialog { border: 1px solid var(--border); border-radius: 10px; padding: 16px; width: 440px; max-width: calc(100vw - 32px); }
+    dialog::backdrop { background: rgba(0, 0, 0, 0.3); }
+    dialog .row.end { margin-top: 14px; }
+    .never { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { display: inline-flex; align-items: center; gap: 4px; background: #f3f4f6; border-radius: 999px; padding: 3px 6px 3px 10px; font-size: 12px; }
+    .chip button { border: 0; background: transparent; padding: 0 4px; color: var(--muted); }
+    .help-card ol, .help-card ul { margin: 6px 0 0 18px; padding: 0; }
+    .help-card li { margin: 4px 0; }
+    .num { width: 64px; padding: 4px 6px; font: inherit; border: 1px solid var(--border); border-radius: 6px; }
+    .time { padding: 3px 6px; font: inherit; border: 1px solid var(--border); border-radius: 6px; }
+    .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .seg button { border: 0; border-radius: 0; padding: 4px 10px; font-size: 12px; }
+    .seg button + button { border-left: 1px solid var(--border); }
+    .seg button.active { background: var(--primary); color: #fff; }
+    .toolbar .push { margin-left: auto; }
+    th.center, td.center { text-align: center; }
+    .colbtns { display: flex; justify-content: center; gap: 2px; margin-top: 2px; }
+    .colbtns button { font-weight: 400; }
+    tr.dirty td { background: #fffbeb; }
+    /* 列太多時表格自己捲，不用把整頁拉很長。標題固定在上面，「全選」「清除所有」才一直按得到。 */
+    /* 外框的圓角交給 .table-scroll。table 自己留著 overflow: hidden 的話，標題固定不住。 */
+    .table-scroll { max-height: 360px; overflow: auto; margin-top: 8px; background: #fff; border: 1px solid var(--border); border-radius: 10px; }
+    .table-scroll table { border: 0; border-radius: 0; overflow: visible; }
+    /* 表格的框線是共用的，不會跟著固定的標題走，所以底線用陰影畫 */
+    .table-scroll th { position: sticky; top: 0; z-index: 1; box-shadow: inset 0 -1px 0 var(--border); }
+    /* 「密碼」表是那一頁的主角，高度跟著視窗走 */
+    .table-scroll.tall { max-height: 70vh; margin-top: 0; }
+    #trashList { max-height: 60vh; overflow: auto; }
+    #trashList > .entry { flex: none; }
+    .table-scroll::-webkit-scrollbar, #trashList::-webkit-scrollbar, #ruleSites::-webkit-scrollbar { width: 10px; height: 10px; }
+    .table-scroll::-webkit-scrollbar-thumb, #trashList::-webkit-scrollbar-thumb, #ruleSites::-webkit-scrollbar-thumb { background: #c4c8cf padding-box; border: 2px solid transparent; border-radius: 5px; }
+    .table-scroll::-webkit-scrollbar-thumb:hover, #trashList::-webkit-scrollbar-thumb:hover, #ruleSites::-webkit-scrollbar-thumb:hover { background-color: #9ca3af; }
+    /* 捲動的只有資料列，捲軸從標題下面才開始。--head-height 是 options.js 量的。 */
+    .table-scroll::-webkit-scrollbar-track:vertical { margin: var(--head-height) 0 4px; }
+    .table-frame { position: relative; }
+    /* 軌道縮短後，標題旁邊那一段瀏覽器還是當捲軸，按了會往下捲一頁，所以蓋起來 */
+    /* 顏色跟標題一樣，標題看起來才是整排的 */
+    .table-frame::after { content: ''; position: absolute; top: 1px; right: 1px; width: 10px; height: var(--head-height); background: #f3f4f6; box-shadow: inset 0 -1px 0 var(--border); border-top-right-radius: 9px; }
+    label.form-label { margin: 0; }
+    /* 自動點選：一個網站一塊，可以收合。一條規則的欄位多，標籤直接放在欄位上面，不用表格的欄標題。 */
+    #ruleSites { display: flex; flex-direction: column; gap: 8px; max-height: 70vh; overflow: auto; }
+    .rule-site { flex: none; background: #fff; border: 1px solid var(--border); border-radius: 10px; }
+    .rule-site > summary { padding: 8px 12px; background: #f3f4f6; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .rule-site > summary:hover { background: #e5e7eb; }
+    .rule-site[open] > summary { border-bottom: 1px solid var(--border); border-radius: 9px 9px 0 0; }
+    .rule-site > summary .muted { margin-left: 8px; font-weight: 400; }
+    .rule-list { display: flex; flex-direction: column; gap: 8px; padding: 8px; }
+    .rule-card { padding: 8px 10px 10px; border: 1px solid var(--border); border-radius: 8px; }
+    /* 關掉的規則整塊變淡。啟用和刪除不在 .rule-fields 裡，還是看得清楚。 */
+    .rule-card.off { background: #f9fafb; }
+    .rule-card.off .rule-fields { opacity: 0.6; }
+    .rule-card.moved { animation: rule-moved 1.2s ease-out; }
+    @keyframes rule-moved { from { background: #dbeafe; } }
+    .rule-head { display: flex; align-items: center; gap: 4px; }
+    .rule-no { margin-right: 6px; font-size: 13px; font-weight: 600; }
+    .rule-head .push { margin-left: auto; margin-right: 8px; }
+    .rule-fields { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px 12px; margin-top: 8px; }
+    .rule-field { margin: 0; }
+    .rule-field.half { grid-column: span 3; }
+    .rule-field.third { grid-column: span 2; }
+    .rule-field.full { grid-column: span 6; }
+    .rule-field-name { display: block; margin-bottom: 2px; }
+    .rule-field input, .rule-field select, .rule-field textarea { display: block; width: 100%; padding: 5px 7px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text); font: inherit; font-size: 13px; }
+    /* 選擇器可能很長：整段折行顯示，高度跟著內容，最多 5 行，再長就在框內捲動 */
+    .rule-field textarea.rule-selector { min-height: 30px; max-height: calc(5 * 1.45em + 12px); overflow-y: auto; resize: none; font-family: Consolas, "Courier New", monospace; font-size: 12px; line-height: 1.45; word-break: break-all; field-sizing: content; }
+    .rule-field .error { min-height: 0; margin-top: 2px; }
+    .rule-note { margin-top: 2px; color: #92400e; }
+    .rule-field .error:empty, .rule-note:empty { display: none; }
+    .rule-add { align-self: flex-start; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 14px 0 6px; }
+    .card .section-head h3 { margin: 0; }
+    #ruleDialog { width: 560px; }
+    @media (max-width: 640px) {
+      .rule-field.half, .rule-field.third { grid-column: span 6; }
+    }
+    .entry input[type="checkbox"] { flex: none; }
+    #choiceList { margin: 8px 0 0; padding-left: 18px; max-height: 220px; overflow: auto; font-size: 12px; }
+    #choiceList li { margin: 3px 0; word-break: break-all; }
+    #choiceList li .muted { display: block; }
+    .folder { width: 200px; padding: 4px 6px; font: inherit; border: 1px solid var(--border); border-radius: 6px; }
+    select { font: inherit; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
+    #backupStatus { font-size: 13px; }
+    #backupStatus.due { color: #92400e; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 8px 10px; }
+    .health-item { display: flex; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .health-item:last-child { border-bottom: 0; }
+    .health-item .what { flex: 1; min-width: 0; }
+    .health-item .who { color: var(--muted); font-size: 12px; }
+    details.card > summary { position: relative; cursor: pointer; font-size: 15px; font-weight: 600; }
+    details.card > summary .muted { font-weight: 400; }
+    details.card > :not(summary) { margin-top: 10px; }
+    /* 放在標題那一排的按鈕，區塊收起來也按得到。用定位是因為 summary 改成 flex 會少掉開合的三角形。 */
+    .card-action { position: absolute; top: 50%; right: 0; transform: translateY(-50%); display: flex; align-items: center; font-weight: 400; }
+    #logTable td { font-size: 12px; word-break: break-all; }
+    #logTable .nowrap { white-space: nowrap; word-break: normal; }
+    .abErr { color: var(--danger); }
+    #lockScreen { max-width: 420px; }
+    #headerVersion { cursor: pointer; font-size: 12px; }
+    #headerVersion:hover { color: var(--primary); }
+    .ver { padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .ver:last-child { border-bottom: 0; }
+    .ver h3 { margin: 0 0 4px; display: flex; gap: 8px; align-items: baseline; font-size: 14px; }
+    .ver .date { font-weight: 400; color: var(--muted); font-size: 12px; }
+    .ver .tag { background: var(--primary); color: #fff; border-radius: 999px; padding: 1px 8px; font-size: 11px; font-weight: 600; }
+    .ver ul { margin: 4px 0 0 18px; padding: 0; }
+    .ver li { margin: 3px 0; font-size: 13px; }
+    .ver .note { font-size: 12px; color: #92400e; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="../../icons/icon48.png" alt="">
+    <div class="grow">
+      <h1 data-i18n="ext_name">密碼小管家</h1>
+      <div class="muted" data-i18n="opt_header_note">密碼只存在這台電腦的瀏覽器裡，不會上傳到任何地方。</div>
+    </div>
+    <label class="lang-pick" title="介面語言" data-i18n-title="opt_lang_label">
+      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="8" r="6.3" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M1.8 8h12.4M8 1.7c1.9 2 1.9 10.6 0 12.6M8 1.7c-1.9 2-1.9 10.6 0 12.6" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+      <select id="langSelect" aria-label="介面語言" data-i18n-aria-label="opt_lang_label">
+        <option value="auto" id="langAuto"></option>
+        <option value="zh_TW" data-i18n="lang_name_zh_TW">繁體中文</option>
+        <option value="en" data-i18n="lang_name_en">English</option>
+        <option value="ja" data-i18n="lang_name_ja">日本語</option>
+      </select>
+    </label>
+    <div id="headerVersion" class="muted" title="看版本功能歷程" data-i18n-title="opt_header_version_title"></div>
+  </div>
+
+  <div class="page">
+    <div id="lockScreen" class="card" hidden>
+      <h2 data-i18n="opt_lock_title">先驗證身分</h2>
+      <div class="help" data-i18n="opt_lock_help">驗證過才看得到密碼和設定。</div>
+      <div style="margin-top:10px"><button id="helloUnlock" class="primary"></button></div>
+      <div id="lockError" class="error"></div>
+    </div>
+
+    <div id="pageMain">
+      <nav class="tabs">
+        <button class="tab" data-tab="passwords" data-i18n="opt_tab_passwords">密碼</button>
+        <button class="tab" data-tab="backup" data-i18n="opt_tab_backup">備份</button>
+        <button class="tab" data-tab="settings" data-i18n="opt_tab_settings">設定</button>
+        <button class="tab" data-tab="trash"><span data-i18n="opt_tab_trash">回收桶</span> <span id="trashCount" class="count"></span></button>
+        <button class="tab" data-tab="help" data-i18n="opt_tab_help">說明</button>
+        <button class="tab" data-tab="versions" data-i18n="opt_tab_versions">版本</button>
+      </nav>
+
+      <section id="tab-passwords" class="tabpane">
+        <div class="toolbar">
+          <input id="search" type="search" placeholder="搜尋網站、帳號或備註" data-i18n-placeholder="opt_search_placeholder">
+          <button id="add" class="primary" data-i18n="opt_add_button">＋ 新增</button>
+          <button id="exportSelected" disabled title="勾選左邊的方框，把那幾筆匯出成加密檔給同事" data-i18n-title="opt_export_selected_title" data-i18n="opt_export_selected">匯出勾選的（加密）</button>
+        </div>
+        <div id="status" class="error"></div>
+        <div id="healthStrip" class="strip">
+          <span id="healthSummary"></span>
+          <button id="healthToggle" class="link small" hidden data-i18n="opt_health_show">看詳細</button>
+        </div>
+        <div id="healthList" class="card" hidden></div>
+        <div class="table-frame">
+          <div id="passwordTableWrap" class="table-scroll tall">
+            <table>
+              <thead>
+                <tr>
+                  <th class="chk"><input type="checkbox" id="checkAll" title="全選目前列出的" data-i18n-title="opt_check_all_title"></th>
+                  <th data-i18n="opt_col_site">網站</th><th data-i18n="opt_col_username">帳號</th><th data-i18n="opt_col_password">密碼</th><th data-i18n="opt_col_last_used">最後使用</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="empty" class="empty" hidden data-i18n="opt_empty">還沒有任何密碼。到網站登入一次，畫面右上角會問你要不要儲存。</div>
+      </section>
+
+      <section id="tab-backup" class="tabpane" hidden>
+        <details class="card" open>
+          <summary data-i18n="opt_block_backup">備份</summary>
+          <div>
+            <div id="backupStatus"></div>
+            <div class="row wrap">
+              <button id="exportBak" class="primary" data-i18n="opt_export_backup">匯出加密備份</button>
+              <button id="importBak" data-i18n="opt_import_backup">匯入加密備份</button>
+              <span class="sep"></span>
+              <button id="export" data-i18n="opt_export_csv">匯出 CSV</button>
+              <button id="import" data-i18n="opt_import_csv">匯入 CSV</button>
+              <input id="file" type="file" accept=".csv,text/csv" hidden>
+              <input id="bakFile" type="file" accept=".pkbak,.json,application/json" hidden>
+            </div>
+            <div class="help"><span data-i18n="opt_backup_help">建議用加密備份。備份密碼忘了就打不開。</span><span class="tip" data-i18n-tip="opt_backup_tip" data-tip="匯出時會跳「另存新檔」讓你選位置。
+CSV 沒有加密，打開就看得到密碼，要放在安全的地方。
+CSV 的格式和 Chrome、Edge 匯出的一樣。">?</span></div>
+            <div id="backupResult" class="muted" style="margin-top:6px"></div>
+          </div>
+        </details>
+
+        <details class="card help-card" id="browserMove">
+          <summary data-i18n="opt_move_title">和瀏覽器互搬密碼</summary>
+          <div>
+            <div class="help" data-i18n="opt_move_help">用 CSV 檔和瀏覽器內建的密碼來回搬，不會自動同步。搬完記得刪掉 CSV 檔，也清掉資源回收筒。</div>
+            <h3 data-i18n="opt_move_in_title">把瀏覽器的密碼搬進來</h3>
+            <ol>
+              <li><span data-i18n="opt_move_in_1a">開瀏覽器的密碼頁：Chrome 在網址列打</span> <code>chrome://password-manager/settings</code><span data-i18n="opt_move_in_1b">，Edge 打</span> <code>edge://settings/passwords</code><span data-i18n="opt_move_in_1c">，Firefox 打</span> <code>about:logins</code><span data-i18n="opt_move_in_1d">。</span></li>
+              <li data-i18n="opt_move_in_2">找「匯出密碼」，存成 CSV 檔。瀏覽器可能會先要你驗證 Windows 密碼或 PIN。</li>
+              <li data-i18n="opt_move_in_3">回到這裡按上面的「匯入 CSV」，選那個檔。Chrome、Edge、Firefox、Safari 匯出的檔案都看得懂。</li>
+            </ol>
+            <h3 data-i18n="opt_move_out_title">把這裡的密碼搬回瀏覽器</h3>
+            <ol>
+              <li data-i18n="opt_move_out_1">按上面的「匯出 CSV」存檔。超過 3000 筆會分成幾個檔，因為 Chrome、Edge 一次最多收 3000 筆。</li>
+              <li data-i18n="opt_move_out_2">開瀏覽器的密碼頁（網址同上），找「匯入密碼」，選剛剛存的檔。</li>
+              <li data-i18n="opt_move_out_3">瀏覽器裡已經有同網站同帳號、密碼卻不一樣的，新版 Chrome 會列出來讓你選要不要換掉；沒問的話，瀏覽器會保留它原本的那組。</li>
+            </ol>
+            <h3 data-i18n="opt_move_what_title">來回搬時會怎樣</h3>
+            <ul>
+              <li data-i18n="opt_move_what_1">同網站同帳號會合併，不會多出一筆。密碼不一樣的換成檔案裡的，原本的留在「舊密碼」裡。</li>
+              <li data-i18n="opt_move_what_2">檔案裡的密碼如果是這裡已經換掉的舊密碼，會保留這裡的，不會蓋回去。</li>
+              <li data-i18n="opt_move_what_3">檔案裡沒有備註的，不會把這裡寫的備註清掉。</li>
+              <li><span data-i18n="opt_move_what_4a">手機 App 的密碼（</span><code>android://</code> <span data-i18n="opt_move_what_4b">開頭）和其他不是網站的項目不會匯入，會算在「略過」裡。</span></li>
+              <li data-i18n="opt_move_what_5">公司關掉瀏覽器的密碼管理時，瀏覽器那邊可能找不到匯出、匯入。</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="card" open>
+          <summary><span data-i18n="opt_block_auto_backup">自動備份</span>
+            <span class="card-action">
+              <button id="abRunNow" class="primary" data-i18n="opt_ab_run_now">立即備份</button>
+              <span class="tip" data-i18n-tip="opt_ab_run_now_tip" data-tip="馬上存一份到「3. 存到」的資料夾，沒打開自動備份也能用。
+沒改過密碼也會存。
+要先設定備份密碼。">?</span>
+            </span>
+          </summary>
+          <div>
+            <div class="help"><span data-i18n="opt_ab_help">定時把加密備份存到「下載」資料夾底下。照 1 到 4 設定。</span><span class="tip" data-i18n-tip="opt_ab_help_tip" data-tip="每天或每週在指定時間存一份，沒改過密碼就不存。
+錯過時間會在下次開瀏覽器時補做。">?</span></div>
+            <div class="form">
+              <div class="form-row">
+                <div class="form-label"><span data-i18n="opt_ab_step_password">1. 備份密碼</span><span class="tip" data-i18n-tip="opt_ab_password_tip" data-tip="自動備份都用這組密碼加密。
+密碼存在擴充功能裡，拿到這台電腦的人可以用它打開備份檔，只拿到檔案的人打不開。">?</span></div>
+                <div class="form-field">
+                  <span id="abPwStatus" class="muted"></span>
+                  <button id="abPassword" class="small" data-i18n="opt_ab_set_password">設定密碼</button>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-label" data-i18n="opt_ab_step_when">2. 什麼時候</div>
+                <div class="form-field">
+                  <select id="abEvery"><option value="day" data-i18n="opt_ab_every_day">每天</option><option value="week" data-i18n="opt_ab_every_week">每週</option></select>
+                  <select id="abWeekday" hidden>
+                    <option value="1" data-i18n="opt_weekday_mon">星期一</option>
+                    <option value="2" data-i18n="opt_weekday_tue">星期二</option>
+                    <option value="3" data-i18n="opt_weekday_wed">星期三</option>
+                    <option value="4" data-i18n="opt_weekday_thu">星期四</option>
+                    <option value="5" data-i18n="opt_weekday_fri">星期五</option>
+                    <option value="6" data-i18n="opt_weekday_sat">星期六</option>
+                    <option value="0" data-i18n="opt_weekday_sun">星期日</option>
+                  </select>
+                  <input id="abTime" type="time" class="time" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-label" data-i18n="opt_ab_step_folder">3. 存到</div>
+                <div class="form-field nowrap">
+                  <span class="muted prefix" data-i18n="opt_ab_folder_prefix">下載 \</span>
+                  <input id="abFolder" type="text" class="folder">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-label" data-i18n="opt_ab_step_switch">4. 開關</div>
+                <div class="form-field">
+                  <label class="inline"><input type="checkbox" id="abEnabled"> <span data-i18n="opt_ab_enable">啟用自動備份</span></label>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:8px">
+              <div id="abNext" class="muted"></div>
+              <div id="abInfo" class="muted"></div>
+            </div>
+            <h3 data-i18n="opt_reminder_title">提醒</h3>
+            <label class="inline">
+              <span data-i18n="opt_reminder_before">超過</span> <input id="reminderDays" class="num" type="number" min="0" max="365"> <span data-i18n="opt_reminder_after">天沒備份，就在小視窗提醒</span><span class="tip" data-i18n-tip="opt_reminder_tip" data-tip="這段期間沒改過密碼就不提醒。
+填 0 關掉。">?</span>
+            </label>
+          </div>
+        </details>
+
+        <details class="card" id="logDetails">
+          <summary><span data-i18n="opt_block_log">備份紀錄</span> <span id="logCount" class="muted"></span></summary>
+          <div class="help"><span data-i18n="opt_log_help">每次備份存到哪裡都記在這裡。</span><span class="tip" data-i18n-tip="opt_log_tip" data-tip="最多留 100 筆。
+「立即備份」算手動。
+換過位置的話，舊檔案還留在原來的地方，要自己刪。">?</span></div>
+          <div class="toolbar">
+            <div id="logFilter" class="seg">
+              <button data-cat="all" data-i18n="opt_log_cat_all">全部</button>
+              <button data-cat="auto" data-i18n="opt_log_cat_auto">自動</button>
+              <button data-cat="manual" data-i18n="opt_log_cat_manual">手動</button>
+              <button data-cat="location" data-i18n="opt_log_cat_location">改位置</button>
+            </div>
+            <button id="logDelete" class="small danger push" disabled data-i18n="opt_log_delete_selected">刪除勾選的紀錄</button>
+          </div>
+          <div class="table-frame">
+            <div id="logTableWrap" class="table-scroll">
+              <table id="logTable">
+                <thead><tr><th class="chk"><input type="checkbox" id="logCheckAll" title="全選目前列出的" data-i18n-title="opt_check_all_title"></th><th class="nowrap" data-i18n="opt_log_col_time">時間</th><th class="nowrap" data-i18n="opt_log_col_kind">方式</th><th data-i18n="opt_log_col_location">位置</th><th class="nowrap" data-i18n="opt_log_col_count">筆數</th><th></th></tr></thead>
+                <tbody id="logRows"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="logEmpty" class="muted" data-i18n="opt_log_empty">還沒有備份紀錄。</div>
+        </details>
+      </section>
+
+      <section id="tab-settings" class="tabpane" hidden>
+        <details class="card">
+          <summary><span data-i18n="opt_block_lock">工具鎖定</span> <span id="lockState" class="muted"></span></summary>
+          <div>
+            <div class="help"><span data-i18n="opt_lock_block_help">離開座位時不讓別人看密碼。鎖上後要通過系統驗證才能用。</span><span class="tip" data-i18n-tip="opt_lock_block_tip" data-tip="小視窗、管理頁、網頁自動填入、快捷鍵、瀏覽器驗證視窗都要先驗證。
+Windows 用 Windows Hello，Mac 用 Touch ID，其他系統用安全金鑰或手機，沒有備用的 PIN。
+管理頁每次打開都要驗證。
+鎖定不會加密硬碟上的資料。
+擴充功能的資料夾搬家後要重新啟用。">?</span></div>
+            <div class="row wrap">
+              <label class="inline"><input type="checkbox" id="lockEnabled"> <span id="lockEnabledLabel" data-i18n="opt_lock_enable">啟用</span></label>
+            </div>
+            <div id="lockInfo" class="muted" style="margin-top:6px"></div>
+            <h3 data-i18n="opt_lock_when_title">什麼時候自動鎖上</h3>
+            <div class="row wrap">
+              <label class="inline"><span data-i18n="opt_lock_idle_before">閒置</span> <input id="lockMinutes" class="num" type="number" min="1" max="720"> <span data-i18n="opt_lock_idle_after">分鐘沒碰電腦就鎖</span></label>
+              <label class="inline"><input type="checkbox" id="lockOnStartup"> <span data-i18n="opt_lock_on_startup">瀏覽器重開就鎖</span></label>
+            </div>
+            <div class="help" data-i18n="opt_lock_manual_help">小視窗右上角的「鎖定」可以隨時手動鎖上。</div>
+          </div>
+        </details>
+
+        <details class="card" open>
+          <summary data-i18n="opt_block_fill">填入</summary>
+          <div>
+            <label class="inline"><input type="checkbox" id="autoFill"> <span data-i18n="opt_autofill_master">打開登入頁時自動填入帳號密碼（總開關）</span></label>
+            <h3 data-i18n="opt_sites_title">各網站</h3>
+            <div id="siteMasterOff" class="help" data-i18n="opt_site_master_off">總開關關著，所有網站都不會自動填。</div>
+            <div id="siteTools" class="toolbar">
+              <input id="siteSearch" type="search" placeholder="搜尋網站" data-i18n-placeholder="opt_site_search_placeholder">
+            </div>
+            <div class="table-frame">
+              <div id="siteTableWrap" class="table-scroll">
+                <table id="siteTable">
+                  <thead>
+                    <tr>
+                      <th data-i18n="opt_col_site">網站</th>
+                      <th class="center" data-i18n="opt_site_col_accounts">帳號</th>
+                      <th class="center"><span data-i18n="opt_site_col_fill">自動填入</span>
+                        <div class="colbtns">
+                          <button class="link small" data-col="fill" data-val="1" title="勾選目前列出的網站" data-i18n-title="opt_site_select_all_title" data-i18n="opt_select_all">全選</button>
+                          <button class="link small" data-col="fill" data-val="0" title="取消目前列出的網站" data-i18n-title="opt_site_clear_all_title" data-i18n="opt_site_clear_all">清除所有</button>
+                        </div>
+                      </th>
+                      <th class="center"><span data-i18n="opt_site_col_submit">自動填完按登入</span><span class="tip" data-i18n-tip="opt_site_submit_tip" data-tip="自動填入成功、頁面上只有一個登入表單時才會按。
+隔多久能再按，看自動點選的間隔預設值。">?</span>
+                        <div class="colbtns">
+                          <button class="link small" data-col="submit" data-val="1" title="勾選目前列出的網站" data-i18n-title="opt_site_select_all_title" data-i18n="opt_select_all">全選</button>
+                          <button class="link small" data-col="submit" data-val="0" title="取消目前列出的網站" data-i18n-title="opt_site_clear_all_title" data-i18n="opt_site_clear_all">清除所有</button>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="siteRows"></tbody>
+                </table>
+              </div>
+            </div>
+            <div id="siteActions" class="row end" style="margin-top:8px">
+              <span id="siteDirty" class="muted" hidden></span>
+              <button id="siteCancel" disabled data-i18n="opt_cancel">取消</button>
+              <button id="siteApply" class="primary" disabled data-i18n="opt_apply">套用</button>
+            </div>
+            <div id="siteEmpty" class="help" data-i18n="opt_site_empty">還沒有存任何帳號。</div>
+            <h3 data-i18n="opt_never_title">永遠不詢問的網站</h3>
+            <div id="never" class="never"></div>
+            <div id="neverEmpty" class="help" data-i18n="opt_never_empty">目前沒有。在儲存提示上按「這個網站永遠不問」就會出現在這裡。</div>
+          </div>
+        </details>
+
+        <details class="card" open>
+          <summary data-i18n="opt_block_click">自動點選</summary>
+          <div>
+            <div class="help"><span data-i18n="opt_click_help">開到指定的網頁時，自動幫你點按鈕。</span><span class="tip" data-i18n-tip="opt_click_tip" data-tip="同一頁有好幾條時照順序點，前一條點完才輪下一條。
+每條最多等 15 秒。">?</span></div>
+            <h3 data-i18n="opt_click_timing_title">時間設定</h3>
+            <div class="form">
+              <div class="form-row">
+                <label class="form-label" for="clickInterval" data-i18n="opt_click_interval_label">間隔預設值</label>
+                <div class="form-field">
+                  <input id="clickInterval" class="num" type="number" min="1" max="86400" step="1">
+                  <span data-i18n="opt_seconds_unit">秒</span>
+                  <span class="muted"><span data-i18n="opt_click_interval_help">點過之後，隔多久才能再點。</span><span class="tip" data-i18n-tip="opt_click_interval_tip" data-tip="每條規則可以自己填間隔，沒填的用這個。
+「自動填完按登入」也用這個。
+時間到不會自己再點，要重新開頁面或跳頁才會再點。">?</span></span>
+                </div>
+              </div>
+              <div class="form-row">
+                <label class="form-label" for="logoutPause" data-i18n="opt_logout_pause_label">登出後暫停</label>
+                <div class="form-field">
+                  <input id="logoutPause" class="num" type="number" min="0" max="86400" step="1">
+                  <span data-i18n="opt_seconds_unit">秒</span>
+                  <span class="muted"><span data-i18n="opt_logout_pause_help">按了登出，隔多久才恢復自動點。</span><span class="tip" data-i18n-tip="opt_logout_pause_tip" data-tip="只影響按登出的那個分頁裡的同一個網站。
+填 0 不暫停。">?</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="section-head">
+              <h3 data-i18n="opt_rule_sites_title">各網站</h3>
+              <button id="ruleAdd" class="primary small" data-i18n="opt_add_button">＋ 新增</button>
+            </div>
+            <div id="ruleSites"></div>
+            <div id="ruleEmpty" class="help" data-i18n="opt_rule_empty">還沒有規則。到要自動點的網頁按小視窗的「選要自動點的按鈕」，或按「＋ 新增」自己填。</div>
+          </div>
+        </details>
+
+        <details class="card">
+          <summary data-i18n="opt_block_danger">危險區</summary>
+          <div>
+            <div class="row">
+              <button id="deleteAll" class="danger" data-i18n="opt_delete_all">刪除全部密碼</button>
+              <span class="help"><span data-i18n="opt_delete_all_help_before">全部會先進回收桶，</span><span id="deleteAllDays">30</span> <span data-i18n="opt_delete_all_help_after">天內可以復原。</span></span>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section id="tab-trash" class="tabpane" hidden>
+        <div class="card">
+          <h2 data-i18n="opt_trash_title">回收桶</h2>
+          <div class="row wrap">
+            <label class="inline"><span data-i18n="opt_trash_days_before">刪掉的帳號放在這裡</span> <input id="trashDays" class="num" type="number" min="1" max="365"> <span data-i18n="opt_trash_days_after">天，之後自動清掉</span></label>
+            <button id="trashDaysApply" class="small" disabled data-i18n="opt_apply">套用</button>
+          </div>
+          <div id="trashTools" class="toolbar" style="margin-top:10px">
+            <label class="inline"><input type="checkbox" id="trashCheckAll"> <span data-i18n="opt_select_all">全選</span></label>
+            <button id="trashRestoreSel" class="small" disabled data-i18n="opt_trash_restore_selected">還原勾選的</button>
+            <button id="trashPurgeSel" class="small danger" disabled data-i18n="opt_trash_purge_selected">永久刪除勾選的</button>
+          </div>
+          <div id="trashList" class="list" style="margin-top:10px"></div>
+          <div id="trashEmpty" class="muted" data-i18n="opt_trash_empty">回收桶是空的。</div>
+          <div class="row end" style="margin-top:8px">
+            <button id="purgeAll" class="danger" data-i18n="opt_trash_purge_all">清空回收桶</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-help" class="tabpane" hidden>
+        <div class="card help-card">
+          <h2 data-i18n="opt_help_title">怎麼用</h2>
+          <ol>
+            <li data-i18n="opt_help_1">到任何網站登入一次，畫面右上角會問「要儲存這組密碼嗎？」。</li>
+            <li data-i18n="opt_help_2">下次再開同一個網站，帳號密碼會自動填好。存了多組帳號時，點帳號欄位會跳清單讓你選，上下鍵選、Enter 填。</li>
+            <li data-i18n="opt_help_3">按 Ctrl+Shift+L（Mac 是 Command+Shift+L）直接把目前網站的帳密填進去。快捷鍵可以在擴充功能管理頁的「鍵盤快速鍵」改。</li>
+            <li data-i18n="opt_help_4">工具列的藍色鎖頭圖示可以看目前網站存的帳號、手動填入、複製密碼、產生強密碼。小視窗最上面的搜尋框可以搜所有網站的帳號，Enter 直接開那個網站。</li>
+            <li data-i18n="opt_help_5">註冊或改密碼時，點新密碼欄會多一個「產生強密碼」，按下去新密碼和確認欄一起填好。</li>
+            <li data-i18n="opt_help_6">要自動按按鈕時，按小視窗的「選要自動點的按鈕」，在網頁上選那顆按鈕，之後開到那一頁就會自動點。也可以在「設定」分頁的「自動點選」手動新增和調整。</li>
+            <li data-i18n="opt_help_7">改過密碼的帳號，表格的密碼欄會有「舊密碼」可以展開。刪掉的帳號先進回收桶，預設放 30 天，天數可以在回收桶分頁改。</li>
+            <li data-i18n="opt_help_8">「設定」分頁的「工具鎖定」開啟後，整個工具都要先用這台電腦的系統驗證（Windows Hello、Touch ID）才能用；閒置、瀏覽器重開、小視窗按「鎖定」都會鎖上。</li>
+            <li data-i18n="opt_help_9">記得定期備份，或打開自動備份。移除擴充功能、清除瀏覽資料、或把資料夾搬走，密碼就會不見。</li>
+          </ol>
+          <div id="browserHint" class="help" style="margin-top:10px"></div>
+        </div>
+      </section>
+
+      <section id="tab-versions" class="tabpane" hidden>
+        <div class="card">
+          <h2 data-i18n="opt_versions_title">版本功能歷程</h2>
+          <div id="versionNow" class="help"></div>
+          <div id="versionList"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <dialog id="dialog">
+    <h2 id="dialogTitle" data-i18n="opt_dialog_add_title">新增密碼</h2>
+    <label for="fUrl" data-i18n="opt_field_url">網站網址</label>
+    <input id="fUrl" type="text" placeholder="https://example.com.tw" autocomplete="off">
+    <label for="fUser" data-i18n="opt_field_username">帳號</label>
+    <input id="fUser" type="text" autocomplete="off">
+    <label for="fPass" data-i18n="opt_field_password">密碼</label>
+    <div class="pw">
+      <input id="fPass" type="password" autocomplete="off">
+      <button type="button" id="fEye" data-i18n="opt_show">顯示</button>
+    </div>
+    <label for="fNote" data-i18n="opt_field_note">備註</label>
+    <textarea id="fNote" rows="2"></textarea>
+    <div id="fError" class="error"></div>
+    <div class="row end">
+      <button id="fCancel" data-i18n="opt_cancel">取消</button>
+      <button id="fSave" class="primary" data-i18n="opt_save">儲存</button>
+    </div>
+  </dialog>
+
+  <dialog id="ruleDialog">
+    <h2 data-i18n="opt_rule_dialog_title">新增自動點選</h2>
+    <div id="ruleDialogFields" class="rule-fields"></div>
+    <div id="ruleDialogError" class="error"></div>
+    <div class="row end">
+      <button id="ruleDialogCancel" data-i18n="opt_cancel">取消</button>
+      <button id="ruleDialogSave" class="primary" data-i18n="opt_save">儲存</button>
+    </div>
+  </dialog>
+
+  <dialog id="pwDialog">
+    <h2 id="pwTitle" data-i18n="opt_backup_password">備份密碼</h2>
+    <div id="pwHint" class="muted"></div>
+    <label for="pw1" id="pw1Label" data-i18n="opt_backup_password">備份密碼</label>
+    <input id="pw1" type="password" autocomplete="off">
+    <label for="pw2" id="pw2Label" data-i18n="opt_pw_again">再輸入一次</label>
+    <input id="pw2" type="password" autocomplete="off">
+    <div id="pwError" class="error"></div>
+    <div class="row end">
+      <button id="pwCancel" data-i18n="opt_cancel">取消</button>
+      <button id="pwOk" class="primary" data-i18n="opt_ok">確定</button>
+    </div>
+  </dialog>
+
+  <dialog id="choiceDialog">
+    <h2 id="choiceTitle"></h2>
+    <div id="choiceText" class="help"></div>
+    <ul id="choiceList"></ul>
+    <div id="choiceCopyRow" class="row">
+      <button id="choiceCopy" class="link small" data-i18n="opt_copy_locations">複製位置</button>
+    </div>
+    <div id="choiceButtons" class="row end"></div>
+  </dialog>
+
+  <div id="toast" class="toast"></div>
+  <script src="../shared/i18n.js"></script>
+  <script src="../shared/webauthn-client.js"></script>
+  <script src="changelog.js"></script>
+  <script src="../shared/tip.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

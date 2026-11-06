@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>密碼小管家 測試頁</title>
+  <style>
+    body { font-family: "Segoe UI", "Microsoft JhengHei", sans-serif; padding: 24px; }
+    label { display: block; margin: 10px 0; }
+    input { padding: 6px; width: 240px; }
+    #welcome { color: green; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>密碼小管家 測試頁</h1>
+  <p>這一頁模擬一個「按登入後不跳頁、原地換畫面」的網站。</p>
+  <input name="q" placeholder="站內搜尋（干擾用，不該被當成帳號欄）">
+  <form id="login">
+    <label>帳號 <input id="u" name="username" type="text" autocomplete="username"></label>
+    <label>密碼 <input id="p" name="password" type="password" autocomplete="current-password"></label>
+    <button type="submit">登入</button>
+  </form>
+  <div id="welcome" hidden>登入成功，歡迎！</div>
+
+  <script src="shim.js"></script>
+  <script src="../src/background/crypto.js"></script>
+  <script src="../src/background/background.js"></script>
+  <script src="../src/content/content.js"></script>
+  <script>
+    document.getElementById('login').addEventListener('submit', (e) => {
+      e.preventDefault();
+      setTimeout(() => {
+        document.getElementById('login').hidden = true;
+        document.getElementById('welcome').hidden = false;
+        history.pushState({}, '', '?loggedin');
+      }, 300);
+    });
+  </script>
+</body>
+</html>

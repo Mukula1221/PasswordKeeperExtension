@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>登入失敗測試</title></head>
+<body>
+  <h1>登入（密碼打錯會退回同一頁）</h1>
+  <p id="err" style="color:red" hidden>帳號或密碼錯誤</p>
+  <form id="f">
+    <label>帳號 <input id="u" name="username" type="text" autocomplete="username"></label>
+    <label>密碼 <input id="p" name="password" type="password" autocomplete="current-password"></label>
+    <button type="submit">登入</button>
+  </form>
+  <script src="shim.js"></script>
+  <script src="../src/background/crypto.js"></script>
+  <script src="../src/background/background.js"></script>
+  <script src="../src/content/content.js"></script>
+  <script>
+    if (location.search.includes('error')) document.getElementById('err').hidden = false;
+    document.getElementById('f').addEventListener('submit', (e) => {
+      e.preventDefault();
+      // 密碼是 right 才算成功，其他都退回同一頁顯示錯誤
+      if (document.getElementById('p').value === 'right') location.href = 'done.html';
+      else location.href = 'fail-login.html?error=1';
+    });
+  </script>
+</body></html>

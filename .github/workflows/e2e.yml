@@ -1,0 +1,35 @@
+name: E2E
+
+# 把擴充功能裝進真的 Edge、Chrome 跑完整流程，一個瀏覽器大約 3 分鐘。要用時到 Actions 頁面按「Run workflow」。
+on:
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: ${{ matrix.browser }}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [edge, chrome]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 完整流程
+        run: node test/e2e/run.js ${{ matrix.browser }}
+        env:
+          TEMP: ${{ runner.temp }}
+          TMP: ${{ runner.temp }}
+      - name: 打包檔能直接載入、換資料夾更新資料還在
+        run: node test/e2e/package.js ${{ matrix.browser }}
+        env:
+          TEMP: ${{ runner.temp }}
+          TMP: ${{ runner.temp }}
+      - name: 上傳截圖
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-shots-${{ matrix.browser }}
+          path: ${{ runner.temp }}/pk-e2e/shots/

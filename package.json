@@ -1,0 +1,18 @@
+{
+  "name": "password-keeper-extension",
+  "private": true,
+  "description": "密碼小管家：記住登入帳號密碼並自動填入的 Edge、Chrome 擴充功能，資料只存在這台電腦。",
+  "license": "MIT",
+  "scripts": {
+    "check": "node tools/check.js",
+    "build": "node tools/build.js",
+    "changelog": "node tools/changelog.js",
+    "release-notes": "node tools/release-notes.js",
+    "test": "node test/e2e/run.js edge",
+    "test:chrome": "node test/e2e/run.js chrome",
+    "test:package": "node test/e2e/package.js edge"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

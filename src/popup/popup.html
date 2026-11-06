@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="ext_name">密碼小管家</title>
+  <link rel="stylesheet" href="../shared/ui.css">
+  <style>
+    body { width: 360px; }
+    .body { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+    .footer { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-top: 1px solid var(--border); background: #fff; }
+    #lockNow { display: inline-flex; align-items: center; gap: 4px; }
+    #addForm, #genPanel { display: none; }
+    #addForm.show, #genPanel.show { display: block; }
+    #main { display: flex; flex-direction: column; gap: 10px; }
+    .warn { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; border-radius: 8px; padding: 8px 10px; font-size: 12px; cursor: pointer; }
+    .warn:hover { background: #fde68a; }
+    .gen-out { display: flex; gap: 6px; align-items: center; }
+    .gen-out input { font-family: Consolas, "Courier New", monospace; font-size: 13px; }
+    .opts { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 8px; }
+    .num { width: 58px; padding: 4px 6px; font: inherit; border: 1px solid var(--border); border-radius: 6px; }
+    /* 日文的「セキュリティキーまたはスマートフォン」比較長，要讓按鈕可以換行 */
+    #helloBtn { width: 100%; padding: 9px; white-space: normal; }
+    /* 沒有錯誤時不佔位置，不然搜尋框和帳號之間會空一大塊 */
+    #status:empty { display: none; }
+    .site-opts { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .site-opts .title { font-size: 12px; font-weight: 600; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="../../icons/icon32.png" alt="">
+    <div class="grow">
+      <h1 data-i18n="ext_name">密碼小管家</h1>
+      <div id="site" class="site"></div>
+    </div>
+    <button id="lockNow" class="small" hidden title="馬上鎖定，要驗證才能再用" data-i18n-title="pop_lock_now_title">
+      <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3" y="7" width="10" height="7.5" rx="1.5" fill="currentColor"/><path d="M5.25 7V5a2.75 2.75 0 0 1 5.5 0v2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span data-i18n="pop_lock_now">鎖定</span>
+    </button>
+  </div>
+
+  <div class="body">
+    <input id="search" type="search" placeholder="搜尋所有網站的帳號，Enter 開啟網站" data-i18n-placeholder="pop_search_placeholder" autocomplete="off">
+    <div id="searchList" class="list" hidden></div>
+
+    <div id="lockScreen" class="card" hidden>
+      <h2 data-i18n="pop_locked_title">已鎖定</h2>
+      <div class="muted" data-i18n="pop_locked_hint">驗證過才能自動填入和看密碼。</div>
+      <div style="margin-top:10px"><button id="helloBtn" class="primary"></button></div>
+    </div>
+
+    <div id="main">
+      <div id="backupBar" class="warn" hidden></div>
+      <div id="status" class="error"></div>
+      <div id="list" class="list"></div>
+
+      <div id="addForm" class="card">
+        <h2 data-i18n="pop_add_title">新增這個網站的帳號</h2>
+        <label for="addUser" data-i18n="pop_username">帳號</label>
+        <input id="addUser" type="text" autocomplete="off">
+        <label for="addPass" data-i18n="pop_password">密碼</label>
+        <div class="pw">
+          <input id="addPass" type="password" autocomplete="off">
+          <button type="button" id="addEye" data-i18n="pop_show">顯示</button>
+        </div>
+        <div id="addError" class="error"></div>
+        <div class="row end">
+          <button id="addCancel" data-i18n="pop_cancel">取消</button>
+          <button id="addSave" class="primary" data-i18n="pop_save">儲存</button>
+        </div>
+      </div>
+
+      <div id="genPanel" class="card">
+        <h2 data-i18n="pop_generate">產生密碼</h2>
+        <div class="gen-out">
+          <input id="genOut" type="text" readonly>
+          <button id="genAgain" class="small" title="重新產生一組" data-i18n-title="pop_regen_title" data-i18n="pop_regen">重產</button>
+        </div>
+        <div class="opts">
+          <label class="inline"><span data-i18n="pop_gen_length">字數</span>
+            <input id="genMin" class="num" type="number" min="4" max="128"> <span data-i18n="pop_gen_to">到</span>
+            <input id="genMax" class="num" type="number" min="4" max="128">
+          </label>
+        </div>
+        <div class="opts">
+          <label class="inline"><input type="checkbox" id="genUpper"> <span data-i18n="pop_gen_upper">大寫</span></label>
+          <label class="inline"><input type="checkbox" id="genLower"> <span data-i18n="pop_gen_lower">小寫</span></label>
+          <label class="inline"><input type="checkbox" id="genDigits"> <span data-i18n="pop_gen_digits">數字</span></label>
+          <label class="inline"><input type="checkbox" id="genSymbols"> <span data-i18n="pop_gen_symbols">特殊符號</span></label>
+        </div>
+        <label for="genSymbolSet" data-i18n="pop_gen_symbol_set">允許的特殊符號</label>
+        <input id="genSymbolSet" type="text" autocomplete="off" spellcheck="false">
+        <div id="genError" class="error"></div>
+        <div class="row end">
+          <button id="genClose" data-i18n="pop_gen_close">收起</button>
+          <button id="genCopy" data-i18n="pop_copy">複製</button>
+          <button id="genFill" class="primary" data-i18n="pop_gen_fill">填入頁面</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <button id="addBtn" class="small" data-i18n="pop_add_account">＋ 新增帳號</button>
+        <button id="genBtn" class="small" data-i18n="pop_generate">產生密碼</button>
+      </div>
+      <div class="site-opts">
+        <div class="title" data-i18n="pop_this_site">這個網站</div>
+        <label class="inline" id="autoFillWrap" hidden title="打開登入頁時自動把帳密填好" data-i18n-title="pop_autofill_title">
+          <input type="checkbox" id="autoFill"> <span data-i18n="pop_autofill">自動填入</span>
+          <span id="autoFillOff" class="muted" hidden data-i18n="pop_autofill_master_off">（總開關關著）</span>
+        </label>
+        <label class="inline" id="autoSubmitWrap" hidden>
+          <input type="checkbox" id="autoSubmit"> <span data-i18n="pop_autosubmit">自動填完就按登入</span><span class="tip" data-tip="只在自動填入成功、而且頁面上只有一個登入表單時才會按" data-i18n-tip="pop_autosubmit_tip">?</span>
+        </label>
+        <div class="row">
+          <button id="pickBtn" class="small" title="之後開到這一頁，就自動點你選的按鈕" data-i18n-title="pop_pick_title" data-i18n="pop_pick">選要自動點的按鈕</button>
+          <button id="pickCount" class="link small" hidden title="到管理頁看自動點選" data-i18n-title="pop_pick_count_title"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button id="manage" class="link" data-i18n="pop_manage">管理所有密碼</button>
+    <span id="count" class="muted"></span>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="../shared/i18n.js"></script>
+  <script src="../shared/webauthn-client.js"></script>
+  <script src="../shared/tip.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

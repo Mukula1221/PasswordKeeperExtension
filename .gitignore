@@ -1,0 +1,15 @@
+# 打包出來的檔案，發布時 GitHub Actions 會重新產生
+dist/
+node_modules/
+
+# 個人的開發工具設定
+.claude/
+
+# 簽 .crx 用的私鑰不能進版本控制
+*.pem
+*.crx
+
+# 作業系統和雲端硬碟自己產生的檔案
+Thumbs.db
+desktop.ini
+.DS_Store

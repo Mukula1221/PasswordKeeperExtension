@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>單一登入按鈕測試</title>
+<style>
+  body { font-family: "Segoe UI", "Microsoft JhengHei", sans-serif; padding: 24px; }
+  .sso { display: inline-block; padding: 8px 24px; background: #2563eb; color: #fff; border-radius: 6px; cursor: pointer; }
+  .fa-sign-out { display: inline-block; width: 24px; height: 24px; background: #6b7280; border-radius: 4px; cursor: pointer; }
+  .plain { display: inline-block; width: 24px; height: 24px; background: #9ca3af; border-radius: 4px; cursor: pointer; }
+  #log { color: #6b7280; font-size: 12px; margin-top: 16px; }
+</style></head>
+<body>
+  <div id="login">
+    <h1>系統入口</h1>
+    <p>這一頁沒有帳號密碼欄，按下按鈕就跳去單一驗證。</p>
+    <a id="ssoBtn" class="sso">使用單一登入</a>
+  </div>
+  <div id="home" hidden>
+    <h1>系統首頁</h1>
+    <p>已經登入。「使用單一登入」按鈕不在這個畫面上。</p>
+    <p>
+      <a id="logout" href="click-sso.html">登出</a>
+      <a id="btnIcon" class="fa-sign-out" href="click-sso.html" aria-hidden="true"></a>
+      <a id="btnPlain" class="plain" href="click-sso.html"></a>
+    </p>
+  </div>
+  <div id="log"></div>
+
+  <script src="shim.js"></script>
+  <script src="../src/background/crypto.js"></script>
+  <script src="../src/background/background.js"></script>
+  <script src="../src/content/content.js"></script>
+  <script>
+    // ?home 是登入後的畫面，網址的路徑跟入口一樣。
+    // ?fail 模擬單一驗證失敗又被丟回入口；logout 那幾個連結分別是有文字、只有圖示但 class 看得出來、完全看不出來的登出鍵。
+    const q = new URLSearchParams(location.search);
+    sessionStorage.ssoClicks = sessionStorage.ssoClicks || '0';
+    document.getElementById('log').textContent = '按鈕被點的次數：' + sessionStorage.ssoClicks;
+    if (q.has('home')) {
+      document.getElementById('login').hidden = true;
+      document.getElementById('home').hidden = false;
+    }
+    document.getElementById('ssoBtn').addEventListener('click', () => {
+      sessionStorage.ssoClicks = String(Number(sessionStorage.ssoClicks) + 1);
+      location.href = q.has('fail') ? 'click-sso.html?fail' : 'click-sso.html?home';
+    });
+  </script>
+</body></html>

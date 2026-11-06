@@ -1,0 +1,25 @@
+name: CI
+
+# 每次推上分支或開 PR：檢查版本號和版本紀錄、打包，打包檔放在這次執行的 Artifacts 可以下載
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  check:
+    name: 檢查和打包
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 檢查
+        run: node tools/check.js
+      - name: 打包
+        run: node tools/build.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: password-keeper-build
+          path: dist/

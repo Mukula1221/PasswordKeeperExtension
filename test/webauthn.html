@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>WebAuthn 試驗頁</title>
+  <link rel="stylesheet" href="../src/shared/ui.css">
+  <style>
+    .page { max-width: 760px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+    pre { background: #111827; color: #e5e7eb; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; white-space: pre-wrap; word-break: break-all; min-height: 120px; max-height: 420px; overflow: auto; margin: 0; }
+    .steps { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    ol { margin: 6px 0 0 18px; padding: 0; }
+    li { margin: 4px 0; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="../icons/icon48.png" alt="">
+    <div class="grow">
+      <h1>WebAuthn 試驗頁</h1>
+      <div class="muted">測試這個擴充功能能不能叫 Windows Hello（Mac 是 Touch ID）來驗證身分。只是試驗，不會動到你存的密碼。</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="card">
+      <h2>怎麼做</h2>
+      <ol>
+        <li>按「1. 檢查環境」，看這個瀏覽器有沒有內建的驗證器。</li>
+        <li>按「2. 建立鑰匙」，應該會跳 Windows 的 PIN 視窗。驗過會看到「鑰匙建立成功」。</li>
+        <li>按「3. 驗證」，應該再跳一次 PIN 視窗，驗過會看到「簽章驗證成功」。這就是之後解鎖會走的流程。</li>
+        <li>不管成功或失敗，按「複製結果」把下面的紀錄貼給我。</li>
+      </ol>
+      <div class="muted" style="margin-top:8px">「2b」是給沒有內建驗證器的電腦（例如 Linux）試的，會讓你選實體安全金鑰或手機。</div>
+      <div class="steps">
+        <button id="check" class="primary">1. 檢查環境</button>
+        <button id="create">2. 建立鑰匙</button>
+        <button id="createAny">2b. 建立鑰匙（允許安全金鑰或手機）</button>
+        <button id="get">3. 驗證</button>
+        <button id="copy">複製結果</button>
+        <button id="clear" class="danger">清掉這頁存的鑰匙</button>
+      </div>
+    </div>
+    <pre id="log">按「1. 檢查環境」開始。</pre>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="webauthn.js"></script>
+</body>
+</html>

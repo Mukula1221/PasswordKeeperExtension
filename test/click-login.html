@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>非標準登入頁測試</title>
+<style>
+  body { font-family: "Segoe UI", "Microsoft JhengHei", sans-serif; padding: 24px; }
+  label { display: block; margin: 10px 0; }
+  input { padding: 6px; width: 240px; }
+  .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #ddd; }
+  .go { display: inline-block; padding: 8px 24px; background: #2563eb; color: #fff; border-radius: 6px; border: 0; font: inherit; cursor: pointer; }
+  button.go:disabled { background: #9ca3af; cursor: default; }
+  #log { color: #6b7280; font-size: 12px; margin-top: 16px; }
+</style></head>
+<body>
+  <h1>登入（按鈕不是 button，也不在表單裡）</h1>
+  <p id="err" style="color:red" hidden>帳號或密碼錯誤</p>
+  <div id="fields">
+    <label>帳號 <input id="u" name="username" type="text"></label>
+    <label>密碼 <input id="p" name="password" type="password"></label>
+  </div>
+  <div class="footer" id="footer"></div>
+  <div id="log"></div>
+
+  <script src="shim.js"></script>
+  <script src="../src/background/crypto.js"></script>
+  <script src="../src/background/background.js"></script>
+  <script src="../src/content/content.js"></script>
+  <script>
+    // 用網址後面的參數切換各種不標準的寫法，可以疊加：
+    // ?mousedown 按鈕只聽 mousedown；?js 按鈕是 <a href="javascript:...">（舊系統的 __doPostBack 就長這樣）
+    // ?disabled 按鈕是 <button>，帳密都有值才能按；?late 按鈕 2 秒後才出現；?captcha 多一個驗證碼欄
+    // ?agree 要先勾「我同意」才能送出
+    const q = new URLSearchParams(location.search);
+    const keep = ['mousedown', 'js', 'disabled', 'late', 'captcha', 'agree'].filter((k) => q.has(k));
+    const footer = document.getElementById('footer');
+    const u = document.getElementById('u');
+    const p = document.getElementById('p');
+    sessionStorage.tries = sessionStorage.tries || '0';
+    document.getElementById('log').textContent = '送出次數：' + sessionStorage.tries;
+    if (q.has('error')) document.getElementById('err').hidden = false;
+
+    if (q.has('captcha')) {
+      const label = document.createElement('label');
+      label.innerHTML = '驗證碼 <input id="c" name="captcha" type="text">';
+      document.getElementById('fields').appendChild(label);
+    }
+    if (q.has('agree')) {
+      const label = document.createElement('label');
+      label.className = 'agree';
+      label.innerHTML = '<input id="a" type="checkbox" style="width:auto"> 我同意使用條款';
+      document.getElementById('fields').appendChild(label);
+    }
+
+    // 密碼是 right 才算成功，其他都退回同一頁顯示錯誤
+    window.doLogin = () => {
+      if (q.has('agree') && !document.getElementById('a').checked) {
+        document.getElementById('log').textContent = '還沒勾同意，沒有送出';
+        return;
+      }
+      sessionStorage.tries = String(Number(sessionStorage.tries) + 1);
+      if (p.value === 'right') location.href = 'done.html';
+      else location.href = 'click-login.html?error=1' + keep.map((k) => '&' + k).join('');
+    };
+
+    function render() {
+      if (q.has('js')) {
+        footer.innerHTML = '<a class="go" href="javascript:doLogin()">登 入</a>';
+      } else if (q.has('disabled')) {
+        footer.innerHTML = '<button class="go" disabled>登 入</button>';
+        const btn = footer.firstChild;
+        const refresh = () => { btn.disabled = !(u.value && p.value); };
+        u.addEventListener('input', refresh);
+        p.addEventListener('input', refresh);
+        btn.addEventListener('click', doLogin);
+        refresh();
+      } else {
+        footer.innerHTML = '<div class="go"><span>登 入</span></div>';
+        footer.firstChild.addEventListener(q.has('mousedown') ? 'mousedown' : 'click', doLogin);
+      }
+    }
+    if (q.has('late')) setTimeout(render, 2000);
+    else render();
+  </script>
+</body></html>

@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>兩段式登入 第 2 頁</title></head>
+<body>
+  <h1>登入（第 2 頁：只打密碼）</h1>
+  <form id="f">
+    <label>密碼 <input type="password" name="passwd" autocomplete="current-password"></label>
+    <button type="submit">登入</button>
+  </form>
+  <script src="shim.js"></script>
+  <script src="../src/background/crypto.js"></script>
+  <script src="../src/background/background.js"></script>
+  <script src="../src/content/content.js"></script>
+  <script>
+    document.getElementById('f').addEventListener('submit', (e) => { e.preventDefault(); location.href = 'done.html'; });
+  </script>
+</body></html>

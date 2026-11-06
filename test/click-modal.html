@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>Nexus 登入框測試</title>
+<style>
+  body { font-family: "Segoe UI", "Microsoft JhengHei", sans-serif; margin: 0; }
+  #header { display: flex; justify-content: flex-end; padding: 12px 16px; background: #222; }
+  .x-btn { display: inline-block; margin-right: 6px; padding: 4px 16px; border-radius: 3px; background: #e5e7eb; color: #111; cursor: pointer; }
+  .x-btn-nx-header-medium { background: transparent; color: #fff; }
+  .x-btn-nx-primary-small { background: #1976d2; color: #fff; }
+  .x-btn-over { opacity: 0.85; }
+  .x-btn-disabled { opacity: 0.5; cursor: default; }
+  .x-item-disabled { pointer-events: none; }
+  .x-mask { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.3); z-index: 10; }
+  .x-window { position: fixed; top: 120px; left: 50%; width: 320px; margin-left: -160px; background: #fff; border: 1px solid #666; z-index: 11; }
+  .x-window.inline { position: static; margin: 24px auto; }
+  .x-window-header { padding: 8px 12px; background: #eee; font-weight: 600; }
+  .x-form-body { padding: 12px; }
+  .x-form-body input { display: block; width: 280px; margin-bottom: 8px; padding: 4px; }
+  .x-box-inner { padding: 0 12px 12px; }
+  #log { padding: 12px; color: #6b7280; font-size: 12px; }
+</style></head>
+<body>
+  <div id="log"></div>
+
+  <script src="shim.js"></script>
+  <script src="../src/background/crypto.js"></script>
+  <script src="../src/background/background.js"></script>
+  <script src="../src/content/content.js"></script>
+  <script>
+    // 照真的 Nexus 3 登入框（Ext JS）的結構和行為寫的：
+    // 右上角有一顆一樣叫 Sign in 的按鈕，開著登入框時被遮罩蓋住，但程式還是按得到。
+    // 登入框的 Sign in 在帳密都有值之前是 aria-disabled，而且 pointer-events: none，座標只找得到外面那層。
+    // 滑鼠移上去多 x-btn-over，按下去多 x-btn-pressed，拿到 focus 多 x-btn-focus。
+    // id 每次載入都不一樣，最外層的 div 數量也不固定，所以記位置不可靠。
+    // 網址參數：?open 一開頁就打開登入框；?slow 帳密填好 1.5 秒後才能按；?noaria 不能按時只有 class 和 pointer-events；?nomask 沒有遮罩
+    const q = new URLSearchParams(location.search);
+    const log = document.getElementById('log');
+    window.__counts = { header: 0, signin: 0, cancel: 0 };
+    const showCounts = () => { log.textContent = JSON.stringify(window.__counts); };
+    showCounts();
+
+    let seq = 1000 + Math.floor(Math.random() * 8000);
+    const nextId = (prefix) => prefix + '-' + seq++;
+
+    function box(className, parent) {
+      const div = document.createElement('div');
+      if (className) div.className = className;
+      parent.appendChild(div);
+      return div;
+    }
+
+    function button(text, ui, idPrefix, parent, onClick) {
+      const a = document.createElement('a');
+      a.id = nextId(idPrefix);
+      a.className = 'x-btn x-unselectable x-box-item x-toolbar-item x-btn-' + ui;
+      a.setAttribute('role', 'button');
+      a.setAttribute('tabindex', '0');
+      a.setAttribute('aria-disabled', 'false');
+      const inner = document.createElement('span');
+      inner.className = 'x-btn-inner';
+      inner.textContent = text;
+      a.appendChild(inner);
+      a.addEventListener('mouseenter', () => a.classList.add('x-btn-over'));
+      a.addEventListener('mouseleave', () => a.classList.remove('x-btn-over', 'x-btn-pressed'));
+      a.addEventListener('mousedown', () => a.classList.add('x-btn-pressed'));
+      a.addEventListener('mouseup', () => a.classList.remove('x-btn-pressed'));
+      a.addEventListener('focus', () => a.classList.add('x-btn-focus'));
+      a.addEventListener('blur', () => a.classList.remove('x-btn-focus'));
+      a.addEventListener('click', onClick);
+      parent.appendChild(a);
+      return a;
+    }
+
+    function setDisabled(a, disabled) {
+      a.classList.toggle('x-item-disabled', disabled);
+      a.classList.toggle('x-btn-disabled', disabled);
+      if (!q.has('noaria')) a.setAttribute('aria-disabled', String(disabled));
+    }
+
+    function field(name, type, parent) {
+      const input = document.createElement('input');
+      input.id = nextId('textfield') + '-inputEl';
+      input.name = name;
+      input.type = type;
+      input.placeholder = name;
+      parent.appendChild(input);
+      return input;
+    }
+
+    function openDialog() {
+      if (document.querySelector('.x-window')) return;
+      if (!q.has('nomask')) box('x-mask', document.body);
+      const win = box('x-window', document.body);
+      if (q.has('nomask')) win.classList.add('inline');
+      win.id = nextId('nx-signin');
+      box('x-window-header', win).textContent = 'Sign In';
+      const panel = box('x-panel', win);
+      const form = box('x-form-body', panel);
+      const u = field('username', 'text', form);
+      const p = field('password', 'password', form);
+      const bar = box('x-box-inner', box('x-toolbar', panel));
+      bar.id = nextId('toolbar') + '-innerCt';
+      const signIn = button('Sign in', 'nx-primary-small', 'button', bar, () => {
+        if (signIn.classList.contains('x-btn-disabled')) return;
+        window.__counts.signin++;
+        showCounts();
+      });
+      button('Cancel', 'default-small', 'button', bar, () => {
+        window.__counts.cancel++;
+        showCounts();
+      });
+      setDisabled(signIn, true);
+      const check = () => setTimeout(() => setDisabled(signIn, !(u.value && p.value)), q.has('slow') ? 1500 : 50);
+      u.addEventListener('input', check);
+      p.addEventListener('input', check);
+    }
+
+    const header = box('', document.body);
+    header.id = 'header';
+    button('Sign in', 'nx-header-medium', 'nx-header-signin', header, () => {
+      window.__counts.header++;
+      showCounts();
+      openDialog();
+    });
+    for (let i = Math.floor(Math.random() * 4); i > 0; i--) box('', document.body);
+    if (q.has('open')) openDialog();
+  </script>
+</body></html>
