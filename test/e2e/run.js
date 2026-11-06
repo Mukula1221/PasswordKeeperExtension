@@ -62,7 +62,7 @@ async function safeEval(page, expr) {
 
 const reset = () =>
   w.eval(`(async () => {
-    await chrome.storage.local.remove(['vault', 'settings', 'webauthn', 'uiLanguage']);
+    await chrome.storage.local.remove(['vault', 'settings', 'webauthn', 'uiLanguage', 'updateInfo']);
     await chrome.storage.session.clear();
     return true;
   })()`);
@@ -2581,6 +2581,7 @@ test('區塊：有好幾個區塊的分頁可以點標題收合，預設狀態�
   const expected = {
     backup: [['備份', true], ['和瀏覽器互搬密碼', false], ['自動備份', true], ['備份紀錄', false]],
     settings: [['工具鎖定', false], ['填入', true], ['自動點選', true], ['危險區', false]],
+    versions: [['檢查新版', true], ['版本功能歷程', true]],
   };
   for (const [tab, want] of Object.entries(expected)) {
     const got = await blocksOf(page, tab);
@@ -2591,7 +2592,7 @@ test('區塊：有好幾個區塊的分頁可以點標題收合，預設狀態�
   await page.screenshot(path.join(SHOTS, 'blocks-settings.png'));
 
   // 分頁只有一個區塊就不用收合
-  for (const [tab, title] of [['trash', '回收桶'], ['help', '怎麼用'], ['versions', '版本功能歷程']]) {
+  for (const [tab, title] of [['trash', '回收桶'], ['help', '怎麼用']]) {
     const got = await page.eval(`(() => {
       const root = document.getElementById('tab-${tab}');
       const heading = root.querySelector(':scope > .card > h2');
@@ -2741,6 +2742,18 @@ test('立即備份：在自動備份標題旁邊，沒設密碼不能按，按�
 });
 
 // ---- 既有功能沒壞 ----
+
+test('自動備份：預設存到「下載」底下的 password-keeper，存過舊名稱的照舊', async () => {
+  check((await w.eval('getSettings().then((s) => s.autoBackup.folder)')) === 'password-keeper', '沒存過設定時預設要是 password-keeper');
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#backup', 1200);
+  const shown = await page.eval(`document.getElementById('abFolder').value`);
+  check(shown === 'password-keeper', '管理頁的資料夾欄要顯示 password-keeper：' + shown);
+  await closePage(page);
+  // 1.13.0 以前存過設定的人，settings 裡寫的是舊的預設名稱，不能被換掉
+  await w.eval(`setSettings({ autoBackup: { ...DEFAULT_SETTINGS.autoBackup, folder: '密碼小管家備份' } }).then(() => true)`); // i18n-ignore：舊版的資料夾名稱
+  check((await w.eval('getSettings().then((s) => s.autoBackup.folder)')) === '密碼小管家備份', '存過的舊資料夾名稱要照舊'); // i18n-ignore：舊版的資料夾名稱
+  check((await w.eval(`safeFolder('')`)) === 'password-keeper', '資料夾名稱清空時要退回 password-keeper');
+});
 
 test('既有功能：沒規則的頁面登入後照常問要不要儲存', async () => {
   const page = await open(T + 'harness.html', 800);
@@ -2982,10 +2995,113 @@ test('語言：英文的瀏覽器也能選繁體中文', async () => {
   });
 });
 
+// ---- 檢查新版：背景程式的 updateApi 換成本機的假 GitHub（ROUTES 的 /fake-gh/latest） ----
+
+const FAKE_GH = ORIGIN + '/fake-gh/latest';
+const GH_RELEASES = 'https://github.com/Mukula1221/PasswordKeeperExtension/releases/';
+const useFakeGitHub = (url) => w.eval(`(updateApi = ${JSON.stringify(url)}, true)`);
+const checkNow = () => w.eval(`handlers['update.check']()`);
+
+test('檢查新版：開發版不自動問，按立即檢查才問；有新版時小視窗和管理頁都會提醒', async () => {
+  const current = await w.eval('chrome.runtime.getManifest().version');
+  let options = null;
+  let popup = null;
+  try {
+    await useFakeGitHub(FAKE_GH + '?v=99.0.0');
+    const before = hitCount('/fake-gh/');
+    await w.eval('updateTick()');
+    check(hitCount('/fake-gh/') === before, '開發版不該自動到 GitHub 問');
+
+    const info = await checkNow();
+    check(hitCount('/fake-gh/') === before + 1, '按立即檢查要問一次');
+    check(info.available && info.latest.version === '99.0.0' && !info.release, '要看出有新版：' + JSON.stringify(info));
+    check(info.latest.zipUrl === GH_RELEASES + 'download/v99.0.0/password-keeper-99.0.0.zip', '下載網址要是那一版的 zip：' + info.latest.zipUrl);
+    check(info.latest.pageUrl === GH_RELEASES + 'tag/v99.0.0', '說明頁網址：' + info.latest.pageUrl);
+
+    options = await open('chrome-extension://' + extId + '/src/options/options.html#versions', 1200);
+    const view = await options.eval(`(() => {
+      const shown = (id) => document.getElementById(id).checkVisibility();
+      return {
+        state: document.getElementById('updateState').textContent,
+        download: shown('updateDownload'),
+        extensions: shown('updateExtensions'),
+        page: shown('updatePage'),
+        steps: shown('updateSteps'),
+        header: shown('headerUpdate'),
+        dev: shown('updateDev'),
+        autoDisabled: document.getElementById('updateAuto').disabled,
+      };
+    })()`);
+    check(view.state.includes('99.0.0'), '要寫出新版的版本號：' + view.state);
+    check(view.download && view.extensions && view.page && view.steps, '有新版時要有下載、管理頁、說明和步驟：' + JSON.stringify(view));
+    check(view.header, '頁首要有「有新版」');
+    check(view.dev && view.autoDisabled, '開發版要說明不會自動檢查，自動檢查的勾選框不能按：' + JSON.stringify(view));
+    await options.screenshot(path.join(SHOTS, 'update-available.png'));
+
+    popup = await open('chrome-extension://' + extId + '/src/popup/popup.html', 1200);
+    const bar = await popup.eval(`(() => { const b = document.getElementById('updateBar'); return b.checkVisibility() ? b.textContent : ''; })()`);
+    check(bar.includes('99.0.0'), '小視窗要提醒有新版：' + bar);
+    await closePage(popup);
+    popup = null;
+
+    // 一樣的版本：在管理頁按「立即檢查」，提醒要收掉
+    await useFakeGitHub(FAKE_GH + '?v=' + current);
+    await options.click('#updateCheckNow');
+    const stateNow = () => options.eval(`document.getElementById('updateState').textContent`);
+    check(await until(async () => (await stateNow()) === '已經是最新版。', 4000), '一樣的版本要寫已經是最新版：' + (await stateNow()));
+    const after = await options.eval(`(() => ({
+      header: document.getElementById('headerUpdate').checkVisibility(),
+      download: document.getElementById('updateDownload').checkVisibility(),
+      checkedAt: document.getElementById('updateCheckedAt').textContent,
+      button: document.getElementById('updateCheckNow').textContent,
+    }))()`);
+    check(!after.header && !after.download, '沒新版時不提醒、不給下載：' + JSON.stringify(after));
+    check(after.checkedAt.startsWith('上次檢查：') && after.button === '立即檢查', '要寫上次檢查的時間，按鈕恢復：' + JSON.stringify(after));
+
+    // 回傳的下載網址不是這個 repo 的：不給下載
+    await useFakeGitHub(FAKE_GH + '?v=99.0.1&evil=1');
+    const evil = await checkNow();
+    check(evil.available && evil.latest.zipUrl === '' && evil.latest.pageUrl === '', '別的網站的網址不能收：' + JSON.stringify(evil.latest));
+    const blocked = await w.eval(`handlers['update.download']().then(() => 'downloaded', (e) => e.message)`);
+    check(blocked.includes('zip'), '沒有可以下載的 zip 要擋下來：' + blocked);
+
+    // 還沒有發布過（GitHub 回 404）：不算錯
+    await useFakeGitHub(ORIGIN + '/fake-gh/none');
+    const none = await checkNow();
+    check(!none.available && !none.error && none.latest === null, '還沒發布不算錯誤：' + JSON.stringify(none));
+
+    // 連不上：寫錯誤，之前知道的新版留著
+    await useFakeGitHub(FAKE_GH + '?v=99.0.0');
+    await checkNow();
+    await useFakeGitHub('http://127.0.0.1:1/');
+    const offline = await checkNow();
+    check(offline.error === '連不到 GitHub，檢查網路之後再試。', '連不上要寫原因：' + offline.error);
+    check(offline.available && offline.latest.version === '99.0.0', '一時連不上不能把新版提醒弄掉');
+  } finally {
+    await w.eval(`(updateApi = 'https://api.github.com/repos/' + UPDATE_REPO + '/releases/latest', chrome.storage.local.remove('updateInfo').then(() => true))`);
+    if (popup) await closePage(popup);
+    if (options) await closePage(options);
+  }
+});
+
 // ---- 跑 ----
 
 // 只有這份腳本用得到的頁面
 const ROUTES = {
+  // 假的 GitHub /releases/latest。?v= 是版本號，?evil=1 的網址指到別的網站
+  '/fake-gh/latest': (url) => {
+    const v = url.searchParams.get('v');
+    const base = url.searchParams.has('evil') ? 'https://evil.example/' : GH_RELEASES;
+    return JSON.stringify({
+      tag_name: 'v' + v,
+      html_url: base + 'tag/v' + v,
+      published_at: '2026-11-07T04:00:00Z',
+      assets: [
+        { name: 'password-keeper-' + v + '.zip.sha256', browser_download_url: base + 'download/v' + v + '/password-keeper-' + v + '.zip.sha256' },
+        { name: 'password-keeper-' + v + '.zip', browser_download_url: base + 'download/v' + v + '/password-keeper-' + v + '.zip' },
+      ],
+    });
+  },
   // 點過的按鈕記在 sessionStorage，頁面重新載入後還在。
   // ?hide=a 那顆不出現；?late=a&ms=2000 那顆晚一點才出現；?reload=a 點了整頁重新載入，之後那顆就不見了；?form=毫秒 晚一點才出現登入表單
   '/order': () => `<!doctype html><meta charset="utf-8"><title>order</title><div id="app"></div>

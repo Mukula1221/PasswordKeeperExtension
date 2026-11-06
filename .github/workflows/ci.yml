@@ -11,15 +11,19 @@ jobs:
     name: 檢查和打包
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          # 用目前最新的 LTS（2026 年 11 月是 26），check-latest 讓每次都拿最新的修補版，資安修補出來就會用上
+          node-version: lts/*
+          check-latest: true
       - name: 檢查
         run: node tools/check.js
       - name: 打包
         run: node tools/build.js
-      - uses: actions/upload-artifact@v4
+      # 打包檔放在這次執行頁面最下面的 Artifacts，名稱就是 zip 的檔名。
+      # archive: false 直接上傳 zip 本身，下載下來就是能解壓縮載入的那個檔，不會再多包一層。只是測試用，正式版請用 Releases。
+      - uses: actions/upload-artifact@v7
         with:
-          name: password-keeper-build
-          path: dist/
+          path: dist/*.zip
+          archive: false

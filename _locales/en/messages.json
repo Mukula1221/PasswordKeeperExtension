@@ -268,6 +268,10 @@
     "message": "You haven't backed up yet, so your passwords are only in this browser. Click here to back up on the manager page.",
     "description": "Backup reminder bar in the popup."
   },
+  "pop_update_bar": {
+    "message": "Version $1 is available. Click here to see how to update.",
+    "description": "$1 = version number like 1.14.0. Update reminder bar in the popup."
+  },
   "pop_unsupported_page": {
     "message": "Can't be used on this page. Only http and https pages are supported.",
     "description": "Shown under the popup title on browser pages such as the new tab page."
@@ -330,6 +334,14 @@
   "opt_header_version_title": {
     "message": "See version history",
     "description": "Tooltip of the version number in the page header."
+  },
+  "opt_header_update": {
+    "message": "Update available",
+    "description": "Small button next to the version number in the header."
+  },
+  "opt_header_update_title": {
+    "message": "Version $1 is available. Click to see how to update",
+    "description": "$1 = version number."
   },
   "opt_lock_title": {
     "message": "Verify it's you",
@@ -1729,6 +1741,64 @@
     "message": "Note: $1",
     "description": "$1 = one note of a version from changelog.js."
   },
+  "opt_update_title": {
+    "message": "Updates"
+  },
+  "opt_update_available": {
+    "message": "Version $1 is available (released $2).",
+    "description": "$1 = version number, $2 = release date."
+  },
+  "opt_update_failed": {
+    "message": "Couldn't check for updates: $1",
+    "description": "$1 = error message."
+  },
+  "opt_update_never": {
+    "message": "Not checked yet."
+  },
+  "opt_update_no_release": {
+    "message": "No release has been published on GitHub yet."
+  },
+  "opt_update_latest": {
+    "message": "You're on the latest version."
+  },
+  "opt_update_checked_at": {
+    "message": "Last checked: $1",
+    "description": "$1 = date and time."
+  },
+  "opt_update_steps": {
+    "message": "Extract the downloaded zip, then click \"Load unpacked\" on the extensions page and pick that folder. The new version replaces this one, and your saved passwords and settings stay. You can also extract it over the current folder and click \"Reload\" on this extension's card."
+  },
+  "opt_update_download": {
+    "message": "Download"
+  },
+  "opt_update_download_started": {
+    "message": "Download started. You'll find it in the browser's downloads."
+  },
+  "opt_update_download_failed": {
+    "message": "Download failed: $1",
+    "description": "$1 = error message."
+  },
+  "opt_update_open_extensions": {
+    "message": "Open extensions page"
+  },
+  "opt_update_release_page": {
+    "message": "Release notes"
+  },
+  "opt_update_check_now": {
+    "message": "Check now"
+  },
+  "opt_update_checking": {
+    "message": "Checking…"
+  },
+  "opt_update_auto": {
+    "message": "Check automatically once a day"
+  },
+  "opt_update_auto_tip": {
+    "message": "It only asks GitHub for the latest version number. No passwords, accounts, or settings are sent.\nBrowsers don't let extensions added with \"Load unpacked\" update themselves, so a new version is only announced here and in the popup. You download and load it yourself."
+  },
+  "opt_update_dev": {
+    "message": "This is the development version loaded straight from the source folder, so it doesn't check automatically. Update it with git, and don't extract a downloaded zip over the source folder."
+  },
   "opt_dialog_add_title": {
     "message": "Add password"
   },
@@ -2137,5 +2207,21 @@
   },
   "bg_language_invalid": {
     "message": "This language isn't supported"
+  },
+  "bg_update_offline": {
+    "message": "Couldn't reach GitHub. Check your network and try again."
+  },
+  "bg_update_busy": {
+    "message": "GitHub is limiting requests right now. Try again later."
+  },
+  "bg_update_http": {
+    "message": "GitHub returned an error ($1).",
+    "description": "$1 = HTTP status code."
+  },
+  "bg_update_bad_reply": {
+    "message": "Couldn't read the version info from GitHub."
+  },
+  "bg_update_no_download": {
+    "message": "The new version has no zip to download. Check the Releases page on GitHub."
   }
 }

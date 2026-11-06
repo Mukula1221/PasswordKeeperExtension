@@ -154,6 +154,14 @@
     .ver ul { margin: 4px 0 0 18px; padding: 0; }
     .ver li { margin: 3px 0; font-size: 13px; }
     .ver .note { font-size: 12px; color: #92400e; margin-top: 6px; }
+    /* 有新版時頁首版本號旁邊的提示，跟版本分頁「有新版」那行同一個綠色 */
+    .update-pill { background: #dcfce7; color: #166534; border-color: #86efac; border-radius: 999px; font-weight: 600; }
+    .update-pill:hover { background: #bbf7d0; }
+    #updateState.available { color: #166534; font-weight: 600; }
+    #updateState.failed { color: var(--danger); }
+    #updateSteps { margin-top: 8px; }
+    .update-actions { margin-top: 10px; }
+    .update-auto { margin-top: 12px; }
   </style>
 </head>
 <body>
@@ -172,6 +180,7 @@
         <option value="ja" data-i18n="lang_name_ja">日本語</option>
       </select>
     </label>
+    <button id="headerUpdate" class="small update-pill" hidden data-i18n="opt_header_update">有新版</button>
     <div id="headerVersion" class="muted" title="看版本功能歷程" data-i18n-title="opt_header_version_title"></div>
   </div>
 
@@ -513,11 +522,31 @@ Windows 用 Windows Hello，Mac 用 Touch ID，其他系統用安全金鑰或手
       </section>
 
       <section id="tab-versions" class="tabpane" hidden>
-        <div class="card">
-          <h2 data-i18n="opt_versions_title">版本功能歷程</h2>
-          <div id="versionNow" class="help"></div>
-          <div id="versionList"></div>
-        </div>
+        <details class="card" open>
+          <summary data-i18n="opt_update_title">檢查新版</summary>
+          <div>
+            <div id="updateState"></div>
+            <div id="updateCheckedAt" class="muted"></div>
+            <div id="updateSteps" class="help" hidden data-i18n="opt_update_steps">下載後解壓縮，在擴充功能管理頁按「載入解壓縮」選那個資料夾，就會換成新版，存的密碼和設定都會留著。也可以解壓縮蓋掉原本的資料夾，再按這個工具卡片上的「重新載入」。</div>
+            <div class="row wrap update-actions">
+              <button id="updateDownload" class="primary" hidden data-i18n="opt_update_download">下載新版</button>
+              <button id="updateExtensions" hidden data-i18n="opt_update_open_extensions">打開擴充功能管理頁</button>
+              <button id="updatePage" class="link" hidden data-i18n="opt_update_release_page">看這一版的說明</button>
+              <button id="updateCheckNow" data-i18n="opt_update_check_now">立即檢查</button>
+            </div>
+            <label class="inline update-auto"><input type="checkbox" id="updateAuto"> <span data-i18n="opt_update_auto">每天自動檢查一次</span><span class="tip" data-i18n-tip="opt_update_auto_tip" data-tip="只會連到 GitHub 問最新的版本號，不會送出任何密碼、帳號或設定。
+瀏覽器不讓自己載入的擴充功能自己換成新版，所以有新版時只會在這裡和小視窗提醒，下載和載入要自己按。">?</span></label>
+            <div id="updateDev" class="help" hidden data-i18n="opt_update_dev">這是直接載入原始碼資料夾的開發版，不會自動檢查。開發版請用 git 更新，不要用下載的 zip 蓋掉原始碼資料夾。</div>
+          </div>
+        </details>
+
+        <details class="card" open>
+          <summary data-i18n="opt_versions_title">版本功能歷程</summary>
+          <div>
+            <div id="versionNow" class="help"></div>
+            <div id="versionList"></div>
+          </div>
+        </details>
       </section>
     </div>
   </div>

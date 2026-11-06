@@ -4,7 +4,7 @@
 
 A browser extension that brings back "save passwords" and "autofill" when the browser's own password manager has been turned off. Works in Edge and Chrome.
 
-Passwords are stored only in this computer's browser. They are never uploaded anywhere, and the extension doesn't connect to any external server.
+Passwords are stored only in this computer's browser and are never uploaded anywhere. The only time the extension connects to anything outside is once a day, when it asks GitHub whether there's a new version. It sends no data, and you can turn it off.
 
 ## Features
 
@@ -15,6 +15,7 @@ Passwords are stored only in this computer's browser. They are never uploaded an
 - App lock: lock it when you leave your desk, and unlock it with Windows Hello, Touch ID, or a security key.
 - Encrypted backups and auto backup. You can also move passwords to and from Chrome, Edge, and Firefox with CSV files.
 - The interface is available in Traditional Chinese, English, and Japanese. It follows your browser language by default, and you can change it at the top right of the manager page.
+- When a new version is out, the popup and the manager page let you know, and you can download it right from the manager page.
 
 ## Install
 
@@ -34,10 +35,12 @@ Edge and Chrome don't let you install `.crx` files from outside their stores, so
 To check that the download hasn't been changed, compute its hash in PowerShell and compare it with the `.sha256` file of the same name on the Releases page:
 
 ```powershell
-Get-FileHash password-keeper-1.13.0.zip
+Get-FileHash password-keeper-1.14.0.zip
 ```
 
 ## Update
+
+Release versions check GitHub for a new version once a day. When one is available, a green notice appears at the top of the popup, and the Versions tab on the manager page lets you download the new zip or click "Check now". Browsers don't let extensions you loaded yourself replace themselves, so after downloading, install it with the steps below.
 
 1. First export an encrypted backup from the "Backup" tab on the manager page, just in case.
 2. Download the new zip and extract it. You can extract it over the old folder or into a new folder.
@@ -85,6 +88,7 @@ Your passwords exist only in this browser. If you remove the extension, or clear
 
 - **There's no master password.** To work like the browser's built-in password manager without typing a password, passwords are stored in the browser profile with only simple encryption, and the key is kept in the same place. Anyone who gets into your Windows account can see all your passwords, so lock your computer. Encrypted backup files are different: they can't be opened without the backup password.
 - **Developer mode is required.** If your company has also locked developer mode, you can't install the extension. Edge and Chrome may warn about developer mode extensions when they start; choose to keep the extension.
+- **Checking for updates connects to GitHub.** Release versions ask `api.github.com` for the latest version number once a day. It's a single request without cookies, and it never sends passwords, sites, or settings. You can turn it off in the Versions tab on the manager page. Development versions don't check automatically.
 - **Firefox isn't supported.** Firefox background scripts work differently and would need changes.
 - **Sites are matched by their full domain.** jira.example.com and gitlab.example.com are two sites, and their accounts don't show up on each other. www.example.com and example.com also count as two.
 - **App lock isn't encryption.** System verification only stops someone from looking around while you're away from your desk; it doesn't change how the data on disk is protected. Verification is tied to the extension ID: the release version isn't affected by changing folders, but the development version needs app lock turned on again after its folder moves. If system verification stops working (for example, your company turns off Windows Hello), you can't unlock, and you'd have to remove the extension, install it again, and import a backup. Export an encrypted backup before turning app lock on, and keep auto backup on. Auto backup still runs while locked.

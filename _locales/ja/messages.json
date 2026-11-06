@@ -268,6 +268,10 @@
     "message": "まだバックアップしていないため、パスワードはこのブラウザーにしかありません。ここをクリックして管理ページでバックアップしてください。",
     "description": "Backup reminder bar in the popup."
   },
+  "pop_update_bar": {
+    "message": "新しいバージョン $1 があります。ここをクリックして更新方法を確認してください。",
+    "description": "$1 = version number like 1.14.0. Update reminder bar in the popup."
+  },
   "pop_unsupported_page": {
     "message": "このページでは使えません。http と https のページだけに対応しています。",
     "description": "Shown under the popup title on browser pages such as the new tab page."
@@ -330,6 +334,14 @@
   "opt_header_version_title": {
     "message": "バージョン履歴を見る",
     "description": "Tooltip of the version number in the page header."
+  },
+  "opt_header_update": {
+    "message": "新バージョンあり",
+    "description": "Small button next to the version number in the header."
+  },
+  "opt_header_update_title": {
+    "message": "新しいバージョン $1 があります。クリックして更新方法を確認",
+    "description": "$1 = version number."
   },
   "opt_lock_title": {
     "message": "本人確認",
@@ -1729,6 +1741,64 @@
     "message": "注意：$1",
     "description": "$1 = one note of a version from changelog.js."
   },
+  "opt_update_title": {
+    "message": "アップデート"
+  },
+  "opt_update_available": {
+    "message": "新しいバージョン $1 があります（$2 公開）。",
+    "description": "$1 = version number, $2 = release date."
+  },
+  "opt_update_failed": {
+    "message": "確認できませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_update_never": {
+    "message": "まだ確認していません。"
+  },
+  "opt_update_no_release": {
+    "message": "GitHub にはまだリリース版が公開されていません。"
+  },
+  "opt_update_latest": {
+    "message": "最新バージョンです。"
+  },
+  "opt_update_checked_at": {
+    "message": "最終確認：$1",
+    "description": "$1 = date and time."
+  },
+  "opt_update_steps": {
+    "message": "ダウンロードした zip を展開し、拡張機能ページの「パッケージ化されていない拡張機能を読み込む」でそのフォルダーを選ぶと、新しいバージョンに置き換わります。保存したパスワードと設定はそのまま残ります。今のフォルダーに上書きで展開して、この拡張機能のカードの「再読み込み」を押す方法もあります。"
+  },
+  "opt_update_download": {
+    "message": "ダウンロード"
+  },
+  "opt_update_download_started": {
+    "message": "ダウンロードを開始しました。ブラウザーのダウンロード一覧で確認できます。"
+  },
+  "opt_update_download_failed": {
+    "message": "ダウンロードできませんでした：$1",
+    "description": "$1 = error message."
+  },
+  "opt_update_open_extensions": {
+    "message": "拡張機能ページを開く"
+  },
+  "opt_update_release_page": {
+    "message": "リリースノート"
+  },
+  "opt_update_check_now": {
+    "message": "今すぐ確認"
+  },
+  "opt_update_checking": {
+    "message": "確認中…"
+  },
+  "opt_update_auto": {
+    "message": "1 日 1 回自動で確認する"
+  },
+  "opt_update_auto_tip": {
+    "message": "GitHub に最新のバージョン番号を問い合わせるだけで、パスワード、アカウント、設定は送信しません。\nブラウザーは自分で読み込んだ拡張機能を自動で新しいバージョンに置き換えないため、新しいバージョンはこことポップアップでお知らせするだけです。ダウンロードと読み込みはご自身で行ってください。"
+  },
+  "opt_update_dev": {
+    "message": "これはソースフォルダーを直接読み込んだ開発版なので、自動では確認しません。開発版は git で更新し、ダウンロードした zip をソースフォルダーに上書きしないでください。"
+  },
   "opt_dialog_add_title": {
     "message": "パスワードを追加"
   },
@@ -2137,5 +2207,21 @@
   },
   "bg_language_invalid": {
     "message": "この言語には対応していません"
+  },
+  "bg_update_offline": {
+    "message": "GitHub に接続できません。ネットワークを確認してから、もう一度お試しください。"
+  },
+  "bg_update_busy": {
+    "message": "GitHub が一時的に問い合わせを制限しています。しばらくしてから、もう一度お試しください。"
+  },
+  "bg_update_http": {
+    "message": "GitHub からエラーが返されました（$1）。",
+    "description": "$1 = HTTP status code."
+  },
+  "bg_update_bad_reply": {
+    "message": "GitHub から返されたバージョン情報を読み取れません。"
+  },
+  "bg_update_no_download": {
+    "message": "新しいバージョンにはダウンロードできる zip がありません。GitHub の Releases ページを確認してください。"
   }
 }
