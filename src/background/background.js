@@ -1,7 +1,7 @@
 // 背景程式。所有密碼的讀寫都在這裡，popup、管理頁、網頁腳本都用 chrome.runtime.sendMessage 來叫它。
 // 訊息格式：{ type: 'entries.forHost', ... }，回覆固定是 { ok: true, data } 或 { ok: false, error }。
 importScripts('../shared/i18n.js');
-importScripts('crypto.js');
+importScripts('crypto.js'); 
 
 // ---- 管理頁指定的介面語言 ----
 // 背景程式丟給畫面的錯誤訊息、圖示上的「鎖」、備份檔名都要跟著指定的語言。
