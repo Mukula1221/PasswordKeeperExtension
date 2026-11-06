@@ -268,6 +268,10 @@
     "message": "還沒備份過，密碼只有瀏覽器裡這一份。點這裡到管理頁備份。",
     "description": "Backup reminder bar in the popup."
   },
+  "pop_update_bar": {
+    "message": "有新版 $1，點這裡看怎麼更新。",
+    "description": "$1 = version number like 1.14.0. Update reminder bar in the popup."
+  },
   "pop_unsupported_page": {
     "message": "這個頁面不能用，只支援 http 和 https 的網頁",
     "description": "Shown under the popup title on browser pages such as the new tab page."
@@ -330,6 +334,14 @@
   "opt_header_version_title": {
     "message": "看版本功能歷程",
     "description": "Tooltip of the version number in the page header."
+  },
+  "opt_header_update": {
+    "message": "有新版",
+    "description": "Small button next to the version number in the header."
+  },
+  "opt_header_update_title": {
+    "message": "有新版 $1，點這裡看怎麼更新",
+    "description": "$1 = version number."
   },
   "opt_lock_title": {
     "message": "先驗證身分",
@@ -1729,6 +1741,64 @@
     "message": "注意：$1",
     "description": "$1 = one note of a version from changelog.js."
   },
+  "opt_update_title": {
+    "message": "檢查新版"
+  },
+  "opt_update_available": {
+    "message": "有新版 $1（$2 發布）。",
+    "description": "$1 = version number, $2 = release date."
+  },
+  "opt_update_failed": {
+    "message": "檢查失敗：$1",
+    "description": "$1 = error message."
+  },
+  "opt_update_never": {
+    "message": "還沒檢查過。"
+  },
+  "opt_update_no_release": {
+    "message": "GitHub 上還沒有發布正式版。"
+  },
+  "opt_update_latest": {
+    "message": "已經是最新版。"
+  },
+  "opt_update_checked_at": {
+    "message": "上次檢查：$1",
+    "description": "$1 = date and time."
+  },
+  "opt_update_steps": {
+    "message": "下載後解壓縮，在擴充功能管理頁按「載入解壓縮」選那個資料夾，就會換成新版，存的密碼和設定都會留著。也可以解壓縮蓋掉原本的資料夾，再按這個工具卡片上的「重新載入」。"
+  },
+  "opt_update_download": {
+    "message": "下載新版"
+  },
+  "opt_update_download_started": {
+    "message": "已開始下載，可以在瀏覽器的下載清單看到。"
+  },
+  "opt_update_download_failed": {
+    "message": "下載失敗：$1",
+    "description": "$1 = error message."
+  },
+  "opt_update_open_extensions": {
+    "message": "打開擴充功能管理頁"
+  },
+  "opt_update_release_page": {
+    "message": "看這一版的說明"
+  },
+  "opt_update_check_now": {
+    "message": "立即檢查"
+  },
+  "opt_update_checking": {
+    "message": "檢查中…"
+  },
+  "opt_update_auto": {
+    "message": "每天自動檢查一次"
+  },
+  "opt_update_auto_tip": {
+    "message": "只會連到 GitHub 問最新的版本號，不會送出任何密碼、帳號或設定。\n瀏覽器不讓自己載入的擴充功能自己換成新版，所以有新版時只會在這裡和小視窗提醒，下載和載入要自己按。"
+  },
+  "opt_update_dev": {
+    "message": "這是直接載入原始碼資料夾的開發版，不會自動檢查。開發版請用 git 更新，不要用下載的 zip 蓋掉原始碼資料夾。"
+  },
   "opt_dialog_add_title": {
     "message": "新增密碼"
   },
@@ -2137,5 +2207,21 @@
   },
   "bg_language_invalid": {
     "message": "不支援這個語言"
+  },
+  "bg_update_offline": {
+    "message": "連不到 GitHub，檢查網路之後再試。"
+  },
+  "bg_update_busy": {
+    "message": "GitHub 暫時不讓查詢，晚一點再試。"
+  },
+  "bg_update_http": {
+    "message": "GitHub 回應錯誤（$1）。",
+    "description": "$1 = HTTP status code."
+  },
+  "bg_update_bad_reply": {
+    "message": "看不懂 GitHub 回傳的版本資料。"
+  },
+  "bg_update_no_download": {
+    "message": "新版沒有可以下載的 zip，到 GitHub 的 Releases 頁面看看。"
   }
 }

@@ -3,7 +3,7 @@
 ## 開發環境
 
 - Edge 或 Chrome，版本 111 以上。
-- Node.js 18 以上。只用來跑檢查、測試和打包，不用 `npm install`，也沒有要裝的套件。
+- Node.js 22 以上，建議用目前的 LTS 版（2026 年 11 月是 26）。只用來跑檢查、測試和打包，不用 `npm install`，也沒有要裝的套件。GitHub Actions 一律用最新的 LTS 和最新的修補版。
 
 ## 載入開發中的版本
 
@@ -36,7 +36,7 @@ test/                測試頁和 e2e 測試
 | 路徑 | 負責什麼 |
 | --- | --- |
 | `manifest.json` | 擴充功能的設定檔，宣告權限、快捷鍵和要注入哪些網頁。版本號以這裡為準。 |
-| `src/background/background.js` | 背景程式，所有密碼的讀寫、加解密、產生密碼、備份匯出匯入都在這裡。 |
+| `src/background/background.js` | 背景程式，所有密碼的讀寫、加解密、產生密碼、備份匯出匯入、檢查新版都在這裡。 |
 | `src/background/crypto.js` | 加解密的工具函式，`background.js` 會載入。 |
 | `src/content/content.js` | 注入到每個網頁的腳本，負責找登入欄位、跳儲存提示、自動填入、帳號清單和自動點選。 |
 | `src/content/page-click.js` | 跑在網頁自己環境的小腳本，替自動點選按最後那一下，`javascript:` 連結才點得動。 |
@@ -59,7 +59,7 @@ test/                測試頁和 e2e 測試
 | `tools/make-icons.js` | 產生圖示，只有改圖示時才需要。 |
 | `test/` | 開發時用的測試頁，正式版不會帶。 |
 | `test/e2e/` | 把擴充功能裝進真的瀏覽器跑完整流程的測試。 |
-| `.github/workflows/` | GitHub Actions：推上去時檢查和打包、推標籤時建立 Release、手動跑 e2e。 |
+| `.github/workflows/` | GitHub Actions：推上去或開 PR 時檢查和打包、推 `v` 開頭的標籤時建立 Release、手動跑 e2e。 |
 
 `src/` 裡的頁面用相對路徑載入別的檔案，例如 `../shared/ui.css`、`../../icons/icon32.png`。背景程式的 `importScripts` 也是從 `background.js` 所在的資料夾算。只有 `chrome.runtime.getURL` 要寫從最外層算的完整路徑，例如 `src/options/options.html`。
 
@@ -122,19 +122,31 @@ node test/e2e/run.js
 2. 在 `src/options/changelog.js` 最上面加這一版的說明。
 3. 執行 `node tools/changelog.js` 更新 `CHANGELOG.md`。
 4. 執行 `node tools/check.js` 和 e2e 測試。
-5. commit 之後打標籤，推上 GitHub：
+5. commit 之後打標籤，推上 GitHub。標籤一定要 `v` 開頭，像 `1.13.0` 這種沒有 `v` 的標籤不會觸發發布：
 
    ```bash
-   git tag v1.13.0
+   git tag v1.14.0
    ```
 
    ```bash
    git push origin main --tags
    ```
 
-6. GitHub Actions 會再檢查一次，確認標籤跟 `manifest.json` 的版本一樣，接著打包並建立 Release，附上 `password-keeper-1.13.0.zip` 和 `.sha256`。
+6. GitHub Actions 會再檢查一次，確認標籤跟 `manifest.json` 的版本一樣，接著打包並建立 Release，附上 `password-keeper-1.14.0.zip` 和 `.sha256`。Release 頁面上 GitHub 自己加的「Source code (zip)」是原始碼，不能直接載入，要下載的是 `password-keeper-版本號.zip`。
 
 想在本機先看打包結果，執行 `node tools/build.js`，檔案會在 `dist/`。同一版每次打包出來的 zip 都一模一樣。
+
+推上分支或開 PR 時，CI 也會打包一份，放在那次執行頁面最下面的「Artifacts」，名稱就是 zip 的檔名，下載下來就是可以解壓縮載入的檔案。這份只給測試用，90 天後會被 GitHub 刪掉，正式版一律從 Releases 下載。
+
+## 檢查新版
+
+正式版每天到 GitHub 問一次 `releases/latest`，有比自己新的版本就在小視窗和管理頁提醒。要能運作有幾個條件：
+
+- repo 要是公開的。私人 repo 沒登入問不到，擴充功能會當作「還沒有發布正式版」。
+- Release 要附上 `password-keeper-版本號.zip`，檔名對不上就不會出現下載按鈕。照上面的流程發布就會有。
+- repo 改名或搬家時，改 `src/background/background.js` 的 `UPDATE_REPO`。
+
+只有擴充功能 ID 是正式版的 `fgmjnolhbeohanamhnomcpmolhdapdkg` 才會自動檢查，開發版只能在「版本」分頁手動按「立即檢查」。e2e 測試把 `updateApi` 換成本機的假 GitHub，不會真的連出去。
 
 ## 正式版的擴充功能 ID
 

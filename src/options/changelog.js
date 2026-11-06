@@ -4,6 +4,32 @@
 // 翻譯直接寫在這裡、不用 t()：tools/ 產生 CHANGELOG.md 和 GitHub Release 說明時也會讀這個檔，那裡沒有 chrome.i18n。
 const CHANGELOG = [
   {
+    version: '1.14.0',
+    date: '2026-11-07',
+    items: {
+      zh_TW: [
+        '會到 GitHub 檢查有沒有新版。有新版時小視窗和管理頁會提醒，管理頁「版本」分頁可以直接下載新版的 zip，也有更新步驟。',
+        '從 Releases 下載的正式版預設每天自動檢查一次，可以在「版本」分頁關掉，也可以按「立即檢查」。只會問 GitHub 最新的版本號，不會送出任何密碼、帳號或設定。',
+        '自動備份預設的子資料夾改成「下載」底下的 password-keeper。',
+      ],
+      en: [
+        'The extension now checks GitHub for new versions. When one is available, the popup and the manager page let you know, and the Versions tab on the manager page lets you download the new zip and shows how to update.',
+        'Release versions downloaded from Releases check automatically once a day. You can turn this off or click "Check now" in the Versions tab. It only asks GitHub for the latest version number and never sends passwords, accounts, or settings.',
+        'The default auto backup subfolder is now password-keeper under Downloads.',
+      ],
+      ja: [
+        'GitHub で新しいバージョンを確認するようになりました。新しいバージョンがあると、ポップアップと管理ページでお知らせします。管理ページの「バージョン」タブから新しい zip をダウンロードでき、更新手順も表示されます。',
+        'Releases からダウンロードしたリリース版は、既定で 1 日 1 回自動で確認します。「バージョン」タブでオフにしたり、「今すぐ確認」を押したりできます。GitHub に最新のバージョン番号を問い合わせるだけで、パスワード、アカウント、設定は送信しません。',
+        '自動バックアップの既定のサブフォルダーを、「ダウンロード」の下の password-keeper に変更しました。',
+      ],
+    },
+    notes: {
+      zh_TW: ['已經存過設定的人，自動備份照舊存到原本的資料夾，不會被搬走。要換的話到管理頁「備份」分頁改資料夾名稱。'],
+      en: ["If you've already saved settings, auto backups keep going to your current folder and aren't moved. To change it, edit the folder name in the Backup tab on the manager page."],
+      ja: ['すでに設定を保存している場合、自動バックアップはこれまでのフォルダーに保存され続け、移動されません。変更するときは、管理ページの「バックアップ」タブでフォルダー名を変えてください。'],
+    },
+  },
+  {
     version: '1.13.0',
     date: '2026-11-06',
     items: {

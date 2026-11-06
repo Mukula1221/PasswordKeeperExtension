@@ -381,6 +381,20 @@ async function renderBackupBar() {
   });
 }
 
+// ---- 有新版的提醒：背景程式每天到 GitHub 問一次，點了開管理頁「版本」分頁看怎麼更新 ----
+
+async function renderUpdateBar() {
+  const res = await send({ type: 'update.status' });
+  if (!res.ok || !res.data.available) return;
+  const bar = $('updateBar');
+  bar.textContent = t('pop_update_bar', res.data.latest.version);
+  bar.hidden = false;
+  bar.addEventListener('click', async () => {
+    await chrome.tabs.create({ url: chrome.runtime.getURL('src/options/options.html#versions') });
+    window.close();
+  });
+}
+
 (async function init() {
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
   tab = tabs[0] || null;
@@ -388,7 +402,10 @@ async function renderBackupBar() {
   const settings = await send({ type: 'settings.get' });
   if (settings.ok) writeGenOptions(settings.data.generator);
   const lock = await refreshLockUi();
-  if (!lock.locked) renderBackupBar();
+  if (!lock.locked) {
+    renderUpdateBar();
+    renderBackupBar();
+  }
   if (!site) {
     $('site').textContent = t('pop_unsupported_page');
     $('addBtn').disabled = true;

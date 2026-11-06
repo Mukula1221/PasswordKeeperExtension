@@ -2003,6 +2003,69 @@ function renderVersions() {
 $('headerVersion').addEventListener('click', () => showTab('versions'));
 renderVersions();
 
+// ---- 檢查新版：背景程式到 GitHub 問，這裡只負責顯示和按鈕 ----
+
+let updateInfo = null;
+
+function renderUpdate(info) {
+  updateInfo = info;
+  const state = $('updateState');
+  const latest = info.latest;
+  state.className = info.available ? 'available' : info.error ? 'failed' : '';
+  if (info.available) state.textContent = t('opt_update_available', latest.version, latest.publishedAt ? new Date(latest.publishedAt).toLocaleDateString(uiLang()) : '—');
+  else if (info.error) state.textContent = t('opt_update_failed', info.error);
+  else if (!info.checkedAt) state.textContent = t('opt_update_never');
+  else if (!latest) state.textContent = t('opt_update_no_release');
+  else state.textContent = t('opt_update_latest');
+  $('updateCheckedAt').textContent = info.checkedAt ? t('opt_update_checked_at', fmtDate(info.checkedAt)) : '';
+  $('updateSteps').hidden = !info.available;
+  $('updateDownload').hidden = !(info.available && latest.zipUrl);
+  $('updateExtensions').hidden = !info.available;
+  $('updatePage').hidden = !(info.available && latest.pageUrl);
+  // 開發版不會自動檢查，勾選框照實際情況顯示沒勾；設定本身留著，換成正式版時照舊
+  $('updateAuto').checked = info.auto && info.release;
+  $('updateAuto').disabled = !info.release;
+  $('updateDev').hidden = info.release;
+  $('headerUpdate').hidden = !info.available;
+  if (info.available) $('headerUpdate').title = t('opt_header_update_title', latest.version);
+}
+
+async function loadUpdate() {
+  const res = await send({ type: 'update.status' });
+  if (res.ok) renderUpdate(res.data);
+}
+
+$('updateCheckNow').addEventListener('click', async () => {
+  const btn = $('updateCheckNow');
+  btn.disabled = true;
+  btn.textContent = t('opt_update_checking');
+  const res = await send({ type: 'update.check' });
+  btn.disabled = false;
+  btn.textContent = t('opt_update_check_now');
+  if (res.ok) renderUpdate(res.data);
+  else toast(t('opt_update_failed', res.error));
+});
+
+$('updateAuto').addEventListener('change', async (e) => {
+  const res = await send({ type: 'update.setAuto', enabled: e.target.checked });
+  if (res.ok) renderUpdate(res.data);
+  else {
+    e.target.checked = !e.target.checked;
+    toast(t('opt_setting_failed', res.error));
+  }
+});
+
+$('updateDownload').addEventListener('click', async () => {
+  const res = await send({ type: 'update.download' });
+  toast(res.ok ? t('opt_update_download_started') : t('opt_update_download_failed', res.error));
+});
+
+// chrome:// 的頁面網頁連不過去，擴充功能可以用 tabs.create 開。Edge 會自己轉到 edge://extensions。
+$('updateExtensions').addEventListener('click', () => chrome.tabs.create({ url: 'chrome://extensions/?id=' + chrome.runtime.id }));
+$('updatePage').addEventListener('click', () => updateInfo && updateInfo.latest && chrome.tabs.create({ url: updateInfo.latest.pageUrl }));
+$('headerUpdate').addEventListener('click', () => showTab('versions'));
+loadUpdate();
+
 // ---- 介面語言：頁首的語言選單 ----
 
 async function renderLanguagePicker() {

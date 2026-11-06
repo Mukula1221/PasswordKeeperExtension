@@ -14,6 +14,8 @@
     #main { display: flex; flex-direction: column; gap: 10px; }
     .warn { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; border-radius: 8px; padding: 8px 10px; font-size: 12px; cursor: pointer; }
     .warn:hover { background: #fde68a; }
+    .info { background: #dcfce7; border: 1px solid #86efac; color: #166534; border-radius: 8px; padding: 8px 10px; font-size: 12px; cursor: pointer; }
+    .info:hover { background: #bbf7d0; }
     .gen-out { display: flex; gap: 6px; align-items: center; }
     .gen-out input { font-family: Consolas, "Courier New", monospace; font-size: 13px; }
     .opts { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 8px; }
@@ -49,6 +51,7 @@
     </div>
 
     <div id="main">
+      <div id="updateBar" class="info" hidden></div>
       <div id="backupBar" class="warn" hidden></div>
       <div id="status" class="error"></div>
       <div id="list" class="list"></div>
