@@ -4,6 +4,44 @@
 // 翻譯直接寫在這裡、不用 t()：tools/ 產生 CHANGELOG.md 和 GitHub Release 說明時也會讀這個檔，那裡沒有 chrome.i18n。
 const CHANGELOG = [
   {
+    version: '1.15.0',
+    date: '2026-11-18',
+    items: {
+      zh_TW: [
+        '自動備份不再把備份密碼存在擴充功能裡。拿到這台電腦的人，沒有備份密碼也打不開自動備份檔。',
+        '匯入新版做的備份檔時，會提醒先更新擴充功能。',
+      ],
+      en: [
+        "Auto backup no longer stores the backup password in the extension. Even someone with access to this computer can't open auto backup files without the backup password.",
+        "If you import a backup file made by a newer version, you're asked to update the extension first.",
+      ],
+      ja: [
+        '自動バックアップ用のパスワードを拡張機能内に保存しなくなりました。このパソコンを使える人でも、バックアップ用パスワードがなければ自動バックアップ ファイルを開けません。',
+        '新しいバージョンで作成されたバックアップ ファイルをインポートすると、先に拡張機能を更新するよう案内します。',
+      ],
+    },
+    notes: {
+      zh_TW: [
+        '已經設過自動備份密碼的不用重設，更新後會自動轉換。',
+        '新的自動備份檔，1.14.0 以前的版本打不開，會顯示「這不是密碼小管家的備份檔」。手動匯出的備份檔不受影響。',
+        '自動備份密碼忘了就打不開自動備份檔，擴充功能沒辦法幫你找回來。',
+        '想更保險的話，更新後到管理頁「備份」分頁改一次自動備份密碼。舊密碼可能還會在瀏覽器的資料檔裡留一陣子。',
+      ],
+      en: [
+        "If you've already set an auto backup password, you don't need to set it again. It's converted automatically after the update.",
+        "Version 1.14.0 and earlier can't open the new auto backup files and show \"This isn't a Password Keeper backup file\". Manually exported backup files aren't affected.",
+        "If you forget the auto backup password, you can't open the auto backup files. The extension can't recover it.",
+        "For extra safety, change the auto backup password once in the Backup tab on the manager page after updating. The old password may stay in the browser's data files for a while.",
+      ],
+      ja: [
+        'すでに自動バックアップ用のパスワードを設定している場合は、設定し直す必要はありません。更新後に自動で切り替わります。',
+        '1.14.0 以前のバージョンでは新しい自動バックアップ ファイルを開けず、「パスワードキーパーのバックアップ ファイルではありません」と表示されます。手動でエクスポートしたバックアップ ファイルには影響しません。',
+        '自動バックアップ用のパスワードを忘れると、自動バックアップ ファイルを開けません。拡張機能で復元することもできません。',
+        'より安全にするには、更新後に管理ページの「バックアップ」タブで自動バックアップ用のパスワードを一度変更してください。古いパスワードがしばらくブラウザーのデータ ファイルに残る場合があります。',
+      ],
+    },
+  },
+  {
     version: '1.14.0',
     date: '2026-11-07',
     items: {

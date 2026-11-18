@@ -822,7 +822,7 @@
     "message": "1. Backup password"
   },
   "opt_ab_password_tip": {
-    "message": "All auto backups are encrypted with this password.\nThe password is stored in the extension. Anyone with access to this computer can use it to open the backup files, but someone who only has the files can't."
+    "message": "All auto backups are encrypted with this password.\nThe extension doesn't keep this password. If you forget it, you can't open the backup files.\nAfter you change it, older backup files still need the old password."
   },
   "opt_ab_set_password": {
     "message": "Set password"
@@ -972,7 +972,7 @@
     "message": "Auto backup password"
   },
   "opt_ab_pw_hint": {
-    "message": "All auto backup files are encrypted with this password. The password is stored in the extension."
+    "message": "The extension doesn't keep this password. If you forget it, you can't open the backup files."
   },
   "opt_ab_pw_saved": {
     "message": "Auto backup password set"
@@ -2052,6 +2052,9 @@
   },
   "bg_not_backup_file": {
     "message": "This isn't a Password Keeper backup file"
+  },
+  "bg_backup_too_new": {
+    "message": "This backup file was made by a newer version of Password Keeper. Update the extension first."
   },
   "bg_wrong_password_or_damaged": {
     "message": "Wrong password or damaged file"

@@ -57,7 +57,8 @@ const DEFAULT_SETTINGS = {
     symbols: true,
     symbolSet: '!@#$%^&*()-_=+[]{};:,.?',
   },
-  // 自動備份：每天或每週的指定時間（weekday 0 是星期日）把加密備份存到「下載」底下的子資料夾。密碼存在 vault.meta 裡，不在這。
+  // 自動備份：每天或每週的指定時間（weekday 0 是星期日）把加密備份存到「下載」底下的子資料夾。
+  // 備份密碼不存。加密用的公鑰在 storage.local 的 autoBackupKey，見 getAutoBackupKey。
   // since 是開啟或改時間的時間點，在那之前的指定時間不補做。lastSignature 是上次備份時帳號清單的指紋，沒變就不存。
   autoBackup: {
     enabled: false,
@@ -118,7 +119,8 @@ function getKey() {
 const DAY_MS = 24 * 60 * 60 * 1000;
 const HISTORY_MAX = 5;
 
-// vault 解密後的樣子：{ entries: [帳號...], trash: [刪掉的帳號...], meta: { autoBackupPassword } }
+// vault 解密後的樣子：{ entries: [帳號...], trash: [刪掉的帳號...], meta: {} }
+// 1.14 以前 meta 裡放自動備份密碼 autoBackupPassword，升級時會換成 autoBackupKey 再刪掉，見 migrateAutoBackupPassword。
 async function loadVault() {
   const { vault } = await chrome.storage.local.get('vault');
   if (!vault) return { entries: [], trash: [], meta: {} };
@@ -555,11 +557,24 @@ function generatePassword(options) {
 }
 
 // ---- 加密備份檔 ----
-// 檔案是 JSON：{ format, version, kdf: { salt, iterations }, iv, data }。
-// 金鑰從備份密碼推出來，沒有密碼打不開，跟平常存在瀏覽器裡那份的保護等級不一樣。
+// 兩種格式，都要有備份密碼才打得開，跟平常存在瀏覽器裡那份的保護等級不一樣。
+// version 1（手動匯出、挑幾筆匯出）：{ format, version, kdf: { salt, iterations }, iv, data }，金鑰從備份密碼推出來。
+// version 2（自動備份、立即備份）：{ format, version, wrappedKey, payload }，用公鑰加密，見 crypto.js 的 createBackupKeyPair。
+// version 2 的密文刻意不放最外層：1.14 以前的版本讀到會說「不是備份檔」，不會說「密碼錯誤」讓人以為忘了密碼。
 
 const BACKUP_FORMAT = 'pk-backup';
+const BACKUP_VERSION_MAX = 2;
 const BACKUP_ITERATIONS = 600000;
+
+function backupBody(entries, settings, partial) {
+  return {
+    entries,
+    neverSave: partial ? [] : settings.neverSave,
+    generator: partial ? undefined : settings.generator,
+    clickRules: partial ? undefined : settings.clickRules,
+    exportedAt: Date.now(),
+  };
+}
 
 // ids 有給就是「挑幾筆匯出給同事」：只放勾選的那幾筆，設定不帶
 async function exportBackup(password, ids) {
@@ -574,13 +589,7 @@ async function exportBackup(password, ids) {
   }
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const key = await deriveKey(password, salt, BACKUP_ITERATIONS);
-  const body = {
-    entries,
-    neverSave: partial ? [] : settings.neverSave,
-    generator: partial ? undefined : settings.generator,
-    clickRules: partial ? undefined : settings.clickRules,
-    exportedAt: Date.now(),
-  };
+  const body = backupBody(entries, settings, partial);
   const payload = await encrypt(key, JSON.stringify(body));
   const file = {
     format: BACKUP_FORMAT,
@@ -592,6 +601,34 @@ async function exportBackup(password, ids) {
   return { content: JSON.stringify(file, null, 2), count: entries.length };
 }
 
+// 自動備份用公鑰加密，不需要備份密碼。私鑰用備份密碼加密過，每個檔案都放一份，換電腦也能還原。
+async function exportAutoBackup(backupKey, entries, settings) {
+  const file = {
+    format: BACKUP_FORMAT,
+    version: 2,
+    wrappedKey: backupKey.wrappedKey,
+    payload: await sealToPublicKey(backupKey.publicKey, JSON.stringify(backupBody(entries, settings, false))),
+  };
+  return { content: JSON.stringify(file, null, 2), count: entries.length };
+}
+
+function isBackupFile(file) {
+  if (!file || file.format !== BACKUP_FORMAT) return false;
+  if (file.version > BACKUP_VERSION_MAX) return true;
+  if (file.version === 2) {
+    const w = file.wrappedKey;
+    const p = file.payload;
+    return !!(w && w.kdf && w.kdf.salt && w.iv && w.data && p && p.ephemeralPublicKey && p.salt && p.iv && p.data);
+  }
+  return !!(file.kdf && file.kdf.salt && file.iv && file.data);
+}
+
+async function decryptBackup(password, file) {
+  if (file.version === 2) return openSealed(await openWrappedKey(password, file.wrappedKey), file.payload);
+  const key = await deriveKey(password, b64ToBytes(file.kdf.salt), file.kdf.iterations || BACKUP_ITERATIONS);
+  return decrypt(key, { iv: file.iv, data: file.data });
+}
+
 async function importBackup(password, content) {
   let file;
   try {
@@ -599,13 +636,11 @@ async function importBackup(password, content) {
   } catch {
     throw new Error(t('bg_not_backup_file'));
   }
-  if (!file || file.format !== BACKUP_FORMAT || !file.kdf || !file.kdf.salt || !file.iv || !file.data) {
-    throw new Error(t('bg_not_backup_file'));
-  }
-  const key = await deriveKey(String(password || ''), b64ToBytes(file.kdf.salt), file.kdf.iterations || BACKUP_ITERATIONS);
+  if (!isBackupFile(file)) throw new Error(t('bg_not_backup_file'));
+  if (file.version > BACKUP_VERSION_MAX) throw new Error(t('bg_backup_too_new'));
   let body;
   try {
-    body = JSON.parse(await decrypt(key, { iv: file.iv, data: file.data }));
+    body = JSON.parse(await decryptBackup(String(password || ''), file));
   } catch {
     // AES-GCM 密碼不對會直接解不開，分不出是密碼錯還是檔案壞
     throw new Error(t('bg_wrong_password_or_damaged'));
@@ -640,7 +675,7 @@ async function backupStatus() {
     due,
     reminderDays: settings.backupReminderDays,
     count: entries.length,
-    autoBackup: autoBackupView(settings.autoBackup, vault),
+    autoBackup: autoBackupView(settings.autoBackup, !!(await getAutoBackupKey())),
     log: await getBackupLog(),
   };
 }
@@ -822,14 +857,43 @@ async function entriesSignature(entries, clickRules) {
   return bytesToB64(new Uint8Array(hash));
 }
 
-// 給管理頁看的狀態：密碼本身不給，只說有沒有設。有啟用就算好下次備份的時間。
-function autoBackupView(ab, vault) {
-  return { ...ab, hasPassword: !!vault.meta.autoBackupPassword, nextAt: ab.enabled ? nextSlot(ab, Date.now()) : 0 };
+// 給管理頁看的狀態：只說有沒有設備份密碼。有啟用就算好下次備份的時間。
+function autoBackupView(ab, hasPassword) {
+  return { ...ab, hasPassword, nextAt: ab.enabled ? nextSlot(ab, Date.now()) : 0 };
 }
 
 async function autoBackupInfo() {
   const settings = await getSettings();
-  return autoBackupView(settings.autoBackup, await loadVault());
+  return autoBackupView(settings.autoBackup, !!(await getAutoBackupKey()));
+}
+
+// 1.14 以前把自動備份密碼存在 vault 裡。升級後用那組密碼產生 autoBackupKey，再把密碼刪掉，使用者不用重設。
+// 背景程式每次醒來都會跑一次。讀 autoBackupKey 之前要先等這裡做完，不然自動備份會以為還沒設密碼。
+async function migrateAutoBackupPassword() {
+  const vault = await loadVault();
+  const password = vault.meta.autoBackupPassword;
+  if (!password) return;
+  const { autoBackupKey } = await chrome.storage.local.get('autoBackupKey');
+  if (!autoBackupKey) await chrome.storage.local.set({ autoBackupKey: await createBackupKeyPair(password, BACKUP_ITERATIONS) });
+  await forgetOldBackupPassword();
+}
+
+async function forgetOldBackupPassword() {
+  if (!(await loadVault()).meta.autoBackupPassword) return;
+  await modifyVault((vault) => {
+    delete vault.meta.autoBackupPassword;
+  });
+}
+
+const autoBackupKeyMigrated = migrateAutoBackupPassword().catch((err) =>
+  console.warn('[密碼小管家] 自動備份密碼升級失敗', err) // i18n-ignore：給開發者看的
+);
+
+// { publicKey, wrappedKey }，沒設過備份密碼就是 null
+async function getAutoBackupKey() {
+  await autoBackupKeyMigrated;
+  const { autoBackupKey } = await chrome.storage.local.get('autoBackupKey');
+  return autoBackupKey || null;
 }
 
 // 備份跑的這幾秒內使用者可能改了設定，寫回前重新讀一次，只蓋這次要改的欄位
@@ -862,14 +926,16 @@ async function setAutoBackup({ enabled, every, time, weekday, folder, password }
       });
     }
   }
+  // 換密碼就換一對新的金鑰。舊的備份檔裡放的是舊的私鑰，還是要用舊密碼開。
   if (password != null) {
     if (String(password).length < 8) throw new Error(t('bg_backup_password_too_short'));
-    await modifyVault((vault) => {
-      vault.meta.autoBackupPassword = String(password);
-    });
+    // 升級轉換還在跑的話，等它做完再寫，不然新密碼的金鑰會被舊密碼的蓋掉
+    await autoBackupKeyMigrated;
+    await chrome.storage.local.set({ autoBackupKey: await createBackupKeyPair(String(password), BACKUP_ITERATIONS) });
+    await forgetOldBackupPassword();
   }
   if (enabled != null) {
-    if (enabled && !(await loadVault()).meta.autoBackupPassword) throw new Error(t('bg_enable_needs_password'));
+    if (enabled && !(await getAutoBackupKey())) throw new Error(t('bg_enable_needs_password'));
     patch.enabled = !!enabled;
     patch.lastError = '';
   }
@@ -903,12 +969,12 @@ async function autoBackupOnce(force) {
   if (!force && (!ab.enabled || lastSlot(ab, now) <= Math.max(ab.lastRunAt || 0, ab.since || 0))) {
     return { ran: false, reason: 'not-due' };
   }
-  const vault = await loadVault();
-  const password = vault.meta.autoBackupPassword;
-  if (!password) {
+  const backupKey = await getAutoBackupKey();
+  if (!backupKey) {
     await patchAutoBackup({ lastRunAt: now, lastResult: 'failed', lastError: t('bg_auto_backup_no_password') });
     throw new Error(t('bg_auto_backup_no_password'));
   }
+  const vault = await loadVault();
   if (!vault.entries.length) {
     await patchAutoBackup({ lastRunAt: now, lastResult: 'empty', lastError: '' });
     return { ran: false, reason: 'empty' };
@@ -919,7 +985,7 @@ async function autoBackupOnce(force) {
     return { ran: false, reason: 'no-change' };
   }
   try {
-    const { content, count } = await exportBackup(password, null);
+    const { content, count } = await exportAutoBackup(backupKey, vault.entries, settings);
     const stamp = backupStamp(true);
     const name = force ? t('bg_backup_file_now', stamp) : t('bg_backup_file_auto', stamp);
     const filename = safeFolder(ab.folder) + '/' + name + '.pkbak';

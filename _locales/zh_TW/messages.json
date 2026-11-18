@@ -822,7 +822,7 @@
     "message": "1. 備份密碼"
   },
   "opt_ab_password_tip": {
-    "message": "自動備份都用這組密碼加密。\n密碼存在擴充功能裡，拿到這台電腦的人可以用它打開備份檔，只拿到檔案的人打不開。"
+    "message": "自動備份都用這組密碼加密。\n擴充功能不會記住這組密碼，忘了就打不開備份檔。\n改密碼後，舊的備份檔還是要用舊密碼開。"
   },
   "opt_ab_set_password": {
     "message": "設定密碼"
@@ -972,7 +972,7 @@
     "message": "自動備份密碼"
   },
   "opt_ab_pw_hint": {
-    "message": "自動備份的檔案都用這組密碼加密。這組密碼會存在擴充功能裡。"
+    "message": "擴充功能不會記住這組密碼，忘了就打不開備份檔。"
   },
   "opt_ab_pw_saved": {
     "message": "自動備份密碼已設定"
@@ -2052,6 +2052,9 @@
   },
   "bg_not_backup_file": {
     "message": "這不是密碼小管家的備份檔"
+  },
+  "bg_backup_too_new": {
+    "message": "這個備份檔是新版密碼小管家做的，請先更新擴充功能"
   },
   "bg_wrong_password_or_damaged": {
     "message": "密碼錯誤或檔案損壞"
