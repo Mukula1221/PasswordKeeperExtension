@@ -156,7 +156,8 @@ async function findServiceWorker(cdp, timeoutMs = 15000) {
   const end = Date.now() + timeoutMs;
   while (Date.now() < end) {
     const { targetInfos } = await cdp.send('Target.getTargets');
-    const sw = targetInfos.find((t) => t.type === 'service_worker' && t.url.includes('background.js'));
+    // 要比對完整路徑：新版 Edge 自帶的擴充功能也有叫 background.js 的背景程式
+    const sw = targetInfos.find((t) => t.type === 'service_worker' && t.url.endsWith('/src/background/background.js'));
     if (sw) return sw;
     await sleep(300);
   }

@@ -62,7 +62,7 @@ async function safeEval(page, expr) {
 
 const reset = () =>
   w.eval(`(async () => {
-    await chrome.storage.local.remove(['vault', 'settings', 'webauthn', 'uiLanguage', 'updateInfo']);
+    await chrome.storage.local.remove(['vault', 'settings', 'webauthn', 'uiLanguage', 'updateInfo', 'autoBackupKey']);
     await chrome.storage.session.clear();
     return true;
   })()`);
@@ -933,6 +933,114 @@ test('自動備份指紋：沒有規則時跟舊版一樣，有規則時會變',
   })()`);
   check(r.old === r.none, '沒有規則時指紋要跟舊版一樣');
   check(r.some !== r.none, '有規則時指紋要變');
+});
+
+test('自動備份：不存備份密碼，檔案只有備份密碼打得開', async () => {
+  await seedEntry('right');
+  const r = await w.eval(`(async () => {
+    const secret = 'auto-backup-pass-123';
+    await handlers['autoBackup.set']({ password: secret });
+    const stored = JSON.stringify(await chrome.storage.local.get(null)) + JSON.stringify(await loadVault());
+    // 不要真的寫檔到下載資料夾
+    const realSave = saveFile;
+    let saved = null;
+    saveFile = async ({ content, filename }) => {
+      saved = content;
+      return { id: 0, path: 'fake/' + filename };
+    };
+    let result;
+    try {
+      result = await runAutoBackup(true);
+    } finally {
+      saveFile = realSave;
+    }
+    const file = JSON.parse(saved);
+    const body = JSON.parse(await decryptBackup(secret, file));
+    let imported = '';
+    try {
+      await importBackup(secret, saved);
+      imported = 'ok';
+    } catch (e) {
+      imported = e.message;
+    }
+    let wrong = '';
+    try {
+      await importBackup('wrong-pass-123', saved);
+    } catch (e) {
+      wrong = e.message;
+    }
+    return {
+      leaked: stored.includes(secret),
+      hasPassword: (await autoBackupInfo()).hasPassword,
+      ran: result.ran,
+      version: file.version,
+      topLevel: 'iv' in file || 'data' in file || 'kdf' in file,
+      passwords: body.entries.map((e) => e.password),
+      imported,
+      wrong,
+      expectWrong: t('bg_wrong_password_or_damaged'),
+    };
+  })()`);
+  check(!r.leaked, '設了備份密碼後，storage.local 和 vault 裡都不能有這組密碼');
+  check(r.hasPassword, '管理頁要顯示已設定');
+  check(r.ran && r.version === 2, '自動備份要存成 version 2：' + JSON.stringify(r));
+  check(!r.topLevel, 'version 2 的密文不能放最外層，舊版才不會說密碼錯誤');
+  check(r.passwords.length === 1 && r.passwords[0] === 'right', '用備份密碼要解得開帳密：' + JSON.stringify(r.passwords));
+  check(r.imported === 'ok', '匯入要成功：' + r.imported);
+  check(r.wrong === r.expectWrong, '密碼錯要說密碼錯誤：' + r.wrong);
+});
+
+test('自動備份：1.14 以前存在 vault 裡的備份密碼，升級時換成金鑰再刪掉', async () => {
+  await seedEntry('right');
+  const r = await w.eval(`(async () => {
+    const old = 'old-auto-pass-123';
+    await modifyVault((v) => {
+      v.meta.autoBackupPassword = old;
+    });
+    await migrateAutoBackupPassword();
+    const key = await getAutoBackupKey();
+    const vault = await loadVault();
+    const { content } = await exportAutoBackup(key, vault.entries, await getSettings());
+    const body = JSON.parse(await decryptBackup(old, JSON.parse(content)));
+
+    // 已經有新金鑰、vault 裡卻還留著舊密碼（上次轉到一半）：不能拿舊密碼蓋掉新金鑰
+    await modifyVault((v) => {
+      v.meta.autoBackupPassword = 'leftover-pass-123';
+    });
+    await migrateAutoBackupPassword();
+    const keyAfter = await getAutoBackupKey();
+    return {
+      left: 'autoBackupPassword' in (await loadVault()).meta,
+      hasPassword: (await autoBackupInfo()).hasPassword,
+      count: body.entries.length,
+      kept: keyAfter.publicKey === key.publicKey,
+    };
+  })()`);
+  check(!r.left, '轉換後 vault 裡不能再有舊密碼');
+  check(r.hasPassword, '轉換後管理頁要顯示已設定');
+  check(r.count === 1, '轉換後的備份檔要用原本的密碼打得開');
+  check(r.kept, '已經有金鑰時不能被舊密碼蓋掉');
+});
+
+test('備份：太新的備份檔說要更新，缺欄位的說不是備份檔', async () => {
+  const r = await w.eval(`(async () => {
+    const msg = async (file) => {
+      try {
+        await importBackup('whatever-123', JSON.stringify(file));
+        return 'ok';
+      } catch (e) {
+        return e.message;
+      }
+    };
+    return {
+      tooNew: await msg({ format: 'pk-backup', version: 3 }),
+      broken: await msg({ format: 'pk-backup', version: 2, payload: {} }),
+      expectNew: t('bg_backup_too_new'),
+      expectBroken: t('bg_not_backup_file'),
+    };
+  })()`);
+  check(r.tooNew === r.expectNew, '太新的檔案要叫使用者更新：' + r.tooNew);
+  check(r.broken === r.expectBroken, '缺欄位的要說不是備份檔：' + r.broken);
 });
 
 // ---- 小視窗和管理頁 ----
