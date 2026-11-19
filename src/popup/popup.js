@@ -265,7 +265,7 @@ $('search').addEventListener('keydown', (e) => {
   }
 });
 
-// ---- 工具鎖定：只用系統驗證，沒有 PIN ----
+// ---- 工具鎖定：系統驗證或自訂密碼，都在獨立的解鎖視窗裡做 ----
 
 function showLocked(locked) {
   $('lockScreen').hidden = !locked;
@@ -278,7 +278,8 @@ async function refreshLockUi() {
   const res = await send({ type: 'lock.status' });
   const st = res.ok ? res.data : { enabled: false, locked: false };
   $('lockNow').hidden = !(st.enabled && !st.locked);
-  $('helloBtn').textContent = t('pop_unlock_with', pkWebAuthn.label());
+  // 自訂密碼加密只能打自訂密碼
+  $('helloBtn').textContent = st.mode === 'password' ? t('pop_unlock_password') : t('pop_unlock_with', pkWebAuthn.label());
   showLocked(!!st.locked);
   return st;
 }

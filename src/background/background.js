@@ -90,7 +90,9 @@ const DEFAULT_SETTINGS = {
   clickIntervalSec: 300,
   // 按了登出，這個分頁暫停幾秒不自動點。0 就不暫停。
   logoutPauseSec: 300,
-  // 工具鎖定：整個工具的鎖，沒碰電腦 idleMinutes 分鐘或瀏覽器重開就鎖，要通過系統驗證才能用。鑰匙存在 storage.local 的 webauthn。
+  // 工具鎖定：整個工具的鎖，沒碰電腦 idleMinutes 分鐘或瀏覽器重開就鎖，要通過系統驗證或自訂密碼才能用。
+  // mode 是保護方式：off 不鎖、screen 只鎖畫面（1.15.0 以前的舊設定）、password 自訂密碼加密、hello 系統驗證加密（Windows Hello、Touch ID）。見 normalizeLock。
+  // 系統驗證的鑰匙存在 storage.local 的 webauthn。
   lock: { enabled: false, idleMinutes: 10, onStartup: true },
   // 每天到 GitHub 問一次有沒有新版，只有正式版會自動問。見「檢查新版」。
   updateCheck: true,
@@ -98,9 +100,19 @@ const DEFAULT_SETTINGS = {
 // 登入送出後，「要不要儲存」的提示最多等這麼久；超過就當作使用者不想存。
 const PENDING_TTL_MS = 2 * 60 * 1000;
 
-// 服務工作者閒置幾十秒就會被瀏覽器關掉，所以金鑰只當暫存，每次重開都從 storage.local 再讀。
+// vault 的金鑰放在哪，看保護方式：
+// 沒加密（off、screen）：金鑰 keyB64 直接存在 storage.local。
+// 加密（password、hello）：storage.local 只有加密過的 vaultKeyLock。解鎖後的金鑰放 storage.session 的 vaultKey，
+// storage.session 只在記憶體，瀏覽器關掉、擴充功能更新或重新載入就清掉，所以那時候要重新解鎖。
+// 服務工作者閒置幾十秒就會被瀏覽器關掉，所以沒加密的金鑰只當暫存，每次重開都從 storage.local 再讀。
 let keyPromise = null;
-function getKey() {
+async function getKey() {
+  const { vaultKeyLock } = await chrome.storage.local.get('vaultKeyLock');
+  if (vaultKeyLock) {
+    const { vaultKey } = await chrome.storage.session.get('vaultKey');
+    if (!vaultKey) throw lockedError();
+    return importKey(b64ToBytes(vaultKey));
+  }
   if (!keyPromise) {
     keyPromise = (async () => {
       const { keyB64 } = await chrome.storage.local.get('keyB64');
@@ -116,6 +128,25 @@ function getKey() {
   return keyPromise;
 }
 
+function lockedError() {
+  const err = new Error(t('bg_locked'));
+  err.locked = true;
+  return err;
+}
+
+// 目前 vault 金鑰的原始值（base64）。換保護方式時要拿原始值重新加密，鎖住時拿不到。
+async function currentVaultKeyB64() {
+  const { vaultKeyLock } = await chrome.storage.local.get('vaultKeyLock');
+  if (vaultKeyLock) {
+    const { vaultKey } = await chrome.storage.session.get('vaultKey');
+    if (!vaultKey) throw lockedError();
+    return vaultKey;
+  }
+  // 還沒存過任何密碼時 getKey 會先產生一把
+  await getKey();
+  return (await chrome.storage.local.get('keyB64')).keyB64;
+}
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 const HISTORY_MAX = 5;
 
@@ -124,9 +155,11 @@ const HISTORY_MAX = 5;
 async function loadVault() {
   const { vault } = await chrome.storage.local.get('vault');
   if (!vault) return { entries: [], trash: [], meta: {} };
+  // 鎖住拿不到金鑰時照原樣往外丟，呼叫的地方才分得出是鎖住、不是資料壞了
+  const key = await getKey();
   let text;
   try {
-    text = await decrypt(await getKey(), vault);
+    text = await decrypt(key, vault);
   } catch (err) {
     console.error('[密碼小管家] 解密失敗', err); // i18n-ignore：給開發者看的
     throw new Error(t('bg_vault_unreadable'));
@@ -156,7 +189,26 @@ function modifyVault(mutator) {
     vault.trash = vault.trash.filter((t) => (t.deletedAt || 0) > cutoff);
     const result = await mutator(vault);
     await storeVault(vault);
+    await refreshAutoBackupReady(vault);
     return result;
+  });
+  writeQueue = run.catch(() => {
+    // 失敗的那次已經往外拋給呼叫者了，這裡只是不要讓佇列卡住。
+  });
+  return run;
+}
+
+// 換 vault 金鑰或換金鑰的存法：用 newKeyB64 重新加密 vault，跟 items 一起寫進 storage.local，再刪掉 removeKeys。
+// 要排進寫入佇列，不然換到一半有別的寫入，會把用舊金鑰加密的 vault 寫回去。
+function replaceVaultKey(newKeyB64, items, removeKeys) {
+  const run = writeQueue.then(async () => {
+    const vault = await loadVault();
+    const payload = await encrypt(await importKey(b64ToBytes(newKeyB64)), JSON.stringify(vault));
+    // 先放好新金鑰再寫 vault：寫進去之後馬上有人讀，才拿得到對的金鑰
+    if (items.vaultKeyLock) await chrome.storage.session.set({ vaultKey: newKeyB64 });
+    await chrome.storage.local.set({ ...items, vault: payload });
+    if (removeKeys.length) await chrome.storage.local.remove(removeKeys);
+    keyPromise = null;
   });
   writeQueue = run.catch(() => {
     // 失敗的那次已經往外拋給呼叫者了，這裡只是不要讓佇列卡住。
@@ -303,7 +355,7 @@ async function getSettings() {
     ...stored,
     generator: { ...DEFAULT_SETTINGS.generator, ...(stored.generator || {}) },
     autoBackup: { ...DEFAULT_SETTINGS.autoBackup, ...(stored.autoBackup || {}) },
-    lock: { ...DEFAULT_SETTINGS.lock, ...(stored.lock || {}) },
+    lock: normalizeLock(stored.lock),
     // 天數壞掉時當預設值。不擋的話回收桶的清除時間會算成 NaN，整個回收桶都被清掉。
     trashDays: Math.min(Math.max(parseInt(stored.trashDays, 10) || DEFAULT_SETTINGS.trashDays, 1), 365),
     // 秒數壞掉時也當預設值。不擋的話防連點會算成 NaN，等於沒有防連點。
@@ -313,14 +365,34 @@ async function getSettings() {
 }
 
 // ---- 工具鎖定 ----
-// 鎖住時背景程式不給任何帳號資料，網頁不自動填、小視窗和管理頁要先通過系統驗證（Windows Hello 之類）。沒有備用 PIN。
+// 鎖住時背景程式不給任何帳號資料，網頁不自動填、小視窗和管理頁要先通過系統驗證（Windows Hello 之類）或自訂密碼。
 // 鎖定狀態放 storage.session：服務工作者重開還在，瀏覽器關掉就清掉。
+// 閒置或手動鎖定只擋畫面，加密的保護方式也不清掉記憶體裡的金鑰。解鎖還是要通過系統驗證，自訂密碼加密要打自訂密碼。
+
+// screen 只鎖畫面是 1.15.0 以前的設定，硬碟上的密碼沒有加密。舊使用者照常用，但不能新選。
+const LOCK_MODES = ['off', 'screen', 'password', 'hello'];
+const MASTER_PASSWORD_MIN = 12;
+
+function isEncryptedMode(mode) {
+  return mode === 'password' || mode === 'hello';
+}
+
+// 1.15 以前只有 enabled，沒有 mode。沒加密的兩種（off、screen）照 enabled 決定，加密的兩種照 mode 決定，
+// 這樣舊程式寫的 { ...lock, enabled: false } 也照樣能用。
+function normalizeLock(raw) {
+  const lock = { ...DEFAULT_SETTINGS.lock, ...(raw || {}) };
+  if (isEncryptedMode(lock.mode)) lock.enabled = true;
+  else lock.mode = lock.enabled ? 'screen' : 'off';
+  return lock;
+}
 
 async function isLocked() {
   const settings = await getSettings();
   if (!settings.lock.enabled) return false;
-  const { locked } = await chrome.storage.session.get('locked');
-  return !!locked;
+  const { locked, vaultKey } = await chrome.storage.session.get(['locked', 'vaultKey']);
+  if (locked) return true;
+  // 加密的保護方式，金鑰不在記憶體（瀏覽器重開過、擴充功能更新過）就算鎖著
+  return isEncryptedMode(settings.lock.mode) && !vaultKey;
 }
 
 async function setLocked(locked) {
@@ -342,10 +414,20 @@ async function setLocked(locked) {
   }
 }
 
+// needsKey：加密的保護方式、金鑰不在記憶體。自訂密碼加密這時只能打自訂密碼，系統驗證加密要拿 PRF 秘密值。
 async function lockStatus() {
   const settings = await getSettings();
   const { webauthn } = await chrome.storage.local.get('webauthn');
-  return { ...settings.lock, locked: await isLocked(), webauthn: !!webauthn };
+  const { vaultKey } = await chrome.storage.session.get('vaultKey');
+  return {
+    ...settings.lock,
+    locked: await isLocked(),
+    webauthn: !!webauthn,
+    needsKey: isEncryptedMode(settings.lock.mode) && !vaultKey,
+    masterPasswordMin: MASTER_PASSWORD_MIN,
+    // 解不開要清掉資料時，管理頁拿這個告訴使用者有沒有備份可以還原。鎖住時讀不到 vault，所以放這裡。
+    lastBackupAt: settings.lastBackupAt || 0,
+  };
 }
 
 // ---- 用 Windows Hello 解鎖（WebAuthn）----
@@ -389,19 +471,31 @@ async function consumeWebAuthnChallenge(clientDataJSONb64url, expectedType) {
 }
 
 async function webAuthnStatus() {
-  const { webauthn } = await chrome.storage.local.get('webauthn');
+  const { webauthn, vaultKeyLock } = await chrome.storage.local.get(['webauthn', 'vaultKeyLock']);
   return {
     registered: !!webauthn,
     id: webauthn ? webauthn.id : null,
     // transports 記的是鑰匙在哪種驗證器上：internal 是內建（Windows Hello、Touch ID），usb、nfc、hybrid 是安全金鑰或手機
     transports: webauthn ? webauthn.transports || [] : [],
     rpId: chrome.runtime.id,
+    // 系統驗證加密時，每次驗證都順便要 PRF 秘密值，頁面要拿這個 salt 去要
+    prfSalt: vaultKeyLock && vaultKeyLock.hello ? vaultKeyLock.hello.prfSalt : null,
   };
 }
 
+// 核對頁面剛建好的系統驗證鑰匙，回傳要存進 storage.local 的 webauthn。亂數要是我們發的、來源要是這個擴充功能，不然不收。
+// 這裡不存：換保護方式時要跟加密過的金鑰一起寫，寫一半失敗會讓鑰匙和金鑰對不上。
+async function checkNewCredential({ id, alg, publicKey, clientDataJSON, transports } = {}) {
+  if (!id || !publicKey || (alg !== -7 && alg !== -257)) throw new Error(t('bg_key_data_incomplete'));
+  await consumeWebAuthnChallenge(clientDataJSON, 'webauthn.create');
+  const list = Array.isArray(transports) ? transports.filter((x) => typeof x === 'string').slice(0, 5) : [];
+  return { id, alg, publicKey, transports: list, createdAt: Date.now() };
+}
+
 // 核對頁面交回來的系統驗證結果。四項都要過：鑰匙編號對、亂數和來源對、真的有驗過本人（UV）、簽章對。
-async function verifyAssertion({ id, clientDataJSON, authenticatorData, signature }) {
-  const { webauthn } = await chrome.storage.local.get('webauthn');
+// credential 沒給就用存著的那把；換保護方式時拿剛建、還沒存的那把來核對。
+async function verifyAssertion({ id, clientDataJSON, authenticatorData, signature }, credential) {
+  const webauthn = credential || (await chrome.storage.local.get('webauthn')).webauthn;
   if (!webauthn) throw new Error(t('bg_webauthn_not_set_up'));
   if (id !== webauthn.id) throw new Error(t('bg_webauthn_unknown_key'));
   await consumeWebAuthnChallenge(clientDataJSON, 'webauthn.get');
@@ -415,6 +509,143 @@ async function verifyAssertion({ id, clientDataJSON, authenticatorData, signatur
     signature: b64urlToBytes(signature),
   });
   if (!ok) throw new Error(t('bg_webauthn_bad_signature'));
+}
+
+// ---- 保護方式：自訂密碼加密、系統驗證加密 ----
+// storage.local 的 vaultKeyLock：
+//   { mode: 'password', password: { kdf, iv, data } }                  vault 金鑰用自訂密碼加密
+//   { mode: 'hello', hello: { credentialId, prfSalt, iv, data } }       vault 金鑰用系統驗證吐出的 PRF 秘密值加密
+
+// 自訂密碼對了就把金鑰放進記憶體
+async function unlockWithPassword(password) {
+  const { vaultKeyLock } = await chrome.storage.local.get('vaultKeyLock');
+  if (!vaultKeyLock || !vaultKeyLock.password) throw new Error(t('bg_master_password_not_set'));
+  let keyB64;
+  try {
+    keyB64 = await unwrapWithPassword(String(password || ''), vaultKeyLock.password);
+  } catch {
+    // AES-GCM 密碼不對會直接解不開，丟給畫面的是「自訂密碼不對」
+    throw new Error(t('bg_master_password_wrong'));
+  }
+  await chrome.storage.session.set({ vaultKey: keyB64 });
+}
+
+// 系統驗證通過之後：金鑰不在記憶體的話（瀏覽器重開過），系統驗證加密用 PRF 秘密值解開。
+// 自訂密碼加密不管什麼時候都只能打自訂密碼，系統驗證解不開。
+async function unlockWithHello(prfB64url) {
+  const settings = await getSettings();
+  if (settings.lock.mode === 'password') throw new Error(t('bg_need_master_password'));
+  if (!isEncryptedMode(settings.lock.mode)) return;
+  const { vaultKey } = await chrome.storage.session.get('vaultKey');
+  if (vaultKey) return;
+  const { vaultKeyLock } = await chrome.storage.local.get('vaultKeyLock');
+  if (!vaultKeyLock || !vaultKeyLock.hello || !prfB64url) throw new Error(t('bg_hello_no_secret'));
+  let keyB64;
+  try {
+    keyB64 = await unwrapWithPrf(b64urlToBytes(prfB64url), vaultKeyLock.hello);
+  } catch {
+    // 秘密值不對多半是用了別把鑰匙（例如重新註冊過），丟給畫面的是「解不開」
+    throw new Error(t('bg_hello_wrong_secret'));
+  }
+  await chrome.storage.session.set({ vaultKey: keyB64 });
+}
+
+// 拿掉加密、關掉鎖定算「降低保護」，要再驗一次；改自訂密碼也要打舊的。
+function needsProof(current, target) {
+  if (current === target) return current === 'password';
+  if (target === 'off') return current !== 'off';
+  return false;
+}
+
+// 原本是自訂密碼加密就打自訂密碼，其他用系統驗證
+async function checkProof(current, proof) {
+  if (current === 'password') {
+    const { vaultKeyLock } = await chrome.storage.local.get('vaultKeyLock');
+    try {
+      await unwrapWithPassword(String((proof && proof.password) || ''), vaultKeyLock.password);
+    } catch {
+      throw new Error(t('bg_master_password_wrong'));
+    }
+    return;
+  }
+  if (!proof || !proof.assertion) throw new Error(t('bg_lock_needs_verify'));
+  await verifyAssertion(proof.assertion);
+}
+
+// 換保護方式。要拿得到目前的金鑰，所以只能在解鎖時叫。
+// setup.password：新的自訂密碼。setup.credential：系統驗證加密時，頁面剛建的系統驗證鑰匙。
+// setup.assertion：系統驗證加密時，用新鑰匙驗一次拿到的結果，裡面的 prf 是秘密值；setup.prfSalt 是要秘密值用的 salt。
+async function setLockMode({ mode, proof, setup, idleMinutes, onStartup }) {
+  if (!LOCK_MODES.includes(mode)) throw new Error(t('bg_lock_mode_unknown'));
+  setup = setup || {};
+  const settings = await getSettings();
+  const current = settings.lock.mode;
+  // 只鎖畫面留給 1.15.0 以前的舊設定照常用，不能新選
+  if (mode === 'screen' && current !== 'screen') throw new Error(t('bg_lock_mode_unknown'));
+  // 先做完所有檢查才動資料，中途失敗不會留下改一半的狀態
+  if (needsProof(current, mode)) await checkProof(current, proof);
+  if (isEncryptedMode(mode) && !(await getAutoBackupKey())) throw new Error(t('bg_lock_needs_backup_password'));
+  if (mode === 'password' && String(setup.password || '').length < MASTER_PASSWORD_MIN) {
+    throw new Error(t('bg_master_password_too_short', MASTER_PASSWORD_MIN));
+  }
+  if (mode === 'hello' && (!setup.credential || !setup.assertion || !setup.assertion.prf || !setup.prfSalt)) {
+    throw new Error(t('bg_hello_no_secret'));
+  }
+  const keyB64 = await currentVaultKeyB64();
+  const newCredential = mode === 'hello' && setup.credential ? await checkNewCredential(setup.credential) : null;
+  // 用新鑰匙驗一次：確定公鑰對得上，秘密值也真的是這把鑰匙吐出來的
+  if (mode === 'hello') await verifyAssertion(setup.assertion, newCredential);
+  const webauthn = newCredential || (await chrome.storage.local.get('webauthn')).webauthn;
+  if ((mode === 'screen' || mode === 'hello') && !webauthn) throw new Error(t('bg_webauthn_not_set_up'));
+
+  // 新鑰匙跟金鑰一起寫：寫一半失敗的話，系統驗證加密會變成鑰匙和加密過的金鑰對不上，再也解不開
+  const items = newCredential ? { webauthn: newCredential } : {};
+  if (isEncryptedMode(mode)) {
+    // 從沒加密改成加密時換一把新金鑰：舊的 keyB64 可能還留在瀏覽器的資料檔裡，不能讓它解得開之後的 vault
+    const newKeyB64 = isEncryptedMode(current) ? keyB64 : bytesToB64(crypto.getRandomValues(new Uint8Array(32)));
+    const vaultKeyLock = { mode };
+    if (mode === 'password') {
+      vaultKeyLock.password = await wrapWithPassword(String(setup.password), newKeyB64, BACKUP_ITERATIONS);
+    } else {
+      const wrapped = await wrapWithPrf(b64urlToBytes(setup.assertion.prf), newKeyB64);
+      vaultKeyLock.hello = { credentialId: webauthn.id, prfSalt: setup.prfSalt, iv: wrapped.iv, data: wrapped.data };
+    }
+    // 自訂密碼加密只用自訂密碼，從系統驗證加密或只鎖畫面改過來時，原本的系統驗證鑰匙一起刪掉
+    await replaceVaultKey(newKeyB64, { ...items, vaultKeyLock }, mode === 'password' ? ['keyB64', 'webauthn'] : ['keyB64']);
+  } else {
+    await replaceVaultKey(keyB64, { ...items, keyB64 }, mode === 'off' ? ['vaultKeyLock', 'webauthn'] : ['vaultKeyLock']);
+    await chrome.storage.session.remove('vaultKey');
+  }
+
+  const next = { ...settings.lock, mode, enabled: mode !== 'off' };
+  if (idleMinutes != null) next.idleMinutes = Math.min(Math.max(parseInt(idleMinutes, 10) || 10, 1), 720);
+  if (onStartup != null) next.onStartup = !!onStartup;
+  await setSettings({ lock: next });
+  await chrome.storage.session.set({ locked: false });
+  applyIdleInterval();
+  refreshActiveBadges();
+  await refreshAutoBackupReadyLater();
+  return lockStatus();
+}
+
+// 忘了自訂密碼、系統驗證壞了：vault 解不開，只能整個清掉，再用備份檔匯入。設定和自動備份的金鑰留著。
+function resetVault() {
+  const run = writeQueue.then(async () => {
+    await chrome.storage.local.remove(['vault', 'vaultKeyLock', 'keyB64', 'webauthn', 'autoBackupReady']);
+    await chrome.storage.session.remove(['vaultKey', 'locked']);
+    keyPromise = null;
+    const settings = await getSettings();
+    await setSettings({ lock: { ...settings.lock, mode: 'off', enabled: false } });
+  });
+  writeQueue = run.catch(() => {
+    // 失敗的那次已經往外拋給呼叫者了，這裡只是不要讓佇列卡住。
+  });
+  return run;
+}
+
+// 換保護方式、清掉資料、打自訂密碼只給擴充功能自己的頁面叫，網頁裡的 content.js 不行
+function requireExtensionPage(sender) {
+  if (!String((sender && sender.url) || '').startsWith(extensionOrigin() + '/')) throw new Error(t('bg_extension_page_only'));
 }
 
 async function applyIdleInterval() {
@@ -439,11 +670,12 @@ applyIdleInterval();
 
 
 // 1.5 以前的鎖定是用 PIN。舊的 PIN 紀錄清掉；只有 PIN、沒有系統驗證鑰匙的鎖定直接關掉，不然會被鎖在外面。
+// 自訂密碼加密可以沒有系統驗證鑰匙，不能關。
 async function migrateLock() {
   const { pin, webauthn } = await chrome.storage.local.get(['pin', 'webauthn']);
   if (pin) await chrome.storage.local.remove('pin');
   const settings = await getSettings();
-  if (settings.lock.enabled && !webauthn) {
+  if (settings.lock.mode === 'screen' && !webauthn) {
     await setSettings({ lock: { ...settings.lock, enabled: false } });
     await chrome.storage.session.set({ locked: false });
   }
@@ -485,16 +717,22 @@ const LOCK_REQUIRED = new Set([
   'clickRules.reorder',
   'clickRules.timing',
   'lock.settings',
-  'webauthn.register',
+  'lock.setMode',
   'update.setAuto',
-  // lock.disable 和 webauthn.unlock 自己會核對系統驗證結果，鎖住時也要能叫
+  // webauthn.unlock 自己會核對系統驗證結果，lock.unlockPassword 會核對自訂密碼，鎖住時也要能叫。
+  // lock.reset 是解不開時清掉重來，也要能叫。
 ]);
+
+// 自動備份會帶這幾項設定，改了要重算事先加密好的備份內容
+const BACKUP_SETTING_KEYS = ['clickRules', 'neverSave', 'generator'];
 
 async function setSettings(patch) {
   const current = await getSettings();
   const next = { ...current, ...patch };
   if (patch.generator) next.generator = normalizeGeneratorOptions({ ...current.generator, ...patch.generator });
   await chrome.storage.local.set({ settings: next });
+  // 不等它算完：setSettings 可能在寫入佇列裡被叫到，等的話會卡住佇列
+  if (BACKUP_SETTING_KEYS.some((k) => k in patch)) refreshAutoBackupReadyLater();
   return next;
 }
 
@@ -870,6 +1108,9 @@ async function autoBackupInfo() {
 // 1.14 以前把自動備份密碼存在 vault 裡。升級後用那組密碼產生 autoBackupKey，再把密碼刪掉，使用者不用重設。
 // 背景程式每次醒來都會跑一次。讀 autoBackupKey 之前要先等這裡做完，不然自動備份會以為還沒設密碼。
 async function migrateAutoBackupPassword() {
+  // 選了加密的保護方式之前一定已經轉換過，而且鎖住時讀不到 vault
+  const { vaultKeyLock } = await chrome.storage.local.get('vaultKeyLock');
+  if (vaultKeyLock) return;
   const vault = await loadVault();
   const password = vault.meta.autoBackupPassword;
   if (!password) return;
@@ -894,6 +1135,35 @@ async function getAutoBackupKey() {
   await autoBackupKeyMigrated;
   const { autoBackupKey } = await chrome.storage.local.get('autoBackupKey');
   return autoBackupKey || null;
+}
+
+// 加密的保護方式鎖住時讀不到 vault，自動備份改存這份事先加密好的內容 autoBackupReady：{ content, count, signature }。
+// vault 或備份會帶的設定改了就重算，改得到就代表那時候是解鎖狀態。沒加密的保護方式用不到，清掉。
+// 算失敗不能讓存密碼跟著失敗，所以這裡只印警告不往外丟；到時間拿不到這份內容，自動備份會記一筆失敗。
+async function refreshAutoBackupReady(vault) {
+  try {
+    const settings = await getSettings();
+    const { autoBackupKey, autoBackupReady } = await chrome.storage.local.get(['autoBackupKey', 'autoBackupReady']);
+    if (!isEncryptedMode(settings.lock.mode)) {
+      if (autoBackupReady) await chrome.storage.local.remove('autoBackupReady');
+      return;
+    }
+    // 不能用 getAutoBackupKey：它會等升級轉換，升級轉換在寫入佇列裡又會等這裡，互相等就卡死了
+    if (!autoBackupKey) return;
+    const v = vault || (await loadVault());
+    const { content, count } = await exportAutoBackup(autoBackupKey, v.entries, settings);
+    const signature = await entriesSignature(v.entries, settings.clickRules);
+    await chrome.storage.local.set({ autoBackupReady: { content, count, signature } });
+  } catch (err) {
+    if (!err.locked) console.warn('[密碼小管家] 準備自動備份的內容失敗', err); // i18n-ignore：給開發者看的
+  }
+}
+
+// 從寫入佇列外面叫：排在正在寫的 vault 後面，才不會拿舊的 vault 算完再蓋掉新的
+function refreshAutoBackupReadyLater() {
+  const run = writeQueue.then(() => refreshAutoBackupReady());
+  writeQueue = run;
+  return run;
 }
 
 // 備份跑的這幾秒內使用者可能改了設定，寫回前重新讀一次，只蓋這次要改的欄位
@@ -933,6 +1203,8 @@ async function setAutoBackup({ enabled, every, time, weekday, folder, password }
     await autoBackupKeyMigrated;
     await chrome.storage.local.set({ autoBackupKey: await createBackupKeyPair(String(password), BACKUP_ITERATIONS) });
     await forgetOldBackupPassword();
+    // 事先加密好的內容裡帶的是舊的私鑰，要用新的重算
+    await refreshAutoBackupReadyLater();
   }
   if (enabled != null) {
     if (enabled && !(await getAutoBackupKey())) throw new Error(t('bg_enable_needs_password'));
@@ -958,6 +1230,27 @@ function runAutoBackup(force) {
   return run;
 }
 
+// 備份內容從哪來：讀得到 vault 就當場加密；加密的保護方式鎖著時，用事先加密好的 autoBackupReady。兩種都沒有回傳 null。
+async function autoBackupSource(backupKey, settings) {
+  try {
+    const vault = await loadVault();
+    return {
+      count: vault.entries.length,
+      signature: await entriesSignature(vault.entries, settings.clickRules),
+      build: () => exportAutoBackup(backupKey, vault.entries, settings),
+    };
+  } catch (err) {
+    if (!err.locked) throw err;
+  }
+  const { autoBackupReady } = await chrome.storage.local.get('autoBackupReady');
+  if (!autoBackupReady) return null;
+  return {
+    count: autoBackupReady.count,
+    signature: autoBackupReady.signature,
+    build: async () => ({ content: autoBackupReady.content, count: autoBackupReady.count }),
+  };
+}
+
 // 過了指定時間、而且上次備份之後帳號有變，才真的寫檔。
 // force=true 是「立即備份」：不看時間也不看有沒有變，紀錄記成 now，算手動。
 async function autoBackupOnce(force) {
@@ -974,18 +1267,22 @@ async function autoBackupOnce(force) {
     await patchAutoBackup({ lastRunAt: now, lastResult: 'failed', lastError: t('bg_auto_backup_no_password') });
     throw new Error(t('bg_auto_backup_no_password'));
   }
-  const vault = await loadVault();
-  if (!vault.entries.length) {
+  const source = await autoBackupSource(backupKey, settings);
+  if (!source) {
+    await patchAutoBackup({ lastRunAt: now, lastResult: 'failed', lastError: t('bg_auto_backup_not_ready') });
+    throw new Error(t('bg_auto_backup_not_ready'));
+  }
+  if (!source.count) {
     await patchAutoBackup({ lastRunAt: now, lastResult: 'empty', lastError: '' });
     return { ran: false, reason: 'empty' };
   }
-  const signature = await entriesSignature(vault.entries, settings.clickRules);
+  const signature = source.signature;
   if (!force && signature === ab.lastSignature) {
     await patchAutoBackup({ lastRunAt: now, lastResult: 'unchanged', lastError: '' });
     return { ran: false, reason: 'no-change' };
   }
   try {
-    const { content, count } = await exportAutoBackup(backupKey, vault.entries, settings);
+    const { content, count } = await source.build();
     const stamp = backupStamp(true);
     const name = force ? t('bg_backup_file_now', stamp) : t('bg_backup_file_auto', stamp);
     const filename = safeFolder(ab.folder) + '/' + name + '.pkbak';
@@ -1742,13 +2039,25 @@ const handlers = {
     return lockStatus();
   },
 
-  // 停用要先通過一次系統驗證，通過就把鑰匙一起清掉
-  async 'lock.disable'(assertion) {
-    await verifyAssertion(assertion);
-    const settings = await getSettings();
-    await setSettings({ lock: { ...settings.lock, enabled: false } });
-    await chrome.storage.local.remove('webauthn');
+  async 'lock.setMode'(data, sender) {
+    requireExtensionPage(sender);
+    return setLockMode(data);
+  },
+
+  // 自訂密碼加密時打自訂密碼解鎖，管理頁驗證身分也用這個。鎖住時也要能叫。
+  async 'lock.unlockPassword'({ password }, sender) {
+    requireExtensionPage(sender);
+    await unlockWithPassword(password);
     await setLocked(false);
+    return lockStatus();
+  },
+
+  // 忘了自訂密碼或系統驗證壞了，清掉資料重來。鎖住時也要能叫，沒加密的不用清。
+  async 'lock.reset'(_, sender) {
+    requireExtensionPage(sender);
+    if (!isEncryptedMode((await getSettings()).lock.mode)) throw new Error(t('bg_lock_reset_not_needed'));
+    await resetVault();
+    refreshActiveBadges();
     return lockStatus();
   },
 
@@ -1767,25 +2076,9 @@ const handlers = {
     return { challenge: await issueWebAuthnChallenge(), rpId: chrome.runtime.id };
   },
 
-  // 管理頁建好鑰匙後把公鑰交過來存，存好就等於啟用工具鎖定
-  async 'webauthn.register'({ id, alg, publicKey, clientDataJSON, transports, idleMinutes, onStartup }) {
-    if (!id || !publicKey || (alg !== -7 && alg !== -257)) throw new Error(t('bg_key_data_incomplete'));
-    await consumeWebAuthnChallenge(clientDataJSON, 'webauthn.create');
-    const list = Array.isArray(transports) ? transports.filter((x) => typeof x === 'string').slice(0, 5) : [];
-    await chrome.storage.local.set({ webauthn: { id, alg, publicKey, transports: list, createdAt: Date.now() } });
-    const settings = await getSettings();
-    const next = { ...settings.lock, enabled: true };
-    if (idleMinutes != null) next.idleMinutes = Math.min(Math.max(parseInt(idleMinutes, 10) || 10, 1), 720);
-    if (onStartup != null) next.onStartup = !!onStartup;
-    await setSettings({ lock: next });
-    await chrome.storage.session.set({ locked: false });
-    applyIdleInterval();
-    refreshActiveBadges();
-    return lockStatus();
-  },
-
   async 'webauthn.unlock'(assertion) {
     await verifyAssertion(assertion);
+    await unlockWithHello(assertion.prf);
     await setLocked(false);
     return lockStatus();
   },
@@ -2062,11 +2355,7 @@ const handlers = {
 
 async function dispatch(msg, sender) {
   await i18nReady;
-  if (LOCK_REQUIRED.has(msg.type) && (await isLocked())) {
-    const err = new Error(t('bg_locked'));
-    err.locked = true;
-    throw err;
-  }
+  if (LOCK_REQUIRED.has(msg.type) && (await isLocked())) throw lockedError();
   return handlers[msg.type](msg, sender);
 }
 

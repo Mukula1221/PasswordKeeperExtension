@@ -1,7 +1,8 @@
 // 加解密工具。background.js 用 importScripts 載入，所以這裡的函式都是全域的。
 // 錯誤訊息用 i18n.js 的 t()，載入這個檔的地方也要載入 i18n.js。
-// 平常存在瀏覽器裡的那份，金鑰是裝好擴充功能時隨機產生、存在 storage.local 裡的，不是主密碼推出來的。
-// 這代表拿得到瀏覽器設定檔的人還是解得開，這層加密只擋「直接翻設定檔看到明文」。
+// 平常存在瀏覽器裡的那份，金鑰是裝好擴充功能時隨機產生的。
+// 保護方式沒選加密時，金鑰直接存在 storage.local，拿得到瀏覽器設定檔的人解得開，這層加密只擋「直接翻設定檔看到明文」。
+// 選了自訂密碼加密或系統驗證加密，金鑰要用自訂密碼或系統驗證吐出的秘密值加密後才存，見 wrapWithPassword、wrapWithPrf。
 // 加密備份檔不一樣：金鑰是從備份密碼推出來的（deriveKey），沒有密碼打不開。
 // 自動備份不存備份密碼，改用公鑰加密：擴充功能只留公鑰和用備份密碼加密過的私鑰，見 createBackupKeyPair。
 
@@ -119,6 +120,43 @@ async function sealToPublicKey(publicKeyB64, text) {
 async function openSealed(privateKey, sealed) {
   const ephemeral = await crypto.subtle.importKey('raw', b64ToBytes(sealed.ephemeralPublicKey), ECDH_P256, false, []);
   return decrypt(await sealKey(privateKey, ephemeral, b64ToBytes(sealed.salt)), sealed);
+}
+
+// ---- vault 金鑰的加密存法 ----
+// 金鑰本身是 base64 字串，加密後是 { iv, data }。
+
+async function wrapWithPassword(password, keyB64, iterations) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const locked = await encrypt(await deriveKey(password, salt, iterations), keyB64);
+  return { kdf: { name: 'PBKDF2', hash: 'SHA-256', iterations, salt: bytesToB64(salt) }, iv: locked.iv, data: locked.data };
+}
+
+// 密碼不對時 AES-GCM 會直接丟錯，呼叫的地方自己決定要顯示什麼
+async function unwrapWithPassword(password, wrapped) {
+  return decrypt(await deriveKey(password, b64ToBytes(wrapped.kdf.salt), wrapped.kdf.iterations), wrapped);
+}
+
+// 改了這串，之前用系統驗證加密的金鑰就解不開
+const PRF_INFO = new TextEncoder().encode('pk-vault prf v1');
+
+// WebAuthn PRF 吐出來的秘密值是 32 bytes 的亂數。同一把鑰匙、同一個 salt，每次吐出來都一樣，所以可以拿來當金鑰。
+async function prfKey(prfBytes) {
+  const base = await crypto.subtle.importKey('raw', prfBytes, 'HKDF', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name: 'HKDF', hash: 'SHA-256', salt: new Uint8Array(0), info: PRF_INFO },
+    base,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+
+async function wrapWithPrf(prfBytes, keyB64) {
+  return encrypt(await prfKey(prfBytes), keyB64);
+}
+
+async function unwrapWithPrf(prfBytes, wrapped) {
+  return decrypt(await prfKey(prfBytes), wrapped);
 }
 
 // ---- Windows Hello（WebAuthn）的簽章驗證 ----
