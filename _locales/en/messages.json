@@ -249,6 +249,9 @@
     "message": "Unlock with $1",
     "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
   },
+  "pop_unlock_password": {
+    "message": "Unlock with custom password"
+  },
   "pop_copied": {
     "message": "Copied"
   },
@@ -302,6 +305,9 @@
     "message": "Verify with $1 in the window that appears",
     "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
   },
+  "unl_password_title": {
+    "message": "Enter the custom password to unlock"
+  },
   "wa_no_response": {
     "message": "The extension didn't respond"
   },
@@ -323,6 +329,12 @@
   },
   "wa_not_set_up": {
     "message": "System verification isn't set up yet"
+  },
+  "wa_no_prf": {
+    "message": "$1 on this computer can't provide the secret needed for encryption. Use custom password encryption instead."
+  },
+  "wa_prf_unstable": {
+    "message": "$1 returned a different secret each time, so it can't be used for encryption. Use custom password encryption instead."
   },
   "opt_page_title": {
     "message": "Password Keeper – Manage passwords",
@@ -356,6 +368,42 @@
   },
   "opt_lock_broken": {
     "message": "The lock settings are broken: the system verification key can't be found. Remove and reinstall the extension, then import your backup."
+  },
+  "opt_lock_unlock": {
+    "message": "Unlock"
+  },
+  "opt_lock_forgot": {
+    "message": "Forgot the custom password, or system verification isn't working?"
+  },
+  "opt_lock_reset_title": {
+    "message": "Clear the passwords on this computer?"
+  },
+  "opt_lock_reset_text": {
+    "message": "If you can't unlock, the only option is to clear them, then restore with \"Import encrypted backup\" in the Backup tab. This can't be undone."
+  },
+  "opt_lock_reset_confirm": {
+    "message": "Clear"
+  },
+  "opt_lock_reset_next": {
+    "message": "Continue"
+  },
+  "opt_lock_reset_again_title": {
+    "message": "Last check: clear the passwords on this computer"
+  },
+  "opt_lock_reset_last_backup": {
+    "message": "Your last backup was $1. After clearing, restore from that backup. Passwords added or changed since then will be lost."
+  },
+  "opt_lock_reset_no_backup": {
+    "message": "There's no backup record on this computer, so your passwords can't be recovered after clearing."
+  },
+  "opt_lock_reset_word": {
+    "message": "delete"
+  },
+  "opt_type_to_confirm": {
+    "message": "Type \"$1\" to continue"
+  },
+  "opt_lock_reset_done": {
+    "message": "Cleared. Click \"Import encrypted backup\" and choose a backup file to restore."
   },
   "opt_no_response": {
     "message": "The extension didn't respond"
@@ -1327,22 +1375,106 @@
     "description": "Section title, followed by 'On' or 'Off'."
   },
   "opt_lock_block_help": {
-    "message": "Keep others from seeing your passwords while you're away. Once locked, you need to pass system verification to use it."
+    "message": "Keep others from seeing your passwords while you're away. You can also encrypt the passwords on your disk."
   },
   "opt_lock_block_tip": {
-    "message": "The popup, manager page, autofill on web pages, keyboard shortcut, and browser sign-in dialogs all require verification first.\nWindows uses Windows Hello, Mac uses Touch ID, and other systems use a security key or phone. There's no backup PIN.\nThe manager page asks for verification every time you open it.\nLocking doesn't encrypt the data on your disk.\nIf you move the extension's folder, turn it on again."
+    "message": "While locked, the popup, manager page, autofill on web pages, keyboard shortcut, and browser sign-in dialogs all need to be unlocked first.\nIf you move the extension's folder, set this up again."
   },
-  "opt_lock_enable": {
-    "message": "Turn on",
-    "description": "Checkbox label before the page knows which verification method is used."
+  "opt_lock_mode_title": {
+    "message": "Protection method"
   },
-  "opt_lock_enable_with": {
-    "message": "Turn on (verify with $1)",
-    "description": "Checkbox label. $1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  "opt_lock_mode_tip": {
+    "message": "Safe if the data is copied: someone who copies the browser's data folder still can't read your passwords.\nWith encryption on, if you forget the custom password or system verification stops working, you can only restore from a backup file.\nBoth encryption methods need an auto backup password first."
   },
-  "opt_lock_state_on": {
-    "message": "On",
-    "description": "Shown next to the App lock section title."
+  "opt_lock_mode_off": {
+    "message": "Off"
+  },
+  "opt_lock_mode_password": {
+    "message": "Encrypt with custom password"
+  },
+  "opt_lock_mode_hello": {
+    "message": "Encrypt with system verification"
+  },
+  "opt_lock_mode_screen_with": {
+    "message": "Lock screen only, unlock with $1"
+  },
+  "opt_lock_mode_hello_with": {
+    "message": "Encrypt with $1"
+  },
+  "opt_lock_legacy_screen": {
+    "message": "You're using the old \"Lock screen only\" setting, so passwords on your disk aren't encrypted. Choose one of the options below."
+  },
+  "opt_hello_step_create": {
+    "message": "$1, step 1 of 2: creating the encryption key"
+  },
+  "opt_hello_step_verify": {
+    "message": "$1, step 2 of 2: checking that it can unlock"
+  },
+  "opt_lock_guard_peek": {
+    "message": "Hidden from people nearby"
+  },
+  "opt_lock_guard_copy": {
+    "message": "Safe if the data is copied"
+  },
+  "opt_lock_guard_yes": {
+    "message": "Yes"
+  },
+  "opt_lock_guard_no": {
+    "message": "No"
+  },
+  "opt_lock_how_off": {
+    "message": "No unlocking needed"
+  },
+  "opt_lock_how_password": {
+    "message": "Always unlock with the custom password. One more password to remember."
+  },
+  "opt_lock_how_hello": {
+    "message": "Unlock with $1. Nothing to remember."
+  },
+  "opt_lock_recommended": {
+    "message": "Recommended"
+  },
+  "opt_lock_change_password": {
+    "message": "Change custom password"
+  },
+  "opt_lock_info_no_hello": {
+    "message": "This browser doesn't support system verification, so only custom password encryption is available."
+  },
+  "opt_lock_mode_changed": {
+    "message": "Protection method changed to \"$1\""
+  },
+  "opt_lock_mode_failed": {
+    "message": "Couldn't change it: $1"
+  },
+  "opt_lock_needs_backup_password": {
+    "message": "Set an auto backup password in the Backup tab first."
+  },
+  "opt_lock_downgrade_title": {
+    "message": "Turn off encryption?"
+  },
+  "opt_lock_downgrade_text": {
+    "message": "After this, anyone with access to this computer can read the passwords on your disk."
+  },
+  "opt_lock_downgrade_confirm": {
+    "message": "Turn off encryption"
+  },
+  "opt_master_password": {
+    "message": "Custom password"
+  },
+  "opt_master_pw_title": {
+    "message": "Set a custom password"
+  },
+  "opt_master_pw_hint": {
+    "message": "At least $1 characters. You'll enter it after the browser restarts. If you forget it, you can only restore from a backup file."
+  },
+  "opt_master_pw_verify_title": {
+    "message": "Enter your current custom password"
+  },
+  "opt_master_pw_new_title": {
+    "message": "New custom password"
+  },
+  "opt_master_pw_changed": {
+    "message": "Custom password changed"
   },
   "opt_lock_state_off": {
     "message": "Off",
@@ -1364,34 +1496,6 @@
   },
   "opt_lock_manual_help": {
     "message": "You can lock it manually anytime with \"Lock\" at the top right of the popup."
-  },
-  "opt_lock_unsupported": {
-    "message": "This browser doesn't support system verification, so App lock isn't available."
-  },
-  "opt_lock_info_on": {
-    "message": "On. When locked, verify with $1 to use it.",
-    "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
-  },
-  "opt_lock_info_off": {
-    "message": "Off. Turning it on asks you to verify with $1 once.",
-    "description": "$1 = 'Windows Hello' or 'Touch ID'."
-  },
-  "opt_lock_info_no_platform": {
-    "message": "This computer has no built-in authenticator. When you turn it on, the browser asks whether to use a security key or a phone."
-  },
-  "opt_lock_turned_on": {
-    "message": "App lock turned on"
-  },
-  "opt_lock_turned_off": {
-    "message": "App lock turned off"
-  },
-  "opt_lock_enable_failed": {
-    "message": "Couldn't turn it on: $1",
-    "description": "$1 = error message."
-  },
-  "opt_lock_disable_failed": {
-    "message": "Couldn't turn it off: $1",
-    "description": "$1 = error message."
   },
   "opt_block_fill": {
     "message": "Autofill",
@@ -2171,6 +2275,42 @@
   "bg_locked": {
     "message": "Locked. Click the lock icon on the toolbar to verify it's you.",
     "description": "The lock icon is this extension's icon on the browser toolbar."
+  },
+  "bg_master_password_not_set": {
+    "message": "No custom password is set"
+  },
+  "bg_master_password_wrong": {
+    "message": "Wrong custom password"
+  },
+  "bg_master_password_too_short": {
+    "message": "The custom password must be at least $1 characters"
+  },
+  "bg_need_master_password": {
+    "message": "With custom password encryption, unlock with the custom password."
+  },
+  "bg_hello_no_secret": {
+    "message": "System verification didn't provide the secret needed for encryption"
+  },
+  "bg_hello_wrong_secret": {
+    "message": "The secret from system verification can't unlock your passwords. The key may have been replaced."
+  },
+  "bg_lock_needs_verify": {
+    "message": "Verify your identity before changing this"
+  },
+  "bg_lock_mode_unknown": {
+    "message": "Unknown protection method"
+  },
+  "bg_lock_needs_backup_password": {
+    "message": "Set an auto backup password in the Backup tab before choosing encryption"
+  },
+  "bg_lock_reset_not_needed": {
+    "message": "Nothing is encrypted, so there's no need to clear your data"
+  },
+  "bg_extension_page_only": {
+    "message": "Only Password Keeper's own pages can do this"
+  },
+  "bg_auto_backup_not_ready": {
+    "message": "Locked, and no backup content is ready yet. Unlock and try again."
   },
   "bg_unknown_message": {
     "message": "Unknown message: $1",

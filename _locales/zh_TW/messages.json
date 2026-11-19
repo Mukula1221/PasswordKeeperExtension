@@ -249,6 +249,9 @@
     "message": "用 $1 解鎖",
     "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
   },
+  "pop_unlock_password": {
+    "message": "輸入自訂密碼解鎖"
+  },
   "pop_copied": {
     "message": "已複製"
   },
@@ -302,6 +305,9 @@
     "message": "請在 $1 視窗完成驗證",
     "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
   },
+  "unl_password_title": {
+    "message": "輸入自訂密碼解鎖"
+  },
   "wa_no_response": {
     "message": "背景程式沒有回應"
   },
@@ -323,6 +329,12 @@
   },
   "wa_not_set_up": {
     "message": "還沒設定系統驗證"
+  },
+  "wa_no_prf": {
+    "message": "這台電腦的 $1 拿不到加密用的秘密值，請改用自訂密碼加密"
+  },
+  "wa_prf_unstable": {
+    "message": "$1 兩次給的秘密值不一樣，不能用來加密，請改用自訂密碼加密"
   },
   "opt_page_title": {
     "message": "密碼小管家 – 管理密碼",
@@ -356,6 +368,42 @@
   },
   "opt_lock_broken": {
     "message": "鎖定設定壞了：找不到系統驗證的鑰匙。請移除擴充功能重裝，再用備份匯入。"
+  },
+  "opt_lock_unlock": {
+    "message": "解鎖"
+  },
+  "opt_lock_forgot": {
+    "message": "忘了自訂密碼或系統驗證不能用？"
+  },
+  "opt_lock_reset_title": {
+    "message": "清掉這台電腦的密碼？"
+  },
+  "opt_lock_reset_text": {
+    "message": "解不開就只能清掉，再到「備份」分頁用「匯入加密備份」還原。清掉後沒辦法復原。"
+  },
+  "opt_lock_reset_confirm": {
+    "message": "清掉"
+  },
+  "opt_lock_reset_next": {
+    "message": "繼續"
+  },
+  "opt_lock_reset_again_title": {
+    "message": "最後確認：清掉這台電腦的密碼"
+  },
+  "opt_lock_reset_last_backup": {
+    "message": "最近一次備份是 $1。清掉後用那份備份還原，之後新增或改過的密碼會不見。"
+  },
+  "opt_lock_reset_no_backup": {
+    "message": "這台電腦沒有備份紀錄，清掉之後就救不回來。"
+  },
+  "opt_lock_reset_word": {
+    "message": "清除"
+  },
+  "opt_type_to_confirm": {
+    "message": "輸入「$1」才能繼續"
+  },
+  "opt_lock_reset_done": {
+    "message": "已清掉。請按「匯入加密備份」選備份檔還原。"
   },
   "opt_no_response": {
     "message": "背景程式沒有回應"
@@ -1327,22 +1375,106 @@
     "description": "Section title, followed by 'On' or 'Off'."
   },
   "opt_lock_block_help": {
-    "message": "離開座位時不讓別人看密碼。鎖上後要通過系統驗證才能用。"
+    "message": "離開座位時不讓別人看密碼，也可以把硬碟上的密碼加密。"
   },
   "opt_lock_block_tip": {
-    "message": "小視窗、管理頁、網頁自動填入、快捷鍵、瀏覽器驗證視窗都要先驗證。\nWindows 用 Windows Hello，Mac 用 Touch ID，其他系統用安全金鑰或手機，沒有備用的 PIN。\n管理頁每次打開都要驗證。\n鎖定不會加密硬碟上的資料。\n擴充功能的資料夾搬家後要重新啟用。"
+    "message": "鎖住時，小視窗、管理頁、網頁自動填入、快捷鍵、瀏覽器驗證視窗都要先解鎖。\n擴充功能的資料夾搬家後要重新設定。"
   },
-  "opt_lock_enable": {
-    "message": "啟用",
-    "description": "Checkbox label before the page knows which verification method is used."
+  "opt_lock_mode_title": {
+    "message": "保護方式"
   },
-  "opt_lock_enable_with": {
-    "message": "啟用，用 $1 驗證",
-    "description": "Checkbox label. $1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  "opt_lock_mode_tip": {
+    "message": "防資料被拷走：有人拷走瀏覽器的資料夾，也讀不到密碼。\n加密後，忘了自訂密碼或系統驗證不能用，只能用備份檔還原。\n兩種加密都要先設好自動備份密碼。"
   },
-  "opt_lock_state_on": {
-    "message": "已啟用",
-    "description": "Shown next to the App lock section title."
+  "opt_lock_mode_off": {
+    "message": "關閉"
+  },
+  "opt_lock_mode_password": {
+    "message": "自訂密碼加密"
+  },
+  "opt_lock_mode_hello": {
+    "message": "系統驗證加密"
+  },
+  "opt_lock_mode_screen_with": {
+    "message": "只鎖畫面，用 $1 解鎖"
+  },
+  "opt_lock_mode_hello_with": {
+    "message": "$1 加密"
+  },
+  "opt_lock_legacy_screen": {
+    "message": "目前是舊版的「只鎖畫面」，硬碟上的密碼沒有加密，請改選下面一種。"
+  },
+  "opt_hello_step_create": {
+    "message": "第 1 次 $1（共 2 次）：建立加密用的鑰匙"
+  },
+  "opt_hello_step_verify": {
+    "message": "第 2 次 $1（共 2 次）：確認之後解得開"
+  },
+  "opt_lock_guard_peek": {
+    "message": "防旁人偷看"
+  },
+  "opt_lock_guard_copy": {
+    "message": "防資料被拷走"
+  },
+  "opt_lock_guard_yes": {
+    "message": "有"
+  },
+  "opt_lock_guard_no": {
+    "message": "沒有"
+  },
+  "opt_lock_how_off": {
+    "message": "不用解鎖"
+  },
+  "opt_lock_how_password": {
+    "message": "解鎖都打自訂密碼，要多記一組密碼"
+  },
+  "opt_lock_how_hello": {
+    "message": "用 $1 解鎖，不用記密碼"
+  },
+  "opt_lock_recommended": {
+    "message": "建議"
+  },
+  "opt_lock_change_password": {
+    "message": "更改自訂密碼"
+  },
+  "opt_lock_info_no_hello": {
+    "message": "這個瀏覽器不支援系統驗證，只能選自訂密碼加密。"
+  },
+  "opt_lock_mode_changed": {
+    "message": "保護方式改成「$1」"
+  },
+  "opt_lock_mode_failed": {
+    "message": "沒改成功：$1"
+  },
+  "opt_lock_needs_backup_password": {
+    "message": "先到「備份」分頁設定自動備份密碼。"
+  },
+  "opt_lock_downgrade_title": {
+    "message": "改成不加密？"
+  },
+  "opt_lock_downgrade_text": {
+    "message": "改了之後，拿到這台電腦的人就讀得到硬碟上的密碼。"
+  },
+  "opt_lock_downgrade_confirm": {
+    "message": "改成不加密"
+  },
+  "opt_master_password": {
+    "message": "自訂密碼"
+  },
+  "opt_master_pw_title": {
+    "message": "設定自訂密碼"
+  },
+  "opt_master_pw_hint": {
+    "message": "至少 $1 個字。瀏覽器重開後要打這組密碼，忘了只能用備份檔還原。"
+  },
+  "opt_master_pw_verify_title": {
+    "message": "輸入目前的自訂密碼"
+  },
+  "opt_master_pw_new_title": {
+    "message": "新的自訂密碼"
+  },
+  "opt_master_pw_changed": {
+    "message": "自訂密碼已更改"
   },
   "opt_lock_state_off": {
     "message": "未啟用",
@@ -1364,34 +1496,6 @@
   },
   "opt_lock_manual_help": {
     "message": "小視窗右上角的「鎖定」可以隨時手動鎖上。"
-  },
-  "opt_lock_unsupported": {
-    "message": "這個瀏覽器不支援系統驗證，沒辦法用工具鎖定。"
-  },
-  "opt_lock_info_on": {
-    "message": "已啟用。鎖住時要用 $1 驗證才能用。",
-    "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
-  },
-  "opt_lock_info_off": {
-    "message": "尚未啟用。啟用時會跳一次 $1 驗證。",
-    "description": "$1 = 'Windows Hello' or 'Touch ID'."
-  },
-  "opt_lock_info_no_platform": {
-    "message": "這台電腦沒有內建的驗證器，啟用時瀏覽器會問你要用安全金鑰還是手機。"
-  },
-  "opt_lock_turned_on": {
-    "message": "工具鎖定已啟用"
-  },
-  "opt_lock_turned_off": {
-    "message": "工具鎖定已停用"
-  },
-  "opt_lock_enable_failed": {
-    "message": "啟用失敗：$1",
-    "description": "$1 = error message."
-  },
-  "opt_lock_disable_failed": {
-    "message": "停用失敗：$1",
-    "description": "$1 = error message."
   },
   "opt_block_fill": {
     "message": "填入",
@@ -2171,6 +2275,42 @@
   "bg_locked": {
     "message": "已鎖定，先到工具列的鎖頭圖示驗證身分",
     "description": "The lock icon is this extension's icon on the browser toolbar."
+  },
+  "bg_master_password_not_set": {
+    "message": "還沒設定自訂密碼"
+  },
+  "bg_master_password_wrong": {
+    "message": "自訂密碼不對"
+  },
+  "bg_master_password_too_short": {
+    "message": "自訂密碼至少 $1 個字"
+  },
+  "bg_need_master_password": {
+    "message": "自訂密碼加密要打自訂密碼解鎖"
+  },
+  "bg_hello_no_secret": {
+    "message": "系統驗證沒有給加密用的秘密值"
+  },
+  "bg_hello_wrong_secret": {
+    "message": "系統驗證給的秘密值解不開密碼，可能換過鑰匙"
+  },
+  "bg_lock_needs_verify": {
+    "message": "要先驗證身分才能改"
+  },
+  "bg_lock_mode_unknown": {
+    "message": "不認得這種保護方式"
+  },
+  "bg_lock_needs_backup_password": {
+    "message": "先到「備份」分頁設定自動備份密碼，才能選加密"
+  },
+  "bg_lock_reset_not_needed": {
+    "message": "沒有加密，不用清掉資料"
+  },
+  "bg_extension_page_only": {
+    "message": "只有密碼小管家自己的頁面可以做這件事"
+  },
+  "bg_auto_backup_not_ready": {
+    "message": "已鎖定，而且還沒有可以備份的內容。解鎖後再試一次"
   },
   "bg_unknown_message": {
     "message": "不認得的訊息：$1",

@@ -4,6 +4,59 @@
 // 翻譯直接寫在這裡、不用 t()：tools/ 產生 CHANGELOG.md 和 GitHub Release 說明時也會讀這個檔，那裡沒有 chrome.i18n。
 const CHANGELOG = [
   {
+    version: '1.16.0',
+    date: '2026-11-19',
+    items: {
+      zh_TW: [
+        '工具鎖定可以選保護方式：關閉、自訂密碼加密、系統驗證加密（Windows Hello、Touch ID）。選了加密，拿走瀏覽器資料夾的人也讀不到密碼。',
+        '自訂密碼加密：瀏覽器重開、閒置或手動鎖定後，都打自訂密碼解開，不用設定 Windows Hello 或 Touch ID。自訂密碼至少 12 個字。',
+        '系統驗證加密：用 Windows Hello 或 Touch ID 解開，不用記密碼。設定時會檢查這台電腦拿不拿得到加密用的秘密值，拿不到就不能選。',
+        '解鎖畫面多了「忘了自訂密碼或系統驗證不能用？」，可以清掉資料、再用備份檔還原。',
+        '加密時就算鎖著，自動備份也照樣存。',
+        '工具沒鎖的時候，打開管理頁不用再驗證一次。',
+      ],
+      en: [
+        "App lock now lets you choose a protection method: Off, Encrypt with custom password, or Encrypt with system verification (Windows Hello, Touch ID). With encryption, someone who takes your browser folder still can't read your passwords.",
+        'Custom password encryption: after the browser restarts, or after an idle or manual lock, unlock with the custom password. No Windows Hello or Touch ID setup is needed. The custom password must be at least 12 characters.',
+        "System verification encryption: unlock with Windows Hello or Touch ID, with no password to remember. Setup checks whether this computer can provide the secret used for encryption, and you can't choose it if not.",
+        'The unlock screen now has "Forgot the custom password, or system verification isn\'t working?" to clear your data and restore from a backup file.',
+        'With encryption, auto backup still saves while locked.',
+        "When the app isn't locked, opening the manager page no longer asks you to verify again.",
+      ],
+      ja: [
+        'アプリロックで保護方法を選べるようになりました：オフ、カスタムパスワードで暗号化、システム認証で暗号化（Windows Hello、Touch ID）。暗号化すると、ブラウザーのフォルダーを持ち出されてもパスワードは読めません。',
+        'カスタムパスワードで暗号化：ブラウザーの再起動後も、アイドル・手動でロックされた後も、カスタムパスワードで解除します。Windows Hello や Touch ID の設定は不要です。カスタムパスワードは 12 文字以上です。',
+        'システム認証で暗号化：Windows Hello や Touch ID で解除するので、パスワードを覚える必要はありません。設定時に、このパソコンで暗号化用のシークレットを取得できるか確認し、取得できない場合は選べません。',
+        'ロック解除画面に「カスタムパスワードを忘れた、またはシステム認証が使えない場合」を追加しました。データを消去してバックアップファイルから復元できます。',
+        '暗号化している場合も、ロック中に自動バックアップが保存されます。',
+        'ロックされていないときは、管理ページを開いても認証を求められなくなりました。',
+      ],
+    },
+    notes: {
+      zh_TW: [
+        '選加密之前要先在「備份」分頁設好自動備份密碼。忘了自訂密碼或系統驗證不能用時，只能靠備份檔還原。',
+        '選了加密之後，擴充功能更新或重新載入也要重新解鎖一次。',
+        '選了加密之後再裝回 1.15.0 以前的版本，會讀不到密碼。要退回舊版，先把保護方式改成不加密。',
+        '系統驗證加密在 Mac 上還沒實際測過。Windows 要 2026 年 2 月以後的更新和 Edge 147 版以上。',
+        '1.15.0 以前開了工具鎖定的人，升級後還是「只鎖畫面」，照常用 Windows Hello 解鎖，但硬碟上的密碼沒有加密。到「設定」分頁的工具鎖定改選一種加密，改了就回不去只鎖畫面。',
+      ],
+      en: [
+        'Before choosing encryption, set an auto backup password in the Backup tab. If you forget the custom password or system verification stops working, a backup file is the only way to restore.',
+        'With encryption, you also need to unlock again after the extension is updated or reloaded.',
+        "If you install version 1.15.0 or earlier after turning on encryption, it can't read your passwords. To go back to an older version, switch the protection method to one without encryption first.",
+        "System verification encryption hasn't been tested on a Mac yet. On Windows, it needs the February 2026 update or later and Edge 147 or later.",
+        'If you turned on app lock in 1.15.0 or earlier, it stays as "Lock screen only" after the update and still unlocks with Windows Hello, but passwords on your disk aren\'t encrypted. Choose an encryption option under App lock in the Settings tab. Once you switch, you can\'t go back to Lock screen only.',
+      ],
+      ja: [
+        '暗号化を選ぶ前に、「バックアップ」タブで自動バックアップ用のパスワードを設定してください。カスタムパスワードを忘れたり、システム認証が使えなくなったりしたときは、バックアップファイルからしか復元できません。',
+        '暗号化している場合、拡張機能の更新や再読み込みの後にももう一度ロック解除が必要です。',
+        '暗号化をオンにした後に 1.15.0 以前のバージョンを入れると、パスワードを読めません。古いバージョンに戻すときは、先に保護方法を暗号化なしに変えてください。',
+        'システム認証での暗号化は Mac ではまだ実際に試していません。Windows では 2026 年 2 月以降の更新と Edge 147 以降が必要です。',
+        '1.15.0 以前にアプリロックをオンにしていた場合、更新後も「画面のロックのみ」のままで、Windows Hello で解除できますが、ディスク上のパスワードは暗号化されていません。「設定」タブのアプリロックで暗号化する方法を選んでください。切り替えると「画面のロックのみ」には戻せません。',
+      ],
+    },
+  },
+  {
     version: '1.15.0',
     date: '2026-11-18',
     items: {

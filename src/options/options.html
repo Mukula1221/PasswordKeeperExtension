@@ -144,6 +144,29 @@
     #logTable .nowrap { white-space: nowrap; word-break: normal; }
     .abErr { color: var(--danger); }
     #lockScreen { max-width: 420px; }
+    .lock-pw { margin-top: 10px; }
+    .lock-pw label { display: block; margin-bottom: 4px; font-size: 13px; }
+    .lock-pw input { flex: 1; min-width: 0; }
+    /* 保護方式：三張卡片並排，每張都列同樣兩項擋不擋得住，不用點就能比 */
+    .lock-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .lock-legacy { margin-bottom: 8px; padding: 8px 10px; border: 1px solid #fcd34d; border-radius: 8px; background: #fef3c7; color: #92400e; font-size: 13px; }
+    @media (max-width: 640px) { .lock-modes { grid-template-columns: minmax(0, 1fr); } }
+    label.lock-card { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--text); font-size: 13px; cursor: pointer; }
+    label.lock-card:hover { border-color: #9ca3af; }
+    /* 框線加粗 1px，padding 就少 1px，選到時卡片不會跳 */
+    label.lock-card:has(input:checked) { border: 2px solid var(--primary); padding: 9px 11px; background: #eff6ff; }
+    label.lock-card:has(input:disabled) { cursor: default; opacity: 0.55; }
+    label.lock-card:has(input:focus-visible) { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .lock-card-head { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 14px; font-weight: 600; }
+    .lock-badge { margin-left: auto; padding: 1px 8px; border-radius: 999px; background: #dbeafe; color: #1e40af; font-size: 11px; font-weight: 600; }
+    /* 打勾打叉只給眼睛看，讀螢幕軟體念的是後面藏起來的「有」「沒有」 */
+    .lock-check::before { content: "✓" / ""; display: inline-block; width: 18px; color: #15803d; font-weight: 700; }
+    .lock-check.no { color: var(--muted); }
+    .lock-check.no::before { content: "✕" / ""; color: var(--danger); }
+    .lock-card-how { margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .lock-card-note { color: #92400e; font-size: 12px; }
+    .lock-step { margin-top: 8px; color: var(--primary); font-size: 13px; font-weight: 600; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     #headerVersion { cursor: pointer; font-size: 12px; }
     #headerVersion:hover { color: var(--primary); }
     .ver { padding: 12px 0; border-bottom: 1px solid var(--border); }
@@ -188,8 +211,16 @@
     <div id="lockScreen" class="card" hidden>
       <h2 data-i18n="opt_lock_title">先驗證身分</h2>
       <div class="help" data-i18n="opt_lock_help">驗證過才看得到密碼和設定。</div>
-      <div style="margin-top:10px"><button id="helloUnlock" class="primary"></button></div>
+      <div id="helloRow" style="margin-top:10px"><button id="helloUnlock" class="primary"></button></div>
+      <form id="lockPwForm" class="lock-pw" hidden>
+        <label for="lockPw" data-i18n="opt_master_password">自訂密碼</label>
+        <div class="row">
+          <input id="lockPw" type="password" autocomplete="current-password">
+          <button id="lockPwSubmit" type="submit" class="primary" data-i18n="opt_lock_unlock">解鎖</button>
+        </div>
+      </form>
       <div id="lockError" class="error"></div>
+      <div id="lockForgotRow" class="help" hidden><button id="lockForgot" type="button" class="link" data-i18n="opt_lock_forgot">忘了自訂密碼或系統驗證不能用？</button></div>
     </div>
 
     <div id="pageMain">
@@ -372,15 +403,37 @@ CSV 的格式和 Chrome、Edge 匯出的一樣。">?</span></div>
         <details class="card">
           <summary><span data-i18n="opt_block_lock">工具鎖定</span> <span id="lockState" class="muted"></span></summary>
           <div>
-            <div class="help"><span data-i18n="opt_lock_block_help">離開座位時不讓別人看密碼。鎖上後要通過系統驗證才能用。</span><span class="tip" data-i18n-tip="opt_lock_block_tip" data-tip="小視窗、管理頁、網頁自動填入、快捷鍵、瀏覽器驗證視窗都要先驗證。
-Windows 用 Windows Hello，Mac 用 Touch ID，其他系統用安全金鑰或手機，沒有備用的 PIN。
-管理頁每次打開都要驗證。
-鎖定不會加密硬碟上的資料。
-擴充功能的資料夾搬家後要重新啟用。">?</span></div>
-            <div class="row wrap">
-              <label class="inline"><input type="checkbox" id="lockEnabled"> <span id="lockEnabledLabel" data-i18n="opt_lock_enable">啟用</span></label>
+            <div class="help"><span data-i18n="opt_lock_block_help">離開座位時不讓別人看密碼，也可以把硬碟上的密碼加密。</span><span class="tip" data-i18n-tip="opt_lock_block_tip" data-tip="鎖住時，小視窗、管理頁、網頁自動填入、快捷鍵、瀏覽器驗證視窗都要先解鎖。
+擴充功能的資料夾搬家後要重新設定。">?</span></div>
+            <h3><span data-i18n="opt_lock_mode_title">保護方式</span><span class="tip" data-i18n-tip="opt_lock_mode_tip" data-tip="防資料被拷走：有人拷走瀏覽器的資料夾，也讀不到密碼。
+加密後，忘了自訂密碼或系統驗證不能用，只能用備份檔還原。
+兩種加密都要先設好自動備份密碼。">?</span></h3>
+            <div id="lockLegacy" class="lock-legacy" data-i18n="opt_lock_legacy_screen" hidden>目前是舊版的「只鎖畫面」，硬碟上的密碼沒有加密，請改選下面一種。</div>
+            <div class="lock-modes" role="radiogroup">
+              <label class="lock-card">
+                <span class="lock-card-head"><input type="radio" name="lockMode" value="off"> <span data-i18n="opt_lock_mode_off">關閉</span></span>
+                <span class="lock-check no"><span data-i18n="opt_lock_guard_peek">防旁人偷看</span><span class="sr-only" data-i18n="opt_lock_guard_no">沒有</span></span>
+                <span class="lock-check no"><span data-i18n="opt_lock_guard_copy">防資料被拷走</span><span class="sr-only" data-i18n="opt_lock_guard_no">沒有</span></span>
+                <span class="lock-card-how" data-i18n="opt_lock_how_off">不用解鎖</span>
+              </label>
+              <label class="lock-card">
+                <span class="lock-card-head"><input type="radio" name="lockMode" value="password"> <span data-i18n="opt_lock_mode_password">自訂密碼加密</span></span>
+                <span class="lock-check"><span data-i18n="opt_lock_guard_peek">防旁人偷看</span><span class="sr-only" data-i18n="opt_lock_guard_yes">有</span></span>
+                <span class="lock-check"><span data-i18n="opt_lock_guard_copy">防資料被拷走</span><span class="sr-only" data-i18n="opt_lock_guard_yes">有</span></span>
+                <span class="lock-card-how" data-i18n="opt_lock_how_password">解鎖都打自訂密碼，要多記一組密碼</span>
+                <span class="lock-card-note" data-i18n="opt_lock_needs_backup_password" hidden>先到「備份」分頁設定自動備份密碼。</span>
+              </label>
+              <label class="lock-card">
+                <span class="lock-card-head"><input type="radio" name="lockMode" value="hello"> <span id="lockModeHello" data-i18n="opt_lock_mode_hello">系統驗證加密</span><span id="lockRecommend" class="lock-badge" data-i18n="opt_lock_recommended" hidden>建議</span></span>
+                <span class="lock-check"><span data-i18n="opt_lock_guard_peek">防旁人偷看</span><span class="sr-only" data-i18n="opt_lock_guard_yes">有</span></span>
+                <span class="lock-check"><span data-i18n="opt_lock_guard_copy">防資料被拷走</span><span class="sr-only" data-i18n="opt_lock_guard_yes">有</span></span>
+                <span id="lockHowHello" class="lock-card-how"></span>
+                <span class="lock-card-note" data-i18n="opt_lock_needs_backup_password" hidden>先到「備份」分頁設定自動備份密碼。</span>
+              </label>
             </div>
+            <div id="lockStep" class="lock-step" role="status" hidden></div>
             <div id="lockInfo" class="muted" style="margin-top:6px"></div>
+            <div class="row wrap" style="margin-top:6px"><button id="lockChangePw" class="small" hidden data-i18n="opt_lock_change_password">更改自訂密碼</button></div>
             <h3 data-i18n="opt_lock_when_title">什麼時候自動鎖上</h3>
             <div class="row wrap">
               <label class="inline"><span data-i18n="opt_lock_idle_before">閒置</span> <input id="lockMinutes" class="num" type="number" min="1" max="720"> <span data-i18n="opt_lock_idle_after">分鐘沒碰電腦就鎖</span></label>
@@ -602,6 +655,10 @@ Windows 用 Windows Hello，Mac 用 Touch ID，其他系統用安全金鑰或手
     <ul id="choiceList"></ul>
     <div id="choiceCopyRow" class="row">
       <button id="choiceCopy" class="link small" data-i18n="opt_copy_locations">複製位置</button>
+    </div>
+    <div id="choiceTypeRow" hidden>
+      <label for="choiceType" id="choiceTypeLabel"></label>
+      <input id="choiceType" type="text" autocomplete="off" spellcheck="false">
     </div>
     <div id="choiceButtons" class="row end"></div>
   </dialog>

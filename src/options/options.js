@@ -39,9 +39,6 @@ let trashSelected = new Set();
 let logItems = [];
 let logFilter = 'all';
 let logSelected = new Set();
-// 這一頁開著期間有沒有通過系統驗證
-let pageVerified = false;
-
 async function copyText(text) {
   try {
     await navigator.clipboard.writeText(text);
@@ -62,16 +59,14 @@ function closeDialogsForLock() {
 }
 
 async function load() {
-  // 鎖住時整頁只剩輸 PIN 的框
-  // 有啟用鎖定的話，每次打開管理頁都要先驗一次；驗過之後這一頁開著期間不用再驗，除非鎖定被觸發
+  // 鎖住時整頁只剩驗證畫面。沒鎖就直接進去，在小視窗解鎖過不用再驗一次。
   const lock = await send({ type: 'lock.status' });
-  const needVerify = lock.ok && lock.data.enabled && (lock.data.locked || !pageVerified);
+  const needVerify = lock.ok && lock.data.enabled && lock.data.locked;
   $('lockScreen').hidden = !needVerify;
   $('pageMain').hidden = needVerify;
   if (needVerify) {
     closeDialogsForLock();
-    $('helloUnlock').textContent = t('opt_verify_with', pkWebAuthn.label());
-    $('lockError').textContent = lock.data.webauthn ? '' : t('opt_lock_broken');
+    renderLockScreen(lock.data);
     return;
   }
   const [a, s] = await Promise.all([send({ type: 'entries.all' }), send({ type: 'settings.get' })]);
@@ -1099,7 +1094,20 @@ $('siteCancel').addEventListener('click', () => {
 
 $('siteSearch').addEventListener('input', renderSites);
 
-// ---- 工具鎖定：只用系統驗證（Windows Hello、Touch ID、安全金鑰），沒有 PIN ----
+// ---- 工具鎖定：保護方式 ----
+// off 關閉、password 自訂密碼加密、hello 系統驗證加密（Windows Hello、Touch ID、安全金鑰）。
+// screen 只鎖畫面是 1.15.0 以前的設定：舊使用者照常用，但畫面上沒有這個選項，改選別的就回不去。
+// 換方式的規則在背景程式的 setLockMode，這裡負責跳該跳的驗證和對話框。
+
+let lockSt = null;
+const isEncryptedLock = (mode) => mode === 'password' || mode === 'hello';
+
+function lockModeName(mode, name) {
+  if (mode === 'screen') return t('opt_lock_mode_screen_with', name);
+  if (mode === 'password') return t('opt_lock_mode_password');
+  if (mode === 'hello') return t('opt_lock_mode_hello_with', name);
+  return t('opt_lock_mode_off');
+}
 
 async function renderLock() {
   const res = await send({ type: 'lock.status' });
@@ -1107,51 +1115,198 @@ async function renderLock() {
     $('lockInfo').textContent = res.error;
     return;
   }
-  const st = res.data;
+  const st = (lockSt = res.data);
   const name = pkWebAuthn.label();
-  // 區塊預設收合，標題旁邊要看得出有沒有開
-  $('lockState').textContent = st.enabled ? t('opt_lock_state_on') : t('opt_lock_state_off');
-  $('lockEnabled').checked = !!st.enabled;
-  $('lockEnabledLabel').textContent = t('opt_lock_enable_with', name);
+  // 區塊預設收合，標題旁邊要看得出用哪種
+  $('lockState').textContent = st.mode === 'off' ? t('opt_lock_state_off') : lockModeName(st.mode, name);
+  $('lockModeHello').textContent = lockModeName('hello', name);
+  $('lockHowHello').textContent = t('opt_lock_how_hello', name);
+  // 舊的只鎖畫面沒有卡片，三張都不會選到，上面多一行請使用者改選
+  $('lockLegacy').hidden = st.mode !== 'screen';
+  for (const radio of document.querySelectorAll('input[name="lockMode"]')) {
+    radio.checked = radio.value === st.mode;
+    // 不支援系統驗證的瀏覽器只能選關閉和自訂密碼加密
+    radio.disabled = !pkWebAuthn.supported() && radio.value === 'hello';
+  }
+  $('lockChangePw').hidden = st.mode !== 'password';
+  const encrypted = isEncryptedLock(st.mode);
   $('lockMinutes').value = st.idleMinutes;
-  $('lockOnStartup').checked = !!st.onStartup;
+  // 加密的保護方式，瀏覽器重開後金鑰就不在記憶體，一定要重新解鎖，不給取消
+  $('lockOnStartup').checked = encrypted || !!st.onStartup;
   $('lockMinutes').disabled = !st.enabled;
-  $('lockOnStartup').disabled = !st.enabled;
-  if (!pkWebAuthn.supported()) {
-    $('lockEnabled').disabled = true;
-    $('lockInfo').textContent = t('opt_lock_unsupported');
-    return;
-  }
-  $('lockEnabled').disabled = false;
-  if (st.enabled) {
-    $('lockInfo').textContent = t('opt_lock_info_on', name);
-    return;
-  }
-  const hasPlatform = await pkWebAuthn.hasPlatformAuthenticator();
-  $('lockInfo').textContent = hasPlatform ? t('opt_lock_info_off', name) : t('opt_lock_info_no_platform');
+  $('lockOnStartup').disabled = !st.enabled || encrypted;
+  $('lockInfo').textContent = pkWebAuthn.supported() ? '' : t('opt_lock_info_no_hello');
+  // 沒有 Windows Hello、Touch ID 的電腦，系統驗證加密要靠安全金鑰或手機，就不推薦
+  $('lockRecommend').hidden = !(await pkWebAuthn.hasPlatformAuthenticator());
+  // 還沒設自動備份密碼的話，加密的兩張卡片直接寫出來，不用點了才知道
+  const ab = isEncryptedLock(st.mode) ? null : await send({ type: 'autoBackup.get' });
+  const needsBackup = !!(ab && ab.ok && !ab.data.hasPassword);
+  for (const note of document.querySelectorAll('.lock-card-note')) note.hidden = !needsBackup;
 }
 
-// 勾起來就跳系統驗證建鑰匙，取消也要先驗一次
-$('lockEnabled').addEventListener('change', async (e) => {
-  const box = e.target;
-  const turningOn = box.checked;
-  box.disabled = true;
-  try {
-    if (turningOn) {
-      await pkWebAuthn.register({ idleMinutes: $('lockMinutes').value, onStartup: $('lockOnStartup').checked });
-      pageVerified = true;
-      toast(t('opt_lock_turned_on'));
-    } else {
-      await pkWebAuthn.disable();
-      toast(t('opt_lock_turned_off'));
+// 跟背景程式的 needsProof 一樣：拿掉加密、關掉鎖定、改自訂密碼要再驗一次
+function lockNeedsProof(current, target) {
+  if (current === target) return current === 'password';
+  if (target === 'off') return current !== 'off';
+  return false;
+}
+
+// 原本是自訂密碼加密就打自訂密碼，其他跳系統驗證。取消回傳 null。
+async function askLockProof(mode) {
+  if (mode === 'password') {
+    const password = await askPassword({ title: t('opt_master_pw_verify_title'), label: t('opt_master_password'), confirm: false });
+    return password == null ? null : { password };
+  }
+  return { assertion: await pkWebAuthn.assertion() };
+}
+
+function askMasterPassword(title) {
+  return askPassword({
+    title,
+    hint: t('opt_master_pw_hint', lockSt.masterPasswordMin),
+    label: t('opt_master_password'),
+    confirm: true,
+    minLength: lockSt.masterPasswordMin,
+  });
+}
+
+// 換保護方式。回傳 cancelled（使用者取消）或 done。
+async function changeLockMode(target) {
+  const st = lockSt;
+  if (isEncryptedLock(target)) {
+    const ab = await send({ type: 'autoBackup.get' });
+    if (!ab.ok) throw new Error(ab.error);
+    if (!ab.data.hasPassword) throw new Error(t('opt_lock_needs_backup_password'));
+  }
+  if (isEncryptedLock(st.mode) && !isEncryptedLock(target)) {
+    const ok = await askChoice({
+      title: t('opt_lock_downgrade_title'),
+      text: t('opt_lock_downgrade_text'),
+      buttons: [
+        { label: t('opt_cancel'), value: false },
+        { label: t('opt_lock_downgrade_confirm'), value: true, className: 'danger' },
+      ],
+    });
+    if (!ok) return 'cancelled';
+  }
+  const msg = { type: 'lock.setMode', mode: target, idleMinutes: $('lockMinutes').value, onStartup: $('lockOnStartup').checked, setup: {} };
+  if (lockNeedsProof(st.mode, target)) {
+    msg.proof = await askLockProof(st.mode);
+    if (!msg.proof) return 'cancelled';
+  }
+  if (target === 'password') {
+    const password = await askMasterPassword(t('opt_master_pw_title'));
+    if (password == null) return 'cancelled';
+    msg.setup.password = password;
+  }
+  if (target === 'hello') {
+    // 會跳兩次系統驗證，卡片下面寫現在是第幾次、在做什麼，使用者才不會以為第一次沒成功
+    const name = pkWebAuthn.label();
+    const step = $('lockStep');
+    const onStep = (n) => {
+      step.textContent = n === 1 ? t('opt_hello_step_create', name) : t('opt_hello_step_verify', name);
+      step.hidden = false;
+    };
+    try {
+      Object.assign(msg.setup, await pkWebAuthn.setupHello({ onStep }));
+    } finally {
+      step.hidden = true;
     }
+  }
+  const res = await send(msg);
+  if (!res.ok) throw new Error(res.error);
+  return 'done';
+}
+
+for (const radio of document.querySelectorAll('input[name="lockMode"]')) {
+  radio.addEventListener('change', async () => {
+    if (!radio.checked) return;
+    const name = pkWebAuthn.label();
+    for (const r of document.querySelectorAll('input[name="lockMode"]')) r.disabled = true;
+    try {
+      if ((await changeLockMode(radio.value)) === 'done') toast(t('opt_lock_mode_changed', lockModeName(radio.value, name)));
+    } catch (err) {
+      toast(t('opt_lock_mode_failed', err.message));
+    }
+    // 失敗或取消時，選項要回到實際的保護方式
+    await renderLock();
+  });
+}
+
+$('lockChangePw').addEventListener('click', async () => {
+  try {
+    const proof = await askLockProof('password');
+    if (!proof) return;
+    const password = await askMasterPassword(t('opt_master_pw_new_title'));
+    if (password == null) return;
+    const res = await send({ type: 'lock.setMode', mode: 'password', proof, setup: { password } });
+    if (!res.ok) throw new Error(res.error);
+    toast(t('opt_master_pw_changed'));
   } catch (err) {
-    toast(turningOn ? t('opt_lock_enable_failed', err.message) : t('opt_lock_disable_failed', err.message));
-    box.checked = !turningOn;
-  } finally {
-    box.disabled = false;
+    toast(t('opt_lock_mode_failed', err.message));
   }
   await renderLock();
+});
+
+// 驗證畫面：自訂密碼加密只給輸入框，其他給系統驗證的按鈕。
+function renderLockScreen(st) {
+  const passwordOnly = st.mode === 'password';
+  $('helloRow').hidden = passwordOnly || !st.webauthn;
+  $('helloUnlock').textContent = t('opt_verify_with', pkWebAuthn.label());
+  $('lockPwForm').hidden = !passwordOnly;
+  $('lockForgotRow').hidden = !isEncryptedLock(st.mode);
+  $('lockError').textContent = (st.mode === 'screen' || st.mode === 'hello') && !st.webauthn ? t('opt_lock_broken') : '';
+  if (passwordOnly) $('lockPw').focus();
+}
+
+$('lockPwForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('lockError').textContent = '';
+  $('lockPwSubmit').disabled = true;
+  try {
+    const res = await send({ type: 'lock.unlockPassword', password: $('lockPw').value });
+    if (!res.ok) throw new Error(res.error);
+    $('lockPw').value = '';
+    await load();
+  } catch (err) {
+    $('lockError').textContent = err.message;
+  } finally {
+    $('lockPwSubmit').disabled = false;
+  }
+});
+
+// 忘了自訂密碼、系統驗證壞了：只能清掉這台的密碼，再用備份檔匯入
+$('lockForgot').addEventListener('click', async () => {
+  const ok = await askChoice({
+    title: t('opt_lock_reset_title'),
+    text: t('opt_lock_reset_text'),
+    buttons: [
+      { label: t('opt_cancel'), value: false },
+      { label: t('opt_lock_reset_next'), value: true, className: 'danger' },
+    ],
+  });
+  if (!ok) return;
+  // 清掉就沒辦法復原，所以再問一次：先讓使用者看到有沒有備份可以還原，還要照打一個字才按得下去
+  const st = await send({ type: 'lock.status' });
+  const last = st.ok ? st.data.lastBackupAt : 0;
+  const sure = await askChoice({
+    title: t('opt_lock_reset_again_title'),
+    text: last ? t('opt_lock_reset_last_backup', fmtDate(last)) : t('opt_lock_reset_no_backup'),
+    confirmWord: t('opt_lock_reset_word'),
+    buttons: [
+      { label: t('opt_cancel'), value: false },
+      { label: t('opt_lock_reset_confirm'), value: true, className: 'danger', typed: true },
+    ],
+  });
+  if (!sure) return;
+  const res = await send({ type: 'lock.reset' });
+  if (!res.ok) {
+    $('lockError').textContent = res.error;
+    return;
+  }
+  await load();
+  showTab('backup');
+  toast(t('opt_lock_reset_done'));
 });
 
 async function onLockSettingChange() {
@@ -1167,7 +1322,6 @@ $('helloUnlock').addEventListener('click', async () => {
   $('helloUnlock').disabled = true;
   try {
     await pkWebAuthn.unlock();
-    pageVerified = true;
     await load();
   } catch (err) {
     $('lockError').textContent = err.message;
@@ -1176,12 +1330,10 @@ $('helloUnlock').addEventListener('click', async () => {
   }
 });
 
-// 管理頁開著的時候鎖定被觸發（閒置、小視窗按鎖定），背景程式會廣播，這裡立刻回到驗證畫面
+// 管理頁開著的時候鎖定被觸發（閒置、小視窗按鎖定），背景程式會廣播，這裡立刻回到驗證畫面。
+// 停在驗證畫面時在小視窗解鎖了，也直接進去。
 chrome.runtime.onMessage.addListener((msg) => {
-  if (msg && msg.type === 'lockChanged' && msg.locked) {
-    pageVerified = false;
-    load();
-  }
+  if (msg && msg.type === 'lockChanged' && (msg.locked || !$('lockScreen').hidden)) load();
   // 在別的分頁選了新的按鈕，那個網站要展開才看得到新規則
   if (msg && msg.type === 'clickRulesChanged') {
     if (msg.host) ruleSiteOpen.set(msg.host, true);
@@ -1715,7 +1867,8 @@ $('logCheckAll').addEventListener('change', (e) => {
 // 刪紀錄和回收桶用的對話框：標題、說明、清單、幾顆按鈕。回傳按下那顆的 value，按 Esc 回傳 null。
 // copy 是 true 時多一顆「複製位置」，讓使用者貼到檔案總管自己去刪。
 let choiceCopyText = '';
-function askChoice({ title, text, items, copy, buttons }) {
+// confirmWord：要使用者照打這個字，buttons 裡標了 typed 的按鈕才按得下去。刪了救不回來的動作用。
+function askChoice({ title, text, items, copy, buttons, confirmWord }) {
   return new Promise((resolve) => {
     const dlg = $('choiceDialog');
     $('choiceTitle').textContent = title;
@@ -1743,15 +1896,28 @@ function askChoice({ title, text, items, copy, buttons }) {
       dlg.close();
       resolve(value);
     };
+    const typed = [];
     for (const b of buttons) {
       const btn = el('button', b.className || null, b.label);
       btn.addEventListener('click', () => finish(b.value));
+      if (confirmWord && b.typed) typed.push(btn);
       box.appendChild(btn);
     }
+    const input = $('choiceType');
+    $('choiceTypeRow').hidden = !confirmWord;
+    $('choiceTypeLabel').textContent = confirmWord ? t('opt_type_to_confirm', confirmWord) : '';
+    input.value = '';
+    const sync = () => {
+      const ok = input.value.trim().toLowerCase() === String(confirmWord || '').toLowerCase();
+      for (const btn of typed) btn.disabled = !ok;
+    };
+    input.oninput = sync;
+    sync();
     dlg.addEventListener('cancel', onEsc);
     dlg.showModal();
-    // 預設停在第一顆（取消或知道了），不小心按 Enter 不會刪東西
-    box.firstChild.focus();
+    // 預設停在第一顆（取消或知道了），不小心按 Enter 不會刪東西。要打字確認的就停在輸入框。
+    if (confirmWord) input.focus();
+    else box.firstChild.focus();
   });
 }
 $('choiceCopy').addEventListener('click', () => copyText(choiceCopyText));
@@ -1892,7 +2058,11 @@ $('abPassword').addEventListener('click', async () => {
     confirm: true,
   });
   if (password == null) return;
-  await applyAutoBackup({ password }, () => toast(t('opt_ab_pw_saved')));
+  await applyAutoBackup({ password }, () => {
+    toast(t('opt_ab_pw_saved'));
+    // 設定分頁的加密卡片上有「先設自動備份密碼」，設好要拿掉
+    renderLock();
+  });
 });
 $('abRunNow').addEventListener('click', async () => {
   const res = await send({ type: 'autoBackup.runNow' });

@@ -52,12 +52,14 @@ const pkWebAuthn = (() => {
     }
   }
 
-  // 建鑰匙。背景程式存好公鑰就等於啟用工具鎖定，opts 可以帶 idleMinutes、onStartup。
-  async function register(opts) {
+  // 跳系統驗證建一把新鑰匙，回傳背景程式要核對、存起來的資料，還沒交給背景程式。
+  // prfSalt 有給的話順便要 PRF 秘密值（系統驗證加密用），有些瀏覽器建鑰匙時就會給，放在 prf。
+  async function create(opts) {
     if (!supported()) throw new Error(t('wa_unsupported'));
     const c = await send({ type: 'webauthn.challenge' });
     if (!c.ok) throw new Error(c.error);
     const platform = await hasPlatformAuthenticator();
+    const prfSalt = opts && opts.prfSalt;
     let cred;
     try {
       cred = await navigator.credentials.create({
@@ -74,6 +76,9 @@ const pkWebAuthn = (() => {
           authenticatorSelection: platform
             ? { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' }
             : { userVerification: 'required', residentKey: 'discouraged' },
+          // 請瀏覽器優先存在這台裝置：存到 Microsoft 密碼管理員這類同步的地方，有些拿不到 PRF 秘密值
+          hints: ['client-device'],
+          extensions: prfSalt ? { prf: { eval: { first: fromB64url(prfSalt) } } } : undefined,
         },
       });
     } catch (err) {
@@ -82,27 +87,52 @@ const pkWebAuthn = (() => {
     const res = cred.response;
     const spki = res.getPublicKey ? res.getPublicKey() : null;
     if (!spki) throw new Error(t('wa_no_public_key'));
-    const r = await send({
-      type: 'webauthn.register',
+    return {
       id: b64url(cred.rawId),
       alg: res.getPublicKeyAlgorithm(),
       publicKey: b64url(spki),
       clientDataJSON: b64url(res.clientDataJSON),
       transports: res.getTransports ? res.getTransports() : [],
-      idleMinutes: opts && opts.idleMinutes,
-      onStartup: opts && opts.onStartup,
-    });
-    if (!r.ok) throw new Error(r.error);
-    return r.data;
+      prf: prfOf(cred),
+    };
+  }
+
+  function prfOf(cred) {
+    const prf = cred.getClientExtensionResults().prf;
+    const first = prf && prf.results && prf.results.first;
+    return first ? b64url(first) : null;
+  }
+
+  // 系統驗證加密的設定：建一把新鑰匙，再用它驗一次拿 PRF 秘密值。
+  // 一定要另外驗一次：建鑰匙時給的秘密值，不保證之後解鎖時拿得到，拿不到就會被鎖在外面。
+  // onStep(1)、onStep(2) 在跳第幾次系統驗證之前叫，讓畫面告訴使用者為什麼要驗兩次。
+  async function setupHello(opts) {
+    const onStep = (opts && opts.onStep) || (() => {});
+    const prfSalt = b64url(crypto.getRandomValues(new Uint8Array(32)));
+    onStep(1);
+    const credential = await create({ prfSalt });
+    onStep(2);
+    const check = await assertion({ credentialId: credential.id, prfSalt });
+    if (!check.prf) throw new Error(t('wa_no_prf', label()));
+    if (credential.prf && credential.prf !== check.prf) throw new Error(t('wa_prf_unstable', label()));
+    delete credential.prf;
+    return { credential, assertion: check, prfSalt };
   }
 
   // 跳一次系統驗證，把簽好的結果整理成背景程式要核對的格式。
+  // 沒指定鑰匙就用背景程式存的那把；系統驗證加密時順便要 PRF 秘密值，放在 prf。
   // signal 中斷時照原樣丟出 AbortError，呼叫的地方才分得出是自己中斷的，不會顯示成「驗證被取消」。
-  async function assertion(signal) {
+  async function assertion(opts) {
+    opts = opts || {};
     if (!supported()) throw new Error(t('wa_unsupported'));
-    const st = await send({ type: 'webauthn.status' });
-    if (!st.ok) throw new Error(st.error);
-    if (!st.data.registered) throw new Error(t('wa_not_set_up'));
+    let { credentialId, prfSalt } = opts;
+    if (!credentialId) {
+      const st = await send({ type: 'webauthn.status' });
+      if (!st.ok) throw new Error(st.error);
+      if (!st.data.registered) throw new Error(t('wa_not_set_up'));
+      credentialId = st.data.id;
+      prfSalt = st.data.prfSalt;
+    }
     const c = await send({ type: 'webauthn.challenge' });
     if (!c.ok) throw new Error(c.error);
     let a;
@@ -113,15 +143,12 @@ const pkWebAuthn = (() => {
           rpId: c.data.rpId,
           timeout: 60000,
           userVerification: 'required',
-          allowCredentials: [
-            {
-              type: 'public-key',
-              id: fromB64url(st.data.id),
-              transports: st.data.transports && st.data.transports.length ? st.data.transports : undefined,
-            },
-          ],
+          // 不帶 transports：只帶 internal 的話，Edge 會先查 Windows 列得出來的鑰匙，
+          // 但 residentKey: 'discouraged' 建的鑰匙不在清單裡，Edge 就直接說「此裝置上沒有金鑰」，不交給 Windows Hello。
+          allowCredentials: [{ type: 'public-key', id: fromB64url(credentialId) }],
+          extensions: prfSalt ? { prf: { eval: { first: fromB64url(prfSalt) } } } : undefined,
         },
-        signal,
+        signal: opts.signal,
       });
     } catch (err) {
       if (err && err.name === 'AbortError') throw err;
@@ -133,21 +160,15 @@ const pkWebAuthn = (() => {
       clientDataJSON: b64url(res.clientDataJSON),
       authenticatorData: b64url(res.authenticatorData),
       signature: b64url(res.signature),
+      prf: prfOf(a),
     };
   }
 
   async function unlock(opts) {
-    const r = await send({ type: 'webauthn.unlock', ...(await assertion(opts && opts.signal)) });
+    const r = await send({ type: 'webauthn.unlock', ...(await assertion({ signal: opts && opts.signal })) });
     if (!r.ok) throw new Error(r.error);
     return r.data;
   }
 
-  // 停用工具鎖定也要先驗證一次
-  async function disable() {
-    const r = await send({ type: 'lock.disable', ...(await assertion()) });
-    if (!r.ok) throw new Error(r.error);
-    return r.data;
-  }
-
-  return { label, supported, hasPlatformAuthenticator, register, unlock, disable };
+  return { label, supported, hasPlatformAuthenticator, create, setupHello, assertion, unlock };
 })();

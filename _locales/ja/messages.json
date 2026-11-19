@@ -249,6 +249,9 @@
     "message": "$1 でロック解除",
     "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
   },
+  "pop_unlock_password": {
+    "message": "カスタムパスワードでロック解除"
+  },
   "pop_copied": {
     "message": "コピーしました"
   },
@@ -302,6 +305,9 @@
     "message": "表示されたウィンドウで $1 の認証を完了してください",
     "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
   },
+  "unl_password_title": {
+    "message": "カスタムパスワードを入力してロックを解除"
+  },
   "wa_no_response": {
     "message": "拡張機能から応答がありません"
   },
@@ -323,6 +329,12 @@
   },
   "wa_not_set_up": {
     "message": "システム認証がまだ設定されていません"
+  },
+  "wa_no_prf": {
+    "message": "このパソコンの $1 では暗号化用のシークレットを取得できません。カスタムパスワードで暗号化してください"
+  },
+  "wa_prf_unstable": {
+    "message": "$1 から返されたシークレットが毎回違うため、暗号化には使えません。カスタムパスワードで暗号化してください"
   },
   "opt_page_title": {
     "message": "パスワードキーパー – パスワードの管理",
@@ -356,6 +368,42 @@
   },
   "opt_lock_broken": {
     "message": "ロックの設定が壊れています。システム認証のキーが見つかりません。拡張機能を削除して再インストールし、バックアップからインポートしてください。"
+  },
+  "opt_lock_unlock": {
+    "message": "ロック解除"
+  },
+  "opt_lock_forgot": {
+    "message": "カスタムパスワードを忘れた、またはシステム認証が使えない場合"
+  },
+  "opt_lock_reset_title": {
+    "message": "このパソコンのパスワードを消去しますか？"
+  },
+  "opt_lock_reset_text": {
+    "message": "ロックを解除できない場合は、消去してから「バックアップ」タブの「暗号化バックアップをインポート」で復元するしかありません。元に戻すことはできません。"
+  },
+  "opt_lock_reset_confirm": {
+    "message": "消去する"
+  },
+  "opt_lock_reset_next": {
+    "message": "続ける"
+  },
+  "opt_lock_reset_again_title": {
+    "message": "最終確認：このパソコンのパスワードを消去"
+  },
+  "opt_lock_reset_last_backup": {
+    "message": "最後のバックアップは $1 です。消去後はそのバックアップから復元します。それ以降に追加・変更したパスワードは失われます。"
+  },
+  "opt_lock_reset_no_backup": {
+    "message": "このパソコンにはバックアップの記録がないため、消去するとパスワードを元に戻せません。"
+  },
+  "opt_lock_reset_word": {
+    "message": "削除"
+  },
+  "opt_type_to_confirm": {
+    "message": "続けるには「$1」と入力してください"
+  },
+  "opt_lock_reset_done": {
+    "message": "消去しました。「暗号化バックアップをインポート」を押して、バックアップファイルを選んで復元してください。"
   },
   "opt_no_response": {
     "message": "拡張機能から応答がありません"
@@ -1327,22 +1375,106 @@
     "description": "Section title, followed by 'On' or 'Off'."
   },
   "opt_lock_block_help": {
-    "message": "席を離れている間、ほかの人にパスワードを見られないようにします。ロック後はシステム認証を通さないと使えません。"
+    "message": "席を離れている間、ほかの人にパスワードを見られないようにします。ディスク上のパスワードを暗号化することもできます。"
   },
   "opt_lock_block_tip": {
-    "message": "ポップアップ、管理ページ、Web ページでの自動入力、ショートカット キー、ブラウザーの認証ダイアログは、すべて先に認証が必要です。\nWindows は Windows Hello、Mac は Touch ID、その他のシステムはセキュリティキーまたはスマートフォンを使います。予備の PIN はありません。\n管理ページは開くたびに認証が必要です。\nロックしてもディスク上のデータは暗号化されません。\n拡張機能のフォルダーを移動したら、もう一度有効にしてください。"
+    "message": "ロック中は、ポップアップ、管理ページ、Web ページでの自動入力、ショートカット キー、ブラウザーの認証ダイアログを使う前にロック解除が必要です。\n拡張機能のフォルダーを移動したら、もう一度設定してください。"
   },
-  "opt_lock_enable": {
-    "message": "有効にする",
-    "description": "Checkbox label before the page knows which verification method is used."
+  "opt_lock_mode_title": {
+    "message": "保護方法"
   },
-  "opt_lock_enable_with": {
-    "message": "有効にする（$1 で認証）",
-    "description": "Checkbox label. $1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  "opt_lock_mode_tip": {
+    "message": "コピーされても読まれない：ブラウザーのデータフォルダーをコピーされても、パスワードは読めません。\n暗号化した後にカスタムパスワードを忘れたり、システム認証が使えなくなったりした場合は、バックアップファイルから復元するしかありません。\nどちらの暗号化も、先に自動バックアップ用のパスワードを設定する必要があります。"
   },
-  "opt_lock_state_on": {
-    "message": "オン",
-    "description": "Shown next to the App lock section title."
+  "opt_lock_mode_off": {
+    "message": "オフ"
+  },
+  "opt_lock_mode_password": {
+    "message": "カスタムパスワードで暗号化"
+  },
+  "opt_lock_mode_hello": {
+    "message": "システム認証で暗号化"
+  },
+  "opt_lock_mode_screen_with": {
+    "message": "画面のロックのみ（$1 で解除）"
+  },
+  "opt_lock_mode_hello_with": {
+    "message": "$1 で暗号化"
+  },
+  "opt_lock_legacy_screen": {
+    "message": "旧バージョンの「画面のロックのみ」を使っているため、ディスク上のパスワードは暗号化されていません。下から選び直してください。"
+  },
+  "opt_hello_step_create": {
+    "message": "$1 の 1 回目（全 2 回）：暗号化用のキーを作成しています"
+  },
+  "opt_hello_step_verify": {
+    "message": "$1 の 2 回目（全 2 回）：ロックを解除できるか確認しています"
+  },
+  "opt_lock_guard_peek": {
+    "message": "近くの人に見られない"
+  },
+  "opt_lock_guard_copy": {
+    "message": "コピーされても読まれない"
+  },
+  "opt_lock_guard_yes": {
+    "message": "あり"
+  },
+  "opt_lock_guard_no": {
+    "message": "なし"
+  },
+  "opt_lock_how_off": {
+    "message": "ロック解除は不要"
+  },
+  "opt_lock_how_password": {
+    "message": "解除はいつもカスタムパスワード。覚えるパスワードが 1 つ増えます"
+  },
+  "opt_lock_how_hello": {
+    "message": "$1 で解除。パスワードを覚える必要はありません"
+  },
+  "opt_lock_recommended": {
+    "message": "おすすめ"
+  },
+  "opt_lock_change_password": {
+    "message": "カスタムパスワードを変更"
+  },
+  "opt_lock_info_no_hello": {
+    "message": "このブラウザーはシステム認証に対応していないため、カスタムパスワードでの暗号化のみ使えます。"
+  },
+  "opt_lock_mode_changed": {
+    "message": "保護方法を「$1」に変更しました"
+  },
+  "opt_lock_mode_failed": {
+    "message": "変更できませんでした：$1"
+  },
+  "opt_lock_needs_backup_password": {
+    "message": "先に「バックアップ」タブで自動バックアップ用のパスワードを設定してください。"
+  },
+  "opt_lock_downgrade_title": {
+    "message": "暗号化をオフにしますか？"
+  },
+  "opt_lock_downgrade_text": {
+    "message": "オフにすると、このパソコンを使える人はディスク上のパスワードを読めるようになります。"
+  },
+  "opt_lock_downgrade_confirm": {
+    "message": "暗号化をオフにする"
+  },
+  "opt_master_password": {
+    "message": "カスタムパスワード"
+  },
+  "opt_master_pw_title": {
+    "message": "カスタムパスワードを設定"
+  },
+  "opt_master_pw_hint": {
+    "message": "$1 文字以上。ブラウザーの再起動後に入力します。忘れた場合はバックアップファイルから復元するしかありません。"
+  },
+  "opt_master_pw_verify_title": {
+    "message": "現在のカスタムパスワードを入力"
+  },
+  "opt_master_pw_new_title": {
+    "message": "新しいカスタムパスワード"
+  },
+  "opt_master_pw_changed": {
+    "message": "カスタムパスワードを変更しました"
   },
   "opt_lock_state_off": {
     "message": "オフ",
@@ -1364,34 +1496,6 @@
   },
   "opt_lock_manual_help": {
     "message": "ポップアップ右上の「ロック」でいつでも手動でロックできます。"
-  },
-  "opt_lock_unsupported": {
-    "message": "このブラウザーはシステム認証に対応していないため、アプリロックを使えません。"
-  },
-  "opt_lock_info_on": {
-    "message": "有効です。ロック中は $1 で認証すると使えます。",
-    "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
-  },
-  "opt_lock_info_off": {
-    "message": "無効です。有効にするときに $1 の認証が 1 回表示されます。",
-    "description": "$1 = 'Windows Hello' or 'Touch ID'."
-  },
-  "opt_lock_info_no_platform": {
-    "message": "このパソコンには内蔵の認証器がありません。有効にするときに、セキュリティキーとスマートフォンのどちらを使うかブラウザーが確認します。"
-  },
-  "opt_lock_turned_on": {
-    "message": "アプリロックを有効にしました"
-  },
-  "opt_lock_turned_off": {
-    "message": "アプリロックを無効にしました"
-  },
-  "opt_lock_enable_failed": {
-    "message": "有効にできませんでした：$1",
-    "description": "$1 = error message."
-  },
-  "opt_lock_disable_failed": {
-    "message": "無効にできませんでした：$1",
-    "description": "$1 = error message."
   },
   "opt_block_fill": {
     "message": "自動入力",
@@ -2171,6 +2275,42 @@
   "bg_locked": {
     "message": "ロック中です。ツールバーの鍵のアイコンから認証してください。",
     "description": "The lock icon is this extension's icon on the browser toolbar."
+  },
+  "bg_master_password_not_set": {
+    "message": "カスタムパスワードが設定されていません"
+  },
+  "bg_master_password_wrong": {
+    "message": "カスタムパスワードが違います"
+  },
+  "bg_master_password_too_short": {
+    "message": "カスタムパスワードは $1 文字以上にしてください"
+  },
+  "bg_need_master_password": {
+    "message": "カスタムパスワードで暗号化している場合は、カスタムパスワードで解除してください"
+  },
+  "bg_hello_no_secret": {
+    "message": "システム認証から暗号化用のシークレットを取得できませんでした"
+  },
+  "bg_hello_wrong_secret": {
+    "message": "システム認証のシークレットでパスワードを開けません。キーが変わった可能性があります"
+  },
+  "bg_lock_needs_verify": {
+    "message": "変更する前に本人確認が必要です"
+  },
+  "bg_lock_mode_unknown": {
+    "message": "不明な保護方法です"
+  },
+  "bg_lock_needs_backup_password": {
+    "message": "暗号化を選ぶ前に、「バックアップ」タブで自動バックアップ用のパスワードを設定してください"
+  },
+  "bg_lock_reset_not_needed": {
+    "message": "暗号化されていないため、データを消去する必要はありません"
+  },
+  "bg_extension_page_only": {
+    "message": "この操作はパスワードキーパー自身のページでのみ実行できます"
+  },
+  "bg_auto_backup_not_ready": {
+    "message": "ロック中で、バックアップできる内容がまだありません。ロックを解除してからもう一度お試しください"
   },
   "bg_unknown_message": {
     "message": "不明なメッセージ：$1",

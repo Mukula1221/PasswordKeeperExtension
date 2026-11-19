@@ -62,8 +62,10 @@ async function safeEval(page, expr) {
 
 const reset = () =>
   w.eval(`(async () => {
-    await chrome.storage.local.remove(['vault', 'settings', 'webauthn', 'uiLanguage', 'updateInfo', 'autoBackupKey']);
+    await chrome.storage.local.remove(['vault', 'settings', 'webauthn', 'uiLanguage', 'updateInfo', 'autoBackupKey', 'vaultKeyLock', 'autoBackupReady']);
     await chrome.storage.session.clear();
+    // 加密的案例會刪掉 keyB64，背景程式記著的舊金鑰也要丟掉
+    keyPromise = null;
     return true;
   })()`);
 
@@ -2415,10 +2417,10 @@ test('工具鎖定：管理頁開著對話框時被鎖定，對話框要關掉�
     check(await until(() => page.eval(`!document.getElementById('lockScreen').hidden`), 3000), '要回到驗證畫面');
     await sleep(200);
   };
-  // 測試沒辦法叫 Windows Hello，直接當作驗證過
+  // 測試沒辦法叫 Windows Hello，直接解鎖；管理頁收到廣播會自己回來
   const unlock = async () => {
     await w.eval('setLocked(false)');
-    await page.eval('pageVerified = true; load()');
+    await until(() => page.eval(`!document.getElementById('pageMain').hidden`), 3000);
     await sleep(300);
   };
   const openDialogs = () => page.eval(`Array.from(document.querySelectorAll('dialog[open]')).map((d) => d.id)`);
@@ -2679,6 +2681,391 @@ test('管理頁：驗證畫面用虛擬驗證器照常解鎖', async () => {
   await closePage(page);
 });
 
+// ---- 保護方式：自訂密碼加密、系統驗證加密 ----
+
+const MASTER = 'master-pass-1234';
+// 換保護方式要從擴充功能自己的頁面叫，這裡假裝是管理頁送來的
+const asPage = `{ url: extensionOrigin() + '/src/options/options.html' }`;
+const setMode = (data) => w.eval(`handlers['lock.setMode'](${JSON.stringify(data)}, ${asPage}).then(() => 'ok', (e) => e.message)`);
+const unlockPassword = (password) =>
+  w.eval(`handlers['lock.unlockPassword']({ password: ${JSON.stringify(password)} }, ${asPage}).then(() => 'ok', (e) => e.message)`);
+const setBackupPassword = () => w.eval(`handlers['autoBackup.set']({ password: 'backup-pass-123' }).then(() => true)`);
+// 瀏覽器重開：storage.session 整個清掉，記憶體裡的金鑰和鎖定狀態都沒了
+const restartBrowser = () => w.eval(`chrome.storage.session.clear().then(() => true)`);
+const msgOf = (key, ...subs) => w.eval(`t(${JSON.stringify(key)}, ${subs.map((s) => JSON.stringify(s)).join(', ')})`);
+const passwordsNow = () => w.eval(`(async () => ({ locked: await isLocked(), passwords: (await loadEntries()).map((e) => e.password) }))()`);
+
+test('保護方式：舊設定只有 enabled，升級後變成關閉或只鎖畫面', async () => {
+  const r = await w.eval(`({
+    on: normalizeLock({ enabled: true, idleMinutes: 5 }),
+    off: normalizeLock({ enabled: false }),
+    none: normalizeLock(undefined),
+    password: normalizeLock({ mode: 'password', enabled: false }),
+    screenOff: normalizeLock({ mode: 'screen', enabled: false }),
+  })`);
+  check(r.on.mode === 'screen' && r.on.enabled && r.on.idleMinutes === 5, '舊的已啟用要變成只鎖畫面：' + JSON.stringify(r.on));
+  check(r.off.mode === 'off' && !r.off.enabled && r.none.mode === 'off', '沒啟用要是關閉：' + JSON.stringify([r.off, r.none]));
+  check(r.password.mode === 'password' && r.password.enabled, '加密的照 mode：' + JSON.stringify(r.password));
+  check(r.screenOff.mode === 'off', '舊程式寫 enabled: false 要變成關閉：' + JSON.stringify(r.screenOff));
+});
+
+test('自訂密碼加密：硬碟上沒有能解開帳密的金鑰，瀏覽器重開後要打自訂密碼', async () => {
+  await seedEntry('right');
+  check((await setMode({ mode: 'password', setup: { password: MASTER } })) === (await msgOf('bg_lock_needs_backup_password')), '沒設自動備份密碼不能選加密');
+  await setBackupPassword();
+  check((await setMode({ mode: 'password', setup: { password: 'short-pass' } })) === (await msgOf('bg_master_password_too_short', 12)), '自訂密碼太短要擋');
+  const fromWeb = await w.eval(`handlers['lock.setMode']({ mode: 'password', setup: { password: '${MASTER}' } }, { url: 'https://example.test/' }).then(() => 'ok', (e) => e.message)`);
+  check(fromWeb === (await msgOf('bg_extension_page_only')), '網頁裡的程式不能換保護方式：' + fromWeb);
+  const oldKey = await w.eval(`chrome.storage.local.get('keyB64').then((x) => x.keyB64)`);
+  check((await setMode({ mode: 'password', setup: { password: MASTER } })) === 'ok', '設自訂密碼要成功');
+  const disk = await w.eval(`(async () => {
+    const all = await chrome.storage.local.get(null);
+    let oldKeyOpens = true;
+    try {
+      await decrypt(await importKey(b64ToBytes(${JSON.stringify(oldKey)})), all.vault);
+    } catch {
+      oldKeyOpens = false;
+    }
+    return { hasKey: 'keyB64' in all, mode: all.vaultKeyLock && all.vaultKeyLock.mode, text: JSON.stringify(all), oldKeyOpens, settingsMode: (await getSettings()).lock.mode };
+  })()`);
+  check(!disk.hasKey, '設了自訂密碼，硬碟上不能再有 keyB64');
+  check(disk.mode === 'password' && disk.settingsMode === 'password', '保護方式要是自訂密碼加密：' + JSON.stringify([disk.mode, disk.settingsMode]));
+  check(!disk.text.includes(MASTER), '硬碟上不能有自訂密碼');
+  check(!disk.oldKeyOpens, '舊的金鑰要解不開新的 vault');
+  check(!(await w.eval('isLocked()')), '剛設好不用再解鎖');
+
+  await restartBrowser();
+  const locked = await w.eval(`(async () => {
+    let all = '';
+    try {
+      await dispatch({ type: 'entries.all' }, {});
+      all = 'ok';
+    } catch (e) {
+      all = e.locked ? 'locked' : e.message;
+    }
+    return { isLocked: await isLocked(), needsKey: (await lockStatus()).needsKey, all };
+  })()`);
+  check(locked.isLocked && locked.needsKey && locked.all === 'locked', '瀏覽器重開後要鎖著，讀不到帳密：' + JSON.stringify(locked));
+  check((await unlockPassword('wrong-pass-12345')) === (await msgOf('bg_master_password_wrong')), '打錯要說自訂密碼不對');
+  check(await w.eval('isLocked()'), '打錯不能解鎖');
+  check((await unlockPassword(MASTER)) === 'ok', '打對要解鎖');
+  const after = await passwordsNow();
+  check(!after.locked && after.passwords[0] === 'right', '解鎖後要讀得到帳密：' + JSON.stringify(after));
+
+  // 改回不加密要打自訂密碼
+  check((await setMode({ mode: 'off' })) === (await msgOf('bg_master_password_wrong')), '改回不加密沒打自訂密碼要擋');
+  check((await setMode({ mode: 'off', proof: { password: MASTER } })) === 'ok', '打了自訂密碼要能改回不加密');
+  await restartBrowser();
+  const plain = await w.eval(`(async () => {
+    const all = await chrome.storage.local.get(null);
+    return { hasKey: 'keyB64' in all, hasLock: 'vaultKeyLock' in all, locked: await isLocked(), passwords: (await loadEntries()).map((e) => e.password) };
+  })()`);
+  check(plain.hasKey && !plain.hasLock && !plain.locked && plain.passwords[0] === 'right', '改回不加密後，重開也直接讀得到：' + JSON.stringify(plain));
+});
+
+test('自訂密碼加密：瀏覽器重開還沒解鎖時，自動備份照樣存', async () => {
+  await seedEntry('right');
+  await setBackupPassword();
+  check((await setMode({ mode: 'password', setup: { password: MASTER } })) === 'ok', '設自訂密碼要成功');
+  await seedEntry('second', 'b.example.test');
+  await restartBrowser();
+  const r = await w.eval(`(async () => {
+    const realSave = saveFile;
+    let saved = null;
+    saveFile = async ({ content, filename }) => {
+      saved = content;
+      return { id: 0, path: 'fake/' + filename };
+    };
+    let result;
+    try {
+      result = await runAutoBackup(true);
+    } finally {
+      saveFile = realSave;
+    }
+    const body = JSON.parse(await decryptBackup('backup-pass-123', JSON.parse(saved)));
+    return { ran: result.ran, locked: await isLocked(), hosts: body.entries.map((e) => e.host).sort() };
+  })()`);
+  check(r.ran && r.locked, '鎖著也要存得出備份：' + JSON.stringify(r));
+  check(sameList(r.hosts, ['127.0.0.1', 'b.example.test']), '備份要帶到鎖之前最後的帳密：' + JSON.stringify(r.hosts));
+});
+
+test('系統驗證加密：虛擬驗證器給 PRF 秘密值，瀏覽器重開後按系統驗證就解得開', async () => {
+  await seedEntry('right');
+  await setBackupPassword();
+  const page = await openPage(b.cdp, 'about:blank');
+  await page.send('WebAuthn.enable', { enableUI: false });
+  await page.send('WebAuthn.addVirtualAuthenticator', {
+    options: { protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true, hasPrf: true },
+  });
+  await page.send('Emulation.setDeviceMetricsOverride', { width: 1100, height: 800, deviceScaleFactor: 1, mobile: false });
+  await page.goto('chrome-extension://' + extId + '/src/options/options.html#settings', 1200);
+  // 記下卡片下面每次顯示的「第幾次」說明
+  const result = await page.eval(`(() => {
+    window.__steps = [];
+    const step = document.getElementById('lockStep');
+    new MutationObserver(() => {
+      if (!step.hidden && window.__steps[window.__steps.length - 1] !== step.textContent) window.__steps.push(step.textContent);
+    }).observe(step, { attributes: true, childList: true, characterData: true, subtree: true });
+    return renderLock().then(() => changeLockMode('hello')).then((r) => r, (e) => 'error: ' + e.message);
+  })()`);
+  check(result === 'done', '選系統驗證加密要成功：' + result);
+  const label = await page.eval('pkWebAuthn.label()');
+  const steps = await page.eval('window.__steps');
+  check(
+    JSON.stringify(steps) === JSON.stringify([await msgOf('opt_hello_step_create', label), await msgOf('opt_hello_step_verify', label)]),
+    '兩次系統驗證前都要說在做什麼：' + JSON.stringify(steps)
+  );
+  check(!(await page.eval(`document.getElementById('lockStep').checkVisibility()`)), '設好之後說明要收起來');
+  const disk = await w.eval(`chrome.storage.local.get(null).then((all) => ({
+    hasKey: 'keyB64' in all,
+    mode: all.vaultKeyLock && all.vaultKeyLock.mode,
+    sameKey: !!all.webauthn && all.webauthn.id === all.vaultKeyLock.hello.credentialId,
+  }))`);
+  check(!disk.hasKey && disk.mode === 'hello' && disk.sameKey, '硬碟上只能有用系統驗證加密過的金鑰：' + JSON.stringify(disk));
+  // 重新設定失敗（鑰匙資料不對）時，原本的鑰匙和加密過的金鑰都不能動，不然重開後會解不開
+  const before = await w.eval(`chrome.storage.local.get(['webauthn', 'vaultKeyLock']).then((x) => JSON.stringify(x))`);
+  const bad = await setMode({ mode: 'hello', setup: { credential: { id: 'x', alg: -7, publicKey: 'x', clientDataJSON: 'bad' }, assertion: { prf: 'AAAA' }, prfSalt: 'AAAA' } });
+  check(bad !== 'ok', '鑰匙資料不對要擋下來');
+  check((await w.eval(`chrome.storage.local.get(['webauthn', 'vaultKeyLock']).then((x) => JSON.stringify(x))`)) === before, '失敗時不能動到原本的鑰匙和金鑰');
+  await restartBrowser();
+  check(await w.eval('isLocked()'), '瀏覽器重開要鎖著');
+  check((await page.eval(`pkWebAuthn.unlock().then(() => 'ok', (e) => e.message)`)) === 'ok', '按系統驗證要解得開');
+  const after = await passwordsNow();
+  check(!after.locked && after.passwords[0] === 'right', '解鎖後要讀得到帳密：' + JSON.stringify(after));
+  await page.eval(`document.querySelector('#tab-settings > details.card').open = true; renderLock()`);
+  await sleep(300);
+  await page.eval(`document.querySelector('#tab-settings > details.card').scrollIntoView()`);
+  await page.screenshot(path.join(SHOTS, 'lock-mode-hello.png'));
+
+  // 改成自訂密碼加密：系統驗證的鑰匙一起刪掉，之後只能打自訂密碼
+  check((await setMode({ mode: 'password', setup: { password: MASTER } })) === 'ok', '改成自訂密碼加密要成功');
+  check(!(await w.eval(`chrome.storage.local.get('webauthn').then((x) => 'webauthn' in x)`)), '系統驗證的鑰匙要刪掉');
+  await w.eval('setLocked(true)');
+  check((await page.eval(`pkWebAuthn.unlock().then(() => 'ok', (e) => e.message)`)) !== 'ok', '系統驗證不能解開自訂密碼加密');
+  check((await unlockPassword(MASTER)) === 'ok', '打自訂密碼要解得開');
+  await closePage(page);
+});
+
+test('解鎖視窗：自訂密碼加密、瀏覽器重開過，直接問自訂密碼，不叫系統驗證', async () => {
+  await seedEntry('right');
+  await setBackupPassword();
+  check((await setMode({ mode: 'password', setup: { password: MASTER } })) === 'ok', '設自訂密碼要成功');
+  // 就算留著系統驗證的鑰匙也一樣：自訂密碼加密不叫系統驗證
+  await w.eval(`chrome.storage.local.set({ webauthn: { id: 'AAAA', alg: -7, publicKey: 'AAAA', transports: [], createdAt: 1 } }).then(() => true)`);
+  await restartBrowser();
+  const page = await openUnlock(FAKE_HELLO);
+  check(await until(() => page.eval(`!document.getElementById('pwForm').hidden`), 3000), '要直接顯示自訂密碼輸入框');
+  const st = await unlockState(page);
+  check(st.calls.length === 0 && !st.waiting, '不能叫系統驗證：' + JSON.stringify(st));
+  await page.screenshot(path.join(SHOTS, 'unlock-password.png'));
+  await page.eval(`document.getElementById('pw').value = 'wrong-pass-12345'; document.getElementById('pwSubmit').click();`);
+  const wrong = await until(() => page.eval(`document.getElementById('pwError').textContent`), 3000);
+  check(wrong === (await msgOf('bg_master_password_wrong')), '打錯要顯示：' + wrong);
+  await page.eval(`document.getElementById('pw').value = '${MASTER}'; document.getElementById('pwSubmit').click();`);
+  check(await until(() => page.eval('window.__closed === true'), 5000), '解鎖後要自己關視窗');
+  check(!(await w.eval('isLocked()')), '背景程式要解鎖');
+  await closePage(page);
+});
+
+test('解鎖視窗：自訂密碼加密閒置鎖定時，也直接問自訂密碼，不叫系統驗證', async () => {
+  await seedEntry('right');
+  await setBackupPassword();
+  check((await setMode({ mode: 'password', setup: { password: MASTER } })) === 'ok', '設自訂密碼要成功');
+  // 閒置鎖定：金鑰還在記憶體，只是畫面鎖住
+  await w.eval('setLocked(true)');
+  const page = await openUnlock(FAKE_HELLO);
+  check(await until(() => page.eval(`!document.getElementById('pwForm').hidden`), 3000), '要直接顯示自訂密碼輸入框');
+  await sleep(300);
+  const st = await unlockState(page);
+  check(st.calls.length === 0 && !st.waiting, '不能叫系統驗證：' + JSON.stringify(st));
+  await page.eval(`document.getElementById('pw').value = '${MASTER}'; document.getElementById('pwSubmit').click();`);
+  check(await until(() => page.eval('window.__closed === true'), 5000), '解鎖後要自己關視窗');
+  check(!(await w.eval('isLocked()')), '背景程式要解鎖');
+  await closePage(page);
+});
+
+test('管理頁：自訂密碼加密的驗證畫面要打自訂密碼，也找得到忘了怎麼辦', async () => {
+  await seedEntry('right');
+  await setBackupPassword();
+  check((await setMode({ mode: 'password', setup: { password: MASTER } })) === 'ok', '設自訂密碼要成功');
+  await restartBrowser();
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html', 1200);
+  const seen = (id) => page.eval(`document.getElementById('${id}').checkVisibility()`);
+  check(await seen('lockScreen'), '要先顯示驗證畫面');
+  check((await seen('lockPwForm')) && !(await seen('helloRow')) && (await seen('lockForgot')), '要有自訂密碼輸入框和忘了怎麼辦，沒有系統驗證按鈕');
+  await page.screenshot(path.join(SHOTS, 'options-lock-password.png'));
+  await page.eval(`document.getElementById('lockPw').value = '${MASTER}'; document.getElementById('lockPwSubmit').click();`);
+  check(await until(() => page.eval(`!document.getElementById('pageMain').hidden`), 5000), '打對要顯示管理頁：' + (await page.eval(`document.getElementById('lockError').textContent`)));
+  await closePage(page);
+});
+
+test('管理頁：忘了自訂密碼要確認兩次，第二次寫出最近備份、照打「清除」才按得下去', async () => {
+  await seedEntry('right');
+  await setBackupPassword();
+  check((await setMode({ mode: 'password', setup: { password: MASTER } })) === 'ok', '設自訂密碼要成功');
+  await restartBrowser();
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html', 1200);
+  const dialog = () =>
+    page.eval(`({
+      open: document.getElementById('choiceDialog').open,
+      text: document.getElementById('choiceText').textContent,
+      typing: document.getElementById('choiceTypeRow').checkVisibility(),
+      danger: (() => {
+        const b = document.querySelector('#choiceButtons .danger');
+        return b ? { label: b.textContent, disabled: b.disabled } : null;
+      })(),
+    })`);
+  const openSecond = async () => {
+    await page.click('#lockForgot');
+    const first = await until(async () => ((await dialog()).open ? dialog() : null), 2000);
+    check(first && !first.typing && first.danger.label === '繼續', '第一層不用打字，按鈕是「繼續」：' + JSON.stringify(first));
+    await page.eval(`document.querySelector('#choiceButtons .danger').click()`);
+    return until(async () => {
+      const d = await dialog();
+      return d.open && d.typing ? d : null;
+    }, 2000);
+  };
+  const typeWord = (word) => page.eval(`(() => { const i = document.getElementById('choiceType'); i.value = ${JSON.stringify(word)}; i.dispatchEvent(new Event('input')); })()`);
+  const encrypted = () => w.eval(`chrome.storage.local.get('vaultKeyLock').then((x) => !!x.vaultKeyLock)`);
+
+  // 沒有備份紀錄：第二層要警告救不回來，打錯字或取消都不能清
+  let d = await openSecond();
+  check(d && d.text === (await msgOf('opt_lock_reset_no_backup')) && d.danger.disabled, '沒有備份要警告，按鈕先不能按：' + JSON.stringify(d));
+  await typeWord('清掉');
+  check((await dialog()).danger.disabled, '打錯字還是不能按');
+  await page.eval(`document.querySelector('#choiceButtons button').click()`);
+  await sleep(200);
+  check(await encrypted(), '取消不能清掉');
+
+  // 有備份紀錄：第二層寫出最近一次備份的時間，打對字才按得下去
+  const lastAt = new Date(2026, 10, 18, 9, 30).getTime();
+  await w.eval(`setSettings({ lastBackupAt: ${lastAt} }).then(() => true)`);
+  d = await openSecond();
+  const when = await page.eval(`fmtDate(${lastAt})`);
+  check(d && d.text === (await msgOf('opt_lock_reset_last_backup', when)), '要寫出最近一次備份：' + JSON.stringify(d));
+  await typeWord('清除');
+  check(!(await dialog()).danger.disabled, '打對字要按得下去');
+  await page.screenshot(path.join(SHOTS, 'lock-reset-confirm.png'));
+  await page.eval(`document.querySelector('#choiceButtons .danger').click()`);
+  check(await until(async () => !(await encrypted()), 3000), '按下去要清掉');
+  await closePage(page);
+});
+
+test('管理頁：保護方式有三張卡片，沒設自動備份密碼選加密會被擋', async () => {
+  await seedEntry('right');
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#settings', 1200);
+  await page.eval(`document.querySelector('#tab-settings > details.card').open = true`);
+  await sleep(200);
+  const modes = await page.eval(`Array.from(document.querySelectorAll('input[name="lockMode"]')).map((r) => [r.value, r.checked, r.closest('label').textContent.trim()])`);
+  check(sameList(modes.map((m) => m[0]), ['off', 'password', 'hello']), '要有三種，沒有只鎖畫面：' + JSON.stringify(modes));
+  check(modes[0][1], '預設要是關閉：' + JSON.stringify(modes));
+  // 每張卡片：[防旁人偷看, 防資料被拷走] 有沒有打勾、怎麼解鎖那行有沒有字
+  const cards = await page.eval(`Array.from(document.querySelectorAll('label.lock-card')).map((c) => [
+    c.querySelector('input').value,
+    ...Array.from(c.querySelectorAll('.lock-check')).map((x) => !x.classList.contains('no')),
+    !!c.querySelector('.lock-card-how').textContent.trim(),
+  ])`);
+  check(
+    JSON.stringify(cards) === JSON.stringify([['off', false, false, true], ['password', true, true, true], ['hello', true, true, true]]),
+    '卡片要標出擋得住什麼、怎麼解鎖：' + JSON.stringify(cards)
+  );
+  const notes = () => page.eval(`Array.from(document.querySelectorAll('.lock-card-note')).map((n) => [n.closest('label').querySelector('input').value, n.checkVisibility()])`);
+  check(JSON.stringify(await notes()) === JSON.stringify([['password', true], ['hello', true]]), '沒設自動備份密碼，加密的卡片要直接寫出來：' + JSON.stringify(await notes()));
+  await page.eval(`document.querySelector('#tab-settings > details.card').scrollIntoView()`);
+  await page.screenshot(path.join(SHOTS, 'lock-cards-no-backup.png'));
+  await page.click('input[name="lockMode"][value="password"]');
+  const toastText = await until(() => page.eval(`document.getElementById('toast').textContent`), 3000);
+  check(toastText.includes('自動備份密碼'), '要說先設自動備份密碼：' + toastText);
+  check(await until(() => page.eval(`document.querySelector('input[name="lockMode"][value="off"]').checked`), 2000), '沒改成功要回到關閉');
+
+  await setBackupPassword();
+  await page.eval('renderLock()');
+  check(await until(async () => (await notes()).every((n) => !n[1]), 2000), '設好自動備份密碼，提示要拿掉：' + JSON.stringify(await notes()));
+  // 走管理頁選自訂密碼加密的流程：問密碼的對話框直接回答，系統驗證一叫就記下來
+  const viaPage = await page.eval(`(async () => {
+    const calls = [];
+    for (const name of ['create', 'setupHello', 'assertion']) pkWebAuthn[name] = async () => { calls.push(name); throw new Error(name); };
+    askMasterPassword = async () => ${JSON.stringify(MASTER)};
+    const result = await changeLockMode('password').catch((e) => e.message);
+    return { result, calls };
+  })()`);
+  check(viaPage.result === 'done' && viaPage.calls.length === 0, '選自訂密碼加密不能叫系統驗證：' + JSON.stringify(viaPage));
+  await page.eval('renderLock()');
+  await sleep(200);
+  const st = await page.eval(`({
+    checked: document.querySelector('input[name="lockMode"]:checked').value,
+    changePw: document.getElementById('lockChangePw').checkVisibility(),
+    onStartup: [document.getElementById('lockOnStartup').checked, document.getElementById('lockOnStartup').disabled],
+    state: document.getElementById('lockState').textContent,
+    border: getComputedStyle(document.querySelector('input[name="lockMode"][value="password"]').closest('label')).borderTopWidth,
+  })`);
+  check(st.checked === 'password' && st.changePw && st.state === '自訂密碼加密', '要顯示自訂密碼加密和更改自訂密碼：' + JSON.stringify(st));
+  check(st.onStartup[0] && st.onStartup[1], '加密時「瀏覽器重開就鎖」要固定勾著：' + JSON.stringify(st.onStartup));
+  check(st.border === '2px', '選到的卡片要框起來：' + st.border);
+  await page.eval(`document.querySelector('#tab-settings > details.card').scrollIntoView()`);
+  await page.screenshot(path.join(SHOTS, 'lock-mode-password.png'));
+  await closePage(page);
+});
+
+test('保護方式：舊的只鎖畫面照常用、有提示，改成加密後就不能再選回來', async () => {
+  await seedEntry('right');
+  check((await setMode({ mode: 'screen' })) === (await msgOf('bg_lock_mode_unknown')), '關閉時不能新選只鎖畫面');
+  // 1.15.0 以前開了工具鎖定的樣子：有系統驗證的鑰匙、enabled: true
+  await w.eval(`(async () => {
+    await chrome.storage.local.set({ webauthn: { id: 'x', alg: -7, publicKey: 'x', transports: [], createdAt: 1 } });
+    const s = await getSettings();
+    await setSettings({ lock: { ...s.lock, enabled: true } });
+  })()`);
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#settings', 1200);
+  await page.eval(`document.querySelector('#tab-settings > details.card').open = true`);
+  await sleep(200);
+  const st = await page.eval(`({
+    main: !document.getElementById('pageMain').hidden,
+    legacy: document.getElementById('lockLegacy').checkVisibility(),
+    checked: Array.from(document.querySelectorAll('input[name="lockMode"]:checked')).map((r) => r.value),
+    state: document.getElementById('lockState').textContent,
+  })`);
+  check(st.main, '沒鎖要直接打開管理頁：' + JSON.stringify(st));
+  check(st.legacy && st.checked.length === 0 && st.state.startsWith('只鎖畫面'), '要提示改選，三張卡片都不選：' + JSON.stringify(st));
+  await page.eval(`document.querySelector('#tab-settings > details.card').scrollIntoView()`);
+  await page.screenshot(path.join(SHOTS, 'lock-legacy-screen.png'));
+  await setBackupPassword();
+  check((await setMode({ mode: 'password', setup: { password: MASTER } })) === 'ok', '舊的只鎖畫面要能改成自訂密碼加密');
+  check((await setMode({ mode: 'screen', proof: { password: MASTER } })) === (await msgOf('bg_lock_mode_unknown')), '改了就不能選回只鎖畫面');
+  await page.eval('renderLock()');
+  check(await until(() => page.eval(`!document.getElementById('lockLegacy').checkVisibility()`), 2000), '改了之後提示要拿掉');
+  await closePage(page);
+});
+
+test('管理頁：工具沒鎖就直接打開，鎖著才要驗證，在別處解鎖後自己進去', async () => {
+  await seedEntry('right');
+  await setBackupPassword();
+  check((await setMode({ mode: 'password', setup: { password: MASTER } })) === 'ok', '設自訂密碼要成功');
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html', 1200);
+  check(await page.eval(`!document.getElementById('pageMain').hidden && document.getElementById('lockScreen').hidden`), '沒鎖要直接顯示管理頁，不問驗證');
+  await w.eval('setLocked(true)');
+  check(await until(() => page.eval(`!document.getElementById('lockScreen').hidden && document.getElementById('pageMain').hidden`), 3000), '鎖上要回到驗證畫面');
+  // 像是在小視窗的解鎖視窗打自訂密碼
+  check((await unlockPassword(MASTER)) === 'ok', '在別處解鎖要成功');
+  check(await until(() => page.eval(`!document.getElementById('pageMain').hidden`), 3000), '別處解鎖後，停在驗證畫面的管理頁要自己進去');
+  await closePage(page);
+});
+
+test('忘了自訂密碼：清掉後回到不加密，自動備份的金鑰還在', async () => {
+  await seedEntry('right');
+  await setBackupPassword();
+  check((await setMode({ mode: 'password', setup: { password: MASTER } })) === 'ok', '設自訂密碼要成功');
+  await restartBrowser();
+  const fromWeb = await w.eval(`handlers['lock.reset']({}, { url: 'https://example.test/' }).then(() => 'ok', (e) => e.message)`);
+  check(fromWeb === (await msgOf('bg_extension_page_only')), '網頁裡的程式不能清：' + fromWeb);
+  check((await w.eval(`handlers['lock.reset']({}, ${asPage}).then(() => 'ok', (e) => e.message)`)) === 'ok', '要清得掉');
+  const r = await w.eval(`(async () => {
+    const all = await chrome.storage.local.get(null);
+    return { vault: 'vault' in all, lock: 'vaultKeyLock' in all, backupKey: 'autoBackupKey' in all, mode: (await getSettings()).lock.mode, locked: await isLocked(), count: (await loadEntries()).length };
+  })()`);
+  check(!r.vault && !r.lock && r.backupKey && r.mode === 'off' && !r.locked && r.count === 0, '清完要回到不加密、沒有帳密，自動備份金鑰留著：' + JSON.stringify(r));
+});
+
 // ---- 大區塊收合和立即備份 ----
 
 const blocksOf = (page, tab) =>
@@ -2753,7 +3140,8 @@ test('區塊：工具鎖定標題旁邊看得出有沒有開，網站區塊的�
   })()`);
   await page.eval('renderLock()');
   await sleep(200);
-  check((await page.eval(`document.getElementById('lockState').textContent`)) === '已啟用', '開了要顯示已啟用');
+  const state = await page.eval(`document.getElementById('lockState').textContent`);
+  check(state.startsWith('只鎖畫面'), '開了要顯示用哪種保護方式：' + state);
   await closePage(page);
 });
 
