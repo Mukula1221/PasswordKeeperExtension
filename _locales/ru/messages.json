@@ -1,0 +1,2674 @@
+{
+  "locale_code": {
+    "message": "ru"
+  },
+  "lang_tag": {
+    "message": "ru"
+  },
+  "ext_name": {
+    "message": "Хранитель паролей"
+  },
+  "ext_description": {
+    "message": "Сохраняет пароли и сам заполняет формы входа, когда менеджер паролей браузера отключён. Данные остаются на этом компьютере."
+  },
+  "cmd_fill_login": {
+    "message": "Вставить имя пользователя и пароль этого сайта в форму входа"
+  },
+  "common_cancelled": {
+    "message": "Отменено",
+    "description": "Download or save dialog was cancelled. background.js returns it as an error and options.js compares against it."
+  },
+  "pop_lock_now_title": {
+    "message": "Заблокировать сейчас. Чтобы снова пользоваться, нужно подтвердить личность.",
+    "description": "Tooltip of the lock button in the popup header."
+  },
+  "pop_lock_now": {
+    "message": "Заблокировать",
+    "description": "Lock button in the popup header, next to a lock icon."
+  },
+  "pop_search_placeholder": {
+    "message": "Поиск аккаунтов, Enter — открыть сайт",
+    "description": "Search box at the top of the popup. Enter opens the site of the first result. The popup is 360px wide, so keep it short."
+  },
+  "pop_locked_title": {
+    "message": "Заблокировано"
+  },
+  "pop_locked_hint": {
+    "message": "Подтвердите личность, чтобы пользоваться автозаполнением и видеть пароли."
+  },
+  "pop_add_title": {
+    "message": "Добавить аккаунт для этого сайта"
+  },
+  "pop_username": {
+    "message": "Имя пользователя",
+    "description": "Field label in the add account form."
+  },
+  "pop_password": {
+    "message": "Пароль",
+    "description": "Field label in the add account form."
+  },
+  "pop_show": {
+    "message": "Показать",
+    "description": "Button inside the password field. Shows the password as text."
+  },
+  "pop_hide": {
+    "message": "Скрыть",
+    "description": "Same button as pop_show after the password is shown. It sits inside the field, so keep it short."
+  },
+  "pop_cancel": {
+    "message": "Отмена"
+  },
+  "pop_save": {
+    "message": "Сохранить"
+  },
+  "pop_generate": {
+    "message": "Создать пароль",
+    "description": "Button that opens the password generator, and the title of that panel."
+  },
+  "pop_regen_title": {
+    "message": "Создать другой пароль"
+  },
+  "pop_regen": {
+    "message": "Заново",
+    "description": "Small button next to the generated password."
+  },
+  "pop_gen_length": {
+    "message": "Длина от",
+    "description": "Reads as 'Length [min] to [max]'."
+  },
+  "pop_gen_to": {
+    "message": "до",
+    "description": "Between the min and max length inputs: 'Length [min] to [max]'."
+  },
+  "pop_gen_upper": {
+    "message": "Заглавные",
+    "description": "Checkbox: use uppercase letters."
+  },
+  "pop_gen_lower": {
+    "message": "Строчные",
+    "description": "Checkbox: use lowercase letters."
+  },
+  "pop_gen_digits": {
+    "message": "Цифры",
+    "description": "Checkbox: use digits."
+  },
+  "pop_gen_symbols": {
+    "message": "Символы",
+    "description": "Checkbox: use symbols."
+  },
+  "pop_gen_symbol_set": {
+    "message": "Разрешённые символы",
+    "description": "Field listing which symbols the generator may use."
+  },
+  "pop_gen_close": {
+    "message": "Свернуть",
+    "description": "Collapses the password generator panel."
+  },
+  "pop_copy": {
+    "message": "Копировать",
+    "description": "Copies the generated password."
+  },
+  "pop_gen_fill": {
+    "message": "Вставить на страницу",
+    "description": "Fills the generated password into the password field on the current web page."
+  },
+  "pop_add_account": {
+    "message": "+ Добавить аккаунт"
+  },
+  "pop_this_site": {
+    "message": "Этот сайт",
+    "description": "Heading above the settings that only apply to the current site."
+  },
+  "pop_autofill_title": {
+    "message": "Заполнять имя пользователя и пароль при открытии страницы входа"
+  },
+  "pop_autofill": {
+    "message": "Автозаполнение",
+    "description": "Checkbox under 'This site'."
+  },
+  "pop_autofill_master_off": {
+    "message": "(главный переключатель выключен)",
+    "description": "Shown next to 'Autofill' when autofill is turned off for all sites on the manager page."
+  },
+  "pop_autosubmit": {
+    "message": "Входить после автозаполнения",
+    "description": "Checkbox under 'This site'."
+  },
+  "pop_autosubmit_tip": {
+    "message": "Вход выполняется, только если автозаполнение прошло успешно и на странице одна форма входа",
+    "description": "Help text of the '?' next to 'Sign in after autofill'."
+  },
+  "pop_pick_title": {
+    "message": "При следующем открытии этой страницы выбранная кнопка будет нажата автоматически"
+  },
+  "pop_pick": {
+    "message": "Выбрать кнопку для автонажатия",
+    "description": "Closes the popup and lets the user click a button on the web page."
+  },
+  "pop_pick_count_title": {
+    "message": "Посмотреть правила автонажатия на странице управления"
+  },
+  "pop_manage": {
+    "message": "Управлять всеми паролями",
+    "description": "Popup footer link. Opens the manager page."
+  },
+  "pop_no_response": {
+    "message": "Расширение не отвечает"
+  },
+  "pop_page_unavailable": {
+    "message": "На этой странице не работает"
+  },
+  "pop_page_not_ready": {
+    "message": "Хранитель паролей ещё не загружен на этой странице. Обновите страницу и попробуйте ещё раз.",
+    "description": "Tabs opened before the extension was installed or reloaded can't talk to it until they are reloaded."
+  },
+  "pop_page_no_response": {
+    "message": "Страница не отвечает"
+  },
+  "pop_password_copied": {
+    "message": "Пароль скопирован"
+  },
+  "pop_copy_failed": {
+    "message": "Не удалось скопировать: $1",
+    "description": "$1 = error message."
+  },
+  "pop_load_failed": {
+    "message": "Не удалось загрузить: $1",
+    "description": "$1 = error message."
+  },
+  "pop_empty": {
+    "message": "Для этого сайта ещё нет сохранённых аккаунтов. Войдите на сайт один раз, и вам предложат сохранить аккаунт."
+  },
+  "pop_no_username": {
+    "message": "(Без имени пользователя, только пароль)",
+    "description": "Shown in the account list instead of an empty username."
+  },
+  "pop_fill": {
+    "message": "Заполнить",
+    "description": "Fills this account into the sign-in form on the page."
+  },
+  "pop_copy_password": {
+    "message": "Копировать пароль"
+  },
+  "pop_account_count_one": {
+    "message": "$1 аккаунт",
+    "description": "Popup footer. $1 = number of saved accounts for this site."
+  },
+  "pop_account_count_few": {
+    "message": "$1 аккаунта",
+    "description": "Popup footer. $1 = number of saved accounts for this site."
+  },
+  "pop_account_count_many": {
+    "message": "$1 аккаунтов",
+    "description": "Popup footer. $1 = number of saved accounts for this site."
+  },
+  "pop_account_count_other": {
+    "message": "$1 аккаунта",
+    "description": "Popup footer. $1 = number of saved accounts for this site."
+  },
+  "pop_page_rule_count_one": {
+    "message": "$1 правило",
+    "description": "Link next to 'Pick a button to auto-click'. $1 = number of auto-click rules for this page. Both buttons share one row, so keep it short."
+  },
+  "pop_page_rule_count_few": {
+    "message": "$1 правила",
+    "description": "Link next to 'Pick a button to auto-click'. $1 = number of auto-click rules for this page. Both buttons share one row, so keep it short."
+  },
+  "pop_page_rule_count_many": {
+    "message": "$1 правил",
+    "description": "Link next to 'Pick a button to auto-click'. $1 = number of auto-click rules for this page. Both buttons share one row, so keep it short."
+  },
+  "pop_page_rule_count_other": {
+    "message": "$1 правила",
+    "description": "Link next to 'Pick a button to auto-click'. $1 = number of auto-click rules for this page. Both buttons share one row, so keep it short."
+  },
+  "pop_password_required": {
+    "message": "Пароль не может быть пустым"
+  },
+  "pop_updated": {
+    "message": "Обновлено",
+    "description": "The username already existed, so its password was updated."
+  },
+  "pop_added": {
+    "message": "Добавлено"
+  },
+  "pop_setting_failed": {
+    "message": "Не удалось изменить настройку: $1",
+    "description": "$1 = error message."
+  },
+  "pop_autofill_on": {
+    "message": "Автозаполнение для этого сайта включено"
+  },
+  "pop_autofill_off": {
+    "message": "Автозаполнение для этого сайта выключено"
+  },
+  "pop_autosubmit_on": {
+    "message": "Теперь на сайте $1 после автозаполнения вход будет выполняться автоматически",
+    "description": "$1 = site host name, e.g. example.com."
+  },
+  "pop_autosubmit_off": {
+    "message": "Автоматический вход для этого сайта выключен"
+  },
+  "pop_search_none": {
+    "message": "Нет аккаунтов по запросу «$1»",
+    "description": "$1 = what the user typed in the search box."
+  },
+  "pop_search_no_username": {
+    "message": "(без имени пользователя)",
+    "description": "Shown in search results instead of an empty username."
+  },
+  "pop_open": {
+    "message": "Открыть",
+    "description": "Opens the site of this search result in a new tab."
+  },
+  "pop_unlock_with": {
+    "message": "Разблокировать через $1",
+    "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "pop_unlock_password": {
+    "message": "Разблокировать личным паролем"
+  },
+  "pop_copied": {
+    "message": "Скопировано"
+  },
+  "pop_gen_filled": {
+    "message": "Пароль вставлен в поле на странице. После отправки формы не забудьте нажать «Сохранить».",
+    "description": "'Save' is the button on the save-password prompt shown after the form is submitted."
+  },
+  "pop_backup_days_one": {
+    "message": "Резервной копии нет уже $1 день. Нажмите здесь, чтобы создать её на странице управления.",
+    "description": "Backup reminder bar in the popup. $1 = days since the last backup."
+  },
+  "pop_backup_days_few": {
+    "message": "Резервной копии нет уже $1 дня. Нажмите здесь, чтобы создать её на странице управления.",
+    "description": "Backup reminder bar in the popup. $1 = days since the last backup."
+  },
+  "pop_backup_days_many": {
+    "message": "Резервной копии нет уже $1 дней. Нажмите здесь, чтобы создать её на странице управления.",
+    "description": "Backup reminder bar in the popup. $1 = days since the last backup."
+  },
+  "pop_backup_days_other": {
+    "message": "Резервной копии нет уже $1 дня. Нажмите здесь, чтобы создать её на странице управления.",
+    "description": "Backup reminder bar in the popup. $1 = days since the last backup."
+  },
+  "pop_backup_never": {
+    "message": "Вы ещё не создавали резервную копию, поэтому пароли есть только в этом браузере. Нажмите здесь, чтобы создать её на странице управления.",
+    "description": "Backup reminder bar in the popup."
+  },
+  "pop_update_bar": {
+    "message": "Доступна версия $1. Нажмите здесь, чтобы узнать, как обновиться.",
+    "description": "$1 = version number like 1.14.0. Update reminder bar in the popup."
+  },
+  "pop_unsupported_page": {
+    "message": "На этой странице не работает. Поддерживаются только страницы http и https.",
+    "description": "Shown under the popup title on browser pages such as the new tab page."
+  },
+  "unl_title": {
+    "message": "Разблокировка Хранителя паролей",
+    "description": "Title of the separate unlock window."
+  },
+  "unl_not_shown": {
+    "message": "Окно не появилось? ",
+    "description": "Followed directly by the unl_retry link, with nothing in between. Keep the trailing space in languages that use spaces."
+  },
+  "unl_retry": {
+    "message": "Нажмите здесь, чтобы открыть его снова",
+    "description": "Link that asks for system verification again, e.g. when the Windows Hello dialog opened behind other windows."
+  },
+  "unl_done": {
+    "message": "Разблокировано"
+  },
+  "unl_cancel": {
+    "message": "Отмена"
+  },
+  "unl_try_again": {
+    "message": "Повторить",
+    "description": "Shown only after verification was canceled or timed out."
+  },
+  "unl_wait_title": {
+    "message": "Подтвердите личность через $1 в появившемся окне",
+    "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "unl_password_title": {
+    "message": "Введите личный пароль для разблокировки"
+  },
+  "wa_no_response": {
+    "message": "Расширение не отвечает"
+  },
+  "wa_cancelled": {
+    "message": "Проверка отменена, или время ожидания истекло"
+  },
+  "wa_blocked": {
+    "message": "Браузер не разрешает этому расширению использовать системную проверку подлинности"
+  },
+  "wa_security_key_or_phone": {
+    "message": "ключ безопасности или телефон",
+    "description": "What to verify with on systems without Windows Hello or Touch ID. Always inserted mid-sentence as $1 (e.g. 'Unlock with $1'), so English keeps it lowercase with an article."
+  },
+  "wa_unsupported": {
+    "message": "Этот браузер не поддерживает системную проверку подлинности"
+  },
+  "wa_no_public_key": {
+    "message": "Браузер не предоставил открытый ключ, поэтому на этом компьютере системная проверка подлинности недоступна"
+  },
+  "wa_not_set_up": {
+    "message": "Системная проверка подлинности ещё не настроена"
+  },
+  "wa_no_prf": {
+    "message": "На этом компьютере $1 не может выдать секрет для шифрования. Используйте шифрование личным паролем."
+  },
+  "wa_prf_unstable": {
+    "message": "При каждой проверке $1 выдаёт разный секрет, поэтому шифровать так нельзя. Используйте шифрование личным паролем."
+  },
+  "opt_page_title": {
+    "message": "Хранитель паролей – управление паролями",
+    "description": "Browser tab title of the manager page."
+  },
+  "opt_header_note": {
+    "message": "Пароли хранятся только в браузере на этом компьютере и никуда не отправляются."
+  },
+  "opt_header_version_title": {
+    "message": "История версий",
+    "description": "Tooltip of the version number in the page header."
+  },
+  "opt_header_update": {
+    "message": "Есть обновление",
+    "description": "Small button next to the version number in the header."
+  },
+  "opt_header_update_title": {
+    "message": "Доступна версия $1. Нажмите, чтобы узнать, как обновиться",
+    "description": "$1 = version number."
+  },
+  "opt_lock_title": {
+    "message": "Подтвердите, что это вы",
+    "description": "Heading of the screen shown while App lock is on."
+  },
+  "opt_lock_help": {
+    "message": "Подтвердите личность, чтобы увидеть пароли и настройки."
+  },
+  "opt_verify_with": {
+    "message": "Подтвердить через $1",
+    "description": "Button on the lock screen. $1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "opt_lock_broken": {
+    "message": "Настройки блокировки повреждены: не найден ключ системной проверки подлинности. Удалите и заново установите расширение, затем импортируйте резервную копию."
+  },
+  "opt_lock_unlock": {
+    "message": "Разблокировать"
+  },
+  "opt_lock_forgot": {
+    "message": "Забыли личный пароль или не работает системная проверка подлинности?"
+  },
+  "opt_lock_reset_title": {
+    "message": "Очистить пароли на этом компьютере?"
+  },
+  "opt_lock_reset_text": {
+    "message": "Если разблокировать не получается, остаётся только очистить данные, а затем восстановить их кнопкой «Импортировать зашифрованную копию» на вкладке «Резервное копирование». Это действие нельзя отменить."
+  },
+  "opt_lock_reset_confirm": {
+    "message": "Очистить"
+  },
+  "opt_lock_reset_next": {
+    "message": "Продолжить"
+  },
+  "opt_lock_reset_again_title": {
+    "message": "Последняя проверка: очистить пароли на этом компьютере"
+  },
+  "opt_lock_reset_last_backup": {
+    "message": "Последняя резервная копия: $1. После очистки восстановите данные из неё. Пароли, добавленные или изменённые позже, будут потеряны."
+  },
+  "opt_lock_reset_no_backup": {
+    "message": "На этом компьютере нет записей о резервных копиях, поэтому после очистки пароли не удастся восстановить."
+  },
+  "opt_lock_reset_word": {
+    "message": "очистить"
+  },
+  "opt_type_to_confirm": {
+    "message": "Чтобы продолжить, введите «$1»"
+  },
+  "opt_lock_reset_done": {
+    "message": "Данные очищены. Нажмите «Импортировать зашифрованную копию» и выберите файл резервной копии для восстановления."
+  },
+  "opt_no_response": {
+    "message": "Расширение не отвечает"
+  },
+  "opt_load_failed": {
+    "message": "Не удалось загрузить: $1",
+    "description": "$1 = error message."
+  },
+  "opt_tab_passwords": {
+    "message": "Пароли"
+  },
+  "opt_tab_backup": {
+    "message": "Резервное копирование"
+  },
+  "opt_tab_settings": {
+    "message": "Настройки"
+  },
+  "opt_tab_trash": {
+    "message": "Корзина"
+  },
+  "opt_tab_help": {
+    "message": "Справка"
+  },
+  "opt_tab_versions": {
+    "message": "Версии"
+  },
+  "opt_add_button": {
+    "message": "+ Добавить",
+    "description": "Adds a password on the Passwords tab, or an auto-click rule on the Settings tab."
+  },
+  "opt_cancel": {
+    "message": "Отмена"
+  },
+  "opt_save": {
+    "message": "Сохранить"
+  },
+  "opt_ok": {
+    "message": "ОК"
+  },
+  "opt_apply": {
+    "message": "Применить"
+  },
+  "opt_got_it": {
+    "message": "Понятно",
+    "description": "Closes an information dialog."
+  },
+  "opt_edit": {
+    "message": "Изменить"
+  },
+  "opt_delete": {
+    "message": "Удалить"
+  },
+  "opt_show": {
+    "message": "Показать",
+    "description": "Shows the password as text."
+  },
+  "opt_hide": {
+    "message": "Скрыть",
+    "description": "Hides the password again."
+  },
+  "opt_copy": {
+    "message": "Копировать"
+  },
+  "opt_copied": {
+    "message": "Скопировано"
+  },
+  "opt_copy_failed": {
+    "message": "Не удалось скопировать: $1",
+    "description": "$1 = error message."
+  },
+  "opt_password_copied": {
+    "message": "Пароль скопирован"
+  },
+  "opt_added": {
+    "message": "Добавлено"
+  },
+  "opt_updated": {
+    "message": "Обновлено"
+  },
+  "opt_setting_failed": {
+    "message": "Не удалось изменить настройку: $1",
+    "description": "$1 = error message."
+  },
+  "opt_delete_failed": {
+    "message": "Не удалось удалить: $1",
+    "description": "$1 = error message."
+  },
+  "opt_select_all": {
+    "message": "Выбрать все"
+  },
+  "opt_seconds_unit": {
+    "message": "сек.",
+    "description": "Unit after a number input."
+  },
+  "opt_no_username": {
+    "message": "(без имени пользователя)",
+    "description": "Shown instead of an empty username."
+  },
+  "opt_account_label": {
+    "message": "$1 · $2",
+    "description": "One saved account in a list. $1 = site, $2 = username. Only the separator between them is translated."
+  },
+  "opt_list_sep": {
+    "message": ", ",
+    "description": "Separator between items of a list inside a sentence."
+  },
+  "opt_note_sep": {
+    "message": "; ",
+    "description": "Separator between two notes shown after a CSV export."
+  },
+  "opt_search_placeholder": {
+    "message": "Поиск по сайтам, именам пользователей и заметкам"
+  },
+  "opt_export_selected_title": {
+    "message": "Отметьте флажки слева, чтобы экспортировать эти записи в зашифрованный файл для коллеги"
+  },
+  "opt_export_selected": {
+    "message": "Экспортировать выбранные (с шифрованием)"
+  },
+  "opt_export_selected_n_one": {
+    "message": "Экспортировать $1 выбранную запись (с шифрованием)",
+    "description": "$1 = number of checked entries."
+  },
+  "opt_export_selected_n_few": {
+    "message": "Экспортировать $1 выбранные записи (с шифрованием)",
+    "description": "$1 = number of checked entries."
+  },
+  "opt_export_selected_n_many": {
+    "message": "Экспортировать $1 выбранных записей (с шифрованием)",
+    "description": "$1 = number of checked entries."
+  },
+  "opt_export_selected_n_other": {
+    "message": "Экспортировать $1 выбранные записи (с шифрованием)",
+    "description": "$1 = number of checked entries."
+  },
+  "opt_check_all_title": {
+    "message": "Выбрать все в списке"
+  },
+  "opt_col_site": {
+    "message": "Сайт",
+    "description": "Table column."
+  },
+  "opt_col_username": {
+    "message": "Имя пользователя",
+    "description": "Table column."
+  },
+  "opt_col_password": {
+    "message": "Пароль",
+    "description": "Table column."
+  },
+  "opt_col_last_used": {
+    "message": "Последнее использование",
+    "description": "Table column: when the password was last filled in."
+  },
+  "opt_empty": {
+    "message": "Паролей пока нет. Войдите на любой сайт один раз, и в правом верхнем углу появится предложение сохранить пароль."
+  },
+  "opt_history_toggle": {
+    "message": "Старые пароли ($1)",
+    "description": "Expands the previous passwords of an account. $1 = how many."
+  },
+  "opt_history_replaced_at": {
+    "message": "Заменён $1",
+    "description": "$1 = date and time the password was replaced."
+  },
+  "opt_confirm_delete": {
+    "message": "Удалить аккаунт «$2» для сайта $1?",
+    "description": "$1 = site, $2 = username."
+  },
+  "opt_moved_to_trash_one": {
+    "message": "Перемещено в корзину. Восстановить можно в течение $1 дня",
+    "description": "$1 = days items stay in the Trash."
+  },
+  "opt_moved_to_trash_few": {
+    "message": "Перемещено в корзину. Восстановить можно в течение $1 дней",
+    "description": "$1 = days items stay in the Trash."
+  },
+  "opt_moved_to_trash_many": {
+    "message": "Перемещено в корзину. Восстановить можно в течение $1 дней",
+    "description": "$1 = days items stay in the Trash."
+  },
+  "opt_moved_to_trash_other": {
+    "message": "Перемещено в корзину. Восстановить можно в течение $1 дня",
+    "description": "$1 = days items stay in the Trash."
+  },
+  "opt_search_no_match": {
+    "message": "Ничего не найдено по запросу «$1»",
+    "description": "$1 = search text."
+  },
+  "opt_health_show": {
+    "message": "Подробнее"
+  },
+  "opt_health_hide": {
+    "message": "Скрыть подробности"
+  },
+  "opt_health_ok": {
+    "message": "Проверка паролей: повторяющихся и слабых паролей нет, все менялись в течение последнего года."
+  },
+  "opt_health_summary_one": {
+    "message": "Проверка паролей: $1 группа повторяющихся паролей, слабых: $2, не менялись больше года: $3.",
+    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  },
+  "opt_health_summary_few": {
+    "message": "Проверка паролей: $1 группы повторяющихся паролей, слабых: $2, не менялись больше года: $3.",
+    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  },
+  "opt_health_summary_many": {
+    "message": "Проверка паролей: $1 групп повторяющихся паролей, слабых: $2, не менялись больше года: $3.",
+    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  },
+  "opt_health_summary_other": {
+    "message": "Проверка паролей: $1 группы повторяющихся паролей, слабых: $2, не менялись больше года: $3.",
+    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  },
+  "opt_health_reused": {
+    "message": "Повтор: группа $1, аккаунтов с этим паролем: $2",
+    "description": "$1 = group number, $2 = accounts using it (always 2 or more)."
+  },
+  "opt_health_weak_short_one": {
+    "message": "Слабый: всего $1 символ",
+    "description": "$1 = password length."
+  },
+  "opt_health_weak_short_few": {
+    "message": "Слабый: всего $1 символа",
+    "description": "$1 = password length."
+  },
+  "opt_health_weak_short_many": {
+    "message": "Слабый: всего $1 символов",
+    "description": "$1 = password length."
+  },
+  "opt_health_weak_short_other": {
+    "message": "Слабый: всего $1 символа",
+    "description": "$1 = password length."
+  },
+  "opt_health_weak_classes": {
+    "message": "Слабый: используется только один тип символов"
+  },
+  "opt_health_old": {
+    "message": "Давно не менялся: последнее изменение $1",
+    "description": "$1 = date and time."
+  },
+  "opt_trash_title": {
+    "message": "Корзина"
+  },
+  "opt_trash_days_before": {
+    "message": "Хранить удалённые аккаунты здесь",
+    "description": "Before the days input: 'Keep deleted accounts here for [30] days, then remove them automatically'."
+  },
+  "opt_trash_days_after": {
+    "message": "дн., затем удалять автоматически",
+    "description": "After the days input. See opt_trash_days_before."
+  },
+  "opt_trash_restore_selected": {
+    "message": "Восстановить выбранные"
+  },
+  "opt_trash_purge_selected": {
+    "message": "Удалить выбранные навсегда"
+  },
+  "opt_trash_restore_selected_n_one": {
+    "message": "Восстановить выбранные ($1)",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_restore_selected_n_few": {
+    "message": "Восстановить выбранные ($1)",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_restore_selected_n_many": {
+    "message": "Восстановить выбранные ($1)",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_restore_selected_n_other": {
+    "message": "Восстановить выбранные ($1)",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_purge_selected_n_one": {
+    "message": "Удалить выбранные навсегда ($1)",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_purge_selected_n_few": {
+    "message": "Удалить выбранные навсегда ($1)",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_purge_selected_n_many": {
+    "message": "Удалить выбранные навсегда ($1)",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_purge_selected_n_other": {
+    "message": "Удалить выбранные навсегда ($1)",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_empty": {
+    "message": "Корзина пуста."
+  },
+  "opt_trash_purge_all": {
+    "message": "Очистить корзину"
+  },
+  "opt_trash_load_failed": {
+    "message": "Не удалось загрузить корзину: $1",
+    "description": "$1 = error message."
+  },
+  "opt_trash_item_info_one": {
+    "message": "Удалено $2. Автоматически удалится через $1 день",
+    "description": "$1 = days left, $2 = date and time it was deleted."
+  },
+  "opt_trash_item_info_few": {
+    "message": "Удалено $2. Автоматически удалится через $1 дня",
+    "description": "$1 = days left, $2 = date and time it was deleted."
+  },
+  "opt_trash_item_info_many": {
+    "message": "Удалено $2. Автоматически удалится через $1 дней",
+    "description": "$1 = days left, $2 = date and time it was deleted."
+  },
+  "opt_trash_item_info_other": {
+    "message": "Удалено $2. Автоматически удалится через $1 дня",
+    "description": "$1 = days left, $2 = date and time it was deleted."
+  },
+  "opt_restore": {
+    "message": "Восстановить"
+  },
+  "opt_restored": {
+    "message": "Восстановлено"
+  },
+  "opt_restore_failed": {
+    "message": "Не удалось восстановить: $1",
+    "description": "$1 = error message."
+  },
+  "opt_restored_n_one": {
+    "message": "Восстановлен $1 аккаунт"
+  },
+  "opt_restored_n_few": {
+    "message": "Восстановлено $1 аккаунта"
+  },
+  "opt_restored_n_many": {
+    "message": "Восстановлено $1 аккаунтов"
+  },
+  "opt_restored_n_other": {
+    "message": "Восстановлено $1 аккаунта"
+  },
+  "opt_restored_skipped_title": {
+    "message": "Восстановлено: $1. Не восстановлено: $2",
+    "description": "$1 = restored accounts, $2 = accounts skipped because the site already has the same username."
+  },
+  "opt_restored_skipped_text": {
+    "message": "На этих сайтах уже есть такой же аккаунт:"
+  },
+  "opt_purge": {
+    "message": "Удалить навсегда"
+  },
+  "opt_confirm_purge": {
+    "message": "Удалить аккаунт «$2» для сайта $1 навсегда? Это действие нельзя отменить.",
+    "description": "$1 = site, $2 = username."
+  },
+  "opt_confirm_purge_selected_one": {
+    "message": "Удалить навсегда $1 выбранный аккаунт? Это действие нельзя отменить."
+  },
+  "opt_confirm_purge_selected_few": {
+    "message": "Удалить навсегда $1 выбранных аккаунта? Это действие нельзя отменить."
+  },
+  "opt_confirm_purge_selected_many": {
+    "message": "Удалить навсегда $1 выбранных аккаунтов? Это действие нельзя отменить."
+  },
+  "opt_confirm_purge_selected_other": {
+    "message": "Удалить навсегда $1 выбранных аккаунта? Это действие нельзя отменить."
+  },
+  "opt_purged_n_one": {
+    "message": "Навсегда удалён $1 аккаунт"
+  },
+  "opt_purged_n_few": {
+    "message": "Навсегда удалено $1 аккаунта"
+  },
+  "opt_purged_n_many": {
+    "message": "Навсегда удалено $1 аккаунтов"
+  },
+  "opt_purged_n_other": {
+    "message": "Навсегда удалено $1 аккаунта"
+  },
+  "opt_confirm_purge_all_one": {
+    "message": "Очистить корзину? $1 аккаунт будет удалён навсегда."
+  },
+  "opt_confirm_purge_all_few": {
+    "message": "Очистить корзину? $1 аккаунта будут удалены навсегда."
+  },
+  "opt_confirm_purge_all_many": {
+    "message": "Очистить корзину? $1 аккаунтов будут удалены навсегда."
+  },
+  "opt_confirm_purge_all_other": {
+    "message": "Очистить корзину? $1 аккаунта будут удалены навсегда."
+  },
+  "opt_trash_emptied": {
+    "message": "Корзина очищена"
+  },
+  "opt_trash_days_invalid": {
+    "message": "Число дней должно быть целым числом от 1 до 365"
+  },
+  "opt_trash_days_title_one": {
+    "message": "Изменить на $1 день",
+    "description": "Dialog title when shortening the Trash days. $1 = new number of days."
+  },
+  "opt_trash_days_title_few": {
+    "message": "Изменить на $1 дня",
+    "description": "Dialog title when shortening the Trash days. $1 = new number of days."
+  },
+  "opt_trash_days_title_many": {
+    "message": "Изменить на $1 дней",
+    "description": "Dialog title when shortening the Trash days. $1 = new number of days."
+  },
+  "opt_trash_days_title_other": {
+    "message": "Изменить на $1 дня",
+    "description": "Dialog title when shortening the Trash days. $1 = new number of days."
+  },
+  "opt_trash_days_expiring_one": {
+    "message": "$1 аккаунт будет сразу удалён навсегда:"
+  },
+  "opt_trash_days_expiring_few": {
+    "message": "$1 аккаунта будут сразу удалены навсегда:"
+  },
+  "opt_trash_days_expiring_many": {
+    "message": "$1 аккаунтов будут сразу удалены навсегда:"
+  },
+  "opt_trash_days_expiring_other": {
+    "message": "$1 аккаунта будут сразу удалены навсегда:"
+  },
+  "opt_trash_age_one": {
+    "message": "В корзине $1 день",
+    "description": "$1 = days since it was deleted."
+  },
+  "opt_trash_age_few": {
+    "message": "В корзине $1 дня",
+    "description": "$1 = days since it was deleted."
+  },
+  "opt_trash_age_many": {
+    "message": "В корзине $1 дней",
+    "description": "$1 = days since it was deleted."
+  },
+  "opt_trash_age_other": {
+    "message": "В корзине $1 дня",
+    "description": "$1 = days since it was deleted."
+  },
+  "opt_confirm_delete_button": {
+    "message": "Удалить",
+    "description": "Confirms deleting the listed accounts."
+  },
+  "opt_trash_days_set_one": {
+    "message": "Изменено на $1 день"
+  },
+  "opt_trash_days_set_few": {
+    "message": "Изменено на $1 дня"
+  },
+  "opt_trash_days_set_many": {
+    "message": "Изменено на $1 дней"
+  },
+  "opt_trash_days_set_other": {
+    "message": "Изменено на $1 дня"
+  },
+  "opt_trash_days_set_purged_one": {
+    "message": "Изменено на $1 день. Удалено: $2",
+    "description": "$1 = new number of days, $2 = accounts deleted because they were older."
+  },
+  "opt_trash_days_set_purged_few": {
+    "message": "Изменено на $1 дня. Удалено: $2",
+    "description": "$1 = new number of days, $2 = accounts deleted because they were older."
+  },
+  "opt_trash_days_set_purged_many": {
+    "message": "Изменено на $1 дней. Удалено: $2",
+    "description": "$1 = new number of days, $2 = accounts deleted because they were older."
+  },
+  "opt_trash_days_set_purged_other": {
+    "message": "Изменено на $1 дня. Удалено: $2",
+    "description": "$1 = new number of days, $2 = accounts deleted because they were older."
+  },
+  "opt_block_backup": {
+    "message": "Резервное копирование",
+    "description": "Section title on the Backup tab."
+  },
+  "opt_export_backup": {
+    "message": "Экспортировать зашифрованную копию"
+  },
+  "opt_import_backup": {
+    "message": "Импортировать зашифрованную копию"
+  },
+  "opt_export_csv": {
+    "message": "Экспортировать в CSV"
+  },
+  "opt_import_csv": {
+    "message": "Импортировать из CSV"
+  },
+  "opt_backup_help": {
+    "message": "Рекомендуем зашифрованные копии. Если вы забудете пароль резервной копии, файл не откроется."
+  },
+  "opt_backup_tip": {
+    "message": "При экспорте откроется окно «Сохранить как», где можно выбрать место сохранения.\nФайлы CSV не зашифрованы: любой, кто откроет такой файл, увидит пароли. Храните его в надёжном месте.\nФормат CSV такой же, как при экспорте из Chrome и Edge.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_move_title": {
+    "message": "Перенос паролей в браузер и из браузера"
+  },
+  "opt_move_help": {
+    "message": "Пароли переносятся между расширением и встроенным менеджером паролей браузера через файл CSV. Автоматической синхронизации нет. После переноса удалите файл CSV и очистите корзину Windows."
+  },
+  "opt_move_in_title": {
+    "message": "Перенести пароли из браузера сюда"
+  },
+  "opt_move_in_1a": {
+    "message": "Откройте страницу паролей браузера. В адресной строке введите для Chrome:",
+    "description": "One sentence split around three addresses: [1a] chrome://password-manager/settings[1b] edge://settings/passwords[1c] about:logins[1d]. A space follows 1a, 1b and 1c."
+  },
+  "opt_move_in_1b": {
+    "message": ", для Edge:",
+    "description": "See opt_move_in_1a. Comes right after the Chrome address."
+  },
+  "opt_move_in_1c": {
+    "message": ", для Firefox:",
+    "description": "See opt_move_in_1a. Comes right after the Edge address."
+  },
+  "opt_move_in_1d": {
+    "message": ".",
+    "description": "See opt_move_in_1a. Comes right after the Firefox address."
+  },
+  "opt_move_in_2": {
+    "message": "Найдите «Экспорт паролей» и сохраните файл CSV. Браузер может сначала запросить пароль или PIN-код Windows.",
+    "description": "'Export passwords' is the browser's own button name."
+  },
+  "opt_move_in_3": {
+    "message": "Вернитесь сюда, нажмите «Импортировать из CSV» выше и выберите этот файл. Подходят файлы, экспортированные из Chrome, Edge, Firefox и Safari."
+  },
+  "opt_move_out_title": {
+    "message": "Перенести пароли отсюда обратно в браузер"
+  },
+  "opt_move_out_1": {
+    "message": "Нажмите «Экспортировать в CSV» выше и сохраните файл. Если записей больше 3000, они разбиваются на несколько файлов, потому что Chrome и Edge принимают не больше 3000 записей за раз."
+  },
+  "opt_move_out_2": {
+    "message": "Откройте страницу паролей браузера (адрес тот же, что выше), найдите «Импорт паролей» и выберите только что сохранённый файл.",
+    "description": "'Import passwords' is the browser's own button name."
+  },
+  "opt_move_out_3": {
+    "message": "Если в браузере уже есть тот же сайт и то же имя пользователя с другим паролем, новые версии Chrome покажут список и предложат выбрать, заменять ли их. Если браузер не спросит, он оставит пароль, который у него уже есть."
+  },
+  "opt_move_what_title": {
+    "message": "Что происходит при переносе туда и обратно"
+  },
+  "opt_move_what_1": {
+    "message": "Записи с одинаковым сайтом и именем пользователя объединяются, а не дублируются. Если пароль отличается, используется пароль из файла, а прежний сохраняется в «Старые пароли»."
+  },
+  "opt_move_what_2": {
+    "message": "Если в файле старый пароль, который вы здесь уже заменили, остаётся здешний пароль. Он не перезаписывается."
+  },
+  "opt_move_what_3": {
+    "message": "Если у записи в файле нет заметки, заметка здесь не удаляется."
+  },
+  "opt_move_what_4a": {
+    "message": "Пароли мобильных приложений (адреса с ",
+    "description": "Split around the address android://: [4a]android:// [4b]."
+  },
+  "opt_move_what_4b": {
+    "message": "в начале) и другие записи, которые не являются сайтами, не импортируются. Они учитываются в графе «пропущено».",
+    "description": "See opt_move_what_4a. 'skipped' is the count in the import result."
+  },
+  "opt_move_what_5": {
+    "message": "Если в вашей организации менеджер паролей браузера отключён, экспорта и импорта в браузере может не оказаться."
+  },
+  "opt_block_auto_backup": {
+    "message": "Автоматическое резервное копирование",
+    "description": "Section title."
+  },
+  "opt_ab_run_now": {
+    "message": "Создать копию сейчас"
+  },
+  "opt_ab_run_now_tip": {
+    "message": "Сразу сохраняет копию в папку из пункта «3. Куда сохранять». Работает, даже если автоматическое резервное копирование выключено.\nСохраняет, даже если пароли не менялись.\nНужен пароль резервного копирования.",
+    "description": "'3. Save to' must match opt_ab_step_folder."
+  },
+  "opt_ab_help": {
+    "message": "Сохраняет зашифрованные копии по расписанию в папку внутри папки «Загрузки». Настройте пункты 1–4."
+  },
+  "opt_ab_help_tip": {
+    "message": "Сохраняет копию каждый день или каждую неделю в заданное время, но только если пароли изменились.\nЕсли время пропущено, копия создаётся при следующем запуске браузера."
+  },
+  "opt_ab_step_password": {
+    "message": "1. Пароль резервного копирования"
+  },
+  "opt_ab_password_tip": {
+    "message": "Все автоматические копии шифруются этим паролем.\nРасширение не хранит этот пароль. Если вы его забудете, файлы копий не откроются.\nПосле смены пароля старые файлы копий по-прежнему открываются старым паролем."
+  },
+  "opt_ab_set_password": {
+    "message": "Задать пароль"
+  },
+  "opt_ab_change_password": {
+    "message": "Сменить пароль"
+  },
+  "opt_ab_pw_set": {
+    "message": "Задан",
+    "description": "Status of the auto backup password."
+  },
+  "opt_ab_pw_unset": {
+    "message": "Не задан",
+    "description": "Status of the auto backup password."
+  },
+  "opt_ab_step_when": {
+    "message": "2. Когда"
+  },
+  "opt_ab_every_day": {
+    "message": "Каждый день"
+  },
+  "opt_ab_every_week": {
+    "message": "Каждую неделю"
+  },
+  "opt_weekday_mon": {
+    "message": "Понедельник"
+  },
+  "opt_weekday_tue": {
+    "message": "Вторник"
+  },
+  "opt_weekday_wed": {
+    "message": "Среда"
+  },
+  "opt_weekday_thu": {
+    "message": "Четверг"
+  },
+  "opt_weekday_fri": {
+    "message": "Пятница"
+  },
+  "opt_weekday_sat": {
+    "message": "Суббота"
+  },
+  "opt_weekday_sun": {
+    "message": "Воскресенье"
+  },
+  "opt_ab_step_folder": {
+    "message": "3. Куда сохранять"
+  },
+  "opt_ab_folder_prefix": {
+    "message": "Загрузки \\",
+    "description": "Shown before the subfolder name input. Means the Downloads folder."
+  },
+  "opt_ab_step_switch": {
+    "message": "4. Включение"
+  },
+  "opt_ab_enable": {
+    "message": "Включить автоматическое резервное копирование"
+  },
+  "opt_reminder_title": {
+    "message": "Напоминание"
+  },
+  "opt_reminder_before": {
+    "message": "Напоминать во всплывающем окне, если резервной копии нет",
+    "description": "Before the days input: 'Remind me in the popup after [30] days without a backup'."
+  },
+  "opt_reminder_after": {
+    "message": "дн.",
+    "description": "After the days input. See opt_reminder_before."
+  },
+  "opt_reminder_tip": {
+    "message": "Если за это время пароли не менялись, напоминания не будет.\nВведите 0, чтобы отключить."
+  },
+  "opt_ab_next": {
+    "message": "Следующая копия: $1",
+    "description": "$1 = date, weekday and time."
+  },
+  "opt_ab_last_failed": {
+    "message": "Последняя попытка не удалась ($1): $2",
+    "description": "$1 = date and time, $2 = error message."
+  },
+  "opt_ab_need_password": {
+    "message": "Чтобы включить копирование или создать копию сейчас, сначала задайте пароль резервного копирования."
+  },
+  "opt_ab_not_enabled": {
+    "message": "Не включено."
+  },
+  "opt_ab_last_check": {
+    "message": "Последняя проверка: $1.",
+    "description": "$1 = date and time."
+  },
+  "opt_ab_last_check_result": {
+    "message": "Последняя проверка: $1. $2.",
+    "description": "$1 = date and time, $2 = opt_ab_result_saved, opt_ab_result_unchanged or opt_ab_result_empty."
+  },
+  "opt_ab_result_saved": {
+    "message": "Сохранено",
+    "description": "Result of the last auto backup check. See opt_ab_last_check_result."
+  },
+  "opt_ab_result_unchanged": {
+    "message": "Пароли не менялись, поэтому ничего не сохранено",
+    "description": "See opt_ab_last_check_result."
+  },
+  "opt_ab_result_empty": {
+    "message": "Нет паролей для резервного копирования",
+    "description": "See opt_ab_last_check_result."
+  },
+  "opt_ab_waiting_first": {
+    "message": "Включено. Время первой копии ещё не наступило."
+  },
+  "opt_wd_sun": {
+    "message": "Вс",
+    "description": "Short weekday in the next backup time. See opt_date_weekday_time."
+  },
+  "opt_wd_mon": {
+    "message": "Пн",
+    "description": "Short weekday."
+  },
+  "opt_wd_tue": {
+    "message": "Вт",
+    "description": "Short weekday."
+  },
+  "opt_wd_wed": {
+    "message": "Ср",
+    "description": "Short weekday."
+  },
+  "opt_wd_thu": {
+    "message": "Чт",
+    "description": "Short weekday."
+  },
+  "opt_wd_fri": {
+    "message": "Пт",
+    "description": "Short weekday."
+  },
+  "opt_wd_sat": {
+    "message": "Сб",
+    "description": "Short weekday."
+  },
+  "opt_date_weekday_time": {
+    "message": "$1 ($2) $3",
+    "description": "$1 = date, $2 = short weekday, $3 = time."
+  },
+  "opt_ab_folder_changed": {
+    "message": "Папка автоматического резервного копирования изменена на «Загрузки\\$1»",
+    "description": "$1 = subfolder name inside the Downloads folder."
+  },
+  "opt_ab_pw_title": {
+    "message": "Пароль автоматического резервного копирования"
+  },
+  "opt_ab_pw_hint": {
+    "message": "Расширение не хранит этот пароль. Если вы его забудете, файлы копий не откроются."
+  },
+  "opt_ab_pw_saved": {
+    "message": "Пароль автоматического резервного копирования задан"
+  },
+  "opt_backup_failed": {
+    "message": "Не удалось создать резервную копию: $1",
+    "description": "$1 = error message."
+  },
+  "opt_backed_up_to": {
+    "message": "Резервная копия сохранена: $1",
+    "description": "$1 = file path."
+  },
+  "opt_nothing_to_back_up": {
+    "message": "Нечего копировать"
+  },
+  "opt_backup_status_failed": {
+    "message": "Не удалось загрузить состояние резервного копирования: $1",
+    "description": "$1 = error message."
+  },
+  "opt_backup_status_empty": {
+    "message": "Паролей пока нет, поэтому копировать нечего."
+  },
+  "opt_backup_status_never": {
+    "message": "Резервных копий ещё не было. Пароли есть только в этом браузере, поэтому при удалении расширения или очистке данных браузера они пропадут."
+  },
+  "opt_backup_status_last_one": {
+    "message": "Последняя копия: $2 ($1 день назад)",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_last_few": {
+    "message": "Последняя копия: $2 ($1 дня назад)",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_last_many": {
+    "message": "Последняя копия: $2 ($1 дней назад)",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_last_other": {
+    "message": "Последняя копия: $2 ($1 дня назад)",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_due_one": {
+    "message": "Последняя копия: $2 ($1 день назад). С тех пор пароли менялись, пора сделать копию снова.",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_due_few": {
+    "message": "Последняя копия: $2 ($1 дня назад). С тех пор пароли менялись, пора сделать копию снова.",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_due_many": {
+    "message": "Последняя копия: $2 ($1 дней назад). С тех пор пароли менялись, пора сделать копию снова.",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_due_other": {
+    "message": "Последняя копия: $2 ($1 дня назад). С тех пор пароли менялись, пора сделать копию снова.",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_import_done": {
+    "message": "Импорт завершён. Добавлено: $1, обновлено: $2, пропущено: $3"
+  },
+  "opt_import_why_same": {
+    "message": "тот же пароль: $1",
+    "description": "Reason some entries were skipped. $1 = how many."
+  },
+  "opt_import_why_older": {
+    "message": "в файле более старый пароль: $1",
+    "description": "Reason some entries were skipped. $1 = how many."
+  },
+  "opt_import_why_invalid": {
+    "message": "не сайт или нет пароля: $1",
+    "description": "Reason some entries were skipped. $1 = how many."
+  },
+  "opt_import_reasons": {
+    "message": " ($1)",
+    "description": "Wraps the skip reasons joined with opt_list_sep. Goes right after the skipped count in opt_import_result."
+  },
+  "opt_import_rules_one": {
+    "message": ", добавлено $1 правило автонажатия",
+    "description": "Optional part of opt_import_result."
+  },
+  "opt_import_rules_few": {
+    "message": ", добавлено $1 правила автонажатия",
+    "description": "Optional part of opt_import_result."
+  },
+  "opt_import_rules_many": {
+    "message": ", добавлено $1 правил автонажатия",
+    "description": "Optional part of opt_import_result."
+  },
+  "opt_import_rules_other": {
+    "message": ", добавлено $1 правила автонажатия",
+    "description": "Optional part of opt_import_result."
+  },
+  "opt_import_result": {
+    "message": "$1. Добавлено: $2, обновлено: $3, пропущено: $4",
+    "description": "$1 = what was imported (opt_import_what_*), $2-$4 = counts, $5 = opt_import_reasons or empty, $6 = opt_import_rules or empty."
+  },
+  "opt_import_result_end": {
+    "message": ".",
+    "description": "Ends the import result sentence, after the optional skip reasons and auto-click rule count."
+  },
+  "opt_import_no_data": {
+    "message": "В этом файле нет данных"
+  },
+  "opt_import_bad_header": {
+    "message": "Не удалось распознать столбцы этого CSV. В первой строке должны быть url и password",
+    "description": "url and password are CSV column names. Do not translate them."
+  },
+  "opt_import_failed": {
+    "message": "Не удалось импортировать: $1",
+    "description": "$1 = error message."
+  },
+  "opt_import_what_csv_one": {
+    "message": "Импортирован CSV ($1 запись)",
+    "description": "Start of opt_import_result. $1 = rows in the file."
+  },
+  "opt_import_what_csv_few": {
+    "message": "Импортирован CSV ($1 записи)",
+    "description": "Start of opt_import_result. $1 = rows in the file."
+  },
+  "opt_import_what_csv_many": {
+    "message": "Импортирован CSV ($1 записей)",
+    "description": "Start of opt_import_result. $1 = rows in the file."
+  },
+  "opt_import_what_csv_other": {
+    "message": "Импортирован CSV ($1 записи)",
+    "description": "Start of opt_import_result. $1 = rows in the file."
+  },
+  "opt_import_what_csv_from_one": {
+    "message": "Импортирован CSV в формате $2 ($1 запись)",
+    "description": "Start of opt_import_result. $1 = rows in the file, $2 = 'Chrome / Edge', 'Firefox' or 'Safari'."
+  },
+  "opt_import_what_csv_from_few": {
+    "message": "Импортирован CSV в формате $2 ($1 записи)",
+    "description": "Start of opt_import_result. $1 = rows in the file, $2 = 'Chrome / Edge', 'Firefox' or 'Safari'."
+  },
+  "opt_import_what_csv_from_many": {
+    "message": "Импортирован CSV в формате $2 ($1 записей)",
+    "description": "Start of opt_import_result. $1 = rows in the file, $2 = 'Chrome / Edge', 'Firefox' or 'Safari'."
+  },
+  "opt_import_what_csv_from_other": {
+    "message": "Импортирован CSV в формате $2 ($1 записи)",
+    "description": "Start of opt_import_result. $1 = rows in the file, $2 = 'Chrome / Edge', 'Firefox' or 'Safari'."
+  },
+  "opt_import_what_backup": {
+    "message": "Импортирована зашифрованная копия $1",
+    "description": "Start of opt_import_result. $1 = file name."
+  },
+  "opt_save_failed": {
+    "message": "Не удалось сохранить файл: $1",
+    "description": "$1 = error message."
+  },
+  "opt_saved_to": {
+    "message": "Сохранено: $1",
+    "description": "$1 = file path."
+  },
+  "opt_export_nothing": {
+    "message": "Нечего экспортировать"
+  },
+  "opt_export_failed": {
+    "message": "Не удалось экспортировать: $1",
+    "description": "$1 = error message."
+  },
+  "opt_csv_filename": {
+    "message": "Хранитель-паролей-резервная-копия-$1",
+    "description": "File name of the CSV export, without the extension. $1 = date like 20261106, maybe followed by -2. Do not use \\ / : * ? \" < > |."
+  },
+  "opt_backup_filename": {
+    "message": "Хранитель-паролей-зашифрованная-копия-$1",
+    "description": "File name of the encrypted backup, without the extension. $1 = date like 20261106. Do not use \\ / : * ? \" < > |."
+  },
+  "opt_share_filename": {
+    "message": "Хранитель-паролей-для-передачи-$1",
+    "description": "File name when exporting checked entries for someone else, without the extension. $1 = date like 20261106. Do not use \\ / : * ? \" < > |."
+  },
+  "opt_csv_split_note": {
+    "message": "Chrome и Edge импортируют не больше 3000 записей за раз, поэтому экспорт разбит на несколько файлов (всего $1). Импортируйте их по одному",
+    "description": "Shown inside opt_csv_export_notes. $1 = number of files (always 2 or more)."
+  },
+  "opt_csv_long_note_one": {
+    "message": "у $1 записи слишком длинный адрес, имя пользователя, пароль или заметка, поэтому Chrome и Edge пропустят её при импорте",
+    "description": "Shown inside opt_csv_export_notes."
+  },
+  "opt_csv_long_note_few": {
+    "message": "у $1 записей слишком длинный адрес, имя пользователя, пароль или заметка, поэтому Chrome и Edge пропустят их при импорте",
+    "description": "Shown inside opt_csv_export_notes."
+  },
+  "opt_csv_long_note_many": {
+    "message": "у $1 записей слишком длинный адрес, имя пользователя, пароль или заметка, поэтому Chrome и Edge пропустят их при импорте",
+    "description": "Shown inside opt_csv_export_notes."
+  },
+  "opt_csv_long_note_other": {
+    "message": "у $1 записи слишком длинный адрес, имя пользователя, пароль или заметка, поэтому Chrome и Edge пропустят их при импорте",
+    "description": "Shown inside opt_csv_export_notes."
+  },
+  "opt_csv_export_notes": {
+    "message": "Экспорт в CSV: $1.",
+    "description": "$1 = notes joined with opt_note_sep."
+  },
+  "opt_backup_password": {
+    "message": "Пароль резервной копии"
+  },
+  "opt_pw_again": {
+    "message": "Введите ещё раз"
+  },
+  "opt_pw_required": {
+    "message": "Введите пароль"
+  },
+  "opt_pw_too_short_one": {
+    "message": "Минимум $1 символ"
+  },
+  "opt_pw_too_short_few": {
+    "message": "Минимум $1 символа"
+  },
+  "opt_pw_too_short_many": {
+    "message": "Минимум $1 символов"
+  },
+  "opt_pw_too_short_other": {
+    "message": "Минимум $1 символа"
+  },
+  "opt_pw_mismatch": {
+    "message": "Пароли не совпадают"
+  },
+  "opt_pw_backup_title": {
+    "message": "Задайте пароль резервной копии"
+  },
+  "opt_pw_backup_hint": {
+    "message": "Этот пароль нужен только для открытия файла резервной копии. Если вы его забудете, восстановить копию не получится."
+  },
+  "opt_pw_share_title": {
+    "message": "Задайте пароль для этого файла"
+  },
+  "opt_pw_share_hint_one": {
+    "message": "В файл попадёт только $1 выбранная запись. Сообщите пароль получателю отдельно, не вместе с файлом."
+  },
+  "opt_pw_share_hint_few": {
+    "message": "В файл попадут только $1 выбранные записи. Сообщите пароль получателю отдельно, не вместе с файлом."
+  },
+  "opt_pw_share_hint_many": {
+    "message": "В файл попадут только $1 выбранных записей. Сообщите пароль получателю отдельно, не вместе с файлом."
+  },
+  "opt_pw_share_hint_other": {
+    "message": "В файл попадут только $1 выбранные записи. Сообщите пароль получателю отдельно, не вместе с файлом."
+  },
+  "opt_pw_import_title": {
+    "message": "Введите пароль резервной копии"
+  },
+  "opt_pw_import_hint": {
+    "message": "Введите пароль, который вы задали при экспорте этого файла."
+  },
+  "opt_block_log": {
+    "message": "Журнал резервного копирования",
+    "description": "Section title."
+  },
+  "opt_log_help": {
+    "message": "Здесь записывается, куда сохранялась каждая резервная копия."
+  },
+  "opt_log_tip": {
+    "message": "Хранится до 100 записей.\n«Создать копию сейчас» считается ручным копированием.\nЕсли сменить папку, старые файлы останутся на прежнем месте. Удалите их сами."
+  },
+  "opt_log_cat_all": {
+    "message": "Все",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_cat_auto": {
+    "message": "Автоматические",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_cat_manual": {
+    "message": "Ручные",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_cat_location": {
+    "message": "Смена папки",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_delete_selected": {
+    "message": "Удалить выбранные записи"
+  },
+  "opt_log_delete_selected_n_one": {
+    "message": "Удалить выбранные записи ($1)"
+  },
+  "opt_log_delete_selected_n_few": {
+    "message": "Удалить выбранные записи ($1)"
+  },
+  "opt_log_delete_selected_n_many": {
+    "message": "Удалить выбранные записи ($1)"
+  },
+  "opt_log_delete_selected_n_other": {
+    "message": "Удалить выбранные записи ($1)"
+  },
+  "opt_log_col_time": {
+    "message": "Время",
+    "description": "Table column."
+  },
+  "opt_log_col_kind": {
+    "message": "Способ",
+    "description": "Table column: how the backup was made."
+  },
+  "opt_log_col_location": {
+    "message": "Расположение",
+    "description": "Table column: file path."
+  },
+  "opt_log_col_count": {
+    "message": "Записей",
+    "description": "Table column: how many accounts the backup has."
+  },
+  "opt_log_empty": {
+    "message": "Журнал резервного копирования пока пуст."
+  },
+  "opt_log_empty_filtered": {
+    "message": "В этой категории записей нет."
+  },
+  "opt_log_count_one": {
+    "message": "($1 запись)",
+    "description": "Shown next to the section title."
+  },
+  "opt_log_count_few": {
+    "message": "($1 записи)",
+    "description": "Shown next to the section title."
+  },
+  "opt_log_count_many": {
+    "message": "($1 записей)",
+    "description": "Shown next to the section title."
+  },
+  "opt_log_count_other": {
+    "message": "($1 записи)",
+    "description": "Shown next to the section title."
+  },
+  "opt_kind_auto": {
+    "message": "Автоматическая копия",
+    "description": "How a backup was made, in the history table."
+  },
+  "opt_kind_now": {
+    "message": "Создать копию сейчас",
+    "description": "How a backup was made. Same name as the 'Back up now' button."
+  },
+  "opt_kind_manual": {
+    "message": "Экспорт зашифрованной копии",
+    "description": "How a backup was made."
+  },
+  "opt_kind_csv": {
+    "message": "Экспорт в CSV",
+    "description": "How a backup was made."
+  },
+  "opt_kind_selected": {
+    "message": "Экспорт выбранных",
+    "description": "Export of only the checked entries."
+  },
+  "opt_kind_location": {
+    "message": "Смена папки",
+    "description": "Record of the auto backup folder being changed."
+  },
+  "opt_files_not_deleted_one": {
+    "message": "$1 файл резервной копии не удалён"
+  },
+  "opt_files_not_deleted_few": {
+    "message": "$1 файла резервных копий не удалены"
+  },
+  "opt_files_not_deleted_many": {
+    "message": "$1 файлов резервных копий не удалены"
+  },
+  "opt_files_not_deleted_other": {
+    "message": "$1 файла резервных копий не удалены"
+  },
+  "opt_delete_yourself": {
+    "message": "Удалите их сами:",
+    "description": "Followed by a list of file paths."
+  },
+  "opt_delete_record_only": {
+    "message": "Удалить только запись"
+  },
+  "opt_delete_both": {
+    "message": "Удалить запись и файл",
+    "description": "Deletes the history record and the backup file."
+  },
+  "opt_confirm_delete_location_log": {
+    "message": "Удалить эту запись «Смена папки»?"
+  },
+  "opt_delete_log": {
+    "message": "Удалить запись",
+    "description": "Dialog title and button."
+  },
+  "opt_delete_files_too": {
+    "message": "Удалить заодно файлы резервных копий на этом компьютере?"
+  },
+  "opt_file_may_remain": {
+    "message": "Файл резервной копии, возможно, остался. Удалите его сами:",
+    "description": "Followed by the file path."
+  },
+  "opt_deleted_log_and_file": {
+    "message": "Запись и файл резервной копии удалены"
+  },
+  "opt_deleted_log": {
+    "message": "Запись удалена"
+  },
+  "opt_delete_logs_title_one": {
+    "message": "Удалить $1 запись"
+  },
+  "opt_delete_logs_title_few": {
+    "message": "Удалить $1 записи"
+  },
+  "opt_delete_logs_title_many": {
+    "message": "Удалить $1 записей"
+  },
+  "opt_delete_logs_title_other": {
+    "message": "Удалить $1 записи"
+  },
+  "opt_confirm_delete_location_logs_one": {
+    "message": "Удалить $1 выбранную запись «Смена папки»?"
+  },
+  "opt_confirm_delete_location_logs_few": {
+    "message": "Удалить $1 выбранные записи «Смена папки»?"
+  },
+  "opt_confirm_delete_location_logs_many": {
+    "message": "Удалить $1 выбранных записей «Смена папки»?"
+  },
+  "opt_confirm_delete_location_logs_other": {
+    "message": "Удалить $1 выбранные записи «Смена папки»?"
+  },
+  "opt_deleted_logs_one": {
+    "message": "Удалена $1 запись"
+  },
+  "opt_deleted_logs_few": {
+    "message": "Удалено $1 записи"
+  },
+  "opt_deleted_logs_many": {
+    "message": "Удалено $1 записей"
+  },
+  "opt_deleted_logs_other": {
+    "message": "Удалено $1 записи"
+  },
+  "opt_files_kept": {
+    "message": "Файлы резервных копий не удалены. Удалите их сами:",
+    "description": "Followed by a list of file paths."
+  },
+  "opt_deleted_logs_files_one": {
+    "message": "Удалена $1 запись. Удалено файлов резервных копий: $2",
+    "description": "$1 = records deleted, $2 = backup files deleted."
+  },
+  "opt_deleted_logs_files_few": {
+    "message": "Удалено $1 записи. Удалено файлов резервных копий: $2",
+    "description": "$1 = records deleted, $2 = backup files deleted."
+  },
+  "opt_deleted_logs_files_many": {
+    "message": "Удалено $1 записей. Удалено файлов резервных копий: $2",
+    "description": "$1 = records deleted, $2 = backup files deleted."
+  },
+  "opt_deleted_logs_files_other": {
+    "message": "Удалено $1 записи. Удалено файлов резервных копий: $2",
+    "description": "$1 = records deleted, $2 = backup files deleted."
+  },
+  "opt_copy_locations": {
+    "message": "Копировать пути",
+    "description": "Copies the listed file paths."
+  },
+  "opt_block_lock": {
+    "message": "Блокировка приложения",
+    "description": "Section title, followed by 'On' or 'Off'."
+  },
+  "opt_lock_block_help": {
+    "message": "Не даёт другим увидеть ваши пароли, пока вас нет на месте. Также можно зашифровать пароли на диске."
+  },
+  "opt_lock_block_tip": {
+    "message": "Пока действует блокировка, всплывающее окно, страница управления, автозаполнение на сайтах, сочетание клавиш и окна входа браузера работают только после разблокировки.\nЕсли переместить папку расширения, настройте блокировку заново."
+  },
+  "opt_lock_mode_title": {
+    "message": "Способ защиты"
+  },
+  "opt_lock_mode_tip": {
+    "message": "Защита при копировании данных: даже если кто-то скопирует папку с данными браузера, он не сможет прочитать пароли.\nЕсли при включённом шифровании вы забудете личный пароль или системная проверка подлинности перестанет работать, восстановить данные можно будет только из резервной копии.\nДля обоих способов шифрования сначала нужен пароль автоматического резервного копирования."
+  },
+  "opt_lock_mode_off": {
+    "message": "Выключено"
+  },
+  "opt_lock_mode_password": {
+    "message": "Шифрование личным паролем"
+  },
+  "opt_lock_mode_hello": {
+    "message": "Шифрование через системную проверку подлинности"
+  },
+  "opt_lock_mode_screen_with": {
+    "message": "Только блокировка экрана, разблокировка через $1"
+  },
+  "opt_lock_mode_hello_with": {
+    "message": "Шифрование через $1"
+  },
+  "opt_lock_legacy_screen": {
+    "message": "Сейчас используется старый режим «Только блокировка экрана», и пароли на диске не зашифрованы. Выберите один из вариантов ниже."
+  },
+  "opt_hello_step_create": {
+    "message": "Шаг 1 из 2 ($1): создаём ключ шифрования"
+  },
+  "opt_hello_step_verify": {
+    "message": "Шаг 2 из 2 ($1): проверяем, что разблокировка работает"
+  },
+  "opt_lock_guard_peek": {
+    "message": "Защита от посторонних глаз"
+  },
+  "opt_lock_guard_copy": {
+    "message": "Защита при копировании данных"
+  },
+  "opt_lock_guard_yes": {
+    "message": "Да"
+  },
+  "opt_lock_guard_no": {
+    "message": "Нет"
+  },
+  "opt_lock_how_off": {
+    "message": "Разблокировка не нужна"
+  },
+  "opt_lock_how_password": {
+    "message": "Разблокировка всегда личным паролем. Нужно помнить ещё один пароль."
+  },
+  "opt_lock_how_hello": {
+    "message": "Разблокировка через $1. Ничего запоминать не нужно."
+  },
+  "opt_lock_recommended": {
+    "message": "Рекомендуется"
+  },
+  "opt_lock_change_password": {
+    "message": "Сменить личный пароль"
+  },
+  "opt_lock_info_no_hello": {
+    "message": "Этот браузер не поддерживает системную проверку подлинности, поэтому доступно только шифрование личным паролем."
+  },
+  "opt_lock_mode_changed": {
+    "message": "Способ защиты изменён: «$1»"
+  },
+  "opt_lock_mode_failed": {
+    "message": "Не удалось изменить: $1"
+  },
+  "opt_lock_needs_backup_password": {
+    "message": "Сначала задайте пароль автоматического резервного копирования на вкладке «Резервное копирование»."
+  },
+  "opt_lock_downgrade_title": {
+    "message": "Отключить шифрование?"
+  },
+  "opt_lock_downgrade_text": {
+    "message": "После этого любой, у кого есть доступ к этому компьютеру, сможет прочитать пароли на диске."
+  },
+  "opt_lock_downgrade_confirm": {
+    "message": "Отключить шифрование"
+  },
+  "opt_master_password": {
+    "message": "Личный пароль"
+  },
+  "opt_master_pw_title": {
+    "message": "Задайте личный пароль"
+  },
+  "opt_master_pw_hint": {
+    "message": "Минимум $1 символов. Его нужно вводить после перезапуска браузера. Если вы его забудете, восстановить данные можно будет только из резервной копии."
+  },
+  "opt_master_pw_verify_title": {
+    "message": "Введите текущий личный пароль"
+  },
+  "opt_master_pw_new_title": {
+    "message": "Новый личный пароль"
+  },
+  "opt_master_pw_changed": {
+    "message": "Личный пароль изменён"
+  },
+  "opt_lock_state_off": {
+    "message": "Выключена",
+    "description": "Shown next to the App lock section title."
+  },
+  "opt_lock_when_title": {
+    "message": "Когда блокировать автоматически"
+  },
+  "opt_lock_idle_before": {
+    "message": "Блокировать после",
+    "description": "Before the minutes input: 'Lock after [15] minutes of inactivity'."
+  },
+  "opt_lock_idle_after": {
+    "message": "мин бездействия",
+    "description": "After the minutes input. See opt_lock_idle_before."
+  },
+  "opt_lock_on_startup": {
+    "message": "Блокировать при перезапуске браузера"
+  },
+  "opt_lock_manual_help": {
+    "message": "Заблокировать вручную можно в любой момент кнопкой «Заблокировать» в правом верхнем углу всплывающего окна."
+  },
+  "opt_block_fill": {
+    "message": "Автозаполнение",
+    "description": "Section title on the Settings tab. Holds the autofill master switch, per-site autofill settings and never-ask sites."
+  },
+  "opt_autofill_master": {
+    "message": "Автоматически заполнять имя пользователя и пароль при открытии страницы входа (главный переключатель)"
+  },
+  "opt_sites_title": {
+    "message": "Настройки сайтов"
+  },
+  "opt_site_master_off": {
+    "message": "Главный переключатель выключен, поэтому автозаполнение не работает ни на одном сайте."
+  },
+  "opt_site_search_placeholder": {
+    "message": "Поиск сайтов"
+  },
+  "opt_site_col_accounts": {
+    "message": "Аккаунты",
+    "description": "Table column: number of saved accounts for the site."
+  },
+  "opt_site_col_fill": {
+    "message": "Автозаполнение",
+    "description": "Table column."
+  },
+  "opt_site_col_submit": {
+    "message": "Входить после автозаполнения",
+    "description": "Table column."
+  },
+  "opt_site_select_all_title": {
+    "message": "Отметить все сайты в списке"
+  },
+  "opt_site_clear_all": {
+    "message": "Снять все"
+  },
+  "opt_site_clear_all_title": {
+    "message": "Снять отметки со всех сайтов в списке"
+  },
+  "opt_site_submit_tip": {
+    "message": "Вход выполняется, только если автозаполнение прошло успешно и на странице одна форма входа.\nКак скоро можно войти снова, определяет интервал автонажатия по умолчанию."
+  },
+  "opt_site_empty": {
+    "message": "Сохранённых аккаунтов пока нет."
+  },
+  "opt_site_search_no_match": {
+    "message": "Нет сайтов по запросу «$1»",
+    "description": "$1 = search text."
+  },
+  "opt_site_dirty_one": {
+    "message": "Не применено: $1 сайт",
+    "description": "Changes wait until the user clicks 'Apply'."
+  },
+  "opt_site_dirty_few": {
+    "message": "Не применено: $1 сайта",
+    "description": "Changes wait until the user clicks 'Apply'."
+  },
+  "opt_site_dirty_many": {
+    "message": "Не применено: $1 сайтов",
+    "description": "Changes wait until the user clicks 'Apply'."
+  },
+  "opt_site_dirty_other": {
+    "message": "Не применено: $1 сайта",
+    "description": "Changes wait until the user clicks 'Apply'."
+  },
+  "opt_apply_failed": {
+    "message": "Не удалось применить: $1",
+    "description": "$1 = error message."
+  },
+  "opt_site_applied_one": {
+    "message": "Применено к $1 сайту"
+  },
+  "opt_site_applied_few": {
+    "message": "Применено к $1 сайтам"
+  },
+  "opt_site_applied_many": {
+    "message": "Применено к $1 сайтам"
+  },
+  "opt_site_applied_other": {
+    "message": "Применено к $1 сайтам"
+  },
+  "opt_never_title": {
+    "message": "Никогда не спрашивать на этих сайтах"
+  },
+  "opt_never_empty": {
+    "message": "Пока пусто. Сайт появится здесь, если в предложении сохранить пароль нажать «Никогда».",
+    "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
+  },
+  "opt_remove": {
+    "message": "Убрать",
+    "description": "Tooltip of the x that removes a site from the never-ask list."
+  },
+  "opt_remove_failed": {
+    "message": "Не удалось убрать: $1",
+    "description": "$1 = error message."
+  },
+  "opt_block_click": {
+    "message": "Автонажатие",
+    "description": "Section title."
+  },
+  "opt_click_help": {
+    "message": "Автоматически нажимает кнопки, когда вы открываете указанные страницы."
+  },
+  "opt_click_tip": {
+    "message": "Если для страницы есть несколько правил, кнопки нажимаются по порядку: следующее правило ждёт, пока выполнится предыдущее.\nКаждое правило ждёт не больше 15 секунд."
+  },
+  "opt_click_timing_title": {
+    "message": "Время"
+  },
+  "opt_click_interval_label": {
+    "message": "Интервал по умолчанию"
+  },
+  "opt_click_interval_help": {
+    "message": "Сколько ждать после нажатия, прежде чем нажать снова."
+  },
+  "opt_click_interval_tip": {
+    "message": "У каждого правила может быть свой интервал. Правила без него используют этот.\n«Входить после автозаполнения» тоже использует этот интервал.\nКогда время выйдет, кнопка сама не нажмётся. Нажатие повторится, когда вы заново откроете страницу или перейдёте на другую."
+  },
+  "opt_logout_pause_label": {
+    "message": "Пауза после выхода"
+  },
+  "opt_logout_pause_help": {
+    "message": "Сколько ждать после выхода из аккаунта, прежде чем автонажатие возобновится."
+  },
+  "opt_logout_pause_tip": {
+    "message": "Действует только на тот же сайт во вкладке, где вы вышли.\nВведите 0, чтобы не делать паузу."
+  },
+  "opt_rule_sites_title": {
+    "message": "Правила по сайтам"
+  },
+  "opt_rule_empty": {
+    "message": "Правил пока нет. Откройте страницу, где нужно автонажатие, и нажмите «Выбрать кнопку для автонажатия» во всплывающем окне или нажмите «+ Добавить», чтобы ввести правило вручную.",
+    "description": "'+ Add' must match opt_add_button."
+  },
+  "opt_rule_dialog_title": {
+    "message": "Добавить правило автонажатия"
+  },
+  "opt_when_after_fill": {
+    "message": "После автозаполнения",
+    "description": "Option of 'When to click'. Also named in opt_rule_tip_when."
+  },
+  "opt_when_on_load": {
+    "message": "Сразу при открытии страницы",
+    "description": "Option of 'When to click'. Also named in opt_rule_tip_when."
+  },
+  "opt_missing_skip": {
+    "message": "Пропустить, перейти к следующему",
+    "description": "Option of 'If the button doesn't appear'."
+  },
+  "opt_missing_stop": {
+    "message": "Остановить, остальные не нажимать",
+    "description": "Option of 'If the button doesn't appear'."
+  },
+  "opt_missing_last_title": {
+    "message": "После этого правила других нет",
+    "description": "Tooltip when the option does not matter for the last rule."
+  },
+  "opt_rule_field_host": {
+    "message": "Сайт",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_path": {
+    "message": "Путь",
+    "description": "Field name of an auto-click rule: the URL path such as /login, or * for the whole site."
+  },
+  "opt_rule_field_selector": {
+    "message": "Селектор",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_text": {
+    "message": "Текст кнопки",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_when": {
+    "message": "Когда нажимать",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_interval": {
+    "message": "Интервал (сек.)",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_missing": {
+    "message": "Если кнопка не появилась",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_tip_host": {
+    "message": "Сайт для автонажатия, например example.com.tw.\nМожно вставить полный адрес: он автоматически разделится на сайт и путь."
+  },
+  "opt_rule_tip_path": {
+    "message": "Нажимает только на страницах с этим путём, например /login.\n* означает любые символы. Для всего сайта введите *."
+  },
+  "opt_rule_tip_selector": {
+    "message": "Запись, которая указывает, какую кнопку нажимать (CSS-селектор), например #login.\nЕсли не знаете, как её написать, выберите кнопку на странице, и селектор создастся автоматически."
+  },
+  "opt_rule_tip_selector_edit": {
+    "message": "$1\nПри изменении текст кнопки будет очищен.",
+    "description": "$1 = opt_rule_tip_selector. Shown on an existing rule."
+  },
+  "opt_rule_tip_text": {
+    "message": "Кнопка нажимается, только если её текст совпадает с этим.\nОставьте пустым, чтобы использовать только селектор.\nЕсли по селектору кнопка не найдена, она ищется по этому тексту."
+  },
+  "opt_rule_tip_when": {
+    "message": "После автозаполнения: нужен сохранённый аккаунт. Нажимает, только когда имя пользователя и пароль заполнены и в форме нет пустых полей.\nСразу при открытии страницы: нажимает, как только кнопка появится. Сохранённый аккаунт не нужен.",
+    "description": "Option names must match opt_when_after_fill and opt_when_on_load."
+  },
+  "opt_rule_tip_interval": {
+    "message": "Сколько ждать после нажатия, прежде чем нажать снова.\nОставьте пустым, чтобы использовать интервал по умолчанию."
+  },
+  "opt_rule_tip_missing": {
+    "message": "Когда наступает очередь этого правила, оно ждёт не больше 15 секунд.\nПропустить: перейти к следующему правилу.\nОстановить: остальные не нажимать. На следующей странице всё начнётся заново."
+  },
+  "opt_rule_note_no_account": {
+    "message": "Нет сохранённого аккаунта, нажатия не будет"
+  },
+  "opt_rule_note_fill_off": {
+    "message": "Автозаполнение выключено, нажатия не будет"
+  },
+  "opt_selector_empty": {
+    "message": "Селектор не может быть пустым"
+  },
+  "opt_selector_invalid": {
+    "message": "Неверный селектор"
+  },
+  "opt_reorder_failed": {
+    "message": "Не удалось изменить порядок: $1",
+    "description": "$1 = error message."
+  },
+  "opt_rule_no": {
+    "message": "Правило $1",
+    "description": "$1 = position of the rule on its site."
+  },
+  "opt_move_up": {
+    "message": "Переместить вверх"
+  },
+  "opt_move_down": {
+    "message": "Переместить вниз"
+  },
+  "opt_rule_enabled": {
+    "message": "Включено",
+    "description": "Checkbox on each rule."
+  },
+  "opt_confirm_delete_rule": {
+    "message": "Удалить это правило автонажатия для сайта $1?",
+    "description": "$1 = site."
+  },
+  "opt_rule_text_cleared": {
+    "message": "Текст кнопки очищен. Теперь используется только селектор"
+  },
+  "opt_interval_placeholder": {
+    "message": "По умолч. $1",
+    "description": "Placeholder of a small number input. $1 = default interval in seconds."
+  },
+  "opt_rule_count_one": {
+    "message": "$1 правило",
+    "description": "Shown next to the site name."
+  },
+  "opt_rule_count_few": {
+    "message": "$1 правила",
+    "description": "Shown next to the site name."
+  },
+  "opt_rule_count_many": {
+    "message": "$1 правил",
+    "description": "Shown next to the site name."
+  },
+  "opt_rule_count_other": {
+    "message": "$1 правила",
+    "description": "Shown next to the site name."
+  },
+  "opt_rule_count_off_one": {
+    "message": "$1 правило, выключено: $2",
+    "description": "$1 = rules for the site, $2 = rules turned off."
+  },
+  "opt_rule_count_off_few": {
+    "message": "$1 правила, выключено: $2",
+    "description": "$1 = rules for the site, $2 = rules turned off."
+  },
+  "opt_rule_count_off_many": {
+    "message": "$1 правил, выключено: $2",
+    "description": "$1 = rules for the site, $2 = rules turned off."
+  },
+  "opt_rule_count_off_other": {
+    "message": "$1 правила, выключено: $2",
+    "description": "$1 = rules for the site, $2 = rules turned off."
+  },
+  "opt_rule_path_placeholder": {
+    "message": "/login или * для всего сайта"
+  },
+  "opt_rule_host_invalid": {
+    "message": "Неверный формат сайта"
+  },
+  "opt_rule_host_empty": {
+    "message": "Сайт не может быть пустым"
+  },
+  "opt_rule_path_empty": {
+    "message": "Путь не может быть пустым. Для всего сайта введите *."
+  },
+  "opt_rule_interval_invalid": {
+    "message": "Интервал должен быть целым числом от 1 до 86400"
+  },
+  "opt_block_danger": {
+    "message": "Опасная зона",
+    "description": "Section title."
+  },
+  "opt_delete_all": {
+    "message": "Удалить все пароли"
+  },
+  "opt_delete_all_help_before": {
+    "message": "Сначала всё попадёт в корзину, и восстановить можно будет в течение ",
+    "description": "Before the number of days: 'Everything goes to the Trash first and can be restored within [30] days.' Keep the trailing space in languages that use spaces."
+  },
+  "opt_delete_all_help_after": {
+    "message": "дн.",
+    "description": "After the number of days. See opt_delete_all_help_before."
+  },
+  "opt_no_passwords": {
+    "message": "Паролей нет"
+  },
+  "opt_confirm_delete_all_one": {
+    "message": "Переместить $1 пароль в корзину? Восстановить можно в течение $2 дн.",
+    "description": "$1 = number of passwords, $2 = days items stay in the Trash."
+  },
+  "opt_confirm_delete_all_few": {
+    "message": "Переместить все $1 пароля в корзину? Восстановить можно в течение $2 дн.",
+    "description": "$1 = number of passwords, $2 = days items stay in the Trash."
+  },
+  "opt_confirm_delete_all_many": {
+    "message": "Переместить все $1 паролей в корзину? Восстановить можно в течение $2 дн.",
+    "description": "$1 = number of passwords, $2 = days items stay in the Trash."
+  },
+  "opt_confirm_delete_all_other": {
+    "message": "Переместить все $1 пароля в корзину? Восстановить можно в течение $2 дн.",
+    "description": "$1 = number of passwords, $2 = days items stay in the Trash."
+  },
+  "opt_all_moved_to_trash": {
+    "message": "Всё перемещено в корзину"
+  },
+  "opt_help_title": {
+    "message": "Как пользоваться"
+  },
+  "opt_help_1": {
+    "message": "Войдите на любой сайт один раз, и в правом верхнем углу появится вопрос «Сохранить этот пароль?».",
+    "description": "The quoted text is the save prompt shown on web pages (content.js). Keep it the same as that prompt."
+  },
+  "opt_help_2": {
+    "message": "Когда вы снова откроете этот сайт, имя пользователя и пароль заполнятся автоматически. Если сохранено несколько аккаунтов, нажмите на поле имени пользователя и выберите аккаунт из списка: стрелками вверх и вниз выберите нужный, Enter — заполнить."
+  },
+  "opt_help_3": {
+    "message": "Нажмите Ctrl+Shift+L (на Mac — Command+Shift+L), чтобы сразу заполнить имя пользователя и пароль для текущего сайта. Сочетание клавиш можно изменить в разделе «Быстрые клавиши» на странице расширений.",
+    "description": "'Keyboard shortcuts' is the browser's own page name."
+  },
+  "opt_help_4": {
+    "message": "Синий значок замка на панели инструментов показывает аккаунты, сохранённые для текущего сайта. Там же можно заполнить их вручную, скопировать пароль и создать надёжный пароль. Поле поиска вверху всплывающего окна ищет аккаунты на всех сайтах, а Enter сразу открывает найденный сайт."
+  },
+  "opt_help_5": {
+    "message": "При регистрации или смене пароля нажмите на поле нового пароля, и появится пункт «Создать надёжный пароль». Нажмите его, и пароль подставится сразу в поле нового пароля и в поле подтверждения.",
+    "description": "The quoted text is an item shown on web pages (content.js). Keep it the same as that item."
+  },
+  "opt_help_6": {
+    "message": "Чтобы кнопка нажималась автоматически, нажмите «Выбрать кнопку для автонажатия» во всплывающем окне и выберите кнопку на странице. После этого она будет нажиматься каждый раз, когда вы открываете эту страницу. Правила также можно добавлять и настраивать вручную в разделе «Автонажатие» на вкладке «Настройки»."
+  },
+  "opt_help_7": {
+    "message": "Если пароль аккаунта менялся, в столбце пароля появится раскрывающийся список «Старые пароли». Удалённые аккаунты сначала попадают в корзину и по умолчанию хранятся там 30 дней. Число дней можно изменить на вкладке «Корзина»."
+  },
+  "opt_help_8": {
+    "message": "Когда на вкладке «Настройки» включена «Блокировка приложения», любой частью расширения можно пользоваться только после системной проверки подлинности этого компьютера (Windows Hello, Touch ID). Блокировка срабатывает при бездействии, при перезапуске браузера и по кнопке «Заблокировать» во всплывающем окне."
+  },
+  "opt_help_9": {
+    "message": "Регулярно создавайте резервные копии или включите автоматическое резервное копирование. Пароли пропадут, если удалить расширение, очистить данные браузера или переместить папку расширения."
+  },
+  "opt_browser_hint": {
+    "message": "Вы используете $1. Страница расширений находится по адресу $2. После обновления файлов нажмите там «Перезагрузить».",
+    "description": "$1 = 'Edge' or 'Chrome', $2 = edge://extensions or chrome://extensions. 'Reload' is the browser's own button name."
+  },
+  "opt_versions_title": {
+    "message": "История версий"
+  },
+  "opt_version_now": {
+    "message": "Текущая версия: $1. После обновления файлов нажмите «Перезагрузить» на странице расширений.",
+    "description": "$1 = version number like 1.12.0."
+  },
+  "opt_version_current": {
+    "message": "Текущая",
+    "description": "Badge next to the installed version in the list."
+  },
+  "opt_version_note": {
+    "message": "Примечание: $1",
+    "description": "$1 = one note of a version from changelog.js."
+  },
+  "opt_update_title": {
+    "message": "Обновления"
+  },
+  "opt_update_available": {
+    "message": "Доступна версия $1 (выпущена $2).",
+    "description": "$1 = version number, $2 = release date."
+  },
+  "opt_update_failed": {
+    "message": "Не удалось проверить обновления: $1",
+    "description": "$1 = error message."
+  },
+  "opt_update_never": {
+    "message": "Проверка ещё не выполнялась."
+  },
+  "opt_update_no_release": {
+    "message": "На GitHub ещё не опубликован ни один выпуск."
+  },
+  "opt_update_latest": {
+    "message": "У вас последняя версия."
+  },
+  "opt_update_checked_at": {
+    "message": "Последняя проверка: $1",
+    "description": "$1 = date and time."
+  },
+  "opt_update_steps": {
+    "message": "Распакуйте скачанный zip-архив, затем на странице расширений нажмите «Загрузить распакованное расширение» и выберите эту папку. Новая версия заменит текущую, а сохранённые пароли и настройки останутся. Можно также распаковать архив поверх текущей папки и нажать «Перезагрузить» на карточке этого расширения."
+  },
+  "opt_update_download": {
+    "message": "Скачать"
+  },
+  "opt_update_download_started": {
+    "message": "Скачивание началось. Файл появится в списке скачиваний браузера."
+  },
+  "opt_update_download_failed": {
+    "message": "Не удалось скачать: $1",
+    "description": "$1 = error message."
+  },
+  "opt_update_open_extensions": {
+    "message": "Открыть страницу расширений"
+  },
+  "opt_update_release_page": {
+    "message": "Описание выпуска"
+  },
+  "opt_update_check_now": {
+    "message": "Проверить сейчас"
+  },
+  "opt_update_checking": {
+    "message": "Проверка…"
+  },
+  "opt_update_auto": {
+    "message": "Проверять автоматически раз в день"
+  },
+  "opt_update_auto_tip": {
+    "message": "Расширение только запрашивает у GitHub номер последней версии. Пароли, аккаунты и настройки не отправляются.\nБраузер не позволяет расширениям, добавленным через «Загрузить распакованное расширение», обновляться самостоятельно, поэтому о новой версии вы узнаете только здесь и во всплывающем окне. Скачать и загрузить её нужно вручную."
+  },
+  "opt_update_dev": {
+    "message": "Это версия для разработки, загруженная прямо из папки с исходным кодом, поэтому она не проверяет обновления автоматически. Обновляйте её через git и не распаковывайте скачанный zip-архив поверх папки с исходным кодом."
+  },
+  "opt_dialog_add_title": {
+    "message": "Добавить пароль"
+  },
+  "opt_dialog_edit_title": {
+    "message": "Изменить пароль"
+  },
+  "opt_field_url": {
+    "message": "Адрес сайта"
+  },
+  "opt_field_username": {
+    "message": "Имя пользователя"
+  },
+  "opt_field_password": {
+    "message": "Пароль"
+  },
+  "opt_field_note": {
+    "message": "Заметка"
+  },
+  "opt_url_empty": {
+    "message": "Адрес сайта не может быть пустым"
+  },
+  "opt_password_empty": {
+    "message": "Пароль не может быть пустым"
+  },
+  "cs_err_ext_reloaded": {
+    "message": "Расширение было перезагружено. Обновите эту страницу.",
+    "description": "Error when the extension was reloaded or updated while this page stayed open. Usually shown after \"Couldn't save: \"."
+  },
+  "cs_err_no_response": {
+    "message": "Расширение не отвечает",
+    "description": "Error when the extension's background service worker didn't answer. Usually shown after \"Couldn't save: \"."
+  },
+  "cs_save": {
+    "message": "Сохранить",
+    "description": "Button on the save-password card and on the auto-click confirmation card."
+  },
+  "cs_cancel": {
+    "message": "Отмена",
+    "description": "Button on the auto-click confirmation card."
+  },
+  "cs_banner_save_title": {
+    "message": "Сохранить этот пароль?",
+    "description": "Title of the card shown on the web page after signing in."
+  },
+  "cs_banner_update_title": {
+    "message": "Обновить пароль для этого аккаунта?",
+    "description": "Title of the same card when the site already has this account saved with a different password."
+  },
+  "cs_banner_username": {
+    "message": "Имя пользователя"
+  },
+  "cs_banner_password": {
+    "message": "Пароль"
+  },
+  "cs_banner_show": {
+    "message": "Показать",
+    "description": "Small button inside the password box that reveals the password. Keep it short."
+  },
+  "cs_banner_hide": {
+    "message": "Скрыть",
+    "description": "Same button after the password is revealed. Keep it short."
+  },
+  "cs_banner_never": {
+    "message": "Никогда",
+    "description": "Link-style button on the save-password card. Stops asking to save passwords on this site."
+  },
+  "cs_banner_no": {
+    "message": "Не сейчас",
+    "description": "Closes the save-password card without saving."
+  },
+  "cs_banner_update": {
+    "message": "Обновить"
+  },
+  "cs_banner_never_done": {
+    "message": "На сайте $1 больше не будем спрашивать. Это можно изменить на странице управления.",
+    "description": "$1 is the site's host name, for example accounts.example.com."
+  },
+  "cs_save_failed": {
+    "message": "Не удалось сохранить: $1",
+    "description": "$1 is the error message."
+  },
+  "cs_password_updated": {
+    "message": "Пароль обновлён"
+  },
+  "cs_password_saved": {
+    "message": "Пароль сохранён"
+  },
+  "cs_generate_failed": {
+    "message": "Не удалось создать пароль: $1",
+    "description": "$1 is the error message."
+  },
+  "cs_generate_no_field": {
+    "message": "Не найдено поле нового пароля для заполнения"
+  },
+  "cs_generate_filled_copied": {
+    "message": "Созданный пароль вставлен и скопирован в буфер обмена. После отправки формы не забудьте нажать «Сохранить».",
+    "description": "\"Save\" is the button on the save-password card that appears after the form is submitted."
+  },
+  "cs_generate_filled": {
+    "message": "Созданный пароль вставлен. После отправки формы не забудьте нажать «Сохранить».",
+    "description": "Same as cs_generate_filled_copied, when copying to the clipboard wasn't allowed."
+  },
+  "cs_dropdown_locked": {
+    "message": "Заблокировано. Нажмите значок замка на панели инструментов и подтвердите личность, чтобы поля заполнились.",
+    "description": "Shown under a sign-in field while App lock is locked."
+  },
+  "cs_dropdown_choose_account": {
+    "message": "$1 — выберите аккаунт для заполнения",
+    "description": "Header of the account list under a sign-in field. $1 is the extension name (Password Keeper)."
+  },
+  "cs_dropdown_generate": {
+    "message": "Создать надёжный пароль",
+    "description": "Item in the list under a new-password field."
+  },
+  "cs_dropdown_generate_hint": {
+    "message": "Заполнит поля нового пароля и подтверждения. Параметры — во всплывающем окне на панели инструментов.",
+    "description": "Second line under \"Generate a strong password\". Options means the password generator options."
+  },
+  "cs_dropdown_no_username": {
+    "message": "(Без имени пользователя, только пароль)",
+    "description": "Shown in the account list for a saved login without a username."
+  },
+  "cs_click_cooldown": {
+    "message": "Автонажатие только что было. В этот раз пропускаем."
+  },
+  "cs_click_after_logout": {
+    "message": "Вы только что вышли. В этот раз автонажатия не будет."
+  },
+  "cs_click_missed_stop": {
+    "message": "Не удалось нажать «$1». Остальные пропущены.",
+    "description": "$1 is the button text (up to 20 characters). The rule is set to stop when its button is missing, so the rules after it on this page are skipped."
+  },
+  "cs_click_button_fallback": {
+    "message": "кнопка",
+    "description": "Used as $1 in the auto-click messages when the button has no text."
+  },
+  "cs_click_done": {
+    "message": "Автонажатие: «$1»",
+    "description": "$1 is the button text (up to 20 characters)."
+  },
+  "cs_click_not_found": {
+    "message": "Не найдена кнопка для автонажатия"
+  },
+  "cs_click_empty_field": {
+    "message": "В форме остались пустые поля. В этот раз автонажатия не было."
+  },
+  "cs_pick_hint": {
+    "message": "Нажмите кнопку, которую нужно нажимать автоматически. Esc — отмена.",
+    "description": "Hint at the top of the web page while picking a button to auto-click."
+  },
+  "cs_pick_untrusted_frame": {
+    "message": "Эта часть страницы встроена с другого сайта, автонажатие здесь невозможно",
+    "description": "The picked button is inside a frame embedded from a different site."
+  },
+  "cs_pick_card_failed": {
+    "message": "Не удалось открыть окно подтверждения: $1",
+    "description": "$1 is the error message."
+  },
+  "cs_pick_title": {
+    "message": "Нажимать это автоматически?",
+    "description": "Title of the card shown after picking a button to auto-click."
+  },
+  "cs_pick_button": {
+    "message": "Кнопка",
+    "description": "Label above the picked button's text."
+  },
+  "cs_pick_no_text": {
+    "message": "(Без текста)",
+    "description": "Shown when the picked button has no text."
+  },
+  "cs_pick_when": {
+    "message": "Когда нажимать"
+  },
+  "cs_pick_note_no_account": {
+    "message": "Для этого сайта ещё нет сохранённого аккаунта. Нажатие заработает после сохранения."
+  },
+  "cs_pick_note_autofill_off": {
+    "message": "Автозаполнение для этого сайта выключено. Нажатие заработает после его включения."
+  },
+  "cs_pick_after_fill": {
+    "message": "После автозаполнения",
+    "description": "Option for when to click: after the username and password are autofilled."
+  },
+  "cs_pick_on_load": {
+    "message": "Сразу при открытии страницы",
+    "description": "Option for when to click."
+  },
+  "cs_pick_saved": {
+    "message": "Сохранено. При следующем открытии этой страницы кнопка будет нажата автоматически."
+  },
+  "cs_fill_no_fields": {
+    "message": "На этой странице не найдены поля входа",
+    "description": "Shown in the popup when \"Fill\" can't find a sign-in form on the page."
+  },
+  "cs_fill_failed": {
+    "message": "Не удалось заполнить поля",
+    "description": "Shown in the popup when filling the page failed."
+  },
+  "bg_vault_unreadable": {
+    "message": "Не удаётся расшифровать данные паролей. Возможно, хранилище повреждено. Можно очистить все данные на странице управления и начать заново."
+  },
+  "bg_url_scheme_unsupported": {
+    "message": "Сохранять можно только сайты, адрес которых начинается с http или https"
+  },
+  "bg_site_required": {
+    "message": "Сайт не может быть пустым"
+  },
+  "bg_duplicate_account": {
+    "message": "Для этого сайта уже сохранено такое имя пользователя"
+  },
+  "bg_webauthn_data_unreadable": {
+    "message": "Не удаётся прочитать данные проверки"
+  },
+  "bg_webauthn_wrong_type": {
+    "message": "Неверный тип проверки"
+  },
+  "bg_webauthn_wrong_origin": {
+    "message": "Проверка пришла не от этого расширения"
+  },
+  "bg_webauthn_expired": {
+    "message": "Время проверки истекло. Попробуйте ещё раз."
+  },
+  "bg_webauthn_not_set_up": {
+    "message": "Системная проверка подлинности ещё не настроена"
+  },
+  "bg_webauthn_unknown_key": {
+    "message": "Этот ключ не зарегистрирован в этом расширении",
+    "description": "The key is the passkey created for app lock (Windows Hello, Touch ID, a security key or phone)."
+  },
+  "bg_webauthn_no_user_verification": {
+    "message": "Личность не подтверждена (PIN-код, отпечаток пальца или лицо)"
+  },
+  "bg_webauthn_bad_signature": {
+    "message": "Подпись не прошла проверку"
+  },
+  "bg_gen_symbols_empty": {
+    "message": "Символы включены, но список разрешённых символов пуст",
+    "description": "Password generator in the popup: the symbols checkbox is on but the allowed symbols field is empty."
+  },
+  "bg_gen_no_charset": {
+    "message": "Выберите хотя бы один тип символов"
+  },
+  "bg_gen_too_short": {
+    "message": "Длина слишком мала, чтобы вместить символы всех выбранных типов"
+  },
+  "bg_backup_password_too_short": {
+    "message": "Пароль резервной копии должен содержать не меньше 8 символов"
+  },
+  "bg_none_selected": {
+    "message": "Не выбран ни один аккаунт"
+  },
+  "bg_not_backup_file": {
+    "message": "Это не файл резервной копии Хранителя паролей"
+  },
+  "bg_backup_too_new": {
+    "message": "Этот файл резервной копии создан более новой версией Хранителя паролей. Сначала обновите расширение."
+  },
+  "bg_wrong_password_or_damaged": {
+    "message": "Неверный пароль, или файл повреждён"
+  },
+  "bg_file_untracked": {
+    "message": "История скачиваний очищена",
+    "description": "Shown under a file location in the backup history: the file can't be deleted from here because the browser's download history was cleared."
+  },
+  "bg_file_missing": {
+    "message": "Файл не найден",
+    "description": "Shown under a file location in the backup history: the file was moved or deleted."
+  },
+  "bg_file_delete_failed": {
+    "message": "Не удалось удалить: $1",
+    "description": "$1 is the browser's error message."
+  },
+  "bg_download_not_found": {
+    "message": "Скачивание не найдено"
+  },
+  "bg_download_interrupted": {
+    "message": "Скачивание прервано или отменено"
+  },
+  "bg_download_interrupted_reason": {
+    "message": "Скачивание прервано или отменено ($1)",
+    "description": "$1 is the browser's reason code, like USER_CANCELED."
+  },
+  "bg_download_failed": {
+    "message": "Не удалось скачать: $1",
+    "description": "$1 is the browser's error message."
+  },
+  "bg_time_format": {
+    "message": "Введите время в формате 12:00"
+  },
+  "bg_weekday_invalid": {
+    "message": "Неверный день недели"
+  },
+  "bg_backup_location_changed": {
+    "message": "Папка автоматического резервного копирования изменена с «$1» на «$2». Прежние файлы остались в старой папке.",
+    "description": "Saved in the backup history when the auto backup folder changes, in the language in use at that time. $1 is the old folder, $2 is the new folder."
+  },
+  "bg_enable_needs_password": {
+    "message": "Чтобы включить, сначала задайте пароль автоматического резервного копирования"
+  },
+  "bg_auto_backup_no_password": {
+    "message": "Пароль автоматического резервного копирования ещё не задан",
+    "description": "Also saved as the last auto backup error, in the language in use at that time."
+  },
+  "bg_backup_file_auto": {
+    "message": "Хранитель-паролей-автоматическая-копия-$1",
+    "description": "File name, without the .pkbak extension, of a scheduled auto backup. $1 is the date and time, like 20261106-1200. Don't use these characters: \\ / : * ? \" < > |"
+  },
+  "bg_backup_file_now": {
+    "message": "Хранитель-паролей-копия-сейчас-$1",
+    "description": "File name, without the .pkbak extension, of a backup made with \"Back up now\". $1 is the date and time, like 20261106-1200. Don't use these characters: \\ / : * ? \" < > |"
+  },
+  "bg_badge_locked": {
+    "message": "Блок",
+    "description": "Badge text on the toolbar icon while the extension is locked. The badge fits only about 4 characters."
+  },
+  "bg_rule_path_required": {
+    "message": "Путь не может быть пустым. Для всего сайта введите *."
+  },
+  "bg_rule_url_invalid": {
+    "message": "Неверный формат пути"
+  },
+  "bg_seconds_range": {
+    "message": "$1: нужно целое число от $2 до $3",
+    "description": "$1 is a field name (bg_label_interval or bg_label_pause). $2 and $3 are the minimum and maximum number of seconds."
+  },
+  "bg_label_interval": {
+    "message": "Интервал",
+    "description": "Field name used as $1 in bg_seconds_range: seconds to wait before auto-clicking the same button again."
+  },
+  "bg_label_pause": {
+    "message": "Пауза после выхода",
+    "description": "Field name used as $1 in bg_seconds_range: the \"pause after sign-out\" seconds on the manager page."
+  },
+  "bg_rule_no_button": {
+    "message": "Кнопка не выбрана"
+  },
+  "bg_duplicate_click_rule": {
+    "message": "Для этого пути уже есть правило с таким же селектором"
+  },
+  "bg_selector_required": {
+    "message": "Селектор не может быть пустым"
+  },
+  "bg_autofill_off_for_site": {
+    "message": "Автозаполнение для этого сайта выключено. Сначала включите его."
+  },
+  "bg_site_invalid": {
+    "message": "Неверный формат сайта"
+  },
+  "bg_rules_changed": {
+    "message": "Правила изменились. Обновите эту страницу."
+  },
+  "bg_lock_not_enabled": {
+    "message": "Блокировка приложения не включена"
+  },
+  "bg_key_data_incomplete": {
+    "message": "Данные ключа неполные"
+  },
+  "bg_trash_not_found": {
+    "message": "Этой записи нет в корзине"
+  },
+  "bg_restore_duplicate": {
+    "message": "Для этого сайта уже сохранено такое имя пользователя. Чтобы восстановить этот аккаунт, сначала удалите тот."
+  },
+  "bg_trash_days_range": {
+    "message": "Число дней должно быть от 1 до 365"
+  },
+  "bg_log_not_found": {
+    "message": "Запись не найдена. Возможно, она уже удалена."
+  },
+  "bg_locked": {
+    "message": "Заблокировано. Нажмите значок замка на панели инструментов и подтвердите личность.",
+    "description": "The lock icon is this extension's icon on the browser toolbar."
+  },
+  "bg_master_password_not_set": {
+    "message": "Личный пароль не задан"
+  },
+  "bg_master_password_wrong": {
+    "message": "Неверный личный пароль"
+  },
+  "bg_master_password_too_short": {
+    "message": "Личный пароль должен содержать не меньше $1 символов"
+  },
+  "bg_need_master_password": {
+    "message": "При шифровании личным паролем разблокировать можно только личным паролем."
+  },
+  "bg_hello_no_secret": {
+    "message": "Системная проверка подлинности не выдала секрет для шифрования"
+  },
+  "bg_hello_wrong_secret": {
+    "message": "Секрет от системной проверки подлинности не подходит для расшифровки паролей. Возможно, ключ был заменён."
+  },
+  "bg_lock_needs_verify": {
+    "message": "Чтобы изменить это, сначала подтвердите личность"
+  },
+  "bg_lock_mode_unknown": {
+    "message": "Неизвестный способ защиты"
+  },
+  "bg_lock_needs_backup_password": {
+    "message": "Прежде чем выбрать шифрование, задайте пароль автоматического резервного копирования на вкладке «Резервное копирование»"
+  },
+  "bg_lock_reset_not_needed": {
+    "message": "Данные не зашифрованы, очищать их не нужно"
+  },
+  "bg_extension_page_only": {
+    "message": "Это можно сделать только на страницах самого Хранителя паролей"
+  },
+  "bg_auto_backup_not_ready": {
+    "message": "Расширение заблокировано, а данных для резервной копии ещё нет. Разблокируйте его и попробуйте ещё раз."
+  },
+  "bg_unknown_message": {
+    "message": "Неизвестное сообщение: $1",
+    "description": "$1 is an internal message type. Only shown when something inside the extension goes wrong."
+  },
+  "bg_der_not_signature": {
+    "message": "Это не подпись DER"
+  },
+  "bg_der_bad_format": {
+    "message": "Неверный формат DER"
+  },
+  "bg_unsupported_sig_alg": {
+    "message": "Алгоритм подписи не поддерживается: $1",
+    "description": "$1 is the algorithm number, like -8."
+  },
+  "lang_name_zh_TW": {
+    "message": "繁體中文",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_en": {
+    "message": "English",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_ja": {
+    "message": "日本語",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_nan_TW": {
+    "message": "台語",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_ko": {
+    "message": "한국어",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_de": {
+    "message": "Deutsch",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_ru": {
+    "message": "Русский",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_th": {
+    "message": "ไทย",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "opt_lang_label": {
+    "message": "Язык интерфейса"
+  },
+  "opt_lang_auto": {
+    "message": "Как в браузере ($1)",
+    "description": "Language menu option that follows the browser. $1 is the language the browser picked, e.g. English."
+  },
+  "opt_lang_failed": {
+    "message": "Не удалось сменить язык: $1"
+  },
+  "bg_language_invalid": {
+    "message": "Этот язык не поддерживается"
+  },
+  "bg_update_offline": {
+    "message": "Не удалось подключиться к GitHub. Проверьте подключение к сети и попробуйте ещё раз."
+  },
+  "bg_update_busy": {
+    "message": "GitHub временно ограничивает запросы. Попробуйте позже."
+  },
+  "bg_update_http": {
+    "message": "GitHub вернул ошибку ($1).",
+    "description": "$1 = HTTP status code."
+  },
+  "bg_update_bad_reply": {
+    "message": "Не удалось прочитать данные о версии от GitHub."
+  },
+  "bg_update_no_download": {
+    "message": "У новой версии нет zip-архива для скачивания. Посмотрите страницу Releases на GitHub."
+  }
+}

@@ -324,11 +324,14 @@
 
   // ---- 畫面：shadow DOM ----
 
-  // 日文介面要用日文字型：用中文字型的話，假名會排得很開、標點在字的正中間，按鈕也會擠到換行
-  const fontStack = () =>
-    uiLocale() === 'ja'
-      ? '-apple-system, "Segoe UI", "Yu Gothic UI", Meiryo, "Hiragino Sans", "Noto Sans JP", sans-serif'
-      : '-apple-system, "Segoe UI", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif';
+  // 日文介面要用日文字型：用中文字型的話，假名會排得很開、標點在字的正中間，按鈕也會擠到換行。
+  // 韓文、泰文也指定各自的字型，跟 ui.css 一樣。
+  const FONTS = {
+    ja: '"Yu Gothic UI", Meiryo, "Hiragino Sans", "Noto Sans JP"',
+    ko: '"Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR"',
+    th: '"Leelawadee UI", Thonburi, "Noto Sans Thai"',
+  };
+  const fontStack = () => '-apple-system, "Segoe UI", ' + (FONTS[uiLocale()] || '"Microsoft JhengHei", "PingFang TC", "Noto Sans TC"') + ', sans-serif';
 
   // 每次重新產生：管理頁換了語言，字型要跟著換
   const CSS = () => `

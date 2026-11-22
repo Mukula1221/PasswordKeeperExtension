@@ -2338,6 +2338,26 @@
     "message": "日本語",
     "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
   },
+  "lang_name_nan_TW": {
+    "message": "台語",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_ko": {
+    "message": "한국어",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_de": {
+    "message": "Deutsch",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_ru": {
+    "message": "Русский",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_th": {
+    "message": "ไทย",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
   "opt_lang_label": {
     "message": "介面語言"
   },

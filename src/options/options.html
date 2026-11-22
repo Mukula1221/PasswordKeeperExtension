@@ -26,7 +26,7 @@
     .header label.lang-pick { display: inline-flex; align-items: center; gap: 6px; margin: 0 12px 0 0; font-size: 13px; color: var(--muted); }
     .lang-pick select { font: inherit; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text); cursor: pointer; }
     .form-row { display: grid; grid-template-columns: 110px 1fr; gap: 10px; align-items: center; }
-    /* 英文、日文的欄位名稱比較長，110px 會擠成兩行 */
+    /* 繁中以外的欄位名稱比較長，110px 會擠成兩行 */
     html:not(:lang(zh)) .form-row { grid-template-columns: 150px 1fr; }
     .form-label { font-size: 13px; color: var(--muted); }
     .form-field { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -199,8 +199,13 @@
       <select id="langSelect" aria-label="介面語言" data-i18n-aria-label="opt_lang_label">
         <option value="auto" id="langAuto"></option>
         <option value="zh_TW" data-i18n="lang_name_zh_TW">繁體中文</option>
+        <option value="nan_TW" data-i18n="lang_name_nan_TW">台語</option>
         <option value="en" data-i18n="lang_name_en">English</option>
         <option value="ja" data-i18n="lang_name_ja">日本語</option>
+        <option value="ko" data-i18n="lang_name_ko">한국어</option>
+        <option value="de" data-i18n="lang_name_de">Deutsch</option>
+        <option value="ru" data-i18n="lang_name_ru">Русский</option>
+        <option value="th" data-i18n="lang_name_th">ไทย</option>
       </select>
     </label>
     <button id="headerUpdate" class="small update-pill" hidden data-i18n="opt_header_update">有新版</button>

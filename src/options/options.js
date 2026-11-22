@@ -89,7 +89,7 @@ async function load() {
 function fmtDate(ts) {
   if (!ts) return '—';
   const d = new Date(ts);
-  return d.toLocaleDateString(uiLang()) + ' ' + d.toLocaleTimeString(uiLang(), { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleDateString(formatLang()) + ' ' + d.toLocaleTimeString(formatLang(), { hour: '2-digit', minute: '2-digit' });
 }
 
 function renderTable() {
@@ -1740,8 +1740,8 @@ const WEEKDAY_SHORT = [t('opt_wd_sun'), t('opt_wd_mon'), t('opt_wd_tue'), t('opt
 // 選每週的時候要對得起來是星期幾，所以下次備份時間多帶星期
 function fmtWithWeekday(ts) {
   const d = new Date(ts);
-  const time = d.toLocaleTimeString(uiLang(), { hour: '2-digit', minute: '2-digit' });
-  return t('opt_date_weekday_time', d.toLocaleDateString(uiLang()), WEEKDAY_SHORT[d.getDay()], time);
+  const time = d.toLocaleTimeString(formatLang(), { hour: '2-digit', minute: '2-digit' });
+  return t('opt_date_weekday_time', d.toLocaleDateString(formatLang()), WEEKDAY_SHORT[d.getDay()], time);
 }
 
 const RESULT_TEXT = {
@@ -2182,7 +2182,7 @@ function renderUpdate(info) {
   const state = $('updateState');
   const latest = info.latest;
   state.className = info.available ? 'available' : info.error ? 'failed' : '';
-  if (info.available) state.textContent = t('opt_update_available', latest.version, latest.publishedAt ? new Date(latest.publishedAt).toLocaleDateString(uiLang()) : '—');
+  if (info.available) state.textContent = t('opt_update_available', latest.version, latest.publishedAt ? new Date(latest.publishedAt).toLocaleDateString(formatLang()) : '—');
   else if (info.error) state.textContent = t('opt_update_failed', info.error);
   else if (!info.checkedAt) state.textContent = t('opt_update_never');
   else if (!latest) state.textContent = t('opt_update_no_release');
@@ -2244,7 +2244,16 @@ async function renderLanguagePicker() {
     toast(t('opt_lang_failed', res.error));
     return;
   }
-  const names = { zh_TW: t('lang_name_zh_TW'), en: t('lang_name_en'), ja: t('lang_name_ja') };
+  const names = {
+    zh_TW: t('lang_name_zh_TW'),
+    nan_TW: t('lang_name_nan_TW'),
+    en: t('lang_name_en'),
+    ja: t('lang_name_ja'),
+    ko: t('lang_name_ko'),
+    de: t('lang_name_de'),
+    ru: t('lang_name_ru'),
+    th: t('lang_name_th'),
+  };
   $('langAuto').textContent = t('opt_lang_auto', names[res.data.browserLocale] || names.en);
   $('langSelect').value = res.data.language;
 }

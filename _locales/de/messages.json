@@ -1,0 +1,2390 @@
+{
+  "locale_code": {
+    "message": "de"
+  },
+  "lang_tag": {
+    "message": "de"
+  },
+  "ext_name": {
+    "message": "Passwort-Hüter"
+  },
+  "ext_description": {
+    "message": "Speichert Passwörter und füllt sie automatisch aus, wenn der Browser-Passwortmanager gesperrt ist. Daten bleiben auf dem Computer."
+  },
+  "cmd_fill_login": {
+    "message": "Anmeldeformular mit Benutzername und Passwort dieser Website ausfüllen"
+  },
+  "common_cancelled": {
+    "message": "Abgebrochen",
+    "description": "Download or save dialog was cancelled. background.js returns it as an error and options.js compares against it."
+  },
+  "pop_lock_now_title": {
+    "message": "Jetzt sperren. Zum Weiterverwenden Identität bestätigen.",
+    "description": "Tooltip of the lock button in the popup header."
+  },
+  "pop_lock_now": {
+    "message": "Sperren",
+    "description": "Lock button in the popup header, next to a lock icon."
+  },
+  "pop_search_placeholder": {
+    "message": "Alle Konten suchen, Enter öffnet Website",
+    "description": "Search box at the top of the popup. Enter opens the site of the first result. The popup is 360px wide, so keep it short."
+  },
+  "pop_locked_title": {
+    "message": "Gesperrt"
+  },
+  "pop_locked_hint": {
+    "message": "Bestätigen Sie Ihre Identität, um Passwörter automatisch auszufüllen und anzuzeigen."
+  },
+  "pop_add_title": {
+    "message": "Konto für diese Website hinzufügen"
+  },
+  "pop_username": {
+    "message": "Benutzername",
+    "description": "Field label in the add account form."
+  },
+  "pop_password": {
+    "message": "Passwort",
+    "description": "Field label in the add account form."
+  },
+  "pop_show": {
+    "message": "Anzeigen",
+    "description": "Button inside the password field. Shows the password as text."
+  },
+  "pop_hide": {
+    "message": "Ausblenden",
+    "description": "Same button as pop_show after the password is shown. It sits inside the field, so keep it short."
+  },
+  "pop_cancel": {
+    "message": "Abbrechen"
+  },
+  "pop_save": {
+    "message": "Speichern"
+  },
+  "pop_generate": {
+    "message": "Passwort generieren",
+    "description": "Button that opens the password generator, and the title of that panel."
+  },
+  "pop_regen_title": {
+    "message": "Ein anderes Passwort generieren"
+  },
+  "pop_regen": {
+    "message": "Neu generieren",
+    "description": "Small button next to the generated password."
+  },
+  "pop_gen_length": {
+    "message": "Länge",
+    "description": "Reads as 'Length [min] to [max]'."
+  },
+  "pop_gen_to": {
+    "message": "bis",
+    "description": "Between the min and max length inputs: 'Length [min] to [max]'."
+  },
+  "pop_gen_upper": {
+    "message": "Großbuchstaben",
+    "description": "Checkbox: use uppercase letters."
+  },
+  "pop_gen_lower": {
+    "message": "Kleinbuchstaben",
+    "description": "Checkbox: use lowercase letters."
+  },
+  "pop_gen_digits": {
+    "message": "Ziffern",
+    "description": "Checkbox: use digits."
+  },
+  "pop_gen_symbols": {
+    "message": "Sonderzeichen",
+    "description": "Checkbox: use symbols."
+  },
+  "pop_gen_symbol_set": {
+    "message": "Erlaubte Sonderzeichen",
+    "description": "Field listing which symbols the generator may use."
+  },
+  "pop_gen_close": {
+    "message": "Schließen",
+    "description": "Collapses the password generator panel."
+  },
+  "pop_copy": {
+    "message": "Kopieren",
+    "description": "Copies the generated password."
+  },
+  "pop_gen_fill": {
+    "message": "In Seite einfügen",
+    "description": "Fills the generated password into the password field on the current web page."
+  },
+  "pop_add_account": {
+    "message": "+ Konto hinzufügen"
+  },
+  "pop_this_site": {
+    "message": "Diese Website",
+    "description": "Heading above the settings that only apply to the current site."
+  },
+  "pop_autofill_title": {
+    "message": "Benutzername und Passwort ausfüllen, sobald die Anmeldeseite geöffnet wird"
+  },
+  "pop_autofill": {
+    "message": "Autofill",
+    "description": "Checkbox under 'This site'."
+  },
+  "pop_autofill_master_off": {
+    "message": "(Hauptschalter ist aus)",
+    "description": "Shown next to 'Autofill' when autofill is turned off for all sites on the manager page."
+  },
+  "pop_autosubmit": {
+    "message": "Nach Autofill anmelden",
+    "description": "Checkbox under 'This site'."
+  },
+  "pop_autosubmit_tip": {
+    "message": "Meldet nur an, wenn Autofill erfolgreich war und die Seite nur ein Anmeldeformular hat",
+    "description": "Help text of the '?' next to 'Sign in after autofill'."
+  },
+  "pop_pick_title": {
+    "message": "Beim nächsten Öffnen dieser Seite wird die gewählte Schaltfläche automatisch geklickt"
+  },
+  "pop_pick": {
+    "message": "Auto-Klick-Schaltfläche wählen",
+    "description": "Closes the popup and lets the user click a button on the web page."
+  },
+  "pop_pick_count_title": {
+    "message": "Auto-Klick-Regeln auf der Verwaltungsseite ansehen"
+  },
+  "pop_manage": {
+    "message": "Alle Passwörter verwalten",
+    "description": "Popup footer link. Opens the manager page."
+  },
+  "pop_no_response": {
+    "message": "Die Erweiterung hat nicht reagiert"
+  },
+  "pop_page_unavailable": {
+    "message": "Auf dieser Seite nicht verfügbar"
+  },
+  "pop_page_not_ready": {
+    "message": "Passwort-Hüter ist auf dieser Seite noch nicht geladen. Laden Sie die Seite neu und versuchen Sie es noch einmal.",
+    "description": "Tabs opened before the extension was installed or reloaded can't talk to it until they are reloaded."
+  },
+  "pop_page_no_response": {
+    "message": "Die Seite hat nicht reagiert"
+  },
+  "pop_password_copied": {
+    "message": "Passwort kopiert"
+  },
+  "pop_copy_failed": {
+    "message": "Kopieren fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "pop_load_failed": {
+    "message": "Laden fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "pop_empty": {
+    "message": "Für diese Website sind noch keine Konten gespeichert. Nach der ersten Anmeldung werden Sie gefragt, ob Sie das Konto speichern möchten."
+  },
+  "pop_no_username": {
+    "message": "(Kein Benutzername, nur Passwort)",
+    "description": "Shown in the account list instead of an empty username."
+  },
+  "pop_fill": {
+    "message": "Ausfüllen",
+    "description": "Fills this account into the sign-in form on the page."
+  },
+  "pop_copy_password": {
+    "message": "Passwort kopieren"
+  },
+  "pop_account_count_one": {
+    "message": "$1 Konto",
+    "description": "Popup footer. $1 = number of saved accounts for this site."
+  },
+  "pop_account_count_other": {
+    "message": "$1 Konten",
+    "description": "Popup footer. $1 = number of saved accounts for this site."
+  },
+  "pop_page_rule_count_one": {
+    "message": "$1 Regel hier",
+    "description": "Link next to 'Pick a button to auto-click'. $1 = number of auto-click rules for this page. Both buttons share one row, so keep it short."
+  },
+  "pop_page_rule_count_other": {
+    "message": "$1 Regeln hier",
+    "description": "Link next to 'Pick a button to auto-click'. $1 = number of auto-click rules for this page. Both buttons share one row, so keep it short."
+  },
+  "pop_password_required": {
+    "message": "Passwort darf nicht leer sein"
+  },
+  "pop_updated": {
+    "message": "Aktualisiert",
+    "description": "The username already existed, so its password was updated."
+  },
+  "pop_added": {
+    "message": "Hinzugefügt"
+  },
+  "pop_setting_failed": {
+    "message": "Einstellung konnte nicht geändert werden: $1",
+    "description": "$1 = error message."
+  },
+  "pop_autofill_on": {
+    "message": "Autofill für diese Website aktiviert"
+  },
+  "pop_autofill_off": {
+    "message": "Autofill für diese Website deaktiviert"
+  },
+  "pop_autosubmit_on": {
+    "message": "Ab jetzt wird auf $1 nach Autofill automatisch angemeldet",
+    "description": "$1 = site host name, e.g. example.com."
+  },
+  "pop_autosubmit_off": {
+    "message": "Automatische Anmeldung für diese Website deaktiviert"
+  },
+  "pop_search_none": {
+    "message": "Keine Konten für „$1“ gefunden",
+    "description": "$1 = what the user typed in the search box."
+  },
+  "pop_search_no_username": {
+    "message": "(kein Benutzername)",
+    "description": "Shown in search results instead of an empty username."
+  },
+  "pop_open": {
+    "message": "Öffnen",
+    "description": "Opens the site of this search result in a new tab."
+  },
+  "pop_unlock_with": {
+    "message": "Mit $1 entsperren",
+    "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "pop_unlock_password": {
+    "message": "Mit eigenem Passwort entsperren"
+  },
+  "pop_copied": {
+    "message": "Kopiert"
+  },
+  "pop_gen_filled": {
+    "message": "In das Passwortfeld der Seite eingefügt. Klicken Sie nach dem Absenden auf „Speichern“.",
+    "description": "'Save' is the button on the save-password prompt shown after the form is submitted."
+  },
+  "pop_backup_days_one": {
+    "message": "Seit $1 Tag keine Sicherung. Hier klicken, um auf der Verwaltungsseite zu sichern.",
+    "description": "Backup reminder bar in the popup. $1 = days since the last backup."
+  },
+  "pop_backup_days_other": {
+    "message": "Seit $1 Tagen keine Sicherung. Hier klicken, um auf der Verwaltungsseite zu sichern.",
+    "description": "Backup reminder bar in the popup. $1 = days since the last backup."
+  },
+  "pop_backup_never": {
+    "message": "Noch nie gesichert. Ihre Passwörter gibt es nur in diesem Browser. Hier klicken, um auf der Verwaltungsseite zu sichern.",
+    "description": "Backup reminder bar in the popup."
+  },
+  "pop_update_bar": {
+    "message": "Version $1 ist verfügbar. Hier klicken, um zu sehen, wie Sie aktualisieren.",
+    "description": "$1 = version number like 1.14.0. Update reminder bar in the popup."
+  },
+  "pop_unsupported_page": {
+    "message": "Auf dieser Seite nicht verfügbar. Nur http- und https-Seiten werden unterstützt.",
+    "description": "Shown under the popup title on browser pages such as the new tab page."
+  },
+  "unl_title": {
+    "message": "Passwort-Hüter entsperren",
+    "description": "Title of the separate unlock window."
+  },
+  "unl_not_shown": {
+    "message": "Nicht erschienen? ",
+    "description": "Followed directly by the unl_retry link, with nothing in between. Keep the trailing space in languages that use spaces."
+  },
+  "unl_retry": {
+    "message": "Hier erneut öffnen",
+    "description": "Link that asks for system verification again, e.g. when the Windows Hello dialog opened behind other windows."
+  },
+  "unl_done": {
+    "message": "Entsperrt"
+  },
+  "unl_cancel": {
+    "message": "Abbrechen"
+  },
+  "unl_try_again": {
+    "message": "Erneut versuchen",
+    "description": "Shown only after verification was canceled or timed out."
+  },
+  "unl_wait_title": {
+    "message": "Bestätigen Sie im angezeigten Fenster mit $1",
+    "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "unl_password_title": {
+    "message": "Eigenes Passwort zum Entsperren eingeben"
+  },
+  "wa_no_response": {
+    "message": "Die Erweiterung hat nicht reagiert"
+  },
+  "wa_cancelled": {
+    "message": "Bestätigung abgebrochen oder Zeit abgelaufen"
+  },
+  "wa_blocked": {
+    "message": "Der Browser erlaubt dieser Erweiterung keine Systemauthentifizierung"
+  },
+  "wa_security_key_or_phone": {
+    "message": "einem Sicherheitsschlüssel oder Smartphone",
+    "description": "What to verify with on systems without Windows Hello or Touch ID. Always inserted mid-sentence as $1 (e.g. 'Unlock with $1'), so English keeps it lowercase with an article."
+  },
+  "wa_unsupported": {
+    "message": "Dieser Browser unterstützt keine Systemauthentifizierung"
+  },
+  "wa_no_public_key": {
+    "message": "Der Browser hat keinen öffentlichen Schlüssel geliefert. Auf diesem Computer ist die Systemauthentifizierung daher nicht nutzbar."
+  },
+  "wa_not_set_up": {
+    "message": "Die Systemauthentifizierung ist noch nicht eingerichtet"
+  },
+  "wa_no_prf": {
+    "message": "Von $1 erhält dieser Computer keinen Geheimwert für die Verschlüsselung. Verschlüsseln Sie stattdessen mit einem eigenen Passwort."
+  },
+  "wa_prf_unstable": {
+    "message": "Von $1 kamen zweimal unterschiedliche Geheimwerte, daher ist damit keine Verschlüsselung möglich. Verschlüsseln Sie stattdessen mit einem eigenen Passwort."
+  },
+  "opt_page_title": {
+    "message": "Passwort-Hüter – Passwörter verwalten",
+    "description": "Browser tab title of the manager page."
+  },
+  "opt_header_note": {
+    "message": "Passwörter werden nur im Browser auf diesem Computer gespeichert und nirgendwohin hochgeladen."
+  },
+  "opt_header_version_title": {
+    "message": "Versionsverlauf ansehen",
+    "description": "Tooltip of the version number in the page header."
+  },
+  "opt_header_update": {
+    "message": "Neue Version",
+    "description": "Small button next to the version number in the header."
+  },
+  "opt_header_update_title": {
+    "message": "Version $1 ist verfügbar. Klicken Sie hier, um zu sehen, wie Sie aktualisieren",
+    "description": "$1 = version number."
+  },
+  "opt_lock_title": {
+    "message": "Identität bestätigen",
+    "description": "Heading of the screen shown while App lock is on."
+  },
+  "opt_lock_help": {
+    "message": "Bestätigen Sie Ihre Identität, um Passwörter und Einstellungen zu sehen."
+  },
+  "opt_verify_with": {
+    "message": "Mit $1 bestätigen",
+    "description": "Button on the lock screen. $1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "opt_lock_broken": {
+    "message": "Die Sperreinstellungen sind beschädigt: Der Schlüssel für die Systemauthentifizierung fehlt. Entfernen Sie die Erweiterung, installieren Sie sie neu und importieren Sie dann Ihre Sicherung."
+  },
+  "opt_lock_unlock": {
+    "message": "Entsperren"
+  },
+  "opt_lock_forgot": {
+    "message": "Eigenes Passwort vergessen oder Systemauthentifizierung funktioniert nicht?"
+  },
+  "opt_lock_reset_title": {
+    "message": "Passwörter auf diesem Computer löschen?"
+  },
+  "opt_lock_reset_text": {
+    "message": "Wenn Sie nicht entsperren können, bleibt nur das Löschen. Stellen Sie danach im Tab „Sicherung“ mit „Verschlüsselte Sicherung importieren“ wieder her. Das Löschen lässt sich nicht rückgängig machen."
+  },
+  "opt_lock_reset_confirm": {
+    "message": "Löschen"
+  },
+  "opt_lock_reset_next": {
+    "message": "Weiter"
+  },
+  "opt_lock_reset_again_title": {
+    "message": "Letzte Bestätigung: Passwörter auf diesem Computer löschen"
+  },
+  "opt_lock_reset_last_backup": {
+    "message": "Ihre letzte Sicherung stammt vom $1. Stellen Sie nach dem Löschen aus dieser Sicherung wieder her. Danach hinzugefügte oder geänderte Passwörter gehen verloren."
+  },
+  "opt_lock_reset_no_backup": {
+    "message": "Auf diesem Computer ist keine Sicherung verzeichnet. Nach dem Löschen lassen sich die Passwörter nicht wiederherstellen."
+  },
+  "opt_lock_reset_word": {
+    "message": "löschen"
+  },
+  "opt_type_to_confirm": {
+    "message": "Geben Sie „$1“ ein, um fortzufahren"
+  },
+  "opt_lock_reset_done": {
+    "message": "Gelöscht. Klicken Sie auf „Verschlüsselte Sicherung importieren“ und wählen Sie eine Sicherungsdatei zum Wiederherstellen."
+  },
+  "opt_no_response": {
+    "message": "Die Erweiterung hat nicht reagiert"
+  },
+  "opt_load_failed": {
+    "message": "Laden fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "opt_tab_passwords": {
+    "message": "Passwörter"
+  },
+  "opt_tab_backup": {
+    "message": "Sicherung"
+  },
+  "opt_tab_settings": {
+    "message": "Einstellungen"
+  },
+  "opt_tab_trash": {
+    "message": "Papierkorb"
+  },
+  "opt_tab_help": {
+    "message": "Hilfe"
+  },
+  "opt_tab_versions": {
+    "message": "Versionen"
+  },
+  "opt_add_button": {
+    "message": "+ Hinzufügen",
+    "description": "Adds a password on the Passwords tab, or an auto-click rule on the Settings tab."
+  },
+  "opt_cancel": {
+    "message": "Abbrechen"
+  },
+  "opt_save": {
+    "message": "Speichern"
+  },
+  "opt_ok": {
+    "message": "OK"
+  },
+  "opt_apply": {
+    "message": "Übernehmen"
+  },
+  "opt_got_it": {
+    "message": "Verstanden",
+    "description": "Closes an information dialog."
+  },
+  "opt_edit": {
+    "message": "Bearbeiten"
+  },
+  "opt_delete": {
+    "message": "Löschen"
+  },
+  "opt_show": {
+    "message": "Anzeigen",
+    "description": "Shows the password as text."
+  },
+  "opt_hide": {
+    "message": "Ausblenden",
+    "description": "Hides the password again."
+  },
+  "opt_copy": {
+    "message": "Kopieren"
+  },
+  "opt_copied": {
+    "message": "Kopiert"
+  },
+  "opt_copy_failed": {
+    "message": "Kopieren fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "opt_password_copied": {
+    "message": "Passwort kopiert"
+  },
+  "opt_added": {
+    "message": "Hinzugefügt"
+  },
+  "opt_updated": {
+    "message": "Aktualisiert"
+  },
+  "opt_setting_failed": {
+    "message": "Einstellung konnte nicht geändert werden: $1",
+    "description": "$1 = error message."
+  },
+  "opt_delete_failed": {
+    "message": "Löschen fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "opt_select_all": {
+    "message": "Alle auswählen"
+  },
+  "opt_seconds_unit": {
+    "message": "Sekunden",
+    "description": "Unit after a number input."
+  },
+  "opt_no_username": {
+    "message": "(kein Benutzername)",
+    "description": "Shown instead of an empty username."
+  },
+  "opt_account_label": {
+    "message": "$1 · $2",
+    "description": "One saved account in a list. $1 = site, $2 = username. Only the separator between them is translated."
+  },
+  "opt_list_sep": {
+    "message": ", ",
+    "description": "Separator between items of a list inside a sentence."
+  },
+  "opt_note_sep": {
+    "message": ". ",
+    "description": "Separator between two notes shown after a CSV export."
+  },
+  "opt_search_placeholder": {
+    "message": "Websites, Benutzernamen oder Notizen suchen"
+  },
+  "opt_export_selected_title": {
+    "message": "Setzen Sie links Häkchen, um diese Einträge als verschlüsselte Datei für Kollegen zu exportieren"
+  },
+  "opt_export_selected": {
+    "message": "Ausgewählte exportieren (verschlüsselt)"
+  },
+  "opt_export_selected_n_one": {
+    "message": "$1 ausgewählten Eintrag exportieren (verschlüsselt)",
+    "description": "$1 = number of checked entries."
+  },
+  "opt_export_selected_n_other": {
+    "message": "$1 ausgewählte Einträge exportieren (verschlüsselt)",
+    "description": "$1 = number of checked entries."
+  },
+  "opt_check_all_title": {
+    "message": "Alle angezeigten auswählen"
+  },
+  "opt_col_site": {
+    "message": "Website",
+    "description": "Table column."
+  },
+  "opt_col_username": {
+    "message": "Benutzername",
+    "description": "Table column."
+  },
+  "opt_col_password": {
+    "message": "Passwort",
+    "description": "Table column."
+  },
+  "opt_col_last_used": {
+    "message": "Zuletzt verwendet",
+    "description": "Table column: when the password was last filled in."
+  },
+  "opt_empty": {
+    "message": "Noch keine Passwörter. Melden Sie sich einmal auf einer Website an, dann werden Sie oben rechts gefragt, ob Sie das Passwort speichern möchten."
+  },
+  "opt_history_toggle": {
+    "message": "Frühere Passwörter ($1)",
+    "description": "Expands the previous passwords of an account. $1 = how many."
+  },
+  "opt_history_replaced_at": {
+    "message": "Ersetzt am $1",
+    "description": "$1 = date and time the password was replaced."
+  },
+  "opt_confirm_delete": {
+    "message": "„$2“ von $1 löschen?",
+    "description": "$1 = site, $2 = username."
+  },
+  "opt_moved_to_trash_one": {
+    "message": "In den Papierkorb verschoben. Sie können es innerhalb von $1 Tag wiederherstellen",
+    "description": "$1 = days items stay in the Trash."
+  },
+  "opt_moved_to_trash_other": {
+    "message": "In den Papierkorb verschoben. Sie können es innerhalb von $1 Tagen wiederherstellen",
+    "description": "$1 = days items stay in the Trash."
+  },
+  "opt_search_no_match": {
+    "message": "Keine Ergebnisse für „$1“",
+    "description": "$1 = search text."
+  },
+  "opt_health_show": {
+    "message": "Details anzeigen"
+  },
+  "opt_health_hide": {
+    "message": "Details ausblenden"
+  },
+  "opt_health_ok": {
+    "message": "Passwortcheck: Keine mehrfach verwendeten oder schwachen Passwörter, alle im letzten Jahr geändert."
+  },
+  "opt_health_summary_one": {
+    "message": "Passwortcheck: $1 Gruppe mehrfach verwendeter Passwörter, $2 schwach, $3 seit über einem Jahr nicht geändert.",
+    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  },
+  "opt_health_summary_other": {
+    "message": "Passwortcheck: $1 Gruppen mehrfach verwendeter Passwörter, $2 schwach, $3 seit über einem Jahr nicht geändert.",
+    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  },
+  "opt_health_reused": {
+    "message": "Mehrfach verwendet: Passwortgruppe $1 wird an $2 Stellen verwendet",
+    "description": "$1 = group number, $2 = accounts using it (always 2 or more)."
+  },
+  "opt_health_weak_short_one": {
+    "message": "Schwach: nur $1 Zeichen",
+    "description": "$1 = password length."
+  },
+  "opt_health_weak_short_other": {
+    "message": "Schwach: nur $1 Zeichen",
+    "description": "$1 = password length."
+  },
+  "opt_health_weak_classes": {
+    "message": "Schwach: nur eine Zeichenart verwendet"
+  },
+  "opt_health_old": {
+    "message": "Lange nicht geändert: zuletzt geändert am $1",
+    "description": "$1 = date and time."
+  },
+  "opt_trash_title": {
+    "message": "Papierkorb"
+  },
+  "opt_trash_days_before": {
+    "message": "Gelöschte Konten hier",
+    "description": "Before the days input: 'Keep deleted accounts here for [30] days, then remove them automatically'."
+  },
+  "opt_trash_days_after": {
+    "message": "Tage aufbewahren, dann automatisch entfernen",
+    "description": "After the days input. See opt_trash_days_before."
+  },
+  "opt_trash_restore_selected": {
+    "message": "Ausgewählte wiederherstellen"
+  },
+  "opt_trash_purge_selected": {
+    "message": "Ausgewählte endgültig löschen"
+  },
+  "opt_trash_restore_selected_n_one": {
+    "message": "$1 ausgewähltes Konto wiederherstellen",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_restore_selected_n_other": {
+    "message": "$1 ausgewählte Konten wiederherstellen",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_purge_selected_n_one": {
+    "message": "$1 ausgewähltes Konto endgültig löschen",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_purge_selected_n_other": {
+    "message": "$1 ausgewählte Konten endgültig löschen",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_empty": {
+    "message": "Der Papierkorb ist leer."
+  },
+  "opt_trash_purge_all": {
+    "message": "Papierkorb leeren"
+  },
+  "opt_trash_load_failed": {
+    "message": "Papierkorb konnte nicht geladen werden: $1",
+    "description": "$1 = error message."
+  },
+  "opt_trash_item_info_one": {
+    "message": "Gelöscht am $2. Wird in $1 Tag automatisch entfernt",
+    "description": "$1 = days left, $2 = date and time it was deleted."
+  },
+  "opt_trash_item_info_other": {
+    "message": "Gelöscht am $2. Wird in $1 Tagen automatisch entfernt",
+    "description": "$1 = days left, $2 = date and time it was deleted."
+  },
+  "opt_restore": {
+    "message": "Wiederherstellen"
+  },
+  "opt_restored": {
+    "message": "Wiederhergestellt"
+  },
+  "opt_restore_failed": {
+    "message": "Wiederherstellen fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "opt_restored_n_one": {
+    "message": "$1 Konto wiederhergestellt"
+  },
+  "opt_restored_n_other": {
+    "message": "$1 Konten wiederhergestellt"
+  },
+  "opt_restored_skipped_title": {
+    "message": "Wiederhergestellt: $1. Nicht wiederhergestellt: $2",
+    "description": "$1 = restored accounts, $2 = accounts skipped because the site already has the same username."
+  },
+  "opt_restored_skipped_text": {
+    "message": "Diese Websites haben bereits dasselbe Konto:"
+  },
+  "opt_purge": {
+    "message": "Endgültig löschen"
+  },
+  "opt_confirm_purge": {
+    "message": "„$2“ von $1 endgültig löschen? Das lässt sich nicht rückgängig machen.",
+    "description": "$1 = site, $2 = username."
+  },
+  "opt_confirm_purge_selected_one": {
+    "message": "$1 ausgewähltes Konto endgültig löschen? Das lässt sich nicht rückgängig machen."
+  },
+  "opt_confirm_purge_selected_other": {
+    "message": "$1 ausgewählte Konten endgültig löschen? Das lässt sich nicht rückgängig machen."
+  },
+  "opt_purged_n_one": {
+    "message": "$1 Konto endgültig gelöscht"
+  },
+  "opt_purged_n_other": {
+    "message": "$1 Konten endgültig gelöscht"
+  },
+  "opt_confirm_purge_all_one": {
+    "message": "Papierkorb leeren? $1 Konto wird endgültig gelöscht."
+  },
+  "opt_confirm_purge_all_other": {
+    "message": "Papierkorb leeren? $1 Konten werden endgültig gelöscht."
+  },
+  "opt_trash_emptied": {
+    "message": "Papierkorb geleert"
+  },
+  "opt_trash_days_invalid": {
+    "message": "Die Anzahl der Tage muss eine ganze Zahl von 1 bis 365 sein"
+  },
+  "opt_trash_days_title_one": {
+    "message": "Auf $1 Tag ändern",
+    "description": "Dialog title when shortening the Trash days. $1 = new number of days."
+  },
+  "opt_trash_days_title_other": {
+    "message": "Auf $1 Tage ändern",
+    "description": "Dialog title when shortening the Trash days. $1 = new number of days."
+  },
+  "opt_trash_days_expiring_one": {
+    "message": "$1 Konto wird sofort endgültig gelöscht:"
+  },
+  "opt_trash_days_expiring_other": {
+    "message": "$1 Konten werden sofort endgültig gelöscht:"
+  },
+  "opt_trash_age_one": {
+    "message": "Seit $1 Tag im Papierkorb",
+    "description": "$1 = days since it was deleted."
+  },
+  "opt_trash_age_other": {
+    "message": "Seit $1 Tagen im Papierkorb",
+    "description": "$1 = days since it was deleted."
+  },
+  "opt_confirm_delete_button": {
+    "message": "Löschen",
+    "description": "Confirms deleting the listed accounts."
+  },
+  "opt_trash_days_set_one": {
+    "message": "Auf $1 Tag geändert"
+  },
+  "opt_trash_days_set_other": {
+    "message": "Auf $1 Tage geändert"
+  },
+  "opt_trash_days_set_purged_one": {
+    "message": "Auf $1 Tag geändert. Gelöscht: $2",
+    "description": "$1 = new number of days, $2 = accounts deleted because they were older."
+  },
+  "opt_trash_days_set_purged_other": {
+    "message": "Auf $1 Tage geändert. Gelöscht: $2",
+    "description": "$1 = new number of days, $2 = accounts deleted because they were older."
+  },
+  "opt_block_backup": {
+    "message": "Sicherung",
+    "description": "Section title on the Backup tab."
+  },
+  "opt_export_backup": {
+    "message": "Verschlüsselte Sicherung exportieren"
+  },
+  "opt_import_backup": {
+    "message": "Verschlüsselte Sicherung importieren"
+  },
+  "opt_export_csv": {
+    "message": "CSV exportieren"
+  },
+  "opt_import_csv": {
+    "message": "CSV importieren"
+  },
+  "opt_backup_help": {
+    "message": "Verschlüsselte Sicherungen werden empfohlen. Wenn Sie das Sicherungspasswort vergessen, lässt sich die Datei nicht öffnen."
+  },
+  "opt_backup_tip": {
+    "message": "Beim Exportieren öffnet sich „Speichern unter“, damit Sie den Speicherort wählen können.\nCSV-Dateien sind nicht verschlüsselt. Wer sie öffnet, sieht die Passwörter. Bewahren Sie sie daher sicher auf.\nDas CSV-Format entspricht dem Export von Chrome und Edge.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_move_title": {
+    "message": "Passwörter mit dem Browser austauschen"
+  },
+  "opt_move_help": {
+    "message": "Mit einer CSV-Datei übertragen Sie Passwörter zwischen hier und dem integrierten Passwortmanager des Browsers. Nichts wird automatisch synchronisiert. Löschen Sie danach die CSV-Datei und leeren Sie den Papierkorb des Computers."
+  },
+  "opt_move_in_title": {
+    "message": "Passwörter aus dem Browser übernehmen"
+  },
+  "opt_move_in_1a": {
+    "message": "Öffnen Sie die Passwortseite des Browsers. Geben Sie dazu Folgendes in die Adressleiste ein. Chrome:",
+    "description": "One sentence split around three addresses: [1a] chrome://password-manager/settings[1b] edge://settings/passwords[1c] about:logins[1d]. A space follows 1a, 1b and 1c."
+  },
+  "opt_move_in_1b": {
+    "message": ", Edge:",
+    "description": "See opt_move_in_1a. Comes right after the Chrome address."
+  },
+  "opt_move_in_1c": {
+    "message": ", Firefox:",
+    "description": "See opt_move_in_1a. Comes right after the Edge address."
+  },
+  "opt_move_in_1d": {
+    "message": ".",
+    "description": "See opt_move_in_1a. Comes right after the Firefox address."
+  },
+  "opt_move_in_2": {
+    "message": "Suchen Sie „Passwörter exportieren“ und speichern Sie eine CSV-Datei. Eventuell fragt der Browser zuerst nach Ihrem Windows-Passwort oder Ihrer PIN.",
+    "description": "'Export passwords' is the browser's own button name."
+  },
+  "opt_move_in_3": {
+    "message": "Kehren Sie hierher zurück, klicken Sie oben auf „CSV importieren“ und wählen Sie diese Datei. Exportdateien aus Chrome, Edge, Firefox und Safari werden erkannt."
+  },
+  "opt_move_out_title": {
+    "message": "Passwörter von hier zurück in den Browser übertragen"
+  },
+  "opt_move_out_1": {
+    "message": "Klicken Sie oben auf „CSV exportieren“, um eine Datei zu speichern. Mehr als 3000 Einträge werden auf mehrere Dateien verteilt, weil Chrome und Edge höchstens 3000 auf einmal annehmen."
+  },
+  "opt_move_out_2": {
+    "message": "Öffnen Sie die Passwortseite des Browsers (Adresse wie oben), suchen Sie „Passwörter importieren“ und wählen Sie die eben gespeicherte Datei.",
+    "description": "'Import passwords' is the browser's own button name."
+  },
+  "opt_move_out_3": {
+    "message": "Hat der Browser bereits dieselbe Website mit demselben Benutzernamen, aber einem anderen Passwort, listet neueres Chrome diese Einträge auf und lässt Sie wählen, ob sie ersetzt werden. Fragt der Browser nicht, behält er sein vorhandenes Passwort."
+  },
+  "opt_move_what_title": {
+    "message": "Was beim Hin- und Herübertragen passiert"
+  },
+  "opt_move_what_1": {
+    "message": "Einträge mit derselben Website und demselben Benutzernamen werden zusammengeführt, nicht verdoppelt. Ist das Passwort anders, wird das aus der Datei übernommen und das bisherige unter „Frühere Passwörter“ aufbewahrt."
+  },
+  "opt_move_what_2": {
+    "message": "Ist das Passwort in der Datei ein altes, das Sie hier schon ersetzt haben, bleibt das hiesige erhalten und wird nicht überschrieben."
+  },
+  "opt_move_what_3": {
+    "message": "Hat ein Eintrag in der Datei keine Notiz, wird die Notiz hier nicht gelöscht."
+  },
+  "opt_move_what_4a": {
+    "message": "Passwörter von Mobil-Apps (Adressen mit ",
+    "description": "Split around the address android://: [4a]android:// [4b]."
+  },
+  "opt_move_what_4b": {
+    "message": "am Anfang) und andere Einträge, die keine Websites sind, werden nicht importiert. Sie zählen als „übersprungen“.",
+    "description": "See opt_move_what_4a. 'skipped' is the count in the import result."
+  },
+  "opt_move_what_5": {
+    "message": "Wenn Ihre Organisation den Passwortmanager des Browsers deaktiviert hat, finden Sie im Browser eventuell kein Exportieren oder Importieren."
+  },
+  "opt_block_auto_backup": {
+    "message": "Automatische Sicherung",
+    "description": "Section title."
+  },
+  "opt_ab_run_now": {
+    "message": "Jetzt sichern"
+  },
+  "opt_ab_run_now_tip": {
+    "message": "Speichert sofort eine Kopie im Ordner unter „3. Speichern in“. Funktioniert auch, wenn die automatische Sicherung aus ist.\nSpeichert auch, wenn sich keine Passwörter geändert haben.\nErfordert ein Sicherungspasswort.",
+    "description": "'3. Save to' must match opt_ab_step_folder."
+  },
+  "opt_ab_help": {
+    "message": "Speichert regelmäßig verschlüsselte Sicherungen in einem Ordner unter „Downloads“. Richten Sie dazu die Schritte 1 bis 4 ein."
+  },
+  "opt_ab_help_tip": {
+    "message": "Speichert täglich oder wöchentlich zur festgelegten Zeit eine Kopie, aber nur, wenn sich Passwörter geändert haben.\nWird der Zeitpunkt verpasst, wird die Sicherung beim nächsten Öffnen des Browsers nachgeholt."
+  },
+  "opt_ab_step_password": {
+    "message": "1. Sicherungspasswort"
+  },
+  "opt_ab_password_tip": {
+    "message": "Alle automatischen Sicherungen werden mit diesem Passwort verschlüsselt.\nDie Erweiterung speichert dieses Passwort nicht. Wenn Sie es vergessen, lassen sich die Sicherungsdateien nicht öffnen.\nNach einer Änderung brauchen ältere Sicherungsdateien weiterhin das alte Passwort."
+  },
+  "opt_ab_set_password": {
+    "message": "Passwort festlegen"
+  },
+  "opt_ab_change_password": {
+    "message": "Passwort ändern"
+  },
+  "opt_ab_pw_set": {
+    "message": "Festgelegt",
+    "description": "Status of the auto backup password."
+  },
+  "opt_ab_pw_unset": {
+    "message": "Nicht festgelegt",
+    "description": "Status of the auto backup password."
+  },
+  "opt_ab_step_when": {
+    "message": "2. Wann"
+  },
+  "opt_ab_every_day": {
+    "message": "Täglich"
+  },
+  "opt_ab_every_week": {
+    "message": "Wöchentlich"
+  },
+  "opt_weekday_mon": {
+    "message": "Montag"
+  },
+  "opt_weekday_tue": {
+    "message": "Dienstag"
+  },
+  "opt_weekday_wed": {
+    "message": "Mittwoch"
+  },
+  "opt_weekday_thu": {
+    "message": "Donnerstag"
+  },
+  "opt_weekday_fri": {
+    "message": "Freitag"
+  },
+  "opt_weekday_sat": {
+    "message": "Samstag"
+  },
+  "opt_weekday_sun": {
+    "message": "Sonntag"
+  },
+  "opt_ab_step_folder": {
+    "message": "3. Speichern in"
+  },
+  "opt_ab_folder_prefix": {
+    "message": "Downloads \\",
+    "description": "Shown before the subfolder name input. Means the Downloads folder."
+  },
+  "opt_ab_step_switch": {
+    "message": "4. Ein/Aus"
+  },
+  "opt_ab_enable": {
+    "message": "Automatische Sicherung aktivieren"
+  },
+  "opt_reminder_title": {
+    "message": "Erinnerung"
+  },
+  "opt_reminder_before": {
+    "message": "Im Pop-up erinnern, wenn seit",
+    "description": "Before the days input: 'Remind me in the popup after [30] days without a backup'."
+  },
+  "opt_reminder_after": {
+    "message": "Tagen keine Sicherung erfolgt ist",
+    "description": "After the days input. See opt_reminder_before."
+  },
+  "opt_reminder_tip": {
+    "message": "Keine Erinnerung, wenn sich in diesem Zeitraum keine Passwörter geändert haben.\nGeben Sie 0 ein, um die Erinnerung auszuschalten."
+  },
+  "opt_ab_next": {
+    "message": "Nächste Sicherung: $1",
+    "description": "$1 = date, weekday and time."
+  },
+  "opt_ab_last_failed": {
+    "message": "Letzter Versuch fehlgeschlagen ($1): $2",
+    "description": "$1 = date and time, $2 = error message."
+  },
+  "opt_ab_need_password": {
+    "message": "Legen Sie zuerst ein Sicherungspasswort fest, um die automatische Sicherung zu aktivieren oder jetzt zu sichern."
+  },
+  "opt_ab_not_enabled": {
+    "message": "Nicht aktiviert."
+  },
+  "opt_ab_last_check": {
+    "message": "Letzte Prüfung: $1.",
+    "description": "$1 = date and time."
+  },
+  "opt_ab_last_check_result": {
+    "message": "Letzte Prüfung: $1. $2.",
+    "description": "$1 = date and time, $2 = opt_ab_result_saved, opt_ab_result_unchanged or opt_ab_result_empty."
+  },
+  "opt_ab_result_saved": {
+    "message": "Gespeichert",
+    "description": "Result of the last auto backup check. See opt_ab_last_check_result."
+  },
+  "opt_ab_result_unchanged": {
+    "message": "Passwörter unverändert, daher nichts gespeichert",
+    "description": "See opt_ab_last_check_result."
+  },
+  "opt_ab_result_empty": {
+    "message": "Keine Passwörter zum Sichern",
+    "description": "See opt_ab_last_check_result."
+  },
+  "opt_ab_waiting_first": {
+    "message": "Aktiviert. Der erste geplante Zeitpunkt ist noch nicht erreicht."
+  },
+  "opt_wd_sun": {
+    "message": "So",
+    "description": "Short weekday in the next backup time. See opt_date_weekday_time."
+  },
+  "opt_wd_mon": {
+    "message": "Mo",
+    "description": "Short weekday."
+  },
+  "opt_wd_tue": {
+    "message": "Di",
+    "description": "Short weekday."
+  },
+  "opt_wd_wed": {
+    "message": "Mi",
+    "description": "Short weekday."
+  },
+  "opt_wd_thu": {
+    "message": "Do",
+    "description": "Short weekday."
+  },
+  "opt_wd_fri": {
+    "message": "Fr",
+    "description": "Short weekday."
+  },
+  "opt_wd_sat": {
+    "message": "Sa",
+    "description": "Short weekday."
+  },
+  "opt_date_weekday_time": {
+    "message": "$1 ($2) $3",
+    "description": "$1 = date, $2 = short weekday, $3 = time."
+  },
+  "opt_ab_folder_changed": {
+    "message": "Speicherort der automatischen Sicherung geändert in „Downloads\\$1“",
+    "description": "$1 = subfolder name inside the Downloads folder."
+  },
+  "opt_ab_pw_title": {
+    "message": "Passwort für die automatische Sicherung"
+  },
+  "opt_ab_pw_hint": {
+    "message": "Die Erweiterung speichert dieses Passwort nicht. Wenn Sie es vergessen, lassen sich die Sicherungsdateien nicht öffnen."
+  },
+  "opt_ab_pw_saved": {
+    "message": "Passwort für die automatische Sicherung festgelegt"
+  },
+  "opt_backup_failed": {
+    "message": "Sicherung fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "opt_backed_up_to": {
+    "message": "Gesichert unter $1",
+    "description": "$1 = file path."
+  },
+  "opt_nothing_to_back_up": {
+    "message": "Nichts zu sichern"
+  },
+  "opt_backup_status_failed": {
+    "message": "Sicherungsstatus konnte nicht geladen werden: $1",
+    "description": "$1 = error message."
+  },
+  "opt_backup_status_empty": {
+    "message": "Noch keine Passwörter, daher nichts zu sichern."
+  },
+  "opt_backup_status_never": {
+    "message": "Noch nie gesichert. Ihre Passwörter gibt es nur in diesem Browser. Wenn Sie die Erweiterung entfernen oder Browserdaten löschen, sind sie weg."
+  },
+  "opt_backup_status_last_one": {
+    "message": "Letzte Sicherung: $2 (vor $1 Tag)",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_last_other": {
+    "message": "Letzte Sicherung: $2 (vor $1 Tagen)",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_due_one": {
+    "message": "Letzte Sicherung: $2 (vor $1 Tag). Seitdem wurden Passwörter geändert. Zeit für eine neue Sicherung.",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_due_other": {
+    "message": "Letzte Sicherung: $2 (vor $1 Tagen). Seitdem wurden Passwörter geändert. Zeit für eine neue Sicherung.",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_import_done": {
+    "message": "Import abgeschlossen: $1 hinzugefügt, $2 aktualisiert, $3 übersprungen"
+  },
+  "opt_import_why_same": {
+    "message": "$1 mit gleichem Passwort",
+    "description": "Reason some entries were skipped. $1 = how many."
+  },
+  "opt_import_why_older": {
+    "message": "$1 älter als das Passwort hier",
+    "description": "Reason some entries were skipped. $1 = how many."
+  },
+  "opt_import_why_invalid": {
+    "message": "$1 keine Website oder ohne Passwort",
+    "description": "Reason some entries were skipped. $1 = how many."
+  },
+  "opt_import_reasons": {
+    "message": " ($1)",
+    "description": "Wraps the skip reasons joined with opt_list_sep. Goes right after the skipped count in opt_import_result."
+  },
+  "opt_import_rules_one": {
+    "message": ", $1 Auto-Klick-Regel hinzugefügt",
+    "description": "Optional part of opt_import_result."
+  },
+  "opt_import_rules_other": {
+    "message": ", $1 Auto-Klick-Regeln hinzugefügt",
+    "description": "Optional part of opt_import_result."
+  },
+  "opt_import_result": {
+    "message": "$1: $2 hinzugefügt, $3 aktualisiert, $4 übersprungen",
+    "description": "$1 = what was imported (opt_import_what_*), $2-$4 = counts, $5 = opt_import_reasons or empty, $6 = opt_import_rules or empty."
+  },
+  "opt_import_result_end": {
+    "message": ".",
+    "description": "Ends the import result sentence, after the optional skip reasons and auto-click rule count."
+  },
+  "opt_import_no_data": {
+    "message": "Diese Datei enthält keine Daten"
+  },
+  "opt_import_bad_header": {
+    "message": "Die Spalten dieser CSV-Datei sind nicht lesbar. Die erste Zeile muss url und password enthalten",
+    "description": "url and password are CSV column names. Do not translate them."
+  },
+  "opt_import_failed": {
+    "message": "Import fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "opt_import_what_csv_one": {
+    "message": "CSV mit $1 Eintrag importiert",
+    "description": "Start of opt_import_result. $1 = rows in the file."
+  },
+  "opt_import_what_csv_other": {
+    "message": "CSV mit $1 Einträgen importiert",
+    "description": "Start of opt_import_result. $1 = rows in the file."
+  },
+  "opt_import_what_csv_from_one": {
+    "message": "CSV im Format $2 mit $1 Eintrag importiert",
+    "description": "Start of opt_import_result. $1 = rows in the file, $2 = 'Chrome / Edge', 'Firefox' or 'Safari'."
+  },
+  "opt_import_what_csv_from_other": {
+    "message": "CSV im Format $2 mit $1 Einträgen importiert",
+    "description": "Start of opt_import_result. $1 = rows in the file, $2 = 'Chrome / Edge', 'Firefox' or 'Safari'."
+  },
+  "opt_import_what_backup": {
+    "message": "Verschlüsselte Sicherung $1 importiert",
+    "description": "Start of opt_import_result. $1 = file name."
+  },
+  "opt_save_failed": {
+    "message": "Datei konnte nicht gespeichert werden: $1",
+    "description": "$1 = error message."
+  },
+  "opt_saved_to": {
+    "message": "Gespeichert unter $1",
+    "description": "$1 = file path."
+  },
+  "opt_export_nothing": {
+    "message": "Nichts zu exportieren"
+  },
+  "opt_export_failed": {
+    "message": "Export fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "opt_csv_filename": {
+    "message": "Passwort-Hüter-Sicherung-$1",
+    "description": "File name of the CSV export, without the extension. $1 = date like 20261106, maybe followed by -2. Do not use \\ / : * ? \" < > |."
+  },
+  "opt_backup_filename": {
+    "message": "Passwort-Hüter-Sicherung-verschlüsselt-$1",
+    "description": "File name of the encrypted backup, without the extension. $1 = date like 20261106. Do not use \\ / : * ? \" < > |."
+  },
+  "opt_share_filename": {
+    "message": "Passwort-Hüter-Freigabe-$1",
+    "description": "File name when exporting checked entries for someone else, without the extension. $1 = date like 20261106. Do not use \\ / : * ? \" < > |."
+  },
+  "opt_csv_split_note": {
+    "message": "Chrome und Edge importieren höchstens 3000 Einträge auf einmal, daher wurde der Export auf $1 Dateien aufgeteilt. Importieren Sie sie nacheinander",
+    "description": "Shown inside opt_csv_export_notes. $1 = number of files (always 2 or more)."
+  },
+  "opt_csv_long_note_one": {
+    "message": "Bei $1 Eintrag ist URL, Benutzername, Passwort oder Notiz zu lang, daher überspringen Chrome und Edge ihn beim Import",
+    "description": "Shown inside opt_csv_export_notes."
+  },
+  "opt_csv_long_note_other": {
+    "message": "Bei $1 Einträgen ist URL, Benutzername, Passwort oder Notiz zu lang, daher überspringen Chrome und Edge sie beim Import",
+    "description": "Shown inside opt_csv_export_notes."
+  },
+  "opt_csv_export_notes": {
+    "message": "CSV-Export: $1.",
+    "description": "$1 = notes joined with opt_note_sep."
+  },
+  "opt_backup_password": {
+    "message": "Sicherungspasswort"
+  },
+  "opt_pw_again": {
+    "message": "Erneut eingeben"
+  },
+  "opt_pw_required": {
+    "message": "Geben Sie ein Passwort ein"
+  },
+  "opt_pw_too_short_one": {
+    "message": "Mindestens $1 Zeichen"
+  },
+  "opt_pw_too_short_other": {
+    "message": "Mindestens $1 Zeichen"
+  },
+  "opt_pw_mismatch": {
+    "message": "Die beiden Eingaben stimmen nicht überein"
+  },
+  "opt_pw_backup_title": {
+    "message": "Sicherungspasswort festlegen"
+  },
+  "opt_pw_backup_hint": {
+    "message": "Dieses Passwort dient nur zum Öffnen der Sicherungsdatei. Wenn Sie es vergessen, lässt sich die Sicherung nicht wiederherstellen."
+  },
+  "opt_pw_share_title": {
+    "message": "Passwort für diese Datei festlegen"
+  },
+  "opt_pw_share_hint_one": {
+    "message": "Nur $1 ausgewählter Eintrag ist enthalten. Teilen Sie das Passwort getrennt mit, nicht zusammen mit der Datei."
+  },
+  "opt_pw_share_hint_other": {
+    "message": "Nur die $1 ausgewählten Einträge sind enthalten. Teilen Sie das Passwort getrennt mit, nicht zusammen mit der Datei."
+  },
+  "opt_pw_import_title": {
+    "message": "Sicherungspasswort eingeben"
+  },
+  "opt_pw_import_hint": {
+    "message": "Geben Sie das Passwort ein, das Sie beim Exportieren dieser Datei festgelegt haben."
+  },
+  "opt_block_log": {
+    "message": "Sicherungsverlauf",
+    "description": "Section title."
+  },
+  "opt_log_help": {
+    "message": "Hier wird festgehalten, wo jede Sicherung gespeichert wurde."
+  },
+  "opt_log_tip": {
+    "message": "Speichert bis zu 100 Einträge.\n„Jetzt sichern“ zählt als manuell.\nWenn Sie den Speicherort ändern, bleiben alte Dateien am bisherigen Ort. Löschen Sie sie selbst."
+  },
+  "opt_log_cat_all": {
+    "message": "Alle",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_cat_auto": {
+    "message": "Automatisch",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_cat_manual": {
+    "message": "Manuell",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_cat_location": {
+    "message": "Ortsänderungen",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_delete_selected": {
+    "message": "Ausgewählte Einträge löschen"
+  },
+  "opt_log_delete_selected_n_one": {
+    "message": "$1 ausgewählten Eintrag löschen"
+  },
+  "opt_log_delete_selected_n_other": {
+    "message": "$1 ausgewählte Einträge löschen"
+  },
+  "opt_log_col_time": {
+    "message": "Zeit",
+    "description": "Table column."
+  },
+  "opt_log_col_kind": {
+    "message": "Art",
+    "description": "Table column: how the backup was made."
+  },
+  "opt_log_col_location": {
+    "message": "Speicherort",
+    "description": "Table column: file path."
+  },
+  "opt_log_col_count": {
+    "message": "Einträge",
+    "description": "Table column: how many accounts the backup has."
+  },
+  "opt_log_empty": {
+    "message": "Noch kein Sicherungsverlauf."
+  },
+  "opt_log_empty_filtered": {
+    "message": "Keine Einträge in dieser Kategorie."
+  },
+  "opt_log_count_one": {
+    "message": "($1 Eintrag)",
+    "description": "Shown next to the section title."
+  },
+  "opt_log_count_other": {
+    "message": "($1 Einträge)",
+    "description": "Shown next to the section title."
+  },
+  "opt_kind_auto": {
+    "message": "Automatische Sicherung",
+    "description": "How a backup was made, in the history table."
+  },
+  "opt_kind_now": {
+    "message": "Jetzt sichern",
+    "description": "How a backup was made. Same name as the 'Back up now' button."
+  },
+  "opt_kind_manual": {
+    "message": "Verschlüsselter Export",
+    "description": "How a backup was made."
+  },
+  "opt_kind_csv": {
+    "message": "CSV-Export",
+    "description": "How a backup was made."
+  },
+  "opt_kind_selected": {
+    "message": "Export der Auswahl",
+    "description": "Export of only the checked entries."
+  },
+  "opt_kind_location": {
+    "message": "Ortsänderung",
+    "description": "Record of the auto backup folder being changed."
+  },
+  "opt_files_not_deleted_one": {
+    "message": "$1 Sicherungsdatei wurde nicht gelöscht"
+  },
+  "opt_files_not_deleted_other": {
+    "message": "$1 Sicherungsdateien wurden nicht gelöscht"
+  },
+  "opt_delete_yourself": {
+    "message": "Löschen Sie sie selbst:",
+    "description": "Followed by a list of file paths."
+  },
+  "opt_delete_record_only": {
+    "message": "Nur Eintrag löschen"
+  },
+  "opt_delete_both": {
+    "message": "Beides löschen",
+    "description": "Deletes the history record and the backup file."
+  },
+  "opt_confirm_delete_location_log": {
+    "message": "Diesen Eintrag „Ortsänderung“ löschen?"
+  },
+  "opt_delete_log": {
+    "message": "Eintrag löschen",
+    "description": "Dialog title and button."
+  },
+  "opt_delete_files_too": {
+    "message": "Auch die Sicherungsdateien auf diesem Computer löschen?"
+  },
+  "opt_file_may_remain": {
+    "message": "Die Sicherungsdatei ist eventuell noch vorhanden. Löschen Sie sie selbst:",
+    "description": "Followed by the file path."
+  },
+  "opt_deleted_log_and_file": {
+    "message": "Eintrag und Sicherungsdatei gelöscht"
+  },
+  "opt_deleted_log": {
+    "message": "Eintrag gelöscht"
+  },
+  "opt_delete_logs_title_one": {
+    "message": "$1 Eintrag löschen"
+  },
+  "opt_delete_logs_title_other": {
+    "message": "$1 Einträge löschen"
+  },
+  "opt_confirm_delete_location_logs_one": {
+    "message": "$1 ausgewählten Eintrag „Ortsänderung“ löschen?"
+  },
+  "opt_confirm_delete_location_logs_other": {
+    "message": "$1 ausgewählte Einträge „Ortsänderung“ löschen?"
+  },
+  "opt_deleted_logs_one": {
+    "message": "$1 Eintrag gelöscht"
+  },
+  "opt_deleted_logs_other": {
+    "message": "$1 Einträge gelöscht"
+  },
+  "opt_files_kept": {
+    "message": "Die Sicherungsdateien wurden nicht gelöscht. Löschen Sie sie selbst:",
+    "description": "Followed by a list of file paths."
+  },
+  "opt_deleted_logs_files_one": {
+    "message": "$1 Eintrag gelöscht. Gelöschte Sicherungsdateien: $2",
+    "description": "$1 = records deleted, $2 = backup files deleted."
+  },
+  "opt_deleted_logs_files_other": {
+    "message": "$1 Einträge gelöscht. Gelöschte Sicherungsdateien: $2",
+    "description": "$1 = records deleted, $2 = backup files deleted."
+  },
+  "opt_copy_locations": {
+    "message": "Speicherorte kopieren",
+    "description": "Copies the listed file paths."
+  },
+  "opt_block_lock": {
+    "message": "App-Sperre",
+    "description": "Section title, followed by 'On' or 'Off'."
+  },
+  "opt_lock_block_help": {
+    "message": "Verhindert, dass andere Ihre Passwörter sehen, während Sie nicht am Platz sind. Sie können die Passwörter auf der Festplatte auch verschlüsseln."
+  },
+  "opt_lock_block_tip": {
+    "message": "Im gesperrten Zustand müssen Pop-up, Verwaltungsseite, Autofill auf Webseiten, Tastenkombination und Anmeldedialoge des Browsers erst entsperrt werden.\nWenn Sie den Ordner der Erweiterung verschieben, richten Sie die Sperre neu ein."
+  },
+  "opt_lock_mode_title": {
+    "message": "Schutzmethode"
+  },
+  "opt_lock_mode_tip": {
+    "message": "Geschützt, falls Daten kopiert werden: Wer den Datenordner des Browsers kopiert, kann die Passwörter trotzdem nicht lesen.\nMit Verschlüsselung gilt: Wenn Sie das eigene Passwort vergessen oder die Systemauthentifizierung nicht mehr funktioniert, hilft nur das Wiederherstellen aus einer Sicherungsdatei.\nFür beide Verschlüsselungsarten muss zuerst ein Passwort für die automatische Sicherung festgelegt sein."
+  },
+  "opt_lock_mode_off": {
+    "message": "Aus"
+  },
+  "opt_lock_mode_password": {
+    "message": "Mit eigenem Passwort verschlüsseln"
+  },
+  "opt_lock_mode_hello": {
+    "message": "Mit Systemauthentifizierung verschlüsseln"
+  },
+  "opt_lock_mode_screen_with": {
+    "message": "Nur Bildschirm sperren, mit $1 entsperren"
+  },
+  "opt_lock_mode_hello_with": {
+    "message": "Mit $1 verschlüsseln"
+  },
+  "opt_lock_legacy_screen": {
+    "message": "Sie verwenden noch die alte Einstellung „Nur Bildschirm sperren“. Die Passwörter auf der Festplatte sind daher nicht verschlüsselt. Wählen Sie unten eine der Optionen."
+  },
+  "opt_hello_step_create": {
+    "message": "Schritt 1 von 2 mit $1: Schlüssel für die Verschlüsselung wird erstellt"
+  },
+  "opt_hello_step_verify": {
+    "message": "Schritt 2 von 2 mit $1: Entsperren wird geprüft"
+  },
+  "opt_lock_guard_peek": {
+    "message": "Geschützt vor neugierigen Blicken"
+  },
+  "opt_lock_guard_copy": {
+    "message": "Geschützt, falls Daten kopiert werden"
+  },
+  "opt_lock_guard_yes": {
+    "message": "Ja"
+  },
+  "opt_lock_guard_no": {
+    "message": "Nein"
+  },
+  "opt_lock_how_off": {
+    "message": "Kein Entsperren nötig"
+  },
+  "opt_lock_how_password": {
+    "message": "Immer mit eigenem Passwort entsperren. Ein Passwort mehr zum Merken."
+  },
+  "opt_lock_how_hello": {
+    "message": "Mit $1 entsperren. Nichts zu merken."
+  },
+  "opt_lock_recommended": {
+    "message": "Empfohlen"
+  },
+  "opt_lock_change_password": {
+    "message": "Eigenes Passwort ändern"
+  },
+  "opt_lock_info_no_hello": {
+    "message": "Dieser Browser unterstützt keine Systemauthentifizierung. Nur „Mit eigenem Passwort verschlüsseln“ ist verfügbar."
+  },
+  "opt_lock_mode_changed": {
+    "message": "Schutzmethode auf „$1“ geändert"
+  },
+  "opt_lock_mode_failed": {
+    "message": "Änderung fehlgeschlagen: $1"
+  },
+  "opt_lock_needs_backup_password": {
+    "message": "Legen Sie zuerst im Tab „Sicherung“ ein Passwort für die automatische Sicherung fest."
+  },
+  "opt_lock_downgrade_title": {
+    "message": "Verschlüsselung ausschalten?"
+  },
+  "opt_lock_downgrade_text": {
+    "message": "Danach kann jeder mit Zugriff auf diesen Computer die Passwörter auf der Festplatte lesen."
+  },
+  "opt_lock_downgrade_confirm": {
+    "message": "Verschlüsselung ausschalten"
+  },
+  "opt_master_password": {
+    "message": "Eigenes Passwort"
+  },
+  "opt_master_pw_title": {
+    "message": "Eigenes Passwort festlegen"
+  },
+  "opt_master_pw_hint": {
+    "message": "Mindestens $1 Zeichen. Sie geben es nach jedem Browserneustart ein. Wenn Sie es vergessen, hilft nur das Wiederherstellen aus einer Sicherungsdatei."
+  },
+  "opt_master_pw_verify_title": {
+    "message": "Aktuelles eigenes Passwort eingeben"
+  },
+  "opt_master_pw_new_title": {
+    "message": "Neues eigenes Passwort"
+  },
+  "opt_master_pw_changed": {
+    "message": "Eigenes Passwort geändert"
+  },
+  "opt_lock_state_off": {
+    "message": "Aus",
+    "description": "Shown next to the App lock section title."
+  },
+  "opt_lock_when_title": {
+    "message": "Wann automatisch sperren"
+  },
+  "opt_lock_idle_before": {
+    "message": "Nach",
+    "description": "Before the minutes input: 'Lock after [15] minutes of inactivity'."
+  },
+  "opt_lock_idle_after": {
+    "message": "Minuten Inaktivität sperren",
+    "description": "After the minutes input. See opt_lock_idle_before."
+  },
+  "opt_lock_on_startup": {
+    "message": "Bei Browserneustart sperren"
+  },
+  "opt_lock_manual_help": {
+    "message": "Mit „Sperren“ oben rechts im Pop-up können Sie jederzeit manuell sperren."
+  },
+  "opt_block_fill": {
+    "message": "Autofill",
+    "description": "Section title on the Settings tab. Holds the autofill master switch, per-site autofill settings and never-ask sites."
+  },
+  "opt_autofill_master": {
+    "message": "Benutzernamen und Passwörter beim Öffnen einer Anmeldeseite automatisch ausfüllen (Hauptschalter)"
+  },
+  "opt_sites_title": {
+    "message": "Einstellungen pro Website"
+  },
+  "opt_site_master_off": {
+    "message": "Der Hauptschalter ist aus, daher wird auf keiner Website automatisch ausgefüllt."
+  },
+  "opt_site_search_placeholder": {
+    "message": "Websites suchen"
+  },
+  "opt_site_col_accounts": {
+    "message": "Konten",
+    "description": "Table column: number of saved accounts for the site."
+  },
+  "opt_site_col_fill": {
+    "message": "Autofill",
+    "description": "Table column."
+  },
+  "opt_site_col_submit": {
+    "message": "Nach Autofill anmelden",
+    "description": "Table column."
+  },
+  "opt_site_select_all_title": {
+    "message": "Alle angezeigten Websites auswählen"
+  },
+  "opt_site_clear_all": {
+    "message": "Alle abwählen"
+  },
+  "opt_site_clear_all_title": {
+    "message": "Auswahl aller angezeigten Websites aufheben"
+  },
+  "opt_site_submit_tip": {
+    "message": "Meldet nur an, wenn Autofill erfolgreich war und die Seite nur ein Anmeldeformular hat.\nWie bald erneut angemeldet werden kann, richtet sich nach dem Standardintervall von Auto-Klick."
+  },
+  "opt_site_empty": {
+    "message": "Noch keine Konten gespeichert."
+  },
+  "opt_site_search_no_match": {
+    "message": "Keine Websites für „$1“ gefunden",
+    "description": "$1 = search text."
+  },
+  "opt_site_dirty_one": {
+    "message": "$1 Website noch nicht übernommen",
+    "description": "Changes wait until the user clicks 'Apply'."
+  },
+  "opt_site_dirty_other": {
+    "message": "$1 Websites noch nicht übernommen",
+    "description": "Changes wait until the user clicks 'Apply'."
+  },
+  "opt_apply_failed": {
+    "message": "Übernehmen fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "opt_site_applied_one": {
+    "message": "Für $1 Website übernommen"
+  },
+  "opt_site_applied_other": {
+    "message": "Für $1 Websites übernommen"
+  },
+  "opt_never_title": {
+    "message": "Auf diesen Websites nie fragen"
+  },
+  "opt_never_empty": {
+    "message": "Noch keine. Websites erscheinen hier, wenn Sie in der Speicheranfrage auf „Nie für diese Website“ klicken.",
+    "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
+  },
+  "opt_remove": {
+    "message": "Entfernen",
+    "description": "Tooltip of the x that removes a site from the never-ask list."
+  },
+  "opt_remove_failed": {
+    "message": "Entfernen fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "opt_block_click": {
+    "message": "Auto-Klick",
+    "description": "Section title."
+  },
+  "opt_click_help": {
+    "message": "Klickt automatisch auf Schaltflächen, wenn Sie die festgelegten Seiten öffnen."
+  },
+  "opt_click_tip": {
+    "message": "Hat eine Seite mehrere Regeln, wird der Reihe nach geklickt. Jede Regel wartet, bis die vorherige fertig ist.\nJede Regel wartet bis zu 15 Sekunden."
+  },
+  "opt_click_timing_title": {
+    "message": "Zeiteinstellungen"
+  },
+  "opt_click_interval_label": {
+    "message": "Standardintervall"
+  },
+  "opt_click_interval_help": {
+    "message": "Wartezeit nach einem Klick, bevor erneut geklickt wird."
+  },
+  "opt_click_interval_tip": {
+    "message": "Jede Regel kann ein eigenes Intervall haben. Regeln ohne eigenes Intervall verwenden dieses.\n„Nach Autofill anmelden“ verwendet es ebenfalls.\nNach Ablauf wird nicht von selbst erneut geklickt. Erst wenn Sie die Seite neu öffnen oder zu einer anderen Seite wechseln, wird wieder geklickt."
+  },
+  "opt_logout_pause_label": {
+    "message": "Pause nach Abmeldung"
+  },
+  "opt_logout_pause_help": {
+    "message": "Wartezeit nach dem Abmelden, bevor Auto-Klick wieder einsetzt."
+  },
+  "opt_logout_pause_tip": {
+    "message": "Gilt nur für dieselbe Website in dem Tab, in dem Sie sich abgemeldet haben.\nGeben Sie 0 ein, um keine Pause einzulegen."
+  },
+  "opt_rule_sites_title": {
+    "message": "Regeln pro Website"
+  },
+  "opt_rule_empty": {
+    "message": "Noch keine Regeln. Klicken Sie auf der gewünschten Seite im Pop-up auf „Auto-Klick-Schaltfläche wählen“ oder klicken Sie auf „+ Hinzufügen“, um selbst eine Regel einzutragen.",
+    "description": "'+ Add' must match opt_add_button."
+  },
+  "opt_rule_dialog_title": {
+    "message": "Auto-Klick-Regel hinzufügen"
+  },
+  "opt_when_after_fill": {
+    "message": "Nach Autofill",
+    "description": "Option of 'When to click'. Also named in opt_rule_tip_when."
+  },
+  "opt_when_on_load": {
+    "message": "Sobald die Seite geöffnet ist",
+    "description": "Option of 'When to click'. Also named in opt_rule_tip_when."
+  },
+  "opt_missing_skip": {
+    "message": "Überspringen, nächste Regel",
+    "description": "Option of 'If the button doesn't appear'."
+  },
+  "opt_missing_stop": {
+    "message": "Stoppen, restliche nicht klicken",
+    "description": "Option of 'If the button doesn't appear'."
+  },
+  "opt_missing_last_title": {
+    "message": "Danach folgen keine weiteren Regeln",
+    "description": "Tooltip when the option does not matter for the last rule."
+  },
+  "opt_rule_field_host": {
+    "message": "Website",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_path": {
+    "message": "Pfad",
+    "description": "Field name of an auto-click rule: the URL path such as /login, or * for the whole site."
+  },
+  "opt_rule_field_selector": {
+    "message": "Selektor",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_text": {
+    "message": "Schaltflächentext",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_when": {
+    "message": "Wann klicken",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_interval": {
+    "message": "Intervall (Sekunden)",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_missing": {
+    "message": "Wenn die Schaltfläche fehlt",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_tip_host": {
+    "message": "Die Website für den Auto-Klick, z. B. example.com.tw.\nSie können eine vollständige URL einfügen. Sie wird automatisch in Website und Pfad aufgeteilt."
+  },
+  "opt_rule_tip_path": {
+    "message": "Klickt nur auf Seiten mit diesem Pfad, z. B. /login.\n* steht für beliebige Zeichen. Geben Sie * für die ganze Website ein."
+  },
+  "opt_rule_tip_selector": {
+    "message": "Die Angabe, welche Schaltfläche geklickt wird (ein CSS-Selektor), z. B. #login.\nWenn Sie keinen schreiben können, wählen Sie die Schaltfläche auf der Seite aus. Der Selektor wird dann automatisch erstellt."
+  },
+  "opt_rule_tip_selector_edit": {
+    "message": "$1\nEine Änderung löscht den Schaltflächentext.",
+    "description": "$1 = opt_rule_tip_selector. Shown on an existing rule."
+  },
+  "opt_rule_tip_text": {
+    "message": "Klickt nur, wenn der Text der Schaltfläche hiermit übereinstimmt.\nLeer lassen, um nur den Selektor zu verwenden.\nFindet der Selektor die Schaltfläche nicht, wird stattdessen mit diesem Text gesucht."
+  },
+  "opt_rule_tip_when": {
+    "message": "Nach Autofill: Erfordert ein gespeichertes Konto. Klickt erst, wenn Benutzername und Passwort ausgefüllt und keine Formularfelder leer sind.\nSobald die Seite geöffnet ist: Klickt, sobald die Schaltfläche erscheint. Kein gespeichertes Konto nötig.",
+    "description": "Option names must match opt_when_after_fill and opt_when_on_load."
+  },
+  "opt_rule_tip_interval": {
+    "message": "Wartezeit nach einem Klick, bevor erneut geklickt wird.\nLeer lassen, um das Standardintervall zu verwenden."
+  },
+  "opt_rule_tip_missing": {
+    "message": "Ist diese Regel an der Reihe, wartet sie bis zu 15 Sekunden.\nÜberspringen: weiter zur nächsten Regel.\nStoppen: Die restlichen werden nicht geklickt. Auf der nächsten Seite beginnt es von vorn."
+  },
+  "opt_rule_note_no_account": {
+    "message": "Kein gespeichertes Konto, daher kein Klick"
+  },
+  "opt_rule_note_fill_off": {
+    "message": "Autofill ist aus, daher kein Klick"
+  },
+  "opt_selector_empty": {
+    "message": "Selektor darf nicht leer sein"
+  },
+  "opt_selector_invalid": {
+    "message": "Der Selektor ist ungültig"
+  },
+  "opt_reorder_failed": {
+    "message": "Reihenfolge konnte nicht geändert werden: $1",
+    "description": "$1 = error message."
+  },
+  "opt_rule_no": {
+    "message": "Regel $1",
+    "description": "$1 = position of the rule on its site."
+  },
+  "opt_move_up": {
+    "message": "Nach oben"
+  },
+  "opt_move_down": {
+    "message": "Nach unten"
+  },
+  "opt_rule_enabled": {
+    "message": "Aktiviert",
+    "description": "Checkbox on each rule."
+  },
+  "opt_confirm_delete_rule": {
+    "message": "Diese Auto-Klick-Regel für $1 löschen?",
+    "description": "$1 = site."
+  },
+  "opt_rule_text_cleared": {
+    "message": "Schaltflächentext gelöscht. Jetzt wird nur der Selektor verwendet"
+  },
+  "opt_interval_placeholder": {
+    "message": "Standard $1",
+    "description": "Placeholder of a small number input. $1 = default interval in seconds."
+  },
+  "opt_rule_count_one": {
+    "message": "$1 Regel",
+    "description": "Shown next to the site name."
+  },
+  "opt_rule_count_other": {
+    "message": "$1 Regeln",
+    "description": "Shown next to the site name."
+  },
+  "opt_rule_count_off_one": {
+    "message": "$1 Regel, $2 aus",
+    "description": "$1 = rules for the site, $2 = rules turned off."
+  },
+  "opt_rule_count_off_other": {
+    "message": "$1 Regeln, $2 aus",
+    "description": "$1 = rules for the site, $2 = rules turned off."
+  },
+  "opt_rule_path_placeholder": {
+    "message": "/login oder * für die ganze Website"
+  },
+  "opt_rule_host_invalid": {
+    "message": "Ungültiges Website-Format"
+  },
+  "opt_rule_host_empty": {
+    "message": "Website darf nicht leer sein"
+  },
+  "opt_rule_path_empty": {
+    "message": "Pfad darf nicht leer sein. Geben Sie * für die ganze Website ein."
+  },
+  "opt_rule_interval_invalid": {
+    "message": "Das Intervall muss eine ganze Zahl von 1 bis 86400 sein"
+  },
+  "opt_block_danger": {
+    "message": "Gefahrenbereich",
+    "description": "Section title."
+  },
+  "opt_delete_all": {
+    "message": "Alle Passwörter löschen"
+  },
+  "opt_delete_all_help_before": {
+    "message": "Alles kommt zuerst in den Papierkorb und kann innerhalb von ",
+    "description": "Before the number of days: 'Everything goes to the Trash first and can be restored within [30] days.' Keep the trailing space in languages that use spaces."
+  },
+  "opt_delete_all_help_after": {
+    "message": "Tagen wiederhergestellt werden.",
+    "description": "After the number of days. See opt_delete_all_help_before."
+  },
+  "opt_no_passwords": {
+    "message": "Es sind keine Passwörter vorhanden"
+  },
+  "opt_confirm_delete_all_one": {
+    "message": "$1 Passwort in den Papierkorb verschieben? Sie können es innerhalb von $2 Tagen wiederherstellen.",
+    "description": "$1 = number of passwords, $2 = days items stay in the Trash."
+  },
+  "opt_confirm_delete_all_other": {
+    "message": "Alle $1 Passwörter in den Papierkorb verschieben? Sie können sie innerhalb von $2 Tagen wiederherstellen.",
+    "description": "$1 = number of passwords, $2 = days items stay in the Trash."
+  },
+  "opt_all_moved_to_trash": {
+    "message": "Alles in den Papierkorb verschoben"
+  },
+  "opt_help_title": {
+    "message": "So funktioniert es"
+  },
+  "opt_help_1": {
+    "message": "Melden Sie sich einmal auf einer beliebigen Website an. Oben rechts werden Sie dann gefragt: „Dieses Passwort speichern?“",
+    "description": "The quoted text is the save prompt shown on web pages (content.js). Keep it the same as that prompt."
+  },
+  "opt_help_2": {
+    "message": "Wenn Sie die Website das nächste Mal öffnen, werden Benutzername und Passwort automatisch ausgefüllt. Haben Sie mehrere Konten gespeichert, klicken Sie in das Feld für den Benutzernamen und wählen eines aus der Liste. Mit den Pfeiltasten auswählen, mit Enter ausfüllen."
+  },
+  "opt_help_3": {
+    "message": "Drücken Sie Strg+Umschalt+L (auf dem Mac Befehl+Umschalt+L), um Benutzername und Passwort für die aktuelle Website auszufüllen. Die Tastenkombination können Sie auf der Erweiterungsseite unter „Tastenkombinationen“ ändern.",
+    "description": "'Keyboard shortcuts' is the browser's own page name."
+  },
+  "opt_help_4": {
+    "message": "Über das blaue Schloss-Symbol in der Symbolleiste sehen Sie die für die aktuelle Website gespeicherten Konten, können sie manuell ausfüllen, Passwörter kopieren und starke Passwörter generieren. Das Suchfeld oben im Pop-up durchsucht die Konten aller Websites. Mit Enter öffnen Sie die jeweilige Website."
+  },
+  "opt_help_5": {
+    "message": "Wenn Sie sich registrieren oder ein Passwort ändern, klicken Sie in das Feld für das neue Passwort. Dort erscheint „Starkes Passwort generieren“. Ein Klick darauf füllt das neue Passwort und das Bestätigungsfeld aus.",
+    "description": "The quoted text is an item shown on web pages (content.js). Keep it the same as that item."
+  },
+  "opt_help_6": {
+    "message": "Um eine Schaltfläche automatisch zu klicken, klicken Sie im Pop-up auf „Auto-Klick-Schaltfläche wählen“ und wählen die Schaltfläche auf der Seite aus. Danach wird sie bei jedem Öffnen dieser Seite geklickt. Unter „Auto-Klick“ im Tab „Einstellungen“ können Sie Regeln auch manuell hinzufügen und anpassen."
+  },
+  "opt_help_7": {
+    "message": "Bei Konten mit geändertem Passwort finden Sie in der Passwortspalte „Frühere Passwörter“ zum Aufklappen. Gelöschte Konten kommen zuerst in den Papierkorb und bleiben dort standardmäßig 30 Tage. Die Anzahl der Tage können Sie im Tab „Papierkorb“ ändern."
+  },
+  "opt_help_8": {
+    "message": "Ist „App-Sperre“ im Tab „Einstellungen“ aktiviert, müssen Sie die Systemauthentifizierung dieses Computers (Windows Hello, Touch ID) bestehen, bevor Sie die Erweiterung verwenden können. Sie wird gesperrt, wenn Sie inaktiv sind, der Browser neu startet oder Sie im Pop-up auf „Sperren“ klicken."
+  },
+  "opt_help_9": {
+    "message": "Sichern Sie regelmäßig oder aktivieren Sie die automatische Sicherung. Wenn Sie die Erweiterung entfernen, Browserdaten löschen oder den Ordner verschieben, gehen Ihre Passwörter verloren."
+  },
+  "opt_browser_hint": {
+    "message": "Sie verwenden $1. Die Erweiterungsseite finden Sie unter $2. Klicken Sie dort nach dem Aktualisieren der Dateien auf „Neu laden“.",
+    "description": "$1 = 'Edge' or 'Chrome', $2 = edge://extensions or chrome://extensions. 'Reload' is the browser's own button name."
+  },
+  "opt_versions_title": {
+    "message": "Versionsverlauf"
+  },
+  "opt_version_now": {
+    "message": "Aktuelle Version: $1. Klicken Sie nach dem Aktualisieren der Dateien auf der Erweiterungsseite auf „Neu laden“.",
+    "description": "$1 = version number like 1.12.0."
+  },
+  "opt_version_current": {
+    "message": "Aktuell",
+    "description": "Badge next to the installed version in the list."
+  },
+  "opt_version_note": {
+    "message": "Hinweis: $1",
+    "description": "$1 = one note of a version from changelog.js."
+  },
+  "opt_update_title": {
+    "message": "Updates"
+  },
+  "opt_update_available": {
+    "message": "Version $1 ist verfügbar (veröffentlicht am $2).",
+    "description": "$1 = version number, $2 = release date."
+  },
+  "opt_update_failed": {
+    "message": "Suche nach Updates fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "opt_update_never": {
+    "message": "Noch nicht geprüft."
+  },
+  "opt_update_no_release": {
+    "message": "Auf GitHub wurde noch keine Version veröffentlicht."
+  },
+  "opt_update_latest": {
+    "message": "Sie verwenden die neueste Version."
+  },
+  "opt_update_checked_at": {
+    "message": "Zuletzt geprüft: $1",
+    "description": "$1 = date and time."
+  },
+  "opt_update_steps": {
+    "message": "Entpacken Sie die heruntergeladene ZIP-Datei, klicken Sie auf der Erweiterungsseite auf „Entpackte Erweiterung laden“ und wählen Sie diesen Ordner. Die neue Version ersetzt diese, Ihre gespeicherten Passwörter und Einstellungen bleiben erhalten. Sie können die Datei auch über den aktuellen Ordner entpacken und auf der Karte dieser Erweiterung auf „Neu laden“ klicken."
+  },
+  "opt_update_download": {
+    "message": "Herunterladen"
+  },
+  "opt_update_download_started": {
+    "message": "Download gestartet. Sie finden ihn in den Downloads des Browsers."
+  },
+  "opt_update_download_failed": {
+    "message": "Download fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "opt_update_open_extensions": {
+    "message": "Erweiterungsseite öffnen"
+  },
+  "opt_update_release_page": {
+    "message": "Versionshinweise"
+  },
+  "opt_update_check_now": {
+    "message": "Jetzt prüfen"
+  },
+  "opt_update_checking": {
+    "message": "Wird geprüft…"
+  },
+  "opt_update_auto": {
+    "message": "Einmal täglich automatisch prüfen"
+  },
+  "opt_update_auto_tip": {
+    "message": "Fragt nur bei GitHub die neueste Versionsnummer ab. Es werden keine Passwörter, Konten oder Einstellungen gesendet.\nBrowser lassen Erweiterungen, die über „Entpackte Erweiterung laden“ hinzugefügt wurden, sich nicht selbst aktualisieren. Eine neue Version wird deshalb nur hier und im Pop-up angezeigt. Herunterladen und laden müssen Sie sie selbst."
+  },
+  "opt_update_dev": {
+    "message": "Dies ist die Entwicklerversion, die direkt aus dem Quellordner geladen wurde. Sie prüft daher nicht automatisch. Aktualisieren Sie sie mit git und entpacken Sie keine heruntergeladene ZIP-Datei über den Quellordner."
+  },
+  "opt_dialog_add_title": {
+    "message": "Passwort hinzufügen"
+  },
+  "opt_dialog_edit_title": {
+    "message": "Passwort bearbeiten"
+  },
+  "opt_field_url": {
+    "message": "Website-URL"
+  },
+  "opt_field_username": {
+    "message": "Benutzername"
+  },
+  "opt_field_password": {
+    "message": "Passwort"
+  },
+  "opt_field_note": {
+    "message": "Notiz"
+  },
+  "opt_url_empty": {
+    "message": "Website-URL darf nicht leer sein"
+  },
+  "opt_password_empty": {
+    "message": "Passwort darf nicht leer sein"
+  },
+  "cs_err_ext_reloaded": {
+    "message": "Die Erweiterung wurde neu geladen. Laden Sie diese Seite neu.",
+    "description": "Error when the extension was reloaded or updated while this page stayed open. Usually shown after \"Couldn't save: \"."
+  },
+  "cs_err_no_response": {
+    "message": "Die Erweiterung hat nicht reagiert",
+    "description": "Error when the extension's background service worker didn't answer. Usually shown after \"Couldn't save: \"."
+  },
+  "cs_save": {
+    "message": "Speichern",
+    "description": "Button on the save-password card and on the auto-click confirmation card."
+  },
+  "cs_cancel": {
+    "message": "Abbrechen",
+    "description": "Button on the auto-click confirmation card."
+  },
+  "cs_banner_save_title": {
+    "message": "Dieses Passwort speichern?",
+    "description": "Title of the card shown on the web page after signing in."
+  },
+  "cs_banner_update_title": {
+    "message": "Passwort für dieses Konto aktualisieren?",
+    "description": "Title of the same card when the site already has this account saved with a different password."
+  },
+  "cs_banner_username": {
+    "message": "Benutzername"
+  },
+  "cs_banner_password": {
+    "message": "Passwort"
+  },
+  "cs_banner_show": {
+    "message": "Anzeigen",
+    "description": "Small button inside the password box that reveals the password. Keep it short."
+  },
+  "cs_banner_hide": {
+    "message": "Ausblenden",
+    "description": "Same button after the password is revealed. Keep it short."
+  },
+  "cs_banner_never": {
+    "message": "Nie für diese Website",
+    "description": "Link-style button on the save-password card. Stops asking to save passwords on this site."
+  },
+  "cs_banner_no": {
+    "message": "Nicht jetzt",
+    "description": "Closes the save-password card without saving."
+  },
+  "cs_banner_update": {
+    "message": "Aktualisieren"
+  },
+  "cs_banner_never_done": {
+    "message": "Auf $1 wird nicht mehr gefragt. Sie können das auf der Verwaltungsseite ändern.",
+    "description": "$1 is the site's host name, for example accounts.example.com."
+  },
+  "cs_save_failed": {
+    "message": "Speichern fehlgeschlagen: $1",
+    "description": "$1 is the error message."
+  },
+  "cs_password_updated": {
+    "message": "Passwort aktualisiert"
+  },
+  "cs_password_saved": {
+    "message": "Passwort gespeichert"
+  },
+  "cs_generate_failed": {
+    "message": "Passwort konnte nicht generiert werden: $1",
+    "description": "$1 is the error message."
+  },
+  "cs_generate_no_field": {
+    "message": "Kein Feld für ein neues Passwort gefunden"
+  },
+  "cs_generate_filled_copied": {
+    "message": "Generiertes Passwort eingefügt und in die Zwischenablage kopiert. Klicken Sie nach dem Absenden auf „Speichern“.",
+    "description": "\"Save\" is the button on the save-password card that appears after the form is submitted."
+  },
+  "cs_generate_filled": {
+    "message": "Generiertes Passwort eingefügt. Klicken Sie nach dem Absenden auf „Speichern“.",
+    "description": "Same as cs_generate_filled_copied, when copying to the clipboard wasn't allowed."
+  },
+  "cs_dropdown_locked": {
+    "message": "Gesperrt. Klicken Sie in der Symbolleiste auf das Schloss-Symbol und bestätigen Sie Ihre Identität, um automatisch auszufüllen.",
+    "description": "Shown under a sign-in field while App lock is locked."
+  },
+  "cs_dropdown_choose_account": {
+    "message": "$1 – Konto zum Ausfüllen wählen",
+    "description": "Header of the account list under a sign-in field. $1 is the extension name (Password Keeper)."
+  },
+  "cs_dropdown_generate": {
+    "message": "Starkes Passwort generieren",
+    "description": "Item in the list under a new-password field."
+  },
+  "cs_dropdown_generate_hint": {
+    "message": "Füllt das neue Passwort und das Bestätigungsfeld aus. Optionen im Pop-up der Symbolleiste.",
+    "description": "Second line under \"Generate a strong password\". Options means the password generator options."
+  },
+  "cs_dropdown_no_username": {
+    "message": "(Kein Benutzername, nur Passwort)",
+    "description": "Shown in the account list for a saved login without a username."
+  },
+  "cs_click_cooldown": {
+    "message": "Gerade erst automatisch geklickt. Diesmal übersprungen."
+  },
+  "cs_click_after_logout": {
+    "message": "Sie haben sich gerade abgemeldet. Auto-Klick diesmal übersprungen."
+  },
+  "cs_click_missed_stop": {
+    "message": "„$1“ konnte nicht geklickt werden. Die restlichen werden übersprungen.",
+    "description": "$1 is the button text (up to 20 characters). The rule is set to stop when its button is missing, so the rules after it on this page are skipped."
+  },
+  "cs_click_button_fallback": {
+    "message": "Schaltfläche",
+    "description": "Used as $1 in the auto-click messages when the button has no text."
+  },
+  "cs_click_done": {
+    "message": "„$1“ automatisch geklickt",
+    "description": "$1 is the button text (up to 20 characters)."
+  },
+  "cs_click_not_found": {
+    "message": "Schaltfläche für Auto-Klick nicht gefunden"
+  },
+  "cs_click_empty_field": {
+    "message": "Einige Formularfelder sind noch leer. Auto-Klick diesmal übersprungen."
+  },
+  "cs_pick_hint": {
+    "message": "Klicken Sie auf die Schaltfläche für den Auto-Klick. Esc zum Abbrechen.",
+    "description": "Hint at the top of the web page while picking a button to auto-click."
+  },
+  "cs_pick_untrusted_frame": {
+    "message": "Dieser Teil ist von einer anderen Website eingebettet und kann nicht automatisch geklickt werden",
+    "description": "The picked button is inside a frame embedded from a different site."
+  },
+  "cs_pick_card_failed": {
+    "message": "Bestätigungsfenster konnte nicht geöffnet werden: $1",
+    "description": "$1 is the error message."
+  },
+  "cs_pick_title": {
+    "message": "Hier automatisch klicken?",
+    "description": "Title of the card shown after picking a button to auto-click."
+  },
+  "cs_pick_button": {
+    "message": "Schaltfläche",
+    "description": "Label above the picked button's text."
+  },
+  "cs_pick_no_text": {
+    "message": "(Kein Text)",
+    "description": "Shown when the picked button has no text."
+  },
+  "cs_pick_when": {
+    "message": "Wann klicken"
+  },
+  "cs_pick_note_no_account": {
+    "message": "Für diese Website ist noch kein Konto gespeichert. Geklickt wird, sobald Sie eines speichern."
+  },
+  "cs_pick_note_autofill_off": {
+    "message": "Autofill ist für diese Website aus. Geklickt wird, sobald Sie es aktivieren."
+  },
+  "cs_pick_after_fill": {
+    "message": "Nach Autofill",
+    "description": "Option for when to click: after the username and password are autofilled."
+  },
+  "cs_pick_on_load": {
+    "message": "Sobald die Seite geöffnet ist",
+    "description": "Option for when to click."
+  },
+  "cs_pick_saved": {
+    "message": "Gespeichert. Beim nächsten Öffnen dieser Seite wird automatisch geklickt."
+  },
+  "cs_fill_no_fields": {
+    "message": "Auf dieser Seite wurden keine Anmeldefelder gefunden",
+    "description": "Shown in the popup when \"Fill\" can't find a sign-in form on the page."
+  },
+  "cs_fill_failed": {
+    "message": "Felder konnten nicht ausgefüllt werden",
+    "description": "Shown in the popup when filling the page failed."
+  },
+  "bg_vault_unreadable": {
+    "message": "Ihre Passwortdaten lassen sich nicht entschlüsseln. Der Speicher ist eventuell beschädigt. Sie können auf der Verwaltungsseite alle Daten löschen und neu beginnen."
+  },
+  "bg_url_scheme_unsupported": {
+    "message": "Nur Websites, die mit http oder https beginnen, können gespeichert werden"
+  },
+  "bg_site_required": {
+    "message": "Website darf nicht leer sein"
+  },
+  "bg_duplicate_account": {
+    "message": "Dieser Benutzername ist für diese Website bereits gespeichert"
+  },
+  "bg_webauthn_data_unreadable": {
+    "message": "Die Bestätigungsdaten können nicht gelesen werden"
+  },
+  "bg_webauthn_wrong_type": {
+    "message": "Falscher Bestätigungstyp"
+  },
+  "bg_webauthn_wrong_origin": {
+    "message": "Die Bestätigung stammt nicht von dieser Erweiterung"
+  },
+  "bg_webauthn_expired": {
+    "message": "Bestätigung abgelaufen. Versuchen Sie es noch einmal."
+  },
+  "bg_webauthn_not_set_up": {
+    "message": "Die Systemauthentifizierung ist noch nicht eingerichtet"
+  },
+  "bg_webauthn_unknown_key": {
+    "message": "Dieser Schlüssel ist nicht bei dieser Erweiterung registriert",
+    "description": "The key is the passkey created for app lock (Windows Hello, Touch ID, a security key or phone)."
+  },
+  "bg_webauthn_no_user_verification": {
+    "message": "Ihre Identität wurde nicht bestätigt (PIN, Fingerabdruck oder Gesicht)"
+  },
+  "bg_webauthn_bad_signature": {
+    "message": "Signaturprüfung fehlgeschlagen"
+  },
+  "bg_gen_symbols_empty": {
+    "message": "Sonderzeichen sind ausgewählt, aber die Liste erlaubter Sonderzeichen ist leer",
+    "description": "Password generator in the popup: the symbols checkbox is on but the allowed symbols field is empty."
+  },
+  "bg_gen_no_charset": {
+    "message": "Wählen Sie mindestens eine Zeichenart aus"
+  },
+  "bg_gen_too_short": {
+    "message": "Zu kurz, um jede Zeichenart aufzunehmen"
+  },
+  "bg_backup_password_too_short": {
+    "message": "Das Sicherungspasswort muss mindestens 8 Zeichen haben"
+  },
+  "bg_none_selected": {
+    "message": "Keine Konten ausgewählt"
+  },
+  "bg_not_backup_file": {
+    "message": "Dies ist keine Sicherungsdatei von Passwort-Hüter"
+  },
+  "bg_backup_too_new": {
+    "message": "Diese Sicherungsdatei wurde mit einer neueren Version von Passwort-Hüter erstellt. Aktualisieren Sie zuerst die Erweiterung."
+  },
+  "bg_wrong_password_or_damaged": {
+    "message": "Falsches Passwort oder beschädigte Datei"
+  },
+  "bg_file_untracked": {
+    "message": "Downloadverlauf wurde gelöscht",
+    "description": "Shown under a file location in the backup history: the file can't be deleted from here because the browser's download history was cleared."
+  },
+  "bg_file_missing": {
+    "message": "Datei nicht gefunden",
+    "description": "Shown under a file location in the backup history: the file was moved or deleted."
+  },
+  "bg_file_delete_failed": {
+    "message": "Löschen fehlgeschlagen: $1",
+    "description": "$1 is the browser's error message."
+  },
+  "bg_download_not_found": {
+    "message": "Download nicht gefunden"
+  },
+  "bg_download_interrupted": {
+    "message": "Download wurde unterbrochen oder abgebrochen"
+  },
+  "bg_download_interrupted_reason": {
+    "message": "Download wurde unterbrochen oder abgebrochen ($1)",
+    "description": "$1 is the browser's reason code, like USER_CANCELED."
+  },
+  "bg_download_failed": {
+    "message": "Download fehlgeschlagen: $1",
+    "description": "$1 is the browser's error message."
+  },
+  "bg_time_format": {
+    "message": "Geben Sie eine Uhrzeit wie 12:00 ein"
+  },
+  "bg_weekday_invalid": {
+    "message": "Ungültiger Wochentag"
+  },
+  "bg_backup_location_changed": {
+    "message": "Speicherort der automatischen Sicherung von „$1“ in „$2“ geändert. Frühere Dateien bleiben am alten Ort.",
+    "description": "Saved in the backup history when the auto backup folder changes, in the language in use at that time. $1 is the old folder, $2 is the new folder."
+  },
+  "bg_enable_needs_password": {
+    "message": "Legen Sie zuerst ein Passwort für die automatische Sicherung fest, um sie zu aktivieren"
+  },
+  "bg_auto_backup_no_password": {
+    "message": "Das Passwort für die automatische Sicherung ist noch nicht festgelegt",
+    "description": "Also saved as the last auto backup error, in the language in use at that time."
+  },
+  "bg_backup_file_auto": {
+    "message": "Passwort-Hüter-Auto-Sicherung-$1",
+    "description": "File name, without the .pkbak extension, of a scheduled auto backup. $1 is the date and time, like 20261106-1200. Don't use these characters: \\ / : * ? \" < > |"
+  },
+  "bg_backup_file_now": {
+    "message": "Passwort-Hüter-Sofortsicherung-$1",
+    "description": "File name, without the .pkbak extension, of a backup made with \"Back up now\". $1 is the date and time, like 20261106-1200. Don't use these characters: \\ / : * ? \" < > |"
+  },
+  "bg_badge_locked": {
+    "message": "Zu",
+    "description": "Badge text on the toolbar icon while the extension is locked. The badge fits only about 4 characters."
+  },
+  "bg_rule_path_required": {
+    "message": "Pfad darf nicht leer sein. Geben Sie * für die ganze Website ein."
+  },
+  "bg_rule_url_invalid": {
+    "message": "Ungültiges Pfadformat"
+  },
+  "bg_seconds_range": {
+    "message": "$1 muss eine ganze Zahl von $2 bis $3 sein",
+    "description": "$1 is a field name (bg_label_interval or bg_label_pause). $2 and $3 are the minimum and maximum number of seconds."
+  },
+  "bg_label_interval": {
+    "message": "Intervall",
+    "description": "Field name used as $1 in bg_seconds_range: seconds to wait before auto-clicking the same button again."
+  },
+  "bg_label_pause": {
+    "message": "Pause nach Abmeldung",
+    "description": "Field name used as $1 in bg_seconds_range: the \"pause after sign-out\" seconds on the manager page."
+  },
+  "bg_rule_no_button": {
+    "message": "Keine Schaltfläche ausgewählt"
+  },
+  "bg_duplicate_click_rule": {
+    "message": "Für diesen Pfad gibt es bereits eine Regel mit demselben Selektor"
+  },
+  "bg_selector_required": {
+    "message": "Selektor darf nicht leer sein"
+  },
+  "bg_autofill_off_for_site": {
+    "message": "Autofill ist für diese Website aus. Aktivieren Sie es zuerst."
+  },
+  "bg_site_invalid": {
+    "message": "Ungültiges Website-Format"
+  },
+  "bg_rules_changed": {
+    "message": "Die Regeln wurden geändert. Laden Sie diese Seite neu."
+  },
+  "bg_lock_not_enabled": {
+    "message": "App-Sperre ist nicht aktiviert"
+  },
+  "bg_key_data_incomplete": {
+    "message": "Die Schlüsseldaten sind unvollständig"
+  },
+  "bg_trash_not_found": {
+    "message": "Dieser Eintrag ist nicht im Papierkorb"
+  },
+  "bg_restore_duplicate": {
+    "message": "Dieser Benutzername ist für diese Website bereits gespeichert. Löschen Sie zuerst das andere Konto, um dieses wiederherzustellen."
+  },
+  "bg_trash_days_range": {
+    "message": "Die Anzahl der Tage muss zwischen 1 und 365 liegen"
+  },
+  "bg_log_not_found": {
+    "message": "Dieser Eintrag wurde nicht gefunden. Möglicherweise wurde er bereits gelöscht."
+  },
+  "bg_locked": {
+    "message": "Gesperrt. Klicken Sie in der Symbolleiste auf das Schloss-Symbol, um Ihre Identität zu bestätigen.",
+    "description": "The lock icon is this extension's icon on the browser toolbar."
+  },
+  "bg_master_password_not_set": {
+    "message": "Es ist kein eigenes Passwort festgelegt"
+  },
+  "bg_master_password_wrong": {
+    "message": "Falsches eigenes Passwort"
+  },
+  "bg_master_password_too_short": {
+    "message": "Das eigene Passwort muss mindestens $1 Zeichen haben"
+  },
+  "bg_need_master_password": {
+    "message": "Bei Verschlüsselung mit eigenem Passwort entsperren Sie mit dem eigenen Passwort."
+  },
+  "bg_hello_no_secret": {
+    "message": "Die Systemauthentifizierung hat keinen Geheimwert für die Verschlüsselung geliefert"
+  },
+  "bg_hello_wrong_secret": {
+    "message": "Mit dem Geheimwert der Systemauthentifizierung lassen sich Ihre Passwörter nicht entsperren. Möglicherweise wurde der Schlüssel ersetzt."
+  },
+  "bg_lock_needs_verify": {
+    "message": "Bestätigen Sie Ihre Identität, bevor Sie dies ändern"
+  },
+  "bg_lock_mode_unknown": {
+    "message": "Unbekannte Schutzmethode"
+  },
+  "bg_lock_needs_backup_password": {
+    "message": "Legen Sie im Tab „Sicherung“ ein Passwort für die automatische Sicherung fest, bevor Sie eine Verschlüsselung wählen"
+  },
+  "bg_lock_reset_not_needed": {
+    "message": "Es ist nichts verschlüsselt, daher müssen Sie Ihre Daten nicht löschen"
+  },
+  "bg_extension_page_only": {
+    "message": "Nur die eigenen Seiten von Passwort-Hüter können das tun"
+  },
+  "bg_auto_backup_not_ready": {
+    "message": "Gesperrt, und es sind noch keine Daten zum Sichern bereit. Entsperren Sie und versuchen Sie es erneut."
+  },
+  "bg_unknown_message": {
+    "message": "Unbekannte Nachricht: $1",
+    "description": "$1 is an internal message type. Only shown when something inside the extension goes wrong."
+  },
+  "bg_der_not_signature": {
+    "message": "Keine DER-Signatur"
+  },
+  "bg_der_bad_format": {
+    "message": "Ungültiges DER-Format"
+  },
+  "bg_unsupported_sig_alg": {
+    "message": "Nicht unterstützter Signaturalgorithmus: $1",
+    "description": "$1 is the algorithm number, like -8."
+  },
+  "lang_name_zh_TW": {
+    "message": "繁體中文",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_en": {
+    "message": "English",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_ja": {
+    "message": "日本語",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_nan_TW": {
+    "message": "台語",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_ko": {
+    "message": "한국어",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_de": {
+    "message": "Deutsch",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_ru": {
+    "message": "Русский",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_th": {
+    "message": "ไทย",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "opt_lang_label": {
+    "message": "Anzeigesprache"
+  },
+  "opt_lang_auto": {
+    "message": "Browserstandard ($1)",
+    "description": "Language menu option that follows the browser. $1 is the language the browser picked, e.g. English."
+  },
+  "opt_lang_failed": {
+    "message": "Sprache konnte nicht geändert werden: $1"
+  },
+  "bg_language_invalid": {
+    "message": "Diese Sprache wird nicht unterstützt"
+  },
+  "bg_update_offline": {
+    "message": "GitHub ist nicht erreichbar. Prüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut."
+  },
+  "bg_update_busy": {
+    "message": "GitHub begrenzt gerade die Anfragen. Versuchen Sie es später noch einmal."
+  },
+  "bg_update_http": {
+    "message": "GitHub hat einen Fehler gemeldet ($1).",
+    "description": "$1 = HTTP status code."
+  },
+  "bg_update_bad_reply": {
+    "message": "Die Versionsdaten von GitHub konnten nicht gelesen werden."
+  },
+  "bg_update_no_download": {
+    "message": "Für die neue Version gibt es keine ZIP-Datei zum Herunterladen. Sehen Sie auf der Releases-Seite von GitHub nach."
+  }
+}

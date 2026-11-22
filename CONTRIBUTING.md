@@ -48,7 +48,7 @@ test/                測試頁和 e2e 測試
 | `src/shared/tip.js` | 管理頁和小視窗共用，顯示欄位旁邊「?」的說明。 |
 | `src/shared/i18n.js` | 所有畫面共用，照瀏覽器的介面語言拿文字。 |
 | `src/shared/ui.css` | 小視窗和管理頁共用的樣式。 |
-| `_locales/` | 繁體中文（`zh_TW`）、英文（`en`）、日文（`ja`）的介面文字。 |
+| `_locales/` | 介面文字，一種語言一個資料夾：繁體中文 `zh_TW`、台語 `nan_TW`、英文 `en`、日文 `ja`、韓文 `ko`、德文 `de`、俄文 `ru`、泰文 `th`。 |
 | `icons/` | 工具列圖示。 |
 | `docs/` | 英文版（`README.en.md`）、日文版（`README.ja.md`）的說明。 |
 | `tools/files.js` | 正式版 zip 要放哪些檔案。`src/` 整個資料夾都會打包，`src/` 以外多了要打包的檔案才要加在這裡。 |
@@ -65,7 +65,9 @@ test/                測試頁和 e2e 測試
 
 ## 介面文字和多國語系
 
-介面有繁體中文、英文、日文三份。預設跟著瀏覽器的語言，瀏覽器是其他語言時用英文（`manifest.json` 的 `default_locale`）。
+介面有繁體中文、台語、英文、日文、韓文、德文、俄文、泰文八份。預設跟著瀏覽器的語言，瀏覽器是其他語言時用英文（`manifest.json` 的 `default_locale`）。
+
+台語（`nan_TW`）比較特別：瀏覽器沒有台語介面，Chrome 也不認得 `nan_TW` 這個資料夾，只會略過，不會自己挑它。所以台語只能從管理頁的語言選單選，選了之後由 `i18n.js` 自己讀 `_locales/nan_TW/messages.json`。瀏覽器也沒有台語的日期格式，日期用台灣華語的寫法（`i18n.js` 的 `formatLang()`）。
 
 管理頁右上角可以指定語言，存在 `chrome.storage.local` 的 `uiLanguage`：
 
@@ -74,21 +76,22 @@ test/                測試頁和 e2e 測試
 - 背景程式和網頁裡的 `content.js` 啟動時讀 `uiLanguage`，改了會收到 storage 的變更通知自己換。背景程式讀好語言之前收到的訊息會先等。
 - 擴充功能管理頁上的名稱和說明、快捷鍵的說明、工具列圖示的提示文字是瀏覽器用 `__MSG_…__` 顯示的，一定跟著瀏覽器的語言。
 
-- 文字放在 `_locales/<語言>/messages.json`，三種語言的 key 要一樣。
-- 程式裡用 `t('key')` 拿文字，有替換值的寫 `t('key', 值)`，訊息裡用 `$1`、`$2` 對應。顯示數量、英文要分單複數的用 `tn('key', 數量)`，翻譯檔要有 `key_one` 和 `key_other`。
+- 文字放在 `_locales/<語言>/messages.json`，每種語言的 key 要一樣。
+- 程式裡用 `t('key')` 拿文字，有替換值的寫 `t('key', 值)`，訊息裡用 `$1`、`$2` 對應。顯示數量的用 `tn('key', 數量)`，翻譯檔要有 `key_one` 和 `key_other`。`tn` 用 `Intl.PluralRules` 照各語言的文法挑：俄文另外要 `key_few`（2～4）和 `key_many`（0、5～20），中文、日文、韓文、泰文、台語不分單複數，`_one`、`_other` 寫一樣。
 - HTML 寫 `<span data-i18n="key">繁體中文原文</span>`，屬性用 `data-i18n-placeholder`、`data-i18n-title`、`data-i18n-aria-label`、`data-i18n-tip`。HTML 裡的中文要跟繁體中文翻譯檔一字不差。
 - key 要寫死在程式裡，不能用字串拼出來，`tools/check.js` 才找得到。
 - 用來比對網頁上文字的中文（例如認登入按鈕的關鍵字）不是介面文字，在同一行註解寫 `i18n-ignore`。
-- `node tools/check.js` 會擋：三種語言的 key 不一樣、替換值對不上、用到的 key 不存在、留著沒用的 key、程式或 HTML 裡還有沒翻到的中文。
-- `node test/e2e/run.js` 的多國語系案例會用英文、日文介面打開各畫面，找漏翻的字，截圖放在測試輸出的資料夾。
+- `node tools/check.js` 會擋：各語言的 key 不一樣（俄文少了 `_few`、`_many` 也算）、替換值對不上、用到的 key 不存在、留著沒用的 key、程式或 HTML 裡還有沒翻到的中文。
+- `node test/e2e/run.js` 的多國語系案例會用繁中以外的每一種介面打開各畫面，找漏翻的字，截圖放在測試輸出的資料夾。
 
 要加新語言：
 
-1. 複製 `_locales/en` 成新的語言代碼資料夾（例如 `ko`），把裡面的文字翻掉，`locale_code` 和 `lang_tag` 改成新的語言代碼。
-2. `src/options/changelog.js` 每一版的 `items`、`notes` 加上那個語言。
-3. 語言代碼加進 `tools/lib/i18n-check.js` 的 `LOCALES` 和 `src/shared/i18n.js` 的 `i18nLocales()`，`tools/lib/project.js` 的 `RELEASE_TEXT` 加上那個語言的 Release 說明。
-4. 管理頁頁首的語言選單（`src/options/options.html` 的 `langSelect`）加一個選項，每一份翻譯檔都加 `lang_name_<語言代碼>`，內容一律寫那個語言自己的寫法，例如 `한국어`。
-5. `test/e2e/run.js` 的多國語系案例加上那個語言。
+1. 複製 `_locales/en` 成新的語言代碼資料夾（例如法文 `fr`），把裡面的文字翻掉，`locale_code` 和 `lang_tag` 改成新的語言代碼。
+2. 語言代碼加進 `tools/lib/i18n-check.js` 的 `LOCALES` 和 `src/shared/i18n.js` 的 `i18nLocales()`。`tools/check.js` 會比對這兩份清單和語言選單。
+3. 版本紀錄（`src/options/changelog.js`）和 GitHub Release 說明只寫繁中、英文、日文三種，新語言的介面會顯示英文的版本紀錄，不用加。
+4. 管理頁頁首的語言選單（`src/options/options.html` 的 `langSelect`）加一個選項，`src/options/options.js` 的 `renderLanguagePicker` 加上那個語言的名稱。每一份翻譯檔都加 `lang_name_<語言代碼>`，內容一律寫那個語言自己的寫法，例如 `Français`。
+5. 字型跟繁中不合的語言（例如日文、韓文、泰文），`src/shared/ui.css` 和 `src/content/content.js` 的 `FONTS` 加上那個語言的字型。
+6. `test/e2e/run.js` 的多國語系案例（`I18N_CASES`）加上那個語言。
 
 ## 檢查和測試
 

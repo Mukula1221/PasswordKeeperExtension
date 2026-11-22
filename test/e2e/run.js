@@ -3276,16 +3276,18 @@ test('既有功能：自動填入照常，存的帳號會填到欄位', async ()
   await closePage(page);
 });
 
-// ---- 多國語系：另外開英文、日文介面的瀏覽器 ----
+// ---- 多國語系：另外開繁中以外介面的瀏覽器 ----
 
 // 同一個擴充功能、同一個測試伺服器，只換瀏覽器的介面語言。用完就關。
-async function withLang(lang, fn) {
+// pick 是開好之後從語言選單選的語言：瀏覽器沒有台語介面，台語要用繁中瀏覽器開再選。
+async function withLang(lang, fn, { pick } = {}) {
   const lb = await launch(browserPath, extDir, { lang });
   try {
     const sw = await findServiceWorker(lb.cdp);
     if (!sw) throw new Error(lang + ' 的瀏覽器沒裝起來擴充功能');
     const lw = await attachWorker(lb.cdp, sw);
     await until(() => lw.eval("typeof handlers === 'object'"), 10000);
+    if (pick) await lw.eval(`handlers['language.set']({ language: ${JSON.stringify(pick)} }).then(() => true)`);
     await fn({ cdp: lb.cdp, lw, base: 'chrome-extension://' + sw.url.split('/')[2] + '/' });
   } finally {
     await lb.close();
@@ -3295,6 +3297,19 @@ async function withLang(lang, fn) {
 // 日文本來就有漢字，改找只有繁體中文才用的字，出現了就是漏翻
 const ZH_ONLY = /[這們嗎沒說點會關號讓從與對傳檔實擇麼幫啟稱單錄數據變顯腦碼]/;
 const HAN = /[㐀-鿿]/;
+// 台語也寫漢字，改找只有華語才用、台語不用的字（們、嗎、給、把……），出現了就是直接沿用華語原文
+const MANDARIN_ONLY = /[們嗎麼沒吧給把什誰]/;
+
+// browser：開瀏覽器用的介面語言，pick：開好之後從語言選單選的，tag：html 的 lang 應該是什麼（沒寫就跟 locale 一樣）
+const I18N_CASES = [
+  { locale: 'en', browser: 'en', bad: HAN },
+  { locale: 'ja', browser: 'ja', bad: ZH_ONLY },
+  { locale: 'ko', browser: 'ko', bad: HAN },
+  { locale: 'de', browser: 'de', bad: HAN },
+  { locale: 'ru', browser: 'ru', bad: HAN },
+  { locale: 'th', browser: 'th', bad: HAN },
+  { locale: 'nan_TW', browser: 'zh-TW', pick: 'nan_TW', tag: 'nan-Hant-TW', bad: MANDARIN_ONLY },
+];
 
 // 整頁的文字（藏起來的對話框、分頁也算）、title、placeholder、aria-label、「?」說明，挑出有問題的字詞
 const scanPage = (page, bad) =>
@@ -3309,17 +3324,24 @@ const scanPage = (page, bad) =>
     return { lang: document.documentElement.lang, words: Array.from(new Set(words)).slice(0, 15) };
   })()`);
 
-for (const lang of ['en', 'ja']) {
+for (const { locale: lang, browser, pick, tag, bad } of I18N_CASES) {
   test('多國語系：' + lang + ' 介面沒有漏翻的中文', async () => {
-    const bad = lang === 'ja' ? ZH_ONLY : HAN;
     const problems = [];
     const look = async (page, name) => {
       const r = await scanPage(page, bad);
-      if (r.lang !== lang) problems.push(name + ' 的 lang 是 ' + r.lang);
+      if (r.lang !== (tag || lang)) problems.push(name + ' 的 lang 是 ' + r.lang);
       if (r.words.length) problems.push(name + '：' + JSON.stringify(r.words));
       await page.screenshot(path.join(SHOTS, 'i18n-' + lang + '-' + name + '.png'));
     };
-    await withLang(lang, async ({ cdp, lw, base }) => {
+    await withLang(browser, async ({ cdp, lw, base }) => {
+      if ((await lw.eval('uiLocale()')) !== lang) problems.push('背景程式用的是 ' + (await lw.eval('uiLocale()')));
+      // 俄文 1、21 用 _one，2～4 用 _few，5～20 用 _many
+      if (lang === 'ru') {
+        const ru = JSON.parse(fs.readFileSync(path.join(extDir, '_locales', 'ru', 'messages.json'), 'utf8'));
+        const want = [[1, 'one'], [2, 'few'], [5, 'many'], [21, 'one']].map(([n, form]) => ru['pop_account_count_' + form].message.replace(/\$1/g, n));
+        const got = await lw.eval(`[1, 2, 5, 21].map((n) => tn('pop_account_count', n))`);
+        if (JSON.stringify(got) !== JSON.stringify(want)) problems.push('俄文的數量寫法：' + JSON.stringify(got) + '，應該是 ' + JSON.stringify(want));
+      }
       await lw.eval(`(async () => {
         await handlers['entries.save']({ entry: { host: '127.0.0.1', origin: ${JSON.stringify(ORIGIN)}, username: 'test-user@example.test', password: 'right' } });
         await setSettings({ clickRules: [{ id: 'r1', host: '127.0.0.1', enabled: true, createdAt: 1, path: '/order', selector: '#nope', text: 'nope', when: 'onLoad' }] });
@@ -3400,7 +3422,7 @@ for (const lang of ['en', 'ja']) {
       const bannerBad = banner.filter((x) => bad.test(x));
       if (bannerBad.length) problems.push('要不要儲存：' + JSON.stringify(bannerBad.slice(0, 15)));
       await login.screenshot(path.join(SHOTS, 'i18n-' + lang + '-save.png'));
-    });
+    }, { pick });
     check(problems.length === 0, problems.join(' / '));
   });
 }
