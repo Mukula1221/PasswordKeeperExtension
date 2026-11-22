@@ -69,8 +69,12 @@ const reset = () =>
     return true;
   })()`);
 
+// 背景程式會看 sender 是誰：直接叫 handlers 準備資料時，假裝是管理頁送來的。
+// 假裝是網頁裡的 content.js 時，sender 要帶那一頁的 url，跟真的瀏覽器一樣。
+const fromOptions = `{ url: extensionOrigin() + '/src/options/options.html' }`;
+
 const seedEntry = (password = 'right', host = '127.0.0.1') =>
-  w.eval(`handlers['entries.save']({ entry: { host: ${JSON.stringify(host)}, origin: ${JSON.stringify('http://' + host + ':' + PORT)}, username: 'test-user@example.test', password: ${JSON.stringify(password)} } }).then(() => true)`);
+  w.eval(`handlers['entries.save']({ entry: { host: ${JSON.stringify(host)}, origin: ${JSON.stringify('http://' + host + ':' + PORT)}, username: 'test-user@example.test', password: ${JSON.stringify(password)} } }, ${fromOptions}).then(() => true)`);
 
 const seedRules = (rules) =>
   w.eval(`(async () => {
@@ -415,13 +419,14 @@ test('網頁自己發的假點擊不算登出', async () => {
 
 test('登出只暫停同一個主網域', async () => {
   const r = await w.eval(`(async () => {
-    const sender = { tab: { id: 9001 } };
-    await handlers['clickRules.pause']({ host: 'jira.example.com.tw' }, sender);
+    // 同一個分頁先後開到不同網站，每個網站的 content.js 各自送訊息
+    const from = (host, tabId = 9001) => ({ tab: { id: tabId }, url: 'https://' + host + '/' });
+    await handlers['clickRules.pause']({ host: 'jira.example.com.tw' }, from('jira.example.com.tw'));
     return {
-      sameBase: await handlers['clickRules.claim']({ key: 'a', host: 'sso.example.com.tw' }, sender),
-      otherBase: await handlers['clickRules.claim']({ key: 'b', host: 'other.example.com' }, sender),
-      otherTab: await handlers['clickRules.claim']({ key: 'c', host: 'sso.example.com.tw' }, { tab: { id: 9002 } }),
-      again: await handlers['clickRules.claim']({ key: 'b', host: 'other.example.com' }, sender),
+      sameBase: await handlers['clickRules.claim']({ key: 'a', host: 'sso.example.com.tw' }, from('sso.example.com.tw')),
+      otherBase: await handlers['clickRules.claim']({ key: 'b', host: 'other.example.com' }, from('other.example.com')),
+      otherTab: await handlers['clickRules.claim']({ key: 'c', host: 'sso.example.com.tw' }, from('sso.example.com.tw', 9002)),
+      again: await handlers['clickRules.claim']({ key: 'b', host: 'other.example.com' }, from('other.example.com')),
     };
   })()`);
   check(r.sameBase.reason === 'logout', '同主網域要擋');
@@ -890,7 +895,7 @@ test('工具鎖定：鎖著不能改規則', async () => {
     const out = {};
     for (const type of ['clickRules.save', 'clickRules.add', 'clickRules.update', 'clickRules.delete', 'clickRules.reorder', 'clickRules.timing']) {
       try {
-        await dispatch({ type, id: 'rule-0', patch: { enabled: false }, rule: { host: 'a.com', path: '/', selector: '#x' } }, {});
+        await dispatch({ type, id: 'rule-0', patch: { enabled: false }, rule: { host: 'a.com', path: '/', selector: '#x' } }, ${fromOptions});
         out[type] = 'allowed';
       } catch (e) {
         out[type] = e.locked ? 'locked' : e.message;
@@ -1236,7 +1241,7 @@ test('管理頁：密碼表、備份紀錄、回收桶列太多時也會自己�
   await w.eval(`(async () => {
     const hosts = ${JSON.stringify(hosts)};
     for (const host of hosts) {
-      await handlers['entries.save']({ entry: { host, origin: 'https://' + host, username: 'test-user', password: 'not-a-real-one' } });
+      await handlers['entries.save']({ entry: { host, origin: 'https://' + host, username: 'test-user', password: 'not-a-real-one' } }, ${fromOptions});
     }
     const entries = await loadEntries();
     for (const e of entries.slice(0, 40)) await handlers['entries.delete']({ id: e.id });
@@ -1288,7 +1293,7 @@ test('管理頁：列太多時表格自己捲，標題留在上面，勾選後�
   const hosts = Array.from({ length: 30 }, (_, i) => 'site' + String(i).padStart(2, '0') + '.example.test');
   await w.eval(`(async () => {
     for (const host of ${JSON.stringify(hosts)}) {
-      await handlers['entries.save']({ entry: { host, origin: 'https://' + host, username: 'test-user', password: 'not-a-real-one' } });
+      await handlers['entries.save']({ entry: { host, origin: 'https://' + host, username: 'test-user', password: 'not-a-real-one' } }, ${fromOptions});
     }
     return true;
   })()`);
@@ -1555,7 +1560,7 @@ test('間隔：規則的秒數優先，沒填用預設值；登出暫停另外�
     { path: '/x', selector: '#b', text: 'B', when: 'onLoad' },
   ]);
   const r = await w.eval(`(async () => {
-    const sender = { tab: { id: 9100 } };
+    const sender = { tab: { id: 9100 }, url: 'https://a.com/' };
     const claim = (key, ruleId, peek) => handlers['clickRules.claim']({ key, host: 'a.com', ruleId, peek }, sender);
     const ago = (key, sec) => updateClickGuard((map) => { map[9100][key] = Date.now() - sec * 1000; });
     await handlers['clickRules.timing']({ clickIntervalSec: 10, logoutPauseSec: 20 });
@@ -1624,7 +1629,7 @@ test('規則：重選同一顆不會蓋掉間隔和等不到按鈕時，備份�
   await seedEntry('right');
   await seedRules([orderRule('a', { intervalSec: 42, onMissing: 'stop' })]);
   const r = await w.eval(`(async () => {
-    await handlers['clickRules.save']({ rule: { host: '127.0.0.1', path: '/order', selector: '#a', text: 'a', when: 'onLoad' } });
+    await handlers['clickRules.save']({ rule: { host: '127.0.0.1', path: '/order', selector: '#a', text: 'a', when: 'onLoad' } }, { tab: { id: 9200 }, url: 'http://127.0.0.1/order' });
     const repicked = (await getSettings()).clickRules;
     const full = await exportBackup('password-123', null);
     await setSettings({ clickRules: [] });
@@ -1693,7 +1698,7 @@ test('管理頁：每個網站可以收合，改東西不會收起來，新增�
   check(!sites[0].open && sites[0].visible === 0, '再點要收合：' + JSON.stringify(sites));
 
   // 在別的分頁新增，那個網站要展開
-  await w.eval(`handlers['clickRules.save']({ rule: { host: 'b.example.test', path: '/new', selector: '#n', text: 'N', when: 'onLoad' } })`);
+  await w.eval(`handlers['clickRules.save']({ rule: { host: 'b.example.test', path: '/new', selector: '#n', text: 'N', when: 'onLoad' } }, { tab: { id: 9300 }, url: 'https://b.example.test/new' })`);
   const opened = await until(async () => {
     const list = await ruleSites(page);
     return list[1].open && list[1].visible === 2;
@@ -2738,7 +2743,7 @@ test('自訂密碼加密：硬碟上沒有能解開帳密的金鑰，瀏覽器�
   const locked = await w.eval(`(async () => {
     let all = '';
     try {
-      await dispatch({ type: 'entries.all' }, {});
+      await dispatch({ type: 'entries.all' }, ${fromOptions});
       all = 'ok';
     } catch (e) {
       all = e.locked ? 'locked' : e.message;
@@ -3343,7 +3348,7 @@ for (const { locale: lang, browser, pick, tag, bad } of I18N_CASES) {
         if (JSON.stringify(got) !== JSON.stringify(want)) problems.push('俄文的數量寫法：' + JSON.stringify(got) + '，應該是 ' + JSON.stringify(want));
       }
       await lw.eval(`(async () => {
-        await handlers['entries.save']({ entry: { host: '127.0.0.1', origin: ${JSON.stringify(ORIGIN)}, username: 'test-user@example.test', password: 'right' } });
+        await handlers['entries.save']({ entry: { host: '127.0.0.1', origin: ${JSON.stringify(ORIGIN)}, username: 'test-user@example.test', password: 'right' } }, ${fromOptions});
         await setSettings({ clickRules: [{ id: 'r1', host: '127.0.0.1', enabled: true, createdAt: 1, path: '/order', selector: '#nope', text: 'nope', when: 'onLoad' }] });
         await chrome.storage.local.set({ webauthn: { id: 'AAAA', alg: -7, publicKey: 'AAAA', transports: [], createdAt: 1 } });
         const s = await getSettings();

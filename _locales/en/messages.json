@@ -2309,6 +2309,9 @@
   "bg_extension_page_only": {
     "message": "Only Password Keeper's own pages can do this"
   },
+  "bg_site_not_allowed": {
+    "message": "This can only be done for the current site"
+  },
   "bg_auto_backup_not_ready": {
     "message": "Locked, and no backup content is ready yet. Unlock and try again."
   },

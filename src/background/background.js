@@ -436,8 +436,11 @@ async function lockStatus() {
 
 const WEBAUTHN_CHALLENGE_TTL_MS = 2 * 60 * 1000;
 
+// 用 getURL 算，不寫死 chrome-extension://，Firefox 的網址開頭不一樣。
+// 不用 URL 的 origin：chrome-extension: 不是標準網址開頭，照網址規格 origin 會是 "null"。
+// 測試頁的假 API 回傳相對路徑，所以要給基準網址。
 function extensionOrigin() {
-  return 'chrome-extension://' + chrome.runtime.id;
+  return new URL(chrome.runtime.getURL(''), self.location.href).href.replace(/\/$/, '');
 }
 
 async function issueWebAuthnChallenge() {
@@ -643,9 +646,38 @@ function resetVault() {
   return run;
 }
 
-// 換保護方式、清掉資料、打自訂密碼只給擴充功能自己的頁面叫，網頁裡的 content.js 不行
+// sender.url 是瀏覽器填的，網頁改不了。小視窗、管理頁、解鎖視窗的網址都在擴充功能自己底下。
+function fromExtensionPage(sender) {
+  return String((sender && sender.url) || '').startsWith(extensionOrigin() + '/');
+}
+
+// dispatch 已經照 MESSAGE_RULES 擋過。換保護方式、清掉資料、打自訂密碼這幾個在處理函式裡再擋一次，
+// 以後改 MESSAGE_RULES 寫錯也不會放行。
 function requireExtensionPage(sender) {
-  if (!String((sender && sender.url) || '').startsWith(extensionOrigin() + '/')) throw new Error(t('bg_extension_page_only'));
+  if (!fromExtensionPage(sender)) throw new Error(t('bg_extension_page_only'));
+}
+
+// 小視窗、管理頁要操作別的網站，用訊息裡帶的 host。
+// content.js 一律用它所在的網址算，網頁的執行程序被攻破時，攻擊者才不能冒充 content.js 拿別的網站的帳密。
+function callerHost(msgHost, sender) {
+  if (fromExtensionPage(sender)) return String(msgHost || '').toLowerCase();
+  return hostFromUrl(sender && sender.url);
+}
+
+// content.js 能存的網站：它自己所在的網站，加上這個分頁暫存的登入資料那個網站。
+// 登入後跳到別的網域、或登入框在 iframe 裡時，跳「要儲存嗎？」的是另一個網站的 content.js。
+// 暫存的 host 和 origin 是 pending.set 時用那個 content.js 的網址算的，不是網頁給的。
+async function contentSaveSites(sender) {
+  const sites = [];
+  // 暫存的排前面：同一個網站時，用登入當時那一頁的 origin
+  const pending = sender.tab ? await getPending(sender.tab.id) : null;
+  if (pending && pending.host) sites.push({ host: pending.host, origin: pending.origin });
+  sites.push({ host: hostFromUrl(sender.url), origin: originFromUrl(sender.url) });
+  return sites;
+}
+
+function siteNotAllowed() {
+  return new Error(t('bg_site_not_allowed'));
 }
 
 async function applyIdleInterval() {
@@ -682,46 +714,78 @@ async function migrateLock() {
 }
 migrateLock().catch((err) => console.warn('[密碼小管家] 鎖定設定升級失敗', err)); // i18n-ignore：給開發者看的
 
-// 鎖住時不能叫的訊息。沒列在這裡的（像 entries.forHost、pending.*）自己會判斷鎖定狀態。
-const LOCK_REQUIRED = new Set([
-  'entries.all',
-  'entries.save',
-  'entries.delete',
-  'entries.deleteAll',
-  'entries.touch',
-  'entries.import',
-  'trash.list',
-  'trash.restore',
-  'trash.purge',
-  'trash.purgeAll',
-  'trash.restoreMany',
-  'trash.purgeMany',
-  'trash.setDays',
-  'backup.export',
-  'backup.import',
-  'backup.download',
-  'backupLog.fileStatus',
-  'backupLog.delete',
-  'autoBackup.set',
-  'autoBackup.runNow',
-  'settings.set',
-  'neverSave.add',
-  'neverSave.remove',
-  'autoSubmit.set',
-  'autoFill.setSite',
-  'autoFill.setSites',
-  'clickRules.save',
-  'clickRules.add',
-  'clickRules.update',
-  'clickRules.delete',
-  'clickRules.reorder',
-  'clickRules.timing',
-  'lock.settings',
-  'lock.setMode',
-  'update.setAuto',
-  // webauthn.unlock 自己會核對系統驗證結果，lock.unlockPassword 會核對自訂密碼，鎖住時也要能叫。
-  // lock.reset 是解不開時清掉重來，也要能叫。
-]);
+// 每種訊息誰可以叫、鎖住時能不能叫。沒列在這裡的訊息一律拒絕，新增訊息時要加一行，test/unit 會檢查。
+// from：'any' 是網頁裡的 content.js 也能叫，'extension' 只收小視窗、管理頁、解鎖視窗。
+// 網頁的執行程序被攻破時，攻擊者可以冒充 content.js 送任何訊息，所以 content.js 用不到的一律設 'extension'。
+// whenLocked：true 是鎖住時也能叫，沒寫就要先解鎖。
+const MESSAGE_RULES = {
+  'i18n.current': { from: 'any', whenLocked: true },
+  // 這幾個鎖住時回傳空的結果和 locked，content.js 看到才知道要提示已鎖定
+  'entries.forHost': { from: 'any', whenLocked: true },
+  'clickRules.forHost': { from: 'any', whenLocked: true },
+  'clickRules.claim': { from: 'any', whenLocked: true },
+  'clickRules.pause': { from: 'any', whenLocked: true },
+  'clickRules.pickDone': { from: 'any', whenLocked: true },
+  'password.generate': { from: 'any', whenLocked: true },
+  // 鎖住時 pending.get 不回暫存的帳密，解鎖後下一頁再問
+  'pending.set': { from: 'any', whenLocked: true },
+  'pending.get': { from: 'any', whenLocked: true },
+  'pending.clear': { from: 'any', whenLocked: true },
+  'entries.save': { from: 'any' },
+  'entries.touch': { from: 'any' },
+  'neverSave.add': { from: 'any' },
+  'clickRules.save': { from: 'any' },
+
+  ping: { from: 'extension', whenLocked: true },
+  'lock.status': { from: 'extension', whenLocked: true },
+  // webauthn.unlock 自己會核對系統驗證結果，lock.unlockPassword 會核對自訂密碼，鎖住時也要能叫
+  'lock.unlockPassword': { from: 'extension', whenLocked: true },
+  'webauthn.status': { from: 'extension', whenLocked: true },
+  'webauthn.challenge': { from: 'extension', whenLocked: true },
+  'webauthn.unlock': { from: 'extension', whenLocked: true },
+  // 解不開時清掉重來，鎖住時也要能叫
+  'lock.reset': { from: 'extension', whenLocked: true },
+  'lock.now': { from: 'extension', whenLocked: true },
+  'backup.status': { from: 'extension', whenLocked: true },
+  'autoBackup.get': { from: 'extension', whenLocked: true },
+  'settings.get': { from: 'extension', whenLocked: true },
+  'language.get': { from: 'extension', whenLocked: true },
+  'language.set': { from: 'extension', whenLocked: true },
+  'update.status': { from: 'extension', whenLocked: true },
+  'update.check': { from: 'extension', whenLocked: true },
+  'update.download': { from: 'extension', whenLocked: true },
+  'lock.settings': { from: 'extension' },
+  'lock.setMode': { from: 'extension' },
+  'entries.all': { from: 'extension' },
+  'entries.delete': { from: 'extension' },
+  'entries.deleteAll': { from: 'extension' },
+  'entries.import': { from: 'extension' },
+  'trash.list': { from: 'extension' },
+  'trash.restore': { from: 'extension' },
+  'trash.purge': { from: 'extension' },
+  'trash.purgeAll': { from: 'extension' },
+  'trash.restoreMany': { from: 'extension' },
+  'trash.purgeMany': { from: 'extension' },
+  'trash.setDays': { from: 'extension' },
+  'backup.export': { from: 'extension' },
+  'backup.import': { from: 'extension' },
+  'backup.download': { from: 'extension' },
+  'backupLog.fileStatus': { from: 'extension' },
+  'backupLog.delete': { from: 'extension' },
+  'autoBackup.set': { from: 'extension' },
+  'autoBackup.runNow': { from: 'extension' },
+  'settings.set': { from: 'extension' },
+  'neverSave.remove': { from: 'extension' },
+  'autoSubmit.set': { from: 'extension' },
+  'autoFill.setSite': { from: 'extension' },
+  'autoFill.setSites': { from: 'extension' },
+  'clickRules.add': { from: 'extension' },
+  'clickRules.update': { from: 'extension' },
+  'clickRules.delete': { from: 'extension' },
+  'clickRules.reorder': { from: 'extension' },
+  'clickRules.timing': { from: 'extension' },
+  'update.setAuto': { from: 'extension' },
+};
 
 // 自動備份會帶這幾項設定，改了要重算事先加密好的備份內容
 const BACKUP_SETTING_KEYS = ['clickRules', 'neverSave', 'generator'];
@@ -1854,7 +1918,7 @@ const handlers = {
 
   async 'entries.forHost'({ host }, sender) {
     const settings = await getSettings();
-    host = String(host || '').toLowerCase();
+    host = callerHost(host, sender);
     // autoFill 是這個網站實際要不要自動填，content.js 看這個。小視窗另外要知道總開關和這個網站自己的開關。
     const siteAutoFill = !settings.noAutoFillHosts.includes(host);
     const flags = {
@@ -1914,16 +1978,17 @@ const handlers = {
   },
 
   // content.js 拿這個網站啟用中的規則。小視窗多帶 url，要知道這一頁有幾條。
-  async 'clickRules.forHost'({ host, url }) {
+  async 'clickRules.forHost'({ host, url }, sender) {
     if (await isLocked()) return { rules: [], pageCount: 0, locked: true };
-    host = String(host || '').toLowerCase();
+    host = callerHost(host, sender);
     const rules = (await getSettings()).clickRules.filter((r) => r.enabled && r.host === host);
     return { rules, pageCount: url ? rules.filter((r) => rulePathMatches(r.path, url)).length : 0, locked: false };
   },
 
   // 同一頁重選同一顆按鈕算改設定，不會多一條
-  async 'clickRules.save'({ rule }) {
-    const data = normalizeClickRule(rule || {});
+  async 'clickRules.save'({ rule }, sender) {
+    const raw = rule || {};
+    const data = normalizeClickRule({ ...raw, host: callerHost(raw.host, sender) });
     await updateClickRules(({ clickRules }) => {
       const rules = clickRules.slice();
       const i = rules.findIndex((r) => sameClickRule(r, data));
@@ -1990,6 +2055,7 @@ const handlers = {
   // peek 只看現在能不能點，不記。ruleId 是哪條規則，用它自己的間隔；沒帶（自動填完按登入）或沒填就用共用的預設值。
   async 'clickRules.claim'({ key, host, ruleId, peek }, sender) {
     if (!sender.tab) return { allowed: false, reason: 'no-tab' };
+    host = callerHost(host, sender);
     if (await isLocked()) return { allowed: false, reason: 'locked' };
     const settings = await getSettings();
     const rule = ruleId && settings.clickRules.find((r) => r.id === ruleId);
@@ -2009,6 +2075,7 @@ const handlers = {
   // 使用者按了登出。用主網域記，因為單一驗證的網址常常跟系統不同，但主網域相同。
   async 'clickRules.pause'({ host }, sender) {
     if (!sender.tab) return false;
+    host = callerHost(host, sender);
     await updateClickGuard((map) => {
       tabClickGuard(map, sender.tab.id)['logout:' + baseDomain(host)] = Date.now();
     });
@@ -2089,8 +2156,21 @@ const handlers = {
     return entries;
   },
 
-  async 'entries.save'({ entry, id }) {
-    const result = await modifyEntries((entries) => upsert(entries, entry || {}, id));
+  // 網頁上的「要儲存嗎？」只能存 contentSaveSites 列的網站，origin 也用那裡記的，不收網頁給的
+  async 'entries.save'({ entry, id }, sender) {
+    let raw = entry || {};
+    const sites = fromExtensionPage(sender) ? null : await contentSaveSites(sender);
+    const host = sites ? normalizeInput(raw).host : null;
+    if (sites) {
+      const site = sites.find((s) => s.host === host);
+      if (!site) throw siteNotAllowed();
+      raw = { ...raw, origin: site.origin };
+    }
+    const result = await modifyEntries((entries) => {
+      // 用 id 更新時，那一筆原本也要是同一個網站的，不然網頁可以拿 id 改掉別的網站的帳號
+      if (sites && id && entries.some((e) => e.id === id && e.host !== host)) throw siteNotAllowed();
+      return upsert(entries, raw, id);
+    });
     refreshActiveBadges();
     return result;
   },
@@ -2214,10 +2294,12 @@ const handlers = {
     return stats;
   },
 
-  // options 有給就用給的（popup 會順便存起來），沒給就用設定裡存的
-  async 'password.generate'({ options, save }) {
-    const result = generatePassword(options || (await getSettings()).generator);
-    if (save && options) await setSettings({ generator: result.options });
+  // options 有給就用給的（popup 會順便存起來），沒給就用設定裡存的。
+  // content.js 只能用存好的設定，不然網頁可以把設定偷改成很短的密碼。
+  async 'password.generate'({ options, save }, sender) {
+    const own = fromExtensionPage(sender);
+    const result = generatePassword((own && options) || (await getSettings()).generator);
+    if (own && save && options) await setSettings({ generator: result.options });
     return result;
   },
 
@@ -2318,8 +2400,9 @@ const handlers = {
     return chrome.downloads.download({ url: latest.zipUrl });
   },
 
-  async 'neverSave.add'({ host }) {
+  async 'neverSave.add'({ host }, sender) {
     host = String(host || '').toLowerCase();
+    if (!fromExtensionPage(sender) && !(await contentSaveSites(sender)).some((s) => s.host === host)) throw siteNotAllowed();
     const settings = await getSettings();
     if (host && !settings.neverSave.includes(host)) settings.neverSave.push(host);
     return setSettings({ neverSave: settings.neverSave });
@@ -2330,11 +2413,12 @@ const handlers = {
     return setSettings({ neverSave: settings.neverSave.filter((h) => h !== host) });
   },
 
+  // 之後存檔只認這裡記下的網站，所以 host、origin 用 content.js 所在的網址算
   async 'pending.set'(data, sender) {
     if (!sender.tab) return null;
     return setPending(sender.tab.id, {
-      host: String(data.host || '').toLowerCase(),
-      origin: data.origin,
+      host: callerHost(data.host, sender),
+      origin: fromExtensionPage(sender) ? data.origin : originFromUrl(sender.url),
       username: data.username,
       password: data.password,
       submitUrl: data.submitUrl,
@@ -2355,13 +2439,19 @@ const handlers = {
 
 async function dispatch(msg, sender) {
   await i18nReady;
-  if (LOCK_REQUIRED.has(msg.type) && (await isLocked())) throw lockedError();
+  const rule = MESSAGE_RULES[msg.type];
+  if (rule.from !== 'any' && !fromExtensionPage(sender)) throw new Error(t('bg_extension_page_only'));
+  if (!rule.whenLocked && (await isLocked())) throw lockedError();
   return handlers[msg.type](msg, sender);
 }
 
+// 用 hasOwn：type 是 'toString'、'constructor' 這類名字時，handlers[type] 會拿到 Object 內建的函式
+function knownMessage(msg) {
+  return !!msg && typeof msg.type === 'string' && Object.hasOwn(handlers, msg.type) && Object.hasOwn(MESSAGE_RULES, msg.type);
+}
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  const fn = msg && handlers[msg.type];
-  if (!fn) {
+  if (!knownMessage(msg)) {
     sendResponse({ ok: false, error: t('bg_unknown_message', msg && msg.type) });
     return false;
   }
