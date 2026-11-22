@@ -1,18 +1,20 @@
 // 介面文字的多國語系：從 _locales/<語言>/messages.json 拿文字。
-// 管理頁右上角可以指定語言，存在 storage 的 uiLanguage。沒指定就照瀏覽器的介面語言，瀏覽器語言不是繁中、英文、日文時用英文。
+// 管理頁右上角可以指定語言，存在 storage 的 uiLanguage。沒指定就照瀏覽器的介面語言，瀏覽器語言不在 i18nLocales() 裡時用英文。
+// 瀏覽器沒有台語介面，台語（nan_TW）只能從語言選單選，Chrome 也不會自己挑 _locales/nan_TW。
 // 小視窗、管理頁、解鎖視窗、網頁裡的 content.js 和背景程式都會載入這個檔。
 //
 // HTML：<span data-i18n="ext_name">密碼小管家</span>。屬性用 data-i18n-placeholder、data-i18n-title、data-i18n-aria-label、data-i18n-tip。
 // 程式：t('ext_name')。有替換值的寫 t(key, 值1, 值2)，訊息裡用 $1、$2 對應。
-// 數量會影響英文單複數時用 tn('pop_account_count', 數量)，翻譯檔要有 pop_account_count_one 和 pop_account_count_other。
+// 有數量的用 tn('pop_account_count', 數量)，翻譯檔要有 pop_account_count_one 和 pop_account_count_other，俄文還要 _few、_many。
 //
 // 這個檔只宣告函式和 var，不宣告 const、let：test/ 的測試頁會重複載入這個檔，const 重複宣告會出錯。
 
-// chrome.i18n 只會照瀏覽器的語言，指定了別的語言時改查 messages。forced 是 zh_TW、en、ja，沒指定是 null。
+// chrome.i18n 只會照瀏覽器的語言，指定了別的語言時改查 messages。forced 是 i18nLocales() 其中一個，沒指定是 null。
 var pkLocale = pkLocale || { forced: null, messages: null };
 
+// 要跟 tools/lib/i18n-check.js 的 LOCALES 一樣，tools/check.js 會比對
 function i18nLocales() {
-  return ['zh_TW', 'en', 'ja'];
+  return ['zh_TW', 'nan_TW', 'en', 'ja', 'ko', 'de', 'ru', 'th'];
 }
 
 // $1～$9 換成替換值、$$ 換成 $，跟 chrome.i18n.getMessage 一樣
@@ -36,13 +38,20 @@ function t(key, ...subs) {
   return text;
 }
 
-// 英文 1 和其他數量的寫法不一樣：key_one 給 1，key_other 給其他數量。中文、日文兩個寫一樣就好。
-// 數量本身是第一個替換值 $1。
-function tn(key, count, ...subs) {
-  return t(key + (count === 1 ? '_one' : '_other'), count, ...subs);
+function hasMessage(key) {
+  return pkLocale.messages ? Boolean(pkLocale.messages[key]) : Boolean(chrome.i18n.getMessage(key));
 }
 
-// 瀏覽器自己挑的是哪一份翻譯：zh_TW、en、ja
+// 照各語言的文法挑寫法（Intl.PluralRules）：英文、德文 key_one 給 1，key_other 給其他數量。
+// 俄文 key_one 給 1、21、31，key_few 給 2～4、22～24，key_many 給 0、5～20、25～30。
+// 翻譯檔沒有挑到的那一種時，1 用 key_one、其他用 key_other。中文、日文這些不分單複數的，_one、_other 寫一樣就好。
+// 數量本身是第一個替換值 $1。
+function tn(key, count, ...subs) {
+  const form = key + '_' + new Intl.PluralRules(formatLang()).select(count);
+  return t(hasMessage(form) ? form : key + (count === 1 ? '_one' : '_other'), count, ...subs);
+}
+
+// 瀏覽器自己挑的是哪一份翻譯，i18nLocales() 其中一個
 function browserLocale() {
   return chrome.i18n.getMessage('locale_code') || 'en';
 }
@@ -52,14 +61,21 @@ function uiLocale() {
   return pkLocale.forced || browserLocale();
 }
 
-// 一筆資料帶三種語言的（例如 changelog.js），挑目前語言那份，沒有就用英文
+// 一筆資料帶好幾種語言的（例如 changelog.js 只寫繁中、英文、日文），挑目前語言那份，沒有就用英文
 function pickLocale(byLocale) {
   return byLocale[uiLocale()] || byLocale.en || byLocale.zh_TW;
 }
 
-// 日期、時間、數字的格式跟著介面語言
+// 介面語言的 BCP 47 寫法，給 html 的 lang 用，例如 zh-Hant-TW、nan-Hant-TW
 function uiLang() {
   return pkLocale.messages ? pkLocale.messages.lang_tag.message : chrome.i18n.getMessage('lang_tag') || 'en';
+}
+
+// 日期、時間、數字的格式和單複數規則跟著介面語言。
+// 瀏覽器沒有台語的格式，nan-Hant-TW 會退回瀏覽器自己的介面語言，台語改用台灣華語的格式。
+function formatLang() {
+  const lang = uiLang();
+  return lang.startsWith('nan') ? 'zh-Hant-TW' : lang;
 }
 
 // 改用指定語言的翻譯。locale 是 null、或跟瀏覽器挑的一樣時，回到 chrome.i18n。

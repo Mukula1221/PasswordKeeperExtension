@@ -1,8 +1,32 @@
 // 版本功能歷程。管理頁的「版本」分頁照這個陣列畫出來，新版本加在最前面。
 // 每一版：version（要和 manifest.json 一致）、date、items（加了什麼）、notes（要注意的事，沒有就整個省略）。
 // items、notes 照語言分開寫：{ zh_TW: [...], en: [...], ja: [...] }，三種語言的條數要一樣、順序要對應。
+// 只寫這三種，介面是其他語言時顯示英文的（i18n.js 的 pickLocale）。
 // 翻譯直接寫在這裡、不用 t()：tools/ 產生 CHANGELOG.md 和 GitHub Release 說明時也會讀這個檔，那裡沒有 chrome.i18n。
 const CHANGELOG = [
+  {
+    version: '1.17.0',
+    date: '2026-11-22',
+    items: {
+      zh_TW: [
+        '介面多了台語、韓文、德文、俄文、泰文。瀏覽器是韓文、德文、俄文、泰文的，打開就是那個語言。台語要到管理頁右上角的語言選單選。',
+        '新加的這幾種語言，「版本」分頁的版本紀錄顯示英文。',
+      ],
+      en: [
+        'The interface now also comes in Taiwanese Hokkien, Korean, German, Russian, and Thai. If your browser uses Korean, German, Russian, or Thai, it opens in that language. To use Taiwanese Hokkien, choose it from the language menu at the top right of the manager page.',
+        'In these new languages, the version history in the Versions tab is shown in English.',
+      ],
+      ja: [
+        '表示言語に台湾語、韓国語、ドイツ語、ロシア語、タイ語を追加しました。ブラウザーが韓国語、ドイツ語、ロシア語、タイ語の場合は、その言語で表示されます。台湾語は管理ページ右上の言語メニューで選んでください。',
+        '追加した言語では、「バージョン」タブの更新履歴は英語で表示されます。',
+      ],
+    },
+    notes: {
+      zh_TW: ['新語言的翻譯還沒給母語人士看過，看到奇怪的說法歡迎回報。'],
+      en: ["The new translations haven't been reviewed by native speakers yet. If something reads oddly, please let us know."],
+      ja: ['追加した言語の翻訳は、まだネイティブスピーカーの確認を受けていません。不自然な表現があればお知らせください。'],
+    },
+  },
   {
     version: '1.16.0',
     date: '2026-11-19',

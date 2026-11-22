@@ -5,7 +5,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const FILES = require('./files');
 const { ROOT, CHANGELOG_JS, readManifest, readChangelog, packageFiles, renderChangelogMd } = require('./lib/project');
-const { LOCALES, checkMessages, usedKeys, untranslatedInJs, checkHtml } = require('./lib/i18n-check');
+const { LOCALES, CHANGELOG_LOCALES, checkMessages, checkLocaleLists, usedKeys, untranslatedInJs, checkHtml } = require('./lib/i18n-check');
 
 const problems = [];
 const SEMVER = /^\d+\.\d+\.\d+$/;
@@ -43,18 +43,18 @@ function checkVersions(manifest) {
   }
 }
 
-// 每一版的說明要三種語言都寫，條數一樣、順序對應
+// 每一版的說明要繁中、英文、日文三種都寫，條數一樣、順序對應。其他介面語言看英文的
 function checkLocalizedLines(v, field) {
   const byLocale = v[field];
   if (!byLocale || typeof byLocale !== 'object' || Array.isArray(byLocale)) {
     problems.push(v.version + ' 的 ' + field + ' 要分語言寫：{ zh_TW: [...], en: [...], ja: [...] }');
     return;
   }
-  const counts = LOCALES.map((loc) => (Array.isArray(byLocale[loc]) ? byLocale[loc].length : -1));
-  if (counts.includes(-1)) problems.push(v.version + ' 的 ' + field + ' 少了 ' + LOCALES.filter((loc, i) => counts[i] < 0).join('、'));
+  const counts = CHANGELOG_LOCALES.map((loc) => (Array.isArray(byLocale[loc]) ? byLocale[loc].length : -1));
+  if (counts.includes(-1)) problems.push(v.version + ' 的 ' + field + ' 少了 ' + CHANGELOG_LOCALES.filter((loc, i) => counts[i] < 0).join('、'));
   else if (new Set(counts).size > 1) problems.push(v.version + ' 的 ' + field + ' 三種語言的條數不一樣：' + counts.join(' / '));
   else if (!counts[0]) problems.push(v.version + ' 的 ' + field + ' 是空的');
-  for (const loc of LOCALES) {
+  for (const loc of CHANGELOG_LOCALES) {
     for (const line of byLocale[loc] || []) if (typeof line !== 'string' || !line.trim()) problems.push(v.version + ' 的 ' + field + '.' + loc + ' 有空的一條');
   }
 }
@@ -76,12 +76,13 @@ function readMessages() {
   return messages;
 }
 
-// 三種語言的 key 要一樣、程式用到的 key 都要有、沒用到的不要留、不能還有沒翻到的中文
+// 每種語言的 key 要一樣、程式用到的 key 都要有、沒用到的不要留、不能還有沒翻到的中文
 function checkI18n(manifest) {
   if (!manifest.default_locale) problems.push('manifest.json 要有 default_locale');
   const messages = readMessages();
   if (LOCALES.some((loc) => !messages[loc])) return;
   problems.push(...checkMessages(messages));
+  problems.push(...checkLocaleLists(readText('src/shared/i18n.js'), readText('src/options/options.html')));
   // i18n.js 直接用 chrome.i18n.getMessage 拿這兩個，不經過 t()
   const used = new Set(['locale_code', 'lang_tag']);
   for (const file of packageFiles()) {

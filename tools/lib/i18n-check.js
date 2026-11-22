@@ -1,10 +1,22 @@
 // 多國語系的檢查，tools/check.js 用：
-// 三種語言的 key 要一樣、替換值 $1 $2 要對得上、程式用到的 key 都要有、HTML 裡的預設文字要跟繁體中文一樣、
+// 每種語言的 key 要跟繁體中文一樣、替換值 $1 $2 要對得上、程式用到的 key 都要有、HTML 裡的預設文字要跟繁體中文一樣、
 // 程式和 HTML 裡不能還有沒翻到的中文。比對網頁文字用的中文（例如認登入按鈕）在那一行寫 i18n-ignore 跳過。
 const HAN = /[㐀-鿿豈-﫿]/;
-const LOCALES = ['zh_TW', 'en', 'ja'];
+// 介面的語言，要跟 src/shared/i18n.js 的 i18nLocales() 一樣
+const LOCALES = ['zh_TW', 'nan_TW', 'en', 'ja', 'ko', 'de', 'ru', 'th'];
+// 版本紀錄（changelog.js）和 GitHub Release 說明只寫這三種，其他語言的介面看英文的
+const CHANGELOG_LOCALES = ['zh_TW', 'en', 'ja'];
 
 const placeholdersOf = (text) => [...new Set((text.replace(/\$\$/g, '').match(/\$[1-9]/g) || []))].sort().join(',');
+
+// tn() 在這個語言會挑到的寫法。one、other 每種語言都要有，俄文另外要 few、many。
+// 台語跟 i18n.js 的 formatLang() 一樣用台灣華語的規則：Node 沒有台語，會退回這台電腦的語言，每台算出來不一樣。
+function pluralFormsOf(langTag) {
+  const forms = new Set(['one', 'other']);
+  for (const form of new Intl.PluralRules(langTag.startsWith('nan') ? 'zh-Hant-TW' : langTag).resolvedOptions().pluralCategories) forms.add(form);
+  return forms;
+}
+const EXTRA_PLURAL = /_(zero|two|few|many)$/;
 
 // Chrome 載入翻譯檔時，把兩個 $ 中間是英數字的當成具名替換值（例如 $name$），沒定義就整個擴充功能載入失敗。
 // 連著寫的 $4$5 也會被讀成 $4$。照 Chrome 的找法找一遍。
@@ -24,20 +36,25 @@ function namedPlaceholderIn(text) {
 function checkMessages(messages) {
   const problems = [];
   const base = Object.keys(messages.zh_TW || {});
+  const plurals = base.filter((k) => k.endsWith('_one')).map((k) => k.slice(0, -4));
   for (const loc of LOCALES) {
     if (!messages[loc]) {
       problems.push('_locales/' + loc + '/messages.json 不存在');
       continue;
     }
+    const forms = [...pluralFormsOf(messages[loc].lang_tag || loc)].filter((f) => f !== 'one' && f !== 'other');
+    const expected = [...base, ...plurals.flatMap((p) => forms.map((f) => p + '_' + f))];
     const keys = Object.keys(messages[loc]);
-    for (const k of base) if (!keys.includes(k)) problems.push(loc + ' 少了 ' + k);
-    for (const k of keys) if (!base.includes(k)) problems.push(loc + ' 多了 ' + k + '，繁體中文沒有');
+    for (const k of expected) if (!keys.includes(k)) problems.push(loc + ' 少了 ' + k);
+    for (const k of keys) if (!expected.includes(k)) problems.push(loc + ' 多了 ' + k + '，繁體中文沒有');
     for (const [k, text] of Object.entries(messages[loc])) {
+      // 俄文的 _few、_many 繁體中文沒有，替換值跟 _one 比
+      const source = messages.zh_TW[k] !== undefined ? messages.zh_TW[k] : messages.zh_TW[k.replace(EXTRA_PLURAL, '_one')];
       if (typeof text !== 'string' || !text.trim()) problems.push(loc + ' 的 ' + k + ' 是空的');
       else if (namedPlaceholderIn(text)) problems.push(loc + ' 的 ' + k + ' 有 ' + namedPlaceholderIn(text) + '，Chrome 會讀成沒定義的具名替換值、整個擴充功能載入失敗。替換值中間要隔開');
       else if (/\$(?![1-9$])/.test(text.replace(/\$\$/g, ''))) problems.push(loc + ' 的 ' + k + ' 有單獨的 $，文字裡的 $ 要寫成 $$');
-      else if (messages.zh_TW[k] !== undefined && placeholdersOf(text) !== placeholdersOf(messages.zh_TW[k])) {
-        problems.push(loc + ' 的 ' + k + ' 用的替換值（' + placeholdersOf(text) + '）跟繁體中文（' + placeholdersOf(messages.zh_TW[k]) + '）不一樣');
+      else if (source !== undefined && placeholdersOf(text) !== placeholdersOf(source)) {
+        problems.push(loc + ' 的 ' + k + ' 用的替換值（' + placeholdersOf(text) + '）跟繁體中文（' + placeholdersOf(source) + '）不一樣');
       }
     }
   }
@@ -156,4 +173,18 @@ function checkHtml(name, html, zh) {
   return problems;
 }
 
-module.exports = { LOCALES, HAN, checkMessages, usedKeys, untranslatedInJs, checkHtml };
+// i18n.js 的 i18nLocales() 和管理頁語言選單的選項，都要跟 LOCALES 一樣
+function checkLocaleLists(i18nJs, optionsHtml) {
+  const problems = [];
+  const same = (list) => list.length === LOCALES.length && LOCALES.every((loc) => list.includes(loc));
+  const m = i18nJs.match(/function i18nLocales\(\) \{\s*return (\[[^\]]*\])/);
+  const fromJs = m ? JSON.parse(m[1].replace(/'/g, '"')) : null;
+  if (!fromJs) problems.push('src/shared/i18n.js 找不到 i18nLocales() 的清單');
+  else if (!same(fromJs)) problems.push('src/shared/i18n.js 的 i18nLocales()（' + fromJs.join(', ') + '）跟 tools/lib/i18n-check.js 的 LOCALES（' + LOCALES.join(', ') + '）不一樣');
+  const select = optionsHtml.match(/<select id="langSelect"[\s\S]*?<\/select>/);
+  const fromHtml = select ? [...select[0].matchAll(/<option value="([^"]+)"/g)].map((x) => x[1]).filter((v) => v !== 'auto') : [];
+  if (!same(fromHtml)) problems.push('管理頁語言選單的選項（' + fromHtml.join(', ') + '）跟 LOCALES（' + LOCALES.join(', ') + '）不一樣');
+  return problems;
+}
+
+module.exports = { LOCALES, CHANGELOG_LOCALES, HAN, checkMessages, checkLocaleLists, usedKeys, untranslatedInJs, checkHtml };

@@ -1,0 +1,2390 @@
+{
+  "locale_code": {
+    "message": "ko"
+  },
+  "lang_tag": {
+    "message": "ko"
+  },
+  "ext_name": {
+    "message": "비밀번호 지킴이"
+  },
+  "ext_description": {
+    "message": "로그인 사용자 이름과 비밀번호를 저장하고 자동으로 입력해, 막혀 있는 브라우저 비밀번호 관리 기능을 대신합니다. 데이터는 이 컴퓨터에만 저장됩니다."
+  },
+  "cmd_fill_login": {
+    "message": "현재 사이트의 사용자 이름과 비밀번호를 로그인 입력란에 입력"
+  },
+  "common_cancelled": {
+    "message": "취소되었습니다",
+    "description": "Download or save dialog was cancelled. background.js returns it as an error and options.js compares against it."
+  },
+  "pop_lock_now_title": {
+    "message": "지금 잠급니다. 다시 사용하려면 인증해야 합니다.",
+    "description": "Tooltip of the lock button in the popup header."
+  },
+  "pop_lock_now": {
+    "message": "잠금",
+    "description": "Lock button in the popup header, next to a lock icon."
+  },
+  "pop_search_placeholder": {
+    "message": "모든 사이트의 계정 검색, Enter로 사이트 열기",
+    "description": "Search box at the top of the popup. Enter opens the site of the first result. The popup is 360px wide, so keep it short."
+  },
+  "pop_locked_title": {
+    "message": "잠김"
+  },
+  "pop_locked_hint": {
+    "message": "인증해야 자동 입력하고 비밀번호를 볼 수 있습니다."
+  },
+  "pop_add_title": {
+    "message": "이 사이트의 계정 추가"
+  },
+  "pop_username": {
+    "message": "사용자 이름",
+    "description": "Field label in the add account form."
+  },
+  "pop_password": {
+    "message": "비밀번호",
+    "description": "Field label in the add account form."
+  },
+  "pop_show": {
+    "message": "표시",
+    "description": "Button inside the password field. Shows the password as text."
+  },
+  "pop_hide": {
+    "message": "숨기기",
+    "description": "Same button as pop_show after the password is shown. It sits inside the field, so keep it short."
+  },
+  "pop_cancel": {
+    "message": "취소"
+  },
+  "pop_save": {
+    "message": "저장"
+  },
+  "pop_generate": {
+    "message": "비밀번호 생성",
+    "description": "Button that opens the password generator, and the title of that panel."
+  },
+  "pop_regen_title": {
+    "message": "새로 하나 생성"
+  },
+  "pop_regen": {
+    "message": "재생성",
+    "description": "Small button next to the generated password."
+  },
+  "pop_gen_length": {
+    "message": "길이",
+    "description": "Reads as 'Length [min] to [max]'."
+  },
+  "pop_gen_to": {
+    "message": "~",
+    "description": "Between the min and max length inputs: 'Length [min] to [max]'."
+  },
+  "pop_gen_upper": {
+    "message": "대문자",
+    "description": "Checkbox: use uppercase letters."
+  },
+  "pop_gen_lower": {
+    "message": "소문자",
+    "description": "Checkbox: use lowercase letters."
+  },
+  "pop_gen_digits": {
+    "message": "숫자",
+    "description": "Checkbox: use digits."
+  },
+  "pop_gen_symbols": {
+    "message": "특수 문자",
+    "description": "Checkbox: use symbols."
+  },
+  "pop_gen_symbol_set": {
+    "message": "허용할 특수 문자",
+    "description": "Field listing which symbols the generator may use."
+  },
+  "pop_gen_close": {
+    "message": "접기",
+    "description": "Collapses the password generator panel."
+  },
+  "pop_copy": {
+    "message": "복사",
+    "description": "Copies the generated password."
+  },
+  "pop_gen_fill": {
+    "message": "페이지에 입력",
+    "description": "Fills the generated password into the password field on the current web page."
+  },
+  "pop_add_account": {
+    "message": "+ 계정 추가"
+  },
+  "pop_this_site": {
+    "message": "이 사이트",
+    "description": "Heading above the settings that only apply to the current site."
+  },
+  "pop_autofill_title": {
+    "message": "로그인 페이지를 열면 사용자 이름과 비밀번호를 자동으로 입력합니다"
+  },
+  "pop_autofill": {
+    "message": "자동 입력",
+    "description": "Checkbox under 'This site'."
+  },
+  "pop_autofill_master_off": {
+    "message": "(전체 스위치 꺼짐)",
+    "description": "Shown next to 'Autofill' when autofill is turned off for all sites on the manager page."
+  },
+  "pop_autosubmit": {
+    "message": "자동 입력 후 로그인",
+    "description": "Checkbox under 'This site'."
+  },
+  "pop_autosubmit_tip": {
+    "message": "자동 입력에 성공하고 페이지에 로그인 양식이 하나만 있을 때만 로그인 버튼을 누릅니다",
+    "description": "Help text of the '?' next to 'Sign in after autofill'."
+  },
+  "pop_pick_title": {
+    "message": "다음에 이 페이지를 열면 선택한 버튼을 자동으로 클릭합니다"
+  },
+  "pop_pick": {
+    "message": "자동 클릭할 버튼 선택",
+    "description": "Closes the popup and lets the user click a button on the web page."
+  },
+  "pop_pick_count_title": {
+    "message": "관리 페이지에서 자동 클릭 보기"
+  },
+  "pop_manage": {
+    "message": "모든 비밀번호 관리",
+    "description": "Popup footer link. Opens the manager page."
+  },
+  "pop_no_response": {
+    "message": "확장 프로그램이 응답하지 않습니다"
+  },
+  "pop_page_unavailable": {
+    "message": "이 페이지에서는 사용할 수 없습니다"
+  },
+  "pop_page_not_ready": {
+    "message": "이 페이지에는 아직 비밀번호 지킴이가 로드되지 않았습니다. 페이지를 새로고침한 후 다시 시도하세요.",
+    "description": "Tabs opened before the extension was installed or reloaded can't talk to it until they are reloaded."
+  },
+  "pop_page_no_response": {
+    "message": "페이지가 응답하지 않습니다"
+  },
+  "pop_password_copied": {
+    "message": "비밀번호를 복사했습니다"
+  },
+  "pop_copy_failed": {
+    "message": "복사하지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "pop_load_failed": {
+    "message": "불러오지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "pop_empty": {
+    "message": "이 사이트에 저장된 계정이 아직 없습니다. 한 번 로그인하면 저장할지 물어봅니다."
+  },
+  "pop_no_username": {
+    "message": "(사용자 이름 없이 비밀번호만 있음)",
+    "description": "Shown in the account list instead of an empty username."
+  },
+  "pop_fill": {
+    "message": "입력",
+    "description": "Fills this account into the sign-in form on the page."
+  },
+  "pop_copy_password": {
+    "message": "비밀번호 복사"
+  },
+  "pop_account_count_one": {
+    "message": "계정 $1개",
+    "description": "Popup footer. $1 = number of saved accounts for this site."
+  },
+  "pop_account_count_other": {
+    "message": "계정 $1개",
+    "description": "Popup footer. $1 = number of saved accounts for this site."
+  },
+  "pop_page_rule_count_one": {
+    "message": "이 페이지 자동 클릭 $1개",
+    "description": "Link next to 'Pick a button to auto-click'. $1 = number of auto-click rules for this page. Both buttons share one row, so keep it short."
+  },
+  "pop_page_rule_count_other": {
+    "message": "이 페이지 자동 클릭 $1개",
+    "description": "Link next to 'Pick a button to auto-click'. $1 = number of auto-click rules for this page. Both buttons share one row, so keep it short."
+  },
+  "pop_password_required": {
+    "message": "비밀번호는 비워 둘 수 없습니다"
+  },
+  "pop_updated": {
+    "message": "업데이트했습니다",
+    "description": "The username already existed, so its password was updated."
+  },
+  "pop_added": {
+    "message": "추가했습니다"
+  },
+  "pop_setting_failed": {
+    "message": "설정을 변경하지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "pop_autofill_on": {
+    "message": "이 사이트의 자동 입력을 켰습니다"
+  },
+  "pop_autofill_off": {
+    "message": "이 사이트의 자동 입력을 껐습니다"
+  },
+  "pop_autosubmit_on": {
+    "message": "이제 $1 로그인 페이지를 열면 자동으로 입력하고 로그인합니다",
+    "description": "$1 = site host name, e.g. example.com."
+  },
+  "pop_autosubmit_off": {
+    "message": "이 사이트의 자동 로그인을 껐습니다"
+  },
+  "pop_search_none": {
+    "message": "'$1'에 해당하는 계정이 없습니다",
+    "description": "$1 = what the user typed in the search box."
+  },
+  "pop_search_no_username": {
+    "message": "(사용자 이름 없음)",
+    "description": "Shown in search results instead of an empty username."
+  },
+  "pop_open": {
+    "message": "열기",
+    "description": "Opens the site of this search result in a new tab."
+  },
+  "pop_unlock_with": {
+    "message": "$1로 잠금 해제",
+    "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "pop_unlock_password": {
+    "message": "사용자 지정 비밀번호로 잠금 해제"
+  },
+  "pop_copied": {
+    "message": "복사했습니다"
+  },
+  "pop_gen_filled": {
+    "message": "페이지의 비밀번호 입력란에 입력했습니다. 제출한 후 '저장'을 누르세요.",
+    "description": "'Save' is the button on the save-password prompt shown after the form is submitted."
+  },
+  "pop_backup_days_one": {
+    "message": "$1일 동안 백업하지 않았습니다. 여기를 클릭해 관리 페이지에서 백업하세요.",
+    "description": "Backup reminder bar in the popup. $1 = days since the last backup."
+  },
+  "pop_backup_days_other": {
+    "message": "$1일 동안 백업하지 않았습니다. 여기를 클릭해 관리 페이지에서 백업하세요.",
+    "description": "Backup reminder bar in the popup. $1 = days since the last backup."
+  },
+  "pop_backup_never": {
+    "message": "아직 백업한 적이 없어 비밀번호가 이 브라우저에만 있습니다. 여기를 클릭해 관리 페이지에서 백업하세요.",
+    "description": "Backup reminder bar in the popup."
+  },
+  "pop_update_bar": {
+    "message": "새 버전이 나왔습니다($1). 여기를 클릭해 업데이트 방법을 확인하세요.",
+    "description": "$1 = version number like 1.14.0. Update reminder bar in the popup."
+  },
+  "pop_unsupported_page": {
+    "message": "이 페이지에서는 사용할 수 없습니다. http와 https 페이지만 지원합니다.",
+    "description": "Shown under the popup title on browser pages such as the new tab page."
+  },
+  "unl_title": {
+    "message": "비밀번호 지킴이 잠금 해제",
+    "description": "Title of the separate unlock window."
+  },
+  "unl_not_shown": {
+    "message": "창이 자동으로 나타나지 않았나요? ",
+    "description": "Followed directly by the unl_retry link, with nothing in between. Keep the trailing space in languages that use spaces."
+  },
+  "unl_retry": {
+    "message": "여기를 클릭해 다시 열기",
+    "description": "Link that asks for system verification again, e.g. when the Windows Hello dialog opened behind other windows."
+  },
+  "unl_done": {
+    "message": "잠금을 해제했습니다"
+  },
+  "unl_cancel": {
+    "message": "취소"
+  },
+  "unl_try_again": {
+    "message": "다시 시도",
+    "description": "Shown only after verification was canceled or timed out."
+  },
+  "unl_wait_title": {
+    "message": "$1 창에서 인증을 완료하세요",
+    "description": "$1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "unl_password_title": {
+    "message": "잠금을 해제하려면 사용자 지정 비밀번호를 입력하세요"
+  },
+  "wa_no_response": {
+    "message": "확장 프로그램이 응답하지 않습니다"
+  },
+  "wa_cancelled": {
+    "message": "인증이 취소되었거나 시간이 초과되었습니다"
+  },
+  "wa_blocked": {
+    "message": "브라우저에서 이 확장 프로그램의 시스템 인증 사용을 허용하지 않습니다"
+  },
+  "wa_security_key_or_phone": {
+    "message": "보안 키 또는 휴대전화",
+    "description": "What to verify with on systems without Windows Hello or Touch ID. Always inserted mid-sentence as $1 (e.g. 'Unlock with $1'), so English keeps it lowercase with an article."
+  },
+  "wa_unsupported": {
+    "message": "이 브라우저는 시스템 인증을 지원하지 않습니다"
+  },
+  "wa_no_public_key": {
+    "message": "브라우저가 공개 키를 제공하지 않아 이 컴퓨터에서는 사용할 수 없습니다"
+  },
+  "wa_not_set_up": {
+    "message": "시스템 인증이 아직 설정되지 않았습니다"
+  },
+  "wa_no_prf": {
+    "message": "이 컴퓨터의 $1에서 암호화에 필요한 비밀 값을 받을 수 없습니다. 사용자 지정 비밀번호 암호화를 사용하세요"
+  },
+  "wa_prf_unstable": {
+    "message": "$1에서 받은 비밀 값이 매번 달라 암호화에 사용할 수 없습니다. 사용자 지정 비밀번호 암호화를 사용하세요"
+  },
+  "opt_page_title": {
+    "message": "비밀번호 지킴이 – 비밀번호 관리",
+    "description": "Browser tab title of the manager page."
+  },
+  "opt_header_note": {
+    "message": "비밀번호는 이 컴퓨터의 브라우저에만 저장되며 어디에도 업로드되지 않습니다."
+  },
+  "opt_header_version_title": {
+    "message": "버전 기록 보기",
+    "description": "Tooltip of the version number in the page header."
+  },
+  "opt_header_update": {
+    "message": "새 버전 있음",
+    "description": "Small button next to the version number in the header."
+  },
+  "opt_header_update_title": {
+    "message": "새 버전이 나왔습니다($1). 클릭해 업데이트 방법을 확인하세요",
+    "description": "$1 = version number."
+  },
+  "opt_lock_title": {
+    "message": "본인 인증",
+    "description": "Heading of the screen shown while App lock is on."
+  },
+  "opt_lock_help": {
+    "message": "인증해야 비밀번호와 설정을 볼 수 있습니다."
+  },
+  "opt_verify_with": {
+    "message": "$1로 인증",
+    "description": "Button on the lock screen. $1 = 'Windows Hello', 'Touch ID' or wa_security_key_or_phone."
+  },
+  "opt_lock_broken": {
+    "message": "잠금 설정이 손상되었습니다. 시스템 인증 키를 찾을 수 없습니다. 확장 프로그램을 삭제하고 다시 설치한 후 백업을 가져오세요."
+  },
+  "opt_lock_unlock": {
+    "message": "잠금 해제"
+  },
+  "opt_lock_forgot": {
+    "message": "사용자 지정 비밀번호를 잊었거나 시스템 인증을 사용할 수 없나요?"
+  },
+  "opt_lock_reset_title": {
+    "message": "이 컴퓨터의 비밀번호를 지울까요?"
+  },
+  "opt_lock_reset_text": {
+    "message": "잠금을 해제할 수 없으면 비밀번호를 지운 다음 '백업' 탭에서 '암호화된 백업 가져오기'로 복원하는 수밖에 없습니다. 지운 후에는 되돌릴 수 없습니다."
+  },
+  "opt_lock_reset_confirm": {
+    "message": "지우기"
+  },
+  "opt_lock_reset_next": {
+    "message": "계속"
+  },
+  "opt_lock_reset_again_title": {
+    "message": "마지막 확인: 이 컴퓨터의 비밀번호 지우기"
+  },
+  "opt_lock_reset_last_backup": {
+    "message": "마지막 백업은 $1입니다. 지운 후 그 백업으로 복원하면, 그 이후에 추가하거나 변경한 비밀번호는 사라집니다."
+  },
+  "opt_lock_reset_no_backup": {
+    "message": "이 컴퓨터에는 백업 기록이 없어 지우면 비밀번호를 복구할 수 없습니다."
+  },
+  "opt_lock_reset_word": {
+    "message": "삭제"
+  },
+  "opt_type_to_confirm": {
+    "message": "계속하려면 '$1'을(를) 입력하세요"
+  },
+  "opt_lock_reset_done": {
+    "message": "지웠습니다. '암호화된 백업 가져오기'를 눌러 백업 파일을 선택해 복원하세요."
+  },
+  "opt_no_response": {
+    "message": "확장 프로그램이 응답하지 않습니다"
+  },
+  "opt_load_failed": {
+    "message": "불러오지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_tab_passwords": {
+    "message": "비밀번호"
+  },
+  "opt_tab_backup": {
+    "message": "백업"
+  },
+  "opt_tab_settings": {
+    "message": "설정"
+  },
+  "opt_tab_trash": {
+    "message": "휴지통"
+  },
+  "opt_tab_help": {
+    "message": "도움말"
+  },
+  "opt_tab_versions": {
+    "message": "버전"
+  },
+  "opt_add_button": {
+    "message": "+ 추가",
+    "description": "Adds a password on the Passwords tab, or an auto-click rule on the Settings tab."
+  },
+  "opt_cancel": {
+    "message": "취소"
+  },
+  "opt_save": {
+    "message": "저장"
+  },
+  "opt_ok": {
+    "message": "확인"
+  },
+  "opt_apply": {
+    "message": "적용"
+  },
+  "opt_got_it": {
+    "message": "확인",
+    "description": "Closes an information dialog."
+  },
+  "opt_edit": {
+    "message": "수정"
+  },
+  "opt_delete": {
+    "message": "삭제"
+  },
+  "opt_show": {
+    "message": "표시",
+    "description": "Shows the password as text."
+  },
+  "opt_hide": {
+    "message": "숨기기",
+    "description": "Hides the password again."
+  },
+  "opt_copy": {
+    "message": "복사"
+  },
+  "opt_copied": {
+    "message": "복사했습니다"
+  },
+  "opt_copy_failed": {
+    "message": "복사하지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_password_copied": {
+    "message": "비밀번호를 복사했습니다"
+  },
+  "opt_added": {
+    "message": "추가했습니다"
+  },
+  "opt_updated": {
+    "message": "업데이트했습니다"
+  },
+  "opt_setting_failed": {
+    "message": "설정을 변경하지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_delete_failed": {
+    "message": "삭제하지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_select_all": {
+    "message": "모두 선택"
+  },
+  "opt_seconds_unit": {
+    "message": "초",
+    "description": "Unit after a number input."
+  },
+  "opt_no_username": {
+    "message": "(사용자 이름 없음)",
+    "description": "Shown instead of an empty username."
+  },
+  "opt_account_label": {
+    "message": "$1 · $2",
+    "description": "One saved account in a list. $1 = site, $2 = username. Only the separator between them is translated."
+  },
+  "opt_list_sep": {
+    "message": ", ",
+    "description": "Separator between items of a list inside a sentence."
+  },
+  "opt_note_sep": {
+    "message": ". ",
+    "description": "Separator between two notes shown after a CSV export."
+  },
+  "opt_search_placeholder": {
+    "message": "사이트, 사용자 이름, 메모 검색"
+  },
+  "opt_export_selected_title": {
+    "message": "왼쪽 체크박스로 선택한 항목을 동료에게 줄 암호화 파일로 내보냅니다"
+  },
+  "opt_export_selected": {
+    "message": "선택 항목 내보내기(암호화)"
+  },
+  "opt_export_selected_n_one": {
+    "message": "선택한 $1개 내보내기(암호화)",
+    "description": "$1 = number of checked entries."
+  },
+  "opt_export_selected_n_other": {
+    "message": "선택한 $1개 내보내기(암호화)",
+    "description": "$1 = number of checked entries."
+  },
+  "opt_check_all_title": {
+    "message": "목록에 표시된 항목 모두 선택"
+  },
+  "opt_col_site": {
+    "message": "사이트",
+    "description": "Table column."
+  },
+  "opt_col_username": {
+    "message": "사용자 이름",
+    "description": "Table column."
+  },
+  "opt_col_password": {
+    "message": "비밀번호",
+    "description": "Table column."
+  },
+  "opt_col_last_used": {
+    "message": "마지막 사용",
+    "description": "Table column: when the password was last filled in."
+  },
+  "opt_empty": {
+    "message": "아직 비밀번호가 없습니다. 사이트에 한 번 로그인하면 화면 오른쪽 위에서 저장할지 물어봅니다."
+  },
+  "opt_history_toggle": {
+    "message": "이전 비밀번호($1)",
+    "description": "Expands the previous passwords of an account. $1 = how many."
+  },
+  "opt_history_replaced_at": {
+    "message": "$1에 변경됨",
+    "description": "$1 = date and time the password was replaced."
+  },
+  "opt_confirm_delete": {
+    "message": "$1의 '$2' 계정을 삭제할까요?",
+    "description": "$1 = site, $2 = username."
+  },
+  "opt_moved_to_trash_one": {
+    "message": "휴지통으로 이동했습니다. $1일 이내에 복원할 수 있습니다",
+    "description": "$1 = days items stay in the Trash."
+  },
+  "opt_moved_to_trash_other": {
+    "message": "휴지통으로 이동했습니다. $1일 이내에 복원할 수 있습니다",
+    "description": "$1 = days items stay in the Trash."
+  },
+  "opt_search_no_match": {
+    "message": "'$1'에 해당하는 항목이 없습니다",
+    "description": "$1 = search text."
+  },
+  "opt_health_show": {
+    "message": "자세히 보기"
+  },
+  "opt_health_hide": {
+    "message": "접기"
+  },
+  "opt_health_ok": {
+    "message": "비밀번호 점검: 재사용하거나 약한 비밀번호가 없고, 모두 1년 이내에 변경했습니다."
+  },
+  "opt_health_summary_one": {
+    "message": "비밀번호 점검: 재사용 $1그룹, 약함 $2개, 1년 넘게 변경 안 함 $3개.",
+    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  },
+  "opt_health_summary_other": {
+    "message": "비밀번호 점검: 재사용 $1그룹, 약함 $2개, 1년 넘게 변경 안 함 $3개.",
+    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  },
+  "opt_health_reused": {
+    "message": "재사용: $1번 그룹의 비밀번호를 $2곳에서 사용 중",
+    "description": "$1 = group number, $2 = accounts using it (always 2 or more)."
+  },
+  "opt_health_weak_short_one": {
+    "message": "약함: $1자뿐",
+    "description": "$1 = password length."
+  },
+  "opt_health_weak_short_other": {
+    "message": "약함: $1자뿐",
+    "description": "$1 = password length."
+  },
+  "opt_health_weak_classes": {
+    "message": "약함: 한 종류의 문자만 사용"
+  },
+  "opt_health_old": {
+    "message": "오래 변경 안 함: 마지막 변경 $1",
+    "description": "$1 = date and time."
+  },
+  "opt_trash_title": {
+    "message": "휴지통"
+  },
+  "opt_trash_days_before": {
+    "message": "삭제한 계정을 여기에",
+    "description": "Before the days input: 'Keep deleted accounts here for [30] days, then remove them automatically'."
+  },
+  "opt_trash_days_after": {
+    "message": "일 동안 보관한 후 자동으로 지웁니다",
+    "description": "After the days input. See opt_trash_days_before."
+  },
+  "opt_trash_restore_selected": {
+    "message": "선택 항목 복원"
+  },
+  "opt_trash_purge_selected": {
+    "message": "선택 항목 영구 삭제"
+  },
+  "opt_trash_restore_selected_n_one": {
+    "message": "선택한 $1개 복원",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_restore_selected_n_other": {
+    "message": "선택한 $1개 복원",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_purge_selected_n_one": {
+    "message": "선택한 $1개 영구 삭제",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_purge_selected_n_other": {
+    "message": "선택한 $1개 영구 삭제",
+    "description": "$1 = number of checked items."
+  },
+  "opt_trash_empty": {
+    "message": "휴지통이 비어 있습니다."
+  },
+  "opt_trash_purge_all": {
+    "message": "휴지통 비우기"
+  },
+  "opt_trash_load_failed": {
+    "message": "휴지통을 불러오지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_trash_item_info_one": {
+    "message": "$2에 삭제됨. $1일 후 자동으로 지웁니다",
+    "description": "$1 = days left, $2 = date and time it was deleted."
+  },
+  "opt_trash_item_info_other": {
+    "message": "$2에 삭제됨. $1일 후 자동으로 지웁니다",
+    "description": "$1 = days left, $2 = date and time it was deleted."
+  },
+  "opt_restore": {
+    "message": "복원"
+  },
+  "opt_restored": {
+    "message": "복원했습니다"
+  },
+  "opt_restore_failed": {
+    "message": "복원하지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_restored_n_one": {
+    "message": "$1개를 복원했습니다"
+  },
+  "opt_restored_n_other": {
+    "message": "$1개를 복원했습니다"
+  },
+  "opt_restored_skipped_title": {
+    "message": "$1개 복원, $2개 복원 안 됨",
+    "description": "$1 = restored accounts, $2 = accounts skipped because the site already has the same username."
+  },
+  "opt_restored_skipped_text": {
+    "message": "다음 사이트에는 같은 계정이 이미 있습니다:"
+  },
+  "opt_purge": {
+    "message": "영구 삭제"
+  },
+  "opt_confirm_purge": {
+    "message": "$1의 '$2' 계정을 영구 삭제할까요? 삭제하면 되돌릴 수 없습니다.",
+    "description": "$1 = site, $2 = username."
+  },
+  "opt_confirm_purge_selected_one": {
+    "message": "선택한 $1개를 영구 삭제할까요? 삭제하면 되돌릴 수 없습니다."
+  },
+  "opt_confirm_purge_selected_other": {
+    "message": "선택한 $1개를 영구 삭제할까요? 삭제하면 되돌릴 수 없습니다."
+  },
+  "opt_purged_n_one": {
+    "message": "$1개를 영구 삭제했습니다"
+  },
+  "opt_purged_n_other": {
+    "message": "$1개를 영구 삭제했습니다"
+  },
+  "opt_confirm_purge_all_one": {
+    "message": "휴지통을 비울까요? 안에 있는 $1개가 영구 삭제됩니다."
+  },
+  "opt_confirm_purge_all_other": {
+    "message": "휴지통을 비울까요? 안에 있는 $1개가 영구 삭제됩니다."
+  },
+  "opt_trash_emptied": {
+    "message": "휴지통을 비웠습니다"
+  },
+  "opt_trash_days_invalid": {
+    "message": "일수는 1~365 사이의 정수여야 합니다"
+  },
+  "opt_trash_days_title_one": {
+    "message": "$1일로 변경",
+    "description": "Dialog title when shortening the Trash days. $1 = new number of days."
+  },
+  "opt_trash_days_title_other": {
+    "message": "$1일로 변경",
+    "description": "Dialog title when shortening the Trash days. $1 = new number of days."
+  },
+  "opt_trash_days_expiring_one": {
+    "message": "다음 $1개가 바로 영구 삭제됩니다:"
+  },
+  "opt_trash_days_expiring_other": {
+    "message": "다음 $1개가 바로 영구 삭제됩니다:"
+  },
+  "opt_trash_age_one": {
+    "message": "$1일 지남",
+    "description": "$1 = days since it was deleted."
+  },
+  "opt_trash_age_other": {
+    "message": "$1일 지남",
+    "description": "$1 = days since it was deleted."
+  },
+  "opt_confirm_delete_button": {
+    "message": "삭제",
+    "description": "Confirms deleting the listed accounts."
+  },
+  "opt_trash_days_set_one": {
+    "message": "$1일로 변경했습니다"
+  },
+  "opt_trash_days_set_other": {
+    "message": "$1일로 변경했습니다"
+  },
+  "opt_trash_days_set_purged_one": {
+    "message": "$1일로 변경하고 $2개를 삭제했습니다",
+    "description": "$1 = new number of days, $2 = accounts deleted because they were older."
+  },
+  "opt_trash_days_set_purged_other": {
+    "message": "$1일로 변경하고 $2개를 삭제했습니다",
+    "description": "$1 = new number of days, $2 = accounts deleted because they were older."
+  },
+  "opt_block_backup": {
+    "message": "백업",
+    "description": "Section title on the Backup tab."
+  },
+  "opt_export_backup": {
+    "message": "암호화된 백업 내보내기"
+  },
+  "opt_import_backup": {
+    "message": "암호화된 백업 가져오기"
+  },
+  "opt_export_csv": {
+    "message": "CSV 내보내기"
+  },
+  "opt_import_csv": {
+    "message": "CSV 가져오기"
+  },
+  "opt_backup_help": {
+    "message": "암호화된 백업을 권장합니다. 백업 비밀번호를 잊으면 파일을 열 수 없습니다."
+  },
+  "opt_backup_tip": {
+    "message": "내보내면 '다른 이름으로 저장' 창이 열려 저장 위치를 선택할 수 있습니다.\nCSV는 암호화되지 않아 파일을 열면 비밀번호가 그대로 보이므로 안전한 곳에 보관하세요.\nCSV 형식은 Chrome, Edge에서 내보낸 파일과 같습니다.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_move_title": {
+    "message": "브라우저와 비밀번호 주고받기"
+  },
+  "opt_move_help": {
+    "message": "CSV 파일로 브라우저에 내장된 비밀번호 관리자와 비밀번호를 주고받습니다. 자동으로 동기화되지는 않습니다. 다 옮긴 후에는 CSV 파일을 삭제하고 Windows 휴지통도 비우세요."
+  },
+  "opt_move_in_title": {
+    "message": "브라우저의 비밀번호 가져오기"
+  },
+  "opt_move_in_1a": {
+    "message": "브라우저의 비밀번호 페이지를 엽니다. 주소창에 Chrome은",
+    "description": "One sentence split around three addresses: [1a] chrome://password-manager/settings[1b] edge://settings/passwords[1c] about:logins[1d]. A space follows 1a, 1b and 1c."
+  },
+  "opt_move_in_1b": {
+    "message": ", Edge는",
+    "description": "See opt_move_in_1a. Comes right after the Chrome address."
+  },
+  "opt_move_in_1c": {
+    "message": ", Firefox는",
+    "description": "See opt_move_in_1a. Comes right after the Edge address."
+  },
+  "opt_move_in_1d": {
+    "message": "를 입력합니다.",
+    "description": "See opt_move_in_1a. Comes right after the Firefox address."
+  },
+  "opt_move_in_2": {
+    "message": "'비밀번호 내보내기'를 찾아 CSV 파일로 저장합니다. 브라우저가 먼저 Windows 비밀번호나 PIN을 확인할 수도 있습니다.",
+    "description": "'Export passwords' is the browser's own button name."
+  },
+  "opt_move_in_3": {
+    "message": "여기로 돌아와 위의 'CSV 가져오기'를 누르고 그 파일을 선택합니다. Chrome, Edge, Firefox, Safari에서 내보낸 파일을 모두 읽을 수 있습니다."
+  },
+  "opt_move_out_title": {
+    "message": "여기 있는 비밀번호를 브라우저로 옮기기"
+  },
+  "opt_move_out_1": {
+    "message": "위의 'CSV 내보내기'를 눌러 파일을 저장합니다. Chrome과 Edge는 한 번에 최대 3000개까지만 받으므로, 3000개가 넘으면 여러 파일로 나눠 저장합니다."
+  },
+  "opt_move_out_2": {
+    "message": "브라우저의 비밀번호 페이지(주소는 위와 같음)를 열고 '비밀번호 가져오기'를 찾아 방금 저장한 파일을 선택합니다.",
+    "description": "'Import passwords' is the browser's own button name."
+  },
+  "opt_move_out_3": {
+    "message": "브라우저에 사이트와 사용자 이름은 같은데 비밀번호가 다른 항목이 이미 있으면, 최신 Chrome은 목록을 보여 주고 바꿀지 선택하게 합니다. 묻지 않으면 브라우저는 원래 있던 비밀번호를 유지합니다."
+  },
+  "opt_move_what_title": {
+    "message": "주고받을 때 처리 방식"
+  },
+  "opt_move_what_1": {
+    "message": "사이트와 사용자 이름이 같은 항목은 하나로 합쳐지고 중복되지 않습니다. 비밀번호가 다르면 파일에 있는 비밀번호로 바뀌고, 원래 비밀번호는 '이전 비밀번호'에 남습니다."
+  },
+  "opt_move_what_2": {
+    "message": "파일의 비밀번호가 여기서 이미 바꾼 예전 비밀번호라면, 여기 있는 비밀번호를 유지하고 덮어쓰지 않습니다."
+  },
+  "opt_move_what_3": {
+    "message": "파일의 항목에 메모가 없어도 여기에 적은 메모는 지워지지 않습니다."
+  },
+  "opt_move_what_4a": {
+    "message": "휴대전화 앱의 비밀번호(",
+    "description": "Split around the address android://: [4a]android:// [4b]."
+  },
+  "opt_move_what_4b": {
+    "message": "주소)와 그 밖에 사이트가 아닌 항목은 가져오지 않고 '건너뜀'에 포함됩니다.",
+    "description": "See opt_move_what_4a. 'skipped' is the count in the import result."
+  },
+  "opt_move_what_5": {
+    "message": "회사에서 브라우저의 비밀번호 관리 기능을 꺼 두었다면 브라우저에서 내보내기와 가져오기 메뉴를 찾지 못할 수도 있습니다."
+  },
+  "opt_block_auto_backup": {
+    "message": "자동 백업",
+    "description": "Section title."
+  },
+  "opt_ab_run_now": {
+    "message": "지금 백업"
+  },
+  "opt_ab_run_now_tip": {
+    "message": "'3. 저장 위치' 폴더에 바로 하나 저장합니다. 자동 백업을 켜지 않아도 사용할 수 있습니다.\n비밀번호를 변경하지 않았어도 저장합니다.\n먼저 백업 비밀번호를 설정해야 합니다.",
+    "description": "'3. Save to' must match opt_ab_step_folder."
+  },
+  "opt_ab_help": {
+    "message": "정해진 시간에 암호화된 백업을 '다운로드' 폴더 안에 저장합니다. 1~4단계를 설정하세요."
+  },
+  "opt_ab_help_tip": {
+    "message": "매일 또는 매주 지정한 시간에 하나씩 저장합니다. 비밀번호를 변경하지 않았으면 저장하지 않습니다.\n시간을 놓치면 다음에 브라우저를 열 때 백업합니다."
+  },
+  "opt_ab_step_password": {
+    "message": "1. 백업 비밀번호"
+  },
+  "opt_ab_password_tip": {
+    "message": "모든 자동 백업은 이 비밀번호로 암호화됩니다.\n확장 프로그램은 이 비밀번호를 기억하지 않으므로, 잊으면 백업 파일을 열 수 없습니다.\n비밀번호를 바꾼 후에도 예전 백업 파일은 예전 비밀번호로 열어야 합니다."
+  },
+  "opt_ab_set_password": {
+    "message": "비밀번호 설정"
+  },
+  "opt_ab_change_password": {
+    "message": "비밀번호 변경"
+  },
+  "opt_ab_pw_set": {
+    "message": "설정됨",
+    "description": "Status of the auto backup password."
+  },
+  "opt_ab_pw_unset": {
+    "message": "설정 안 됨",
+    "description": "Status of the auto backup password."
+  },
+  "opt_ab_step_when": {
+    "message": "2. 언제"
+  },
+  "opt_ab_every_day": {
+    "message": "매일"
+  },
+  "opt_ab_every_week": {
+    "message": "매주"
+  },
+  "opt_weekday_mon": {
+    "message": "월요일"
+  },
+  "opt_weekday_tue": {
+    "message": "화요일"
+  },
+  "opt_weekday_wed": {
+    "message": "수요일"
+  },
+  "opt_weekday_thu": {
+    "message": "목요일"
+  },
+  "opt_weekday_fri": {
+    "message": "금요일"
+  },
+  "opt_weekday_sat": {
+    "message": "토요일"
+  },
+  "opt_weekday_sun": {
+    "message": "일요일"
+  },
+  "opt_ab_step_folder": {
+    "message": "3. 저장 위치"
+  },
+  "opt_ab_folder_prefix": {
+    "message": "다운로드 \\",
+    "description": "Shown before the subfolder name input. Means the Downloads folder."
+  },
+  "opt_ab_step_switch": {
+    "message": "4. 켜기/끄기"
+  },
+  "opt_ab_enable": {
+    "message": "자동 백업 켜기"
+  },
+  "opt_reminder_title": {
+    "message": "알림"
+  },
+  "opt_reminder_before": {
+    "message": "백업하지 않은 채",
+    "description": "Before the days input: 'Remind me in the popup after [30] days without a backup'."
+  },
+  "opt_reminder_after": {
+    "message": "일이 지나면 팝업에서 알림",
+    "description": "After the days input. See opt_reminder_before."
+  },
+  "opt_reminder_tip": {
+    "message": "그 기간에 비밀번호를 변경하지 않았으면 알리지 않습니다.\n0을 입력하면 꺼집니다."
+  },
+  "opt_ab_next": {
+    "message": "다음 백업: $1",
+    "description": "$1 = date, weekday and time."
+  },
+  "opt_ab_last_failed": {
+    "message": "지난번 백업 실패($1): $2",
+    "description": "$1 = date and time, $2 = error message."
+  },
+  "opt_ab_need_password": {
+    "message": "자동 백업을 켜거나 지금 백업하려면 먼저 백업 비밀번호를 설정하세요."
+  },
+  "opt_ab_not_enabled": {
+    "message": "아직 켜지 않았습니다."
+  },
+  "opt_ab_last_check": {
+    "message": "마지막 확인: $1.",
+    "description": "$1 = date and time."
+  },
+  "opt_ab_last_check_result": {
+    "message": "마지막 확인: $1, $2.",
+    "description": "$1 = date and time, $2 = opt_ab_result_saved, opt_ab_result_unchanged or opt_ab_result_empty."
+  },
+  "opt_ab_result_saved": {
+    "message": "저장함",
+    "description": "Result of the last auto backup check. See opt_ab_last_check_result."
+  },
+  "opt_ab_result_unchanged": {
+    "message": "비밀번호가 바뀌지 않아 저장하지 않음",
+    "description": "See opt_ab_last_check_result."
+  },
+  "opt_ab_result_empty": {
+    "message": "백업할 비밀번호 없음",
+    "description": "See opt_ab_last_check_result."
+  },
+  "opt_ab_waiting_first": {
+    "message": "켜져 있습니다. 아직 첫 백업 시간이 되지 않았습니다."
+  },
+  "opt_wd_sun": {
+    "message": "일",
+    "description": "Short weekday in the next backup time. See opt_date_weekday_time."
+  },
+  "opt_wd_mon": {
+    "message": "월",
+    "description": "Short weekday."
+  },
+  "opt_wd_tue": {
+    "message": "화",
+    "description": "Short weekday."
+  },
+  "opt_wd_wed": {
+    "message": "수",
+    "description": "Short weekday."
+  },
+  "opt_wd_thu": {
+    "message": "목",
+    "description": "Short weekday."
+  },
+  "opt_wd_fri": {
+    "message": "금",
+    "description": "Short weekday."
+  },
+  "opt_wd_sat": {
+    "message": "토",
+    "description": "Short weekday."
+  },
+  "opt_date_weekday_time": {
+    "message": "$1 ($2) $3",
+    "description": "$1 = date, $2 = short weekday, $3 = time."
+  },
+  "opt_ab_folder_changed": {
+    "message": "자동 백업 위치를 바꿨습니다: '다운로드\\$1'",
+    "description": "$1 = subfolder name inside the Downloads folder."
+  },
+  "opt_ab_pw_title": {
+    "message": "자동 백업 비밀번호"
+  },
+  "opt_ab_pw_hint": {
+    "message": "확장 프로그램은 이 비밀번호를 기억하지 않으므로, 잊으면 백업 파일을 열 수 없습니다."
+  },
+  "opt_ab_pw_saved": {
+    "message": "자동 백업 비밀번호를 설정했습니다"
+  },
+  "opt_backup_failed": {
+    "message": "백업하지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_backed_up_to": {
+    "message": "$1에 백업했습니다",
+    "description": "$1 = file path."
+  },
+  "opt_nothing_to_back_up": {
+    "message": "백업할 항목이 없습니다"
+  },
+  "opt_backup_status_failed": {
+    "message": "백업 상태를 불러오지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_backup_status_empty": {
+    "message": "아직 비밀번호가 없어 백업할 필요가 없습니다."
+  },
+  "opt_backup_status_never": {
+    "message": "아직 백업한 적이 없습니다. 비밀번호가 이 브라우저에만 있어서, 확장 프로그램을 삭제하거나 인터넷 사용 기록을 삭제하면 사라집니다."
+  },
+  "opt_backup_status_last_one": {
+    "message": "마지막 백업: $2($1일 전)",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_last_other": {
+    "message": "마지막 백업: $2($1일 전)",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_due_one": {
+    "message": "마지막 백업: $2($1일 전). 그 후 비밀번호가 바뀌었으니 다시 백업하세요.",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_backup_status_due_other": {
+    "message": "마지막 백업: $2($1일 전). 그 후 비밀번호가 바뀌었으니 다시 백업하세요.",
+    "description": "$1 = days since the last backup, $2 = date and time."
+  },
+  "opt_import_done": {
+    "message": "가져오기 완료: 추가 $1개, 업데이트 $2개, 건너뜀 $3개"
+  },
+  "opt_import_why_same": {
+    "message": "비밀번호가 같음 $1개",
+    "description": "Reason some entries were skipped. $1 = how many."
+  },
+  "opt_import_why_older": {
+    "message": "파일의 비밀번호가 더 오래됨 $1개",
+    "description": "Reason some entries were skipped. $1 = how many."
+  },
+  "opt_import_why_invalid": {
+    "message": "사이트가 아니거나 비밀번호 없음 $1개",
+    "description": "Reason some entries were skipped. $1 = how many."
+  },
+  "opt_import_reasons": {
+    "message": " ($1)",
+    "description": "Wraps the skip reasons joined with opt_list_sep. Goes right after the skipped count in opt_import_result."
+  },
+  "opt_import_rules_one": {
+    "message": ", 자동 클릭 규칙 $1개 추가",
+    "description": "Optional part of opt_import_result."
+  },
+  "opt_import_rules_other": {
+    "message": ", 자동 클릭 규칙 $1개 추가",
+    "description": "Optional part of opt_import_result."
+  },
+  "opt_import_result": {
+    "message": "$1: 추가 $2개, 업데이트 $3개, 건너뜀 $4개",
+    "description": "$1 = what was imported (opt_import_what_*), $2-$4 = counts, $5 = opt_import_reasons or empty, $6 = opt_import_rules or empty."
+  },
+  "opt_import_result_end": {
+    "message": ".",
+    "description": "Ends the import result sentence, after the optional skip reasons and auto-click rule count."
+  },
+  "opt_import_no_data": {
+    "message": "이 파일에는 데이터가 없습니다"
+  },
+  "opt_import_bad_header": {
+    "message": "이 CSV의 열을 읽을 수 없습니다. 첫 번째 행에 url과 password가 있어야 합니다",
+    "description": "url and password are CSV column names. Do not translate them."
+  },
+  "opt_import_failed": {
+    "message": "가져오지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_import_what_csv_one": {
+    "message": "CSV 가져오기(총 $1개)",
+    "description": "Start of opt_import_result. $1 = rows in the file."
+  },
+  "opt_import_what_csv_other": {
+    "message": "CSV 가져오기(총 $1개)",
+    "description": "Start of opt_import_result. $1 = rows in the file."
+  },
+  "opt_import_what_csv_from_one": {
+    "message": "$2 형식 CSV 가져오기(총 $1개)",
+    "description": "Start of opt_import_result. $1 = rows in the file, $2 = 'Chrome / Edge', 'Firefox' or 'Safari'."
+  },
+  "opt_import_what_csv_from_other": {
+    "message": "$2 형식 CSV 가져오기(총 $1개)",
+    "description": "Start of opt_import_result. $1 = rows in the file, $2 = 'Chrome / Edge', 'Firefox' or 'Safari'."
+  },
+  "opt_import_what_backup": {
+    "message": "암호화된 백업 $1 가져오기",
+    "description": "Start of opt_import_result. $1 = file name."
+  },
+  "opt_save_failed": {
+    "message": "파일을 저장하지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_saved_to": {
+    "message": "$1에 저장했습니다",
+    "description": "$1 = file path."
+  },
+  "opt_export_nothing": {
+    "message": "내보낼 데이터가 없습니다"
+  },
+  "opt_export_failed": {
+    "message": "내보내지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_csv_filename": {
+    "message": "비밀번호 지킴이-백업-$1",
+    "description": "File name of the CSV export, without the extension. $1 = date like 20261106, maybe followed by -2. Do not use \\ / : * ? \" < > |."
+  },
+  "opt_backup_filename": {
+    "message": "비밀번호 지킴이-암호화 백업-$1",
+    "description": "File name of the encrypted backup, without the extension. $1 = date like 20261106. Do not use \\ / : * ? \" < > |."
+  },
+  "opt_share_filename": {
+    "message": "비밀번호 지킴이-공유-$1",
+    "description": "File name when exporting checked entries for someone else, without the extension. $1 = date like 20261106. Do not use \\ / : * ? \" < > |."
+  },
+  "opt_csv_split_note": {
+    "message": "Chrome과 Edge는 한 번에 최대 3000개까지 가져올 수 있어 파일을 $1개로 나눴습니다. 하나씩 가져오세요",
+    "description": "Shown inside opt_csv_export_notes. $1 = number of files (always 2 or more)."
+  },
+  "opt_csv_long_note_one": {
+    "message": "$1개 항목은 URL, 사용자 이름, 비밀번호, 메모 중 하나가 너무 길어 Chrome과 Edge에서 가져올 때 건너뜁니다",
+    "description": "Shown inside opt_csv_export_notes."
+  },
+  "opt_csv_long_note_other": {
+    "message": "$1개 항목은 URL, 사용자 이름, 비밀번호, 메모 중 하나가 너무 길어 Chrome과 Edge에서 가져올 때 건너뜁니다",
+    "description": "Shown inside opt_csv_export_notes."
+  },
+  "opt_csv_export_notes": {
+    "message": "CSV 내보내기: $1.",
+    "description": "$1 = notes joined with opt_note_sep."
+  },
+  "opt_backup_password": {
+    "message": "백업 비밀번호"
+  },
+  "opt_pw_again": {
+    "message": "다시 입력"
+  },
+  "opt_pw_required": {
+    "message": "비밀번호를 입력하세요"
+  },
+  "opt_pw_too_short_one": {
+    "message": "$1자 이상 입력하세요"
+  },
+  "opt_pw_too_short_other": {
+    "message": "$1자 이상 입력하세요"
+  },
+  "opt_pw_mismatch": {
+    "message": "두 번 입력한 내용이 다릅니다"
+  },
+  "opt_pw_backup_title": {
+    "message": "백업 비밀번호 설정"
+  },
+  "opt_pw_backup_hint": {
+    "message": "이 비밀번호는 백업 파일을 열 때만 사용합니다. 잊으면 복구할 수 없습니다."
+  },
+  "opt_pw_share_title": {
+    "message": "이 파일의 비밀번호 설정"
+  },
+  "opt_pw_share_hint_one": {
+    "message": "선택한 $1개만 포함됩니다. 비밀번호는 파일과 함께 두지 말고 상대방에게 따로 알려 주세요."
+  },
+  "opt_pw_share_hint_other": {
+    "message": "선택한 $1개만 포함됩니다. 비밀번호는 파일과 함께 두지 말고 상대방에게 따로 알려 주세요."
+  },
+  "opt_pw_import_title": {
+    "message": "백업 비밀번호 입력"
+  },
+  "opt_pw_import_hint": {
+    "message": "이 파일을 내보낼 때 설정한 비밀번호를 입력하세요."
+  },
+  "opt_block_log": {
+    "message": "백업 기록",
+    "description": "Section title."
+  },
+  "opt_log_help": {
+    "message": "백업할 때마다 저장 위치를 여기에 기록합니다."
+  },
+  "opt_log_tip": {
+    "message": "최대 100개까지 보관합니다.\n'지금 백업'은 수동으로 분류됩니다.\n위치를 바꿔도 예전 파일은 원래 위치에 남으므로 직접 삭제하세요."
+  },
+  "opt_log_cat_all": {
+    "message": "전체",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_cat_auto": {
+    "message": "자동",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_cat_manual": {
+    "message": "수동",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_cat_location": {
+    "message": "위치 변경",
+    "description": "Filter button, followed by a count."
+  },
+  "opt_log_delete_selected": {
+    "message": "선택한 기록 삭제"
+  },
+  "opt_log_delete_selected_n_one": {
+    "message": "선택한 기록 $1개 삭제"
+  },
+  "opt_log_delete_selected_n_other": {
+    "message": "선택한 기록 $1개 삭제"
+  },
+  "opt_log_col_time": {
+    "message": "시간",
+    "description": "Table column."
+  },
+  "opt_log_col_kind": {
+    "message": "방식",
+    "description": "Table column: how the backup was made."
+  },
+  "opt_log_col_location": {
+    "message": "위치",
+    "description": "Table column: file path."
+  },
+  "opt_log_col_count": {
+    "message": "항목 수",
+    "description": "Table column: how many accounts the backup has."
+  },
+  "opt_log_empty": {
+    "message": "아직 백업 기록이 없습니다."
+  },
+  "opt_log_empty_filtered": {
+    "message": "이 분류에는 기록이 없습니다."
+  },
+  "opt_log_count_one": {
+    "message": "($1개)",
+    "description": "Shown next to the section title."
+  },
+  "opt_log_count_other": {
+    "message": "($1개)",
+    "description": "Shown next to the section title."
+  },
+  "opt_kind_auto": {
+    "message": "자동 백업",
+    "description": "How a backup was made, in the history table."
+  },
+  "opt_kind_now": {
+    "message": "지금 백업",
+    "description": "How a backup was made. Same name as the 'Back up now' button."
+  },
+  "opt_kind_manual": {
+    "message": "암호화된 백업 내보내기",
+    "description": "How a backup was made."
+  },
+  "opt_kind_csv": {
+    "message": "CSV 내보내기",
+    "description": "How a backup was made."
+  },
+  "opt_kind_selected": {
+    "message": "선택 항목 내보내기",
+    "description": "Export of only the checked entries."
+  },
+  "opt_kind_location": {
+    "message": "위치 변경",
+    "description": "Record of the auto backup folder being changed."
+  },
+  "opt_files_not_deleted_one": {
+    "message": "백업 파일 $1개를 삭제하지 못했습니다"
+  },
+  "opt_files_not_deleted_other": {
+    "message": "백업 파일 $1개를 삭제하지 못했습니다"
+  },
+  "opt_delete_yourself": {
+    "message": "직접 삭제하세요:",
+    "description": "Followed by a list of file paths."
+  },
+  "opt_delete_record_only": {
+    "message": "기록만 삭제"
+  },
+  "opt_delete_both": {
+    "message": "함께 삭제",
+    "description": "Deletes the history record and the backup file."
+  },
+  "opt_confirm_delete_location_log": {
+    "message": "이 '위치 변경' 기록을 삭제할까요?"
+  },
+  "opt_delete_log": {
+    "message": "기록 삭제",
+    "description": "Dialog title and button."
+  },
+  "opt_delete_files_too": {
+    "message": "컴퓨터에 있는 백업 파일도 함께 삭제할까요?"
+  },
+  "opt_file_may_remain": {
+    "message": "백업 파일이 남아 있을 수 있습니다. 직접 삭제하세요:",
+    "description": "Followed by the file path."
+  },
+  "opt_deleted_log_and_file": {
+    "message": "기록과 백업 파일을 삭제했습니다"
+  },
+  "opt_deleted_log": {
+    "message": "기록을 삭제했습니다"
+  },
+  "opt_delete_logs_title_one": {
+    "message": "기록 $1개 삭제"
+  },
+  "opt_delete_logs_title_other": {
+    "message": "기록 $1개 삭제"
+  },
+  "opt_confirm_delete_location_logs_one": {
+    "message": "선택한 '위치 변경' 기록 $1개를 삭제할까요?"
+  },
+  "opt_confirm_delete_location_logs_other": {
+    "message": "선택한 '위치 변경' 기록 $1개를 삭제할까요?"
+  },
+  "opt_deleted_logs_one": {
+    "message": "기록 $1개를 삭제했습니다"
+  },
+  "opt_deleted_logs_other": {
+    "message": "기록 $1개를 삭제했습니다"
+  },
+  "opt_files_kept": {
+    "message": "백업 파일은 삭제하지 않았습니다. 직접 삭제하세요:",
+    "description": "Followed by a list of file paths."
+  },
+  "opt_deleted_logs_files_one": {
+    "message": "기록 $1개와 백업 파일 $2개를 삭제했습니다",
+    "description": "$1 = records deleted, $2 = backup files deleted."
+  },
+  "opt_deleted_logs_files_other": {
+    "message": "기록 $1개와 백업 파일 $2개를 삭제했습니다",
+    "description": "$1 = records deleted, $2 = backup files deleted."
+  },
+  "opt_copy_locations": {
+    "message": "위치 복사",
+    "description": "Copies the listed file paths."
+  },
+  "opt_block_lock": {
+    "message": "앱 잠금",
+    "description": "Section title, followed by 'On' or 'Off'."
+  },
+  "opt_lock_block_help": {
+    "message": "자리를 비운 사이에 다른 사람이 비밀번호를 보지 못하게 합니다. 디스크에 저장된 비밀번호를 암호화할 수도 있습니다."
+  },
+  "opt_lock_block_tip": {
+    "message": "잠겨 있는 동안에는 팝업, 관리 페이지, 웹페이지 자동 입력, 단축키, 브라우저 로그인 창을 쓰려면 먼저 잠금을 해제해야 합니다.\n확장 프로그램 폴더를 옮기면 다시 설정해야 합니다."
+  },
+  "opt_lock_mode_title": {
+    "message": "보호 방식"
+  },
+  "opt_lock_mode_tip": {
+    "message": "데이터 복사 방지: 누군가 브라우저 데이터 폴더를 복사해 가도 비밀번호를 읽을 수 없습니다.\n암호화한 후 사용자 지정 비밀번호를 잊거나 시스템 인증을 쓸 수 없게 되면 백업 파일로만 복원할 수 있습니다.\n두 가지 암호화 모두 먼저 자동 백업 비밀번호를 설정해야 합니다."
+  },
+  "opt_lock_mode_off": {
+    "message": "끄기"
+  },
+  "opt_lock_mode_password": {
+    "message": "사용자 지정 비밀번호로 암호화"
+  },
+  "opt_lock_mode_hello": {
+    "message": "시스템 인증으로 암호화"
+  },
+  "opt_lock_mode_screen_with": {
+    "message": "화면만 잠금, $1로 잠금 해제"
+  },
+  "opt_lock_mode_hello_with": {
+    "message": "$1로 암호화"
+  },
+  "opt_lock_legacy_screen": {
+    "message": "예전 버전의 '화면만 잠금'을 사용 중이라 디스크의 비밀번호가 암호화되어 있지 않습니다. 아래에서 하나를 다시 선택하세요."
+  },
+  "opt_hello_step_create": {
+    "message": "$1 (1/2): 암호화 키를 만드는 중"
+  },
+  "opt_hello_step_verify": {
+    "message": "$1 (2/2): 잠금 해제가 되는지 확인하는 중"
+  },
+  "opt_lock_guard_peek": {
+    "message": "주변 사람 엿보기 방지"
+  },
+  "opt_lock_guard_copy": {
+    "message": "데이터 복사 방지"
+  },
+  "opt_lock_guard_yes": {
+    "message": "예"
+  },
+  "opt_lock_guard_no": {
+    "message": "아니요"
+  },
+  "opt_lock_how_off": {
+    "message": "잠금 해제 필요 없음"
+  },
+  "opt_lock_how_password": {
+    "message": "항상 사용자 지정 비밀번호를 입력해 잠금 해제합니다. 기억할 비밀번호가 하나 더 생깁니다."
+  },
+  "opt_lock_how_hello": {
+    "message": "$1로 잠금 해제합니다. 기억할 비밀번호가 없습니다."
+  },
+  "opt_lock_recommended": {
+    "message": "권장"
+  },
+  "opt_lock_change_password": {
+    "message": "사용자 지정 비밀번호 변경"
+  },
+  "opt_lock_info_no_hello": {
+    "message": "이 브라우저는 시스템 인증을 지원하지 않아 사용자 지정 비밀번호 암호화만 선택할 수 있습니다."
+  },
+  "opt_lock_mode_changed": {
+    "message": "보호 방식을 바꿨습니다: '$1'"
+  },
+  "opt_lock_mode_failed": {
+    "message": "변경하지 못했습니다: $1"
+  },
+  "opt_lock_needs_backup_password": {
+    "message": "먼저 '백업' 탭에서 자동 백업 비밀번호를 설정하세요."
+  },
+  "opt_lock_downgrade_title": {
+    "message": "암호화를 끌까요?"
+  },
+  "opt_lock_downgrade_text": {
+    "message": "끄고 나면 이 컴퓨터를 손에 넣은 사람은 누구나 디스크의 비밀번호를 읽을 수 있습니다."
+  },
+  "opt_lock_downgrade_confirm": {
+    "message": "암호화 끄기"
+  },
+  "opt_master_password": {
+    "message": "사용자 지정 비밀번호"
+  },
+  "opt_master_pw_title": {
+    "message": "사용자 지정 비밀번호 설정"
+  },
+  "opt_master_pw_hint": {
+    "message": "$1자 이상. 브라우저를 다시 시작하면 이 비밀번호를 입력해야 합니다. 잊으면 백업 파일로만 복원할 수 있습니다."
+  },
+  "opt_master_pw_verify_title": {
+    "message": "현재 사용자 지정 비밀번호 입력"
+  },
+  "opt_master_pw_new_title": {
+    "message": "새 사용자 지정 비밀번호"
+  },
+  "opt_master_pw_changed": {
+    "message": "사용자 지정 비밀번호를 변경했습니다"
+  },
+  "opt_lock_state_off": {
+    "message": "꺼짐",
+    "description": "Shown next to the App lock section title."
+  },
+  "opt_lock_when_title": {
+    "message": "자동으로 잠그는 시점"
+  },
+  "opt_lock_idle_before": {
+    "message": "아무 조작 없이",
+    "description": "Before the minutes input: 'Lock after [15] minutes of inactivity'."
+  },
+  "opt_lock_idle_after": {
+    "message": "분이 지나면 잠금",
+    "description": "After the minutes input. See opt_lock_idle_before."
+  },
+  "opt_lock_on_startup": {
+    "message": "브라우저를 다시 시작하면 잠금"
+  },
+  "opt_lock_manual_help": {
+    "message": "팝업 오른쪽 위의 '잠금'을 눌러 언제든지 직접 잠글 수 있습니다."
+  },
+  "opt_block_fill": {
+    "message": "자동 입력",
+    "description": "Section title on the Settings tab. Holds the autofill master switch, per-site autofill settings and never-ask sites."
+  },
+  "opt_autofill_master": {
+    "message": "로그인 페이지를 열면 사용자 이름과 비밀번호 자동 입력(전체 스위치)"
+  },
+  "opt_sites_title": {
+    "message": "사이트별 설정"
+  },
+  "opt_site_master_off": {
+    "message": "전체 스위치가 꺼져 있어 모든 사이트에서 자동 입력하지 않습니다."
+  },
+  "opt_site_search_placeholder": {
+    "message": "사이트 검색"
+  },
+  "opt_site_col_accounts": {
+    "message": "계정",
+    "description": "Table column: number of saved accounts for the site."
+  },
+  "opt_site_col_fill": {
+    "message": "자동 입력",
+    "description": "Table column."
+  },
+  "opt_site_col_submit": {
+    "message": "자동 입력 후 로그인",
+    "description": "Table column."
+  },
+  "opt_site_select_all_title": {
+    "message": "목록에 표시된 사이트 모두 선택"
+  },
+  "opt_site_clear_all": {
+    "message": "모두 해제"
+  },
+  "opt_site_clear_all_title": {
+    "message": "목록에 표시된 사이트 모두 선택 해제"
+  },
+  "opt_site_submit_tip": {
+    "message": "자동 입력에 성공하고 페이지에 로그인 양식이 하나만 있을 때만 로그인 버튼을 누릅니다.\n다시 누를 수 있기까지의 시간은 자동 클릭의 '기본 간격'을 따릅니다."
+  },
+  "opt_site_empty": {
+    "message": "아직 저장된 계정이 없습니다."
+  },
+  "opt_site_search_no_match": {
+    "message": "'$1'에 해당하는 사이트가 없습니다",
+    "description": "$1 = search text."
+  },
+  "opt_site_dirty_one": {
+    "message": "아직 적용하지 않은 사이트 $1개",
+    "description": "Changes wait until the user clicks 'Apply'."
+  },
+  "opt_site_dirty_other": {
+    "message": "아직 적용하지 않은 사이트 $1개",
+    "description": "Changes wait until the user clicks 'Apply'."
+  },
+  "opt_apply_failed": {
+    "message": "적용하지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_site_applied_one": {
+    "message": "사이트 $1개에 적용했습니다"
+  },
+  "opt_site_applied_other": {
+    "message": "사이트 $1개에 적용했습니다"
+  },
+  "opt_never_title": {
+    "message": "다시 묻지 않는 사이트"
+  },
+  "opt_never_empty": {
+    "message": "아직 없습니다. 저장 안내 창에서 '이 사이트에서는 묻지 않기'를 누르면 여기에 표시됩니다.",
+    "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
+  },
+  "opt_remove": {
+    "message": "제거",
+    "description": "Tooltip of the x that removes a site from the never-ask list."
+  },
+  "opt_remove_failed": {
+    "message": "제거하지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_block_click": {
+    "message": "자동 클릭",
+    "description": "Section title."
+  },
+  "opt_click_help": {
+    "message": "지정한 페이지를 열면 버튼을 자동으로 클릭합니다."
+  },
+  "opt_click_tip": {
+    "message": "한 페이지에 규칙이 여러 개 있으면 순서대로 클릭하며, 앞의 규칙이 끝나야 다음 규칙으로 넘어갑니다.\n규칙마다 최대 15초까지 기다립니다."
+  },
+  "opt_click_timing_title": {
+    "message": "시간 설정"
+  },
+  "opt_click_interval_label": {
+    "message": "기본 간격"
+  },
+  "opt_click_interval_help": {
+    "message": "클릭한 후 다시 클릭할 수 있기까지의 시간입니다."
+  },
+  "opt_click_interval_tip": {
+    "message": "규칙마다 간격을 따로 정할 수 있으며, 정하지 않은 규칙은 이 값을 사용합니다.\n'자동 입력 후 로그인'도 이 값을 사용합니다.\n시간이 지나도 저절로 다시 클릭하지 않습니다. 페이지를 다시 열거나 다른 페이지로 이동하면 다시 클릭합니다."
+  },
+  "opt_logout_pause_label": {
+    "message": "로그아웃 후 일시 중지"
+  },
+  "opt_logout_pause_help": {
+    "message": "로그아웃한 후 자동 클릭을 다시 시작하기까지의 시간입니다."
+  },
+  "opt_logout_pause_tip": {
+    "message": "로그아웃한 탭의 같은 사이트에만 적용됩니다.\n0을 입력하면 일시 중지하지 않습니다."
+  },
+  "opt_rule_sites_title": {
+    "message": "사이트별 규칙"
+  },
+  "opt_rule_empty": {
+    "message": "아직 규칙이 없습니다. 자동 클릭할 페이지에서 팝업의 '자동 클릭할 버튼 선택'을 누르거나, '+ 추가'를 눌러 직접 입력하세요.",
+    "description": "'+ Add' must match opt_add_button."
+  },
+  "opt_rule_dialog_title": {
+    "message": "자동 클릭 규칙 추가"
+  },
+  "opt_when_after_fill": {
+    "message": "자동 입력 후 클릭",
+    "description": "Option of 'When to click'. Also named in opt_rule_tip_when."
+  },
+  "opt_when_on_load": {
+    "message": "페이지가 열리면 바로 클릭",
+    "description": "Option of 'When to click'. Also named in opt_rule_tip_when."
+  },
+  "opt_missing_skip": {
+    "message": "건너뛰고 다음 규칙으로",
+    "description": "Option of 'If the button doesn't appear'."
+  },
+  "opt_missing_stop": {
+    "message": "중지하고 나머지는 클릭 안 함",
+    "description": "Option of 'If the button doesn't appear'."
+  },
+  "opt_missing_last_title": {
+    "message": "이 규칙 뒤에 다른 규칙이 없습니다",
+    "description": "Tooltip when the option does not matter for the last rule."
+  },
+  "opt_rule_field_host": {
+    "message": "사이트",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_path": {
+    "message": "경로",
+    "description": "Field name of an auto-click rule: the URL path such as /login, or * for the whole site."
+  },
+  "opt_rule_field_selector": {
+    "message": "선택자",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_text": {
+    "message": "버튼 텍스트",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_when": {
+    "message": "클릭 시점",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_interval": {
+    "message": "간격(초)",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_field_missing": {
+    "message": "버튼이 나타나지 않을 때",
+    "description": "Field name of an auto-click rule."
+  },
+  "opt_rule_tip_host": {
+    "message": "자동 클릭할 사이트입니다(예: example.com.tw).\n전체 URL을 붙여 넣으면 사이트와 경로로 자동으로 나눕니다."
+  },
+  "opt_rule_tip_path": {
+    "message": "이 경로의 페이지에서만 클릭합니다(예: /login).\n*는 아무 문자나 뜻하며, 사이트 전체에 적용하려면 *를 입력합니다."
+  },
+  "opt_rule_tip_selector": {
+    "message": "어떤 버튼을 클릭할지 지정하는 문법(CSS 선택자)입니다(예: #login).\n작성 방법을 모르면 페이지에서 버튼을 선택하세요. 자동으로 만들어집니다."
+  },
+  "opt_rule_tip_selector_edit": {
+    "message": "$1\n바꾸면 버튼 텍스트가 지워집니다.",
+    "description": "$1 = opt_rule_tip_selector. Shown on an existing rule."
+  },
+  "opt_rule_tip_text": {
+    "message": "버튼의 텍스트가 이것과 같을 때만 클릭합니다.\n비워 두면 선택자만 봅니다.\n선택자로 버튼을 찾지 못하면 이 텍스트로 찾습니다."
+  },
+  "opt_rule_tip_when": {
+    "message": "자동 입력 후 클릭: 계정이 저장되어 있어야 합니다. 사용자 이름과 비밀번호가 입력되고 양식에 빈 칸이 없을 때만 클릭합니다.\n페이지가 열리면 바로 클릭: 버튼이 나타나면 바로 클릭합니다. 계정을 저장하지 않아도 됩니다.",
+    "description": "Option names must match opt_when_after_fill and opt_when_on_load."
+  },
+  "opt_rule_tip_interval": {
+    "message": "클릭한 후 다시 클릭할 수 있기까지의 시간입니다.\n비워 두면 기본 간격을 사용합니다."
+  },
+  "opt_rule_tip_missing": {
+    "message": "이 규칙 차례가 되면 최대 15초까지 기다립니다.\n건너뛰기: 다음 규칙으로 넘어갑니다.\n중지: 나머지는 클릭하지 않습니다. 페이지가 바뀌면 처음부터 다시 시작합니다."
+  },
+  "opt_rule_note_no_account": {
+    "message": "저장된 계정이 없어 클릭하지 않습니다"
+  },
+  "opt_rule_note_fill_off": {
+    "message": "자동 입력이 꺼져 있어 클릭하지 않습니다"
+  },
+  "opt_selector_empty": {
+    "message": "선택자는 비워 둘 수 없습니다"
+  },
+  "opt_selector_invalid": {
+    "message": "선택자 형식이 올바르지 않습니다"
+  },
+  "opt_reorder_failed": {
+    "message": "순서를 바꾸지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_rule_no": {
+    "message": "규칙 $1",
+    "description": "$1 = position of the rule on its site."
+  },
+  "opt_move_up": {
+    "message": "위로 이동"
+  },
+  "opt_move_down": {
+    "message": "아래로 이동"
+  },
+  "opt_rule_enabled": {
+    "message": "사용",
+    "description": "Checkbox on each rule."
+  },
+  "opt_confirm_delete_rule": {
+    "message": "$1의 이 자동 클릭 규칙을 삭제할까요?",
+    "description": "$1 = site."
+  },
+  "opt_rule_text_cleared": {
+    "message": "버튼 텍스트를 지웠습니다. 이제 선택자만 봅니다"
+  },
+  "opt_interval_placeholder": {
+    "message": "기본값 $1",
+    "description": "Placeholder of a small number input. $1 = default interval in seconds."
+  },
+  "opt_rule_count_one": {
+    "message": "규칙 $1개",
+    "description": "Shown next to the site name."
+  },
+  "opt_rule_count_other": {
+    "message": "규칙 $1개",
+    "description": "Shown next to the site name."
+  },
+  "opt_rule_count_off_one": {
+    "message": "규칙 $1개, $2개 꺼짐",
+    "description": "$1 = rules for the site, $2 = rules turned off."
+  },
+  "opt_rule_count_off_other": {
+    "message": "규칙 $1개, $2개 꺼짐",
+    "description": "$1 = rules for the site, $2 = rules turned off."
+  },
+  "opt_rule_path_placeholder": {
+    "message": "/login, 사이트 전체는 *"
+  },
+  "opt_rule_host_invalid": {
+    "message": "사이트 형식이 올바르지 않습니다"
+  },
+  "opt_rule_host_empty": {
+    "message": "사이트는 비워 둘 수 없습니다"
+  },
+  "opt_rule_path_empty": {
+    "message": "경로는 비워 둘 수 없습니다. 사이트 전체에 적용하려면 *를 입력하세요."
+  },
+  "opt_rule_interval_invalid": {
+    "message": "간격은 1~86400 사이의 정수여야 합니다"
+  },
+  "opt_block_danger": {
+    "message": "위험 구역",
+    "description": "Section title."
+  },
+  "opt_delete_all": {
+    "message": "모든 비밀번호 삭제"
+  },
+  "opt_delete_all_help_before": {
+    "message": "모두 먼저 휴지통으로 이동하며 ",
+    "description": "Before the number of days: 'Everything goes to the Trash first and can be restored within [30] days.' Keep the trailing space in languages that use spaces."
+  },
+  "opt_delete_all_help_after": {
+    "message": "일 이내에 복원할 수 있습니다.",
+    "description": "After the number of days. See opt_delete_all_help_before."
+  },
+  "opt_no_passwords": {
+    "message": "비밀번호가 없습니다"
+  },
+  "opt_confirm_delete_all_one": {
+    "message": "비밀번호 $1개를 모두 휴지통으로 이동할까요? $2일 이내에 복원할 수 있습니다.",
+    "description": "$1 = number of passwords, $2 = days items stay in the Trash."
+  },
+  "opt_confirm_delete_all_other": {
+    "message": "비밀번호 $1개를 모두 휴지통으로 이동할까요? $2일 이내에 복원할 수 있습니다.",
+    "description": "$1 = number of passwords, $2 = days items stay in the Trash."
+  },
+  "opt_all_moved_to_trash": {
+    "message": "모두 휴지통으로 이동했습니다"
+  },
+  "opt_help_title": {
+    "message": "사용 방법"
+  },
+  "opt_help_1": {
+    "message": "아무 사이트에나 한 번 로그인하면 화면 오른쪽 위에 '이 비밀번호를 저장할까요?'라고 묻는 창이 나타납니다.",
+    "description": "The quoted text is the save prompt shown on web pages (content.js). Keep it the same as that prompt."
+  },
+  "opt_help_2": {
+    "message": "다음에 같은 사이트를 열면 사용자 이름과 비밀번호가 자동으로 입력됩니다. 계정을 여러 개 저장했다면 사용자 이름 입력란을 클릭해 목록에서 고를 수 있습니다. 위아래 화살표 키로 고르고 Enter로 입력합니다."
+  },
+  "opt_help_3": {
+    "message": "Ctrl+Shift+L(Mac은 Command+Shift+L)을 누르면 현재 사이트의 사용자 이름과 비밀번호를 바로 입력합니다. 단축키는 확장 프로그램 페이지의 '키보드 단축키'에서 바꿀 수 있습니다.",
+    "description": "'Keyboard shortcuts' is the browser's own page name."
+  },
+  "opt_help_4": {
+    "message": "툴바의 파란색 자물쇠 아이콘을 누르면 현재 사이트에 저장된 계정 보기, 직접 입력, 비밀번호 복사, 강력한 비밀번호 생성을 할 수 있습니다. 팝업 맨 위의 검색창에서는 모든 사이트의 계정을 검색할 수 있고, Enter를 누르면 그 사이트가 열립니다."
+  },
+  "opt_help_5": {
+    "message": "가입하거나 비밀번호를 바꿀 때 새 비밀번호 입력란을 클릭하면 '강력한 비밀번호 생성'이 나타납니다. 누르면 새 비밀번호와 확인 입력란이 함께 채워집니다.",
+    "description": "The quoted text is an item shown on web pages (content.js). Keep it the same as that item."
+  },
+  "opt_help_6": {
+    "message": "버튼을 자동으로 클릭하려면 팝업의 '자동 클릭할 버튼 선택'을 누르고 페이지에서 그 버튼을 선택하세요. 그다음부터 그 페이지를 열면 자동으로 클릭합니다. '설정' 탭의 '자동 클릭'에서 직접 추가하고 조정할 수도 있습니다."
+  },
+  "opt_help_7": {
+    "message": "비밀번호를 바꾼 계정은 표의 비밀번호 열에서 '이전 비밀번호'를 펼쳐 볼 수 있습니다. 삭제한 계정은 먼저 휴지통으로 이동하며 기본적으로 30일 동안 보관됩니다. 보관 일수는 '휴지통' 탭에서 바꿀 수 있습니다."
+  },
+  "opt_help_8": {
+    "message": "'설정' 탭의 '앱 잠금'을 켜면 이 컴퓨터의 시스템 인증(Windows Hello, Touch ID)을 거쳐야 확장 프로그램 전체를 사용할 수 있습니다. 한동안 사용하지 않거나, 브라우저를 다시 시작하거나, 팝업에서 '잠금'을 누르면 잠깁니다."
+  },
+  "opt_help_9": {
+    "message": "정기적으로 백업하거나 자동 백업을 켜 두세요. 확장 프로그램을 삭제하거나, 인터넷 사용 기록을 삭제하거나, 폴더를 옮기면 비밀번호가 사라집니다."
+  },
+  "opt_browser_hint": {
+    "message": "지금 사용 중인 브라우저는 $1입니다. 확장 프로그램 페이지는 $2이며, 프로그램을 업데이트한 후에는 그곳에서 '새로고침'을 누르세요.",
+    "description": "$1 = 'Edge' or 'Chrome', $2 = edge://extensions or chrome://extensions. 'Reload' is the browser's own button name."
+  },
+  "opt_versions_title": {
+    "message": "버전 기록"
+  },
+  "opt_version_now": {
+    "message": "현재 버전은 $1입니다. 프로그램을 업데이트한 후에는 확장 프로그램 페이지에서 '새로고침'을 누르세요.",
+    "description": "$1 = version number like 1.12.0."
+  },
+  "opt_version_current": {
+    "message": "현재 버전",
+    "description": "Badge next to the installed version in the list."
+  },
+  "opt_version_note": {
+    "message": "주의: $1",
+    "description": "$1 = one note of a version from changelog.js."
+  },
+  "opt_update_title": {
+    "message": "업데이트 확인"
+  },
+  "opt_update_available": {
+    "message": "새 버전이 나왔습니다: $1($2 출시).",
+    "description": "$1 = version number, $2 = release date."
+  },
+  "opt_update_failed": {
+    "message": "업데이트를 확인하지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_update_never": {
+    "message": "아직 확인하지 않았습니다."
+  },
+  "opt_update_no_release": {
+    "message": "GitHub에 아직 정식 버전이 게시되지 않았습니다."
+  },
+  "opt_update_latest": {
+    "message": "최신 버전입니다."
+  },
+  "opt_update_checked_at": {
+    "message": "마지막 확인: $1",
+    "description": "$1 = date and time."
+  },
+  "opt_update_steps": {
+    "message": "다운로드한 zip의 압축을 푼 다음, 확장 프로그램 페이지에서 '압축해제된 확장 프로그램을 로드합니다'를 누르고 그 폴더를 선택하면 새 버전으로 바뀝니다. 저장한 비밀번호와 설정은 그대로 남습니다. 압축을 풀어 기존 폴더에 덮어쓴 다음 이 확장 프로그램 카드의 '새로고침'을 눌러도 됩니다."
+  },
+  "opt_update_download": {
+    "message": "새 버전 다운로드"
+  },
+  "opt_update_download_started": {
+    "message": "다운로드를 시작했습니다. 브라우저의 다운로드 목록에서 확인할 수 있습니다."
+  },
+  "opt_update_download_failed": {
+    "message": "다운로드하지 못했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "opt_update_open_extensions": {
+    "message": "확장 프로그램 페이지 열기"
+  },
+  "opt_update_release_page": {
+    "message": "이 버전 설명 보기"
+  },
+  "opt_update_check_now": {
+    "message": "지금 확인"
+  },
+  "opt_update_checking": {
+    "message": "확인 중…"
+  },
+  "opt_update_auto": {
+    "message": "하루에 한 번 자동으로 확인"
+  },
+  "opt_update_auto_tip": {
+    "message": "GitHub에 최신 버전 번호만 물어보며, 비밀번호, 계정, 설정은 전혀 보내지 않습니다.\n브라우저는 직접 로드한 확장 프로그램이 스스로 새 버전으로 바뀌는 것을 허용하지 않습니다. 그래서 새 버전이 나오면 여기와 팝업에서 알려 주기만 하며, 다운로드와 로드는 직접 해야 합니다."
+  },
+  "opt_update_dev": {
+    "message": "소스 폴더를 바로 로드한 개발 버전이라 자동으로 확인하지 않습니다. 개발 버전은 git으로 업데이트하고, 다운로드한 zip을 소스 폴더에 덮어쓰지 마세요."
+  },
+  "opt_dialog_add_title": {
+    "message": "비밀번호 추가"
+  },
+  "opt_dialog_edit_title": {
+    "message": "비밀번호 수정"
+  },
+  "opt_field_url": {
+    "message": "사이트 URL"
+  },
+  "opt_field_username": {
+    "message": "사용자 이름"
+  },
+  "opt_field_password": {
+    "message": "비밀번호"
+  },
+  "opt_field_note": {
+    "message": "메모"
+  },
+  "opt_url_empty": {
+    "message": "사이트 URL은 비워 둘 수 없습니다"
+  },
+  "opt_password_empty": {
+    "message": "비밀번호는 비워 둘 수 없습니다"
+  },
+  "cs_err_ext_reloaded": {
+    "message": "확장 프로그램이 다시 로드되었습니다. 이 페이지를 새로고침하세요.",
+    "description": "Error when the extension was reloaded or updated while this page stayed open. Usually shown after \"Couldn't save: \"."
+  },
+  "cs_err_no_response": {
+    "message": "확장 프로그램이 응답하지 않습니다",
+    "description": "Error when the extension's background service worker didn't answer. Usually shown after \"Couldn't save: \"."
+  },
+  "cs_save": {
+    "message": "저장",
+    "description": "Button on the save-password card and on the auto-click confirmation card."
+  },
+  "cs_cancel": {
+    "message": "취소",
+    "description": "Button on the auto-click confirmation card."
+  },
+  "cs_banner_save_title": {
+    "message": "이 비밀번호를 저장할까요?",
+    "description": "Title of the card shown on the web page after signing in."
+  },
+  "cs_banner_update_title": {
+    "message": "이 계정의 비밀번호를 업데이트할까요?",
+    "description": "Title of the same card when the site already has this account saved with a different password."
+  },
+  "cs_banner_username": {
+    "message": "사용자 이름"
+  },
+  "cs_banner_password": {
+    "message": "비밀번호"
+  },
+  "cs_banner_show": {
+    "message": "표시",
+    "description": "Small button inside the password box that reveals the password. Keep it short."
+  },
+  "cs_banner_hide": {
+    "message": "숨기기",
+    "description": "Same button after the password is revealed. Keep it short."
+  },
+  "cs_banner_never": {
+    "message": "이 사이트에서는 묻지 않기",
+    "description": "Link-style button on the save-password card. Stops asking to save passwords on this site."
+  },
+  "cs_banner_no": {
+    "message": "나중에",
+    "description": "Closes the save-password card without saving."
+  },
+  "cs_banner_update": {
+    "message": "업데이트"
+  },
+  "cs_banner_never_done": {
+    "message": "앞으로 $1에서는 묻지 않습니다. 관리 페이지에서 되돌릴 수 있습니다.",
+    "description": "$1 is the site's host name, for example accounts.example.com."
+  },
+  "cs_save_failed": {
+    "message": "저장하지 못했습니다: $1",
+    "description": "$1 is the error message."
+  },
+  "cs_password_updated": {
+    "message": "비밀번호를 업데이트했습니다"
+  },
+  "cs_password_saved": {
+    "message": "비밀번호를 저장했습니다"
+  },
+  "cs_generate_failed": {
+    "message": "비밀번호를 생성하지 못했습니다: $1",
+    "description": "$1 is the error message."
+  },
+  "cs_generate_no_field": {
+    "message": "입력할 새 비밀번호 입력란을 찾지 못했습니다"
+  },
+  "cs_generate_filled_copied": {
+    "message": "생성한 비밀번호를 입력하고 클립보드에도 복사했습니다. 제출한 후 '저장'을 누르세요.",
+    "description": "\"Save\" is the button on the save-password card that appears after the form is submitted."
+  },
+  "cs_generate_filled": {
+    "message": "생성한 비밀번호를 입력했습니다. 제출한 후 '저장'을 누르세요.",
+    "description": "Same as cs_generate_filled_copied, when copying to the clipboard wasn't allowed."
+  },
+  "cs_dropdown_locked": {
+    "message": "잠겨 있습니다. 툴바의 자물쇠 아이콘을 클릭해 본인 인증을 하면 자동으로 입력됩니다.",
+    "description": "Shown under a sign-in field while App lock is locked."
+  },
+  "cs_dropdown_choose_account": {
+    "message": "$1 — 입력할 계정 선택",
+    "description": "Header of the account list under a sign-in field. $1 is the extension name (Password Keeper)."
+  },
+  "cs_dropdown_generate": {
+    "message": "강력한 비밀번호 생성",
+    "description": "Item in the list under a new-password field."
+  },
+  "cs_dropdown_generate_hint": {
+    "message": "새 비밀번호와 확인 입력란에 입력합니다. 옵션은 툴바 팝업에 있습니다.",
+    "description": "Second line under \"Generate a strong password\". Options means the password generator options."
+  },
+  "cs_dropdown_no_username": {
+    "message": "(사용자 이름 없이 비밀번호만 있음)",
+    "description": "Shown in the account list for a saved login without a username."
+  },
+  "cs_click_cooldown": {
+    "message": "방금 자동 클릭해서 이번에는 클릭하지 않습니다"
+  },
+  "cs_click_after_logout": {
+    "message": "방금 로그아웃해서 이번에는 자동 클릭하지 않습니다"
+  },
+  "cs_click_missed_stop": {
+    "message": "'$1' 클릭 실패. 나머지는 클릭하지 않습니다",
+    "description": "$1 is the button text (up to 20 characters). The rule is set to stop when its button is missing, so the rules after it on this page are skipped."
+  },
+  "cs_click_button_fallback": {
+    "message": "버튼",
+    "description": "Used as $1 in the auto-click messages when the button has no text."
+  },
+  "cs_click_done": {
+    "message": "자동 클릭했습니다: '$1'",
+    "description": "$1 is the button text (up to 20 characters)."
+  },
+  "cs_click_not_found": {
+    "message": "자동 클릭할 버튼을 찾지 못했습니다"
+  },
+  "cs_click_empty_field": {
+    "message": "양식에 빈 칸이 있어 이번에는 자동 클릭하지 않았습니다"
+  },
+  "cs_pick_hint": {
+    "message": "자동 클릭할 버튼을 클릭하세요. Esc를 누르면 취소합니다.",
+    "description": "Hint at the top of the web page while picking a button to auto-click."
+  },
+  "cs_pick_untrusted_frame": {
+    "message": "이 부분은 다른 사이트에서 삽입된 것이라 자동 클릭할 수 없습니다",
+    "description": "The picked button is inside a frame embedded from a different site."
+  },
+  "cs_pick_card_failed": {
+    "message": "확인 창을 열지 못했습니다: $1",
+    "description": "$1 is the error message."
+  },
+  "cs_pick_title": {
+    "message": "이것을 자동으로 클릭할까요?",
+    "description": "Title of the card shown after picking a button to auto-click."
+  },
+  "cs_pick_button": {
+    "message": "버튼",
+    "description": "Label above the picked button's text."
+  },
+  "cs_pick_no_text": {
+    "message": "(텍스트 없음)",
+    "description": "Shown when the picked button has no text."
+  },
+  "cs_pick_when": {
+    "message": "클릭 시점"
+  },
+  "cs_pick_note_no_account": {
+    "message": "이 사이트에 아직 저장된 계정이 없습니다. 계정을 저장해야 클릭합니다."
+  },
+  "cs_pick_note_autofill_off": {
+    "message": "이 사이트의 자동 입력이 꺼져 있습니다. 켜야 클릭합니다."
+  },
+  "cs_pick_after_fill": {
+    "message": "자동 입력 후 클릭",
+    "description": "Option for when to click: after the username and password are autofilled."
+  },
+  "cs_pick_on_load": {
+    "message": "페이지가 열리면 바로 클릭",
+    "description": "Option for when to click."
+  },
+  "cs_pick_saved": {
+    "message": "저장했습니다. 다음에 이 페이지를 열면 자동으로 클릭합니다."
+  },
+  "cs_fill_no_fields": {
+    "message": "이 페이지에서 로그인 입력란을 찾지 못했습니다",
+    "description": "Shown in the popup when \"Fill\" can't find a sign-in form on the page."
+  },
+  "cs_fill_failed": {
+    "message": "입력하지 못했습니다",
+    "description": "Shown in the popup when filling the page failed."
+  },
+  "bg_vault_unreadable": {
+    "message": "비밀번호 데이터를 복호화할 수 없습니다. 저장 공간이 손상되었을 수 있습니다. 관리 페이지에서 모든 데이터를 지우고 다시 시작할 수 있습니다."
+  },
+  "bg_url_scheme_unsupported": {
+    "message": "http 또는 https로 시작하는 사이트만 저장할 수 있습니다"
+  },
+  "bg_site_required": {
+    "message": "사이트는 비워 둘 수 없습니다"
+  },
+  "bg_duplicate_account": {
+    "message": "이 사이트에 같은 사용자 이름이 이미 저장되어 있습니다"
+  },
+  "bg_webauthn_data_unreadable": {
+    "message": "인증 데이터를 읽을 수 없습니다"
+  },
+  "bg_webauthn_wrong_type": {
+    "message": "인증 유형이 올바르지 않습니다"
+  },
+  "bg_webauthn_wrong_origin": {
+    "message": "인증 출처가 이 확장 프로그램이 아닙니다"
+  },
+  "bg_webauthn_expired": {
+    "message": "인증이 만료되었습니다. 다시 시도하세요."
+  },
+  "bg_webauthn_not_set_up": {
+    "message": "시스템 인증이 아직 설정되지 않았습니다"
+  },
+  "bg_webauthn_unknown_key": {
+    "message": "이 확장 프로그램에 등록된 키가 아닙니다",
+    "description": "The key is the passkey created for app lock (Windows Hello, Touch ID, a security key or phone)."
+  },
+  "bg_webauthn_no_user_verification": {
+    "message": "본인 인증(PIN, 지문 또는 얼굴)을 통과하지 못했습니다"
+  },
+  "bg_webauthn_bad_signature": {
+    "message": "서명 검증에 실패했습니다"
+  },
+  "bg_gen_symbols_empty": {
+    "message": "특수 문자를 선택했지만 허용할 특수 문자가 비어 있습니다",
+    "description": "Password generator in the popup: the symbols checkbox is on but the allowed symbols field is empty."
+  },
+  "bg_gen_no_charset": {
+    "message": "문자 종류를 하나 이상 선택하세요"
+  },
+  "bg_gen_too_short": {
+    "message": "길이가 너무 짧아 모든 문자 종류를 넣을 수 없습니다"
+  },
+  "bg_backup_password_too_short": {
+    "message": "백업 비밀번호는 8자 이상이어야 합니다"
+  },
+  "bg_none_selected": {
+    "message": "선택한 계정이 없습니다"
+  },
+  "bg_not_backup_file": {
+    "message": "비밀번호 지킴이 백업 파일이 아닙니다"
+  },
+  "bg_backup_too_new": {
+    "message": "새 버전의 비밀번호 지킴이로 만든 백업 파일입니다. 먼저 확장 프로그램을 업데이트하세요."
+  },
+  "bg_wrong_password_or_damaged": {
+    "message": "비밀번호가 틀렸거나 파일이 손상되었습니다"
+  },
+  "bg_file_untracked": {
+    "message": "다운로드 기록이 삭제되었습니다",
+    "description": "Shown under a file location in the backup history: the file can't be deleted from here because the browser's download history was cleared."
+  },
+  "bg_file_missing": {
+    "message": "파일을 찾을 수 없습니다",
+    "description": "Shown under a file location in the backup history: the file was moved or deleted."
+  },
+  "bg_file_delete_failed": {
+    "message": "삭제하지 못했습니다: $1",
+    "description": "$1 is the browser's error message."
+  },
+  "bg_download_not_found": {
+    "message": "다운로드 항목을 찾을 수 없습니다"
+  },
+  "bg_download_interrupted": {
+    "message": "다운로드가 중단되었거나 취소되었습니다"
+  },
+  "bg_download_interrupted_reason": {
+    "message": "다운로드가 중단되었거나 취소되었습니다($1)",
+    "description": "$1 is the browser's reason code, like USER_CANCELED."
+  },
+  "bg_download_failed": {
+    "message": "다운로드하지 못했습니다: $1",
+    "description": "$1 is the browser's error message."
+  },
+  "bg_time_format": {
+    "message": "시간은 12:00처럼 입력하세요"
+  },
+  "bg_weekday_invalid": {
+    "message": "요일이 올바르지 않습니다"
+  },
+  "bg_backup_location_changed": {
+    "message": "자동 백업 위치 변경: '$1' → '$2'. 이전 파일은 원래 위치에 남아 있습니다.",
+    "description": "Saved in the backup history when the auto backup folder changes, in the language in use at that time. $1 is the old folder, $2 is the new folder."
+  },
+  "bg_enable_needs_password": {
+    "message": "자동 백업을 켜려면 먼저 자동 백업 비밀번호를 설정하세요"
+  },
+  "bg_auto_backup_no_password": {
+    "message": "자동 백업 비밀번호가 아직 설정되지 않았습니다",
+    "description": "Also saved as the last auto backup error, in the language in use at that time."
+  },
+  "bg_backup_file_auto": {
+    "message": "비밀번호 지킴이-자동 백업-$1",
+    "description": "File name, without the .pkbak extension, of a scheduled auto backup. $1 is the date and time, like 20261106-1200. Don't use these characters: \\ / : * ? \" < > |"
+  },
+  "bg_backup_file_now": {
+    "message": "비밀번호 지킴이-지금 백업-$1",
+    "description": "File name, without the .pkbak extension, of a backup made with \"Back up now\". $1 is the date and time, like 20261106-1200. Don't use these characters: \\ / : * ? \" < > |"
+  },
+  "bg_badge_locked": {
+    "message": "잠금",
+    "description": "Badge text on the toolbar icon while the extension is locked. The badge fits only about 4 characters."
+  },
+  "bg_rule_path_required": {
+    "message": "경로는 비워 둘 수 없습니다. 사이트 전체에 적용하려면 *를 입력하세요."
+  },
+  "bg_rule_url_invalid": {
+    "message": "경로 형식이 올바르지 않습니다"
+  },
+  "bg_seconds_range": {
+    "message": "$1 값은 $2~$3 사이의 정수여야 합니다",
+    "description": "$1 is a field name (bg_label_interval or bg_label_pause). $2 and $3 are the minimum and maximum number of seconds."
+  },
+  "bg_label_interval": {
+    "message": "간격",
+    "description": "Field name used as $1 in bg_seconds_range: seconds to wait before auto-clicking the same button again."
+  },
+  "bg_label_pause": {
+    "message": "로그아웃 후 일시 중지",
+    "description": "Field name used as $1 in bg_seconds_range: the \"pause after sign-out\" seconds on the manager page."
+  },
+  "bg_rule_no_button": {
+    "message": "선택한 버튼이 없습니다"
+  },
+  "bg_duplicate_click_rule": {
+    "message": "이 경로에는 같은 선택자를 쓰는 규칙이 이미 있습니다"
+  },
+  "bg_selector_required": {
+    "message": "선택자는 비워 둘 수 없습니다"
+  },
+  "bg_autofill_off_for_site": {
+    "message": "이 사이트의 자동 입력이 꺼져 있습니다. 먼저 켜세요."
+  },
+  "bg_site_invalid": {
+    "message": "사이트 형식이 올바르지 않습니다"
+  },
+  "bg_rules_changed": {
+    "message": "규칙이 바뀌었습니다. 이 페이지를 새로고침하세요."
+  },
+  "bg_lock_not_enabled": {
+    "message": "앱 잠금이 켜져 있지 않습니다"
+  },
+  "bg_key_data_incomplete": {
+    "message": "키 데이터가 불완전합니다"
+  },
+  "bg_trash_not_found": {
+    "message": "휴지통에서 이 항목을 찾을 수 없습니다"
+  },
+  "bg_restore_duplicate": {
+    "message": "이 사이트에 같은 사용자 이름이 이미 저장되어 있습니다. 먼저 그 계정을 삭제해야 복원할 수 있습니다."
+  },
+  "bg_trash_days_range": {
+    "message": "일수는 1~365 사이여야 합니다"
+  },
+  "bg_log_not_found": {
+    "message": "이 기록을 찾을 수 없습니다. 이미 삭제되었을 수 있습니다."
+  },
+  "bg_locked": {
+    "message": "잠겨 있습니다. 먼저 툴바의 자물쇠 아이콘에서 본인 인증을 하세요.",
+    "description": "The lock icon is this extension's icon on the browser toolbar."
+  },
+  "bg_master_password_not_set": {
+    "message": "사용자 지정 비밀번호가 설정되지 않았습니다"
+  },
+  "bg_master_password_wrong": {
+    "message": "사용자 지정 비밀번호가 틀렸습니다"
+  },
+  "bg_master_password_too_short": {
+    "message": "사용자 지정 비밀번호는 $1자 이상이어야 합니다"
+  },
+  "bg_need_master_password": {
+    "message": "사용자 지정 비밀번호로 암호화했다면 사용자 지정 비밀번호를 입력해 잠금 해제해야 합니다"
+  },
+  "bg_hello_no_secret": {
+    "message": "시스템 인증에서 암호화에 필요한 비밀 값을 받지 못했습니다"
+  },
+  "bg_hello_wrong_secret": {
+    "message": "시스템 인증에서 받은 비밀 값으로 비밀번호를 풀 수 없습니다. 키가 바뀌었을 수 있습니다."
+  },
+  "bg_lock_needs_verify": {
+    "message": "변경하려면 먼저 본인 인증을 하세요"
+  },
+  "bg_lock_mode_unknown": {
+    "message": "알 수 없는 보호 방식입니다"
+  },
+  "bg_lock_needs_backup_password": {
+    "message": "암호화를 선택하려면 먼저 '백업' 탭에서 자동 백업 비밀번호를 설정하세요"
+  },
+  "bg_lock_reset_not_needed": {
+    "message": "암호화되어 있지 않으므로 데이터를 지울 필요가 없습니다"
+  },
+  "bg_extension_page_only": {
+    "message": "비밀번호 지킴이 자체 페이지에서만 할 수 있는 작업입니다"
+  },
+  "bg_auto_backup_not_ready": {
+    "message": "잠겨 있고 아직 백업할 내용이 준비되지 않았습니다. 잠금을 해제한 후 다시 시도하세요."
+  },
+  "bg_unknown_message": {
+    "message": "알 수 없는 메시지: $1",
+    "description": "$1 is an internal message type. Only shown when something inside the extension goes wrong."
+  },
+  "bg_der_not_signature": {
+    "message": "DER 서명이 아닙니다"
+  },
+  "bg_der_bad_format": {
+    "message": "DER 형식이 올바르지 않습니다"
+  },
+  "bg_unsupported_sig_alg": {
+    "message": "지원하지 않는 서명 알고리즘: $1",
+    "description": "$1 is the algorithm number, like -8."
+  },
+  "lang_name_zh_TW": {
+    "message": "繁體中文",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_en": {
+    "message": "English",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_ja": {
+    "message": "日本語",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_nan_TW": {
+    "message": "台語",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_ko": {
+    "message": "한국어",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_de": {
+    "message": "Deutsch",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_ru": {
+    "message": "Русский",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "lang_name_th": {
+    "message": "ไทย",
+    "description": "Shown in the language menu. Always written in that language itself, so people can find their language."
+  },
+  "opt_lang_label": {
+    "message": "표시 언어"
+  },
+  "opt_lang_auto": {
+    "message": "브라우저 설정 따름($1)",
+    "description": "Language menu option that follows the browser. $1 is the language the browser picked, e.g. English."
+  },
+  "opt_lang_failed": {
+    "message": "언어를 바꾸지 못했습니다: $1"
+  },
+  "bg_language_invalid": {
+    "message": "지원하지 않는 언어입니다"
+  },
+  "bg_update_offline": {
+    "message": "GitHub에 연결할 수 없습니다. 네트워크를 확인한 후 다시 시도하세요."
+  },
+  "bg_update_busy": {
+    "message": "GitHub에서 지금은 조회를 제한하고 있습니다. 잠시 후 다시 시도하세요."
+  },
+  "bg_update_http": {
+    "message": "GitHub에서 오류를 반환했습니다($1).",
+    "description": "$1 = HTTP status code."
+  },
+  "bg_update_bad_reply": {
+    "message": "GitHub에서 받은 버전 정보를 읽을 수 없습니다."
+  },
+  "bg_update_no_download": {
+    "message": "새 버전에 다운로드할 zip이 없습니다. GitHub의 Releases 페이지를 확인하세요."
+  }
+}
