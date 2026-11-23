@@ -1,0 +1,8 @@
+{
+  "minimum_chrome_version": null,
+  "browser_specific_settings": {
+    "gecko": {
+      "strict_min_version": "128.0"
+    }
+  }
+}

@@ -65,7 +65,7 @@ const reset = () =>
     await chrome.storage.local.remove(['vault', 'settings', 'webauthn', 'uiLanguage', 'updateInfo', 'autoBackupKey', 'vaultKeyLock', 'autoBackupReady']);
     await chrome.storage.session.clear();
     // 加密的案例會刪掉 keyB64，背景程式記著的舊金鑰也要丟掉
-    keyPromise = null;
+    forgetCachedKey();
     return true;
   })()`);
 
@@ -2814,7 +2814,7 @@ test('系統驗證加密：虛擬驗證器給 PRF 秘密值，瀏覽器重開後
     return renderLock().then(() => changeLockMode('hello')).then((r) => r, (e) => 'error: ' + e.message);
   })()`);
   check(result === 'done', '選系統驗證加密要成功：' + result);
-  const label = await page.eval('pkWebAuthn.label()');
+  const label = await page.eval('PK.webauthnClient.label()');
   const steps = await page.eval('window.__steps');
   check(
     JSON.stringify(steps) === JSON.stringify([await msgOf('opt_hello_step_create', label), await msgOf('opt_hello_step_verify', label)]),
@@ -2834,7 +2834,7 @@ test('系統驗證加密：虛擬驗證器給 PRF 秘密值，瀏覽器重開後
   check((await w.eval(`chrome.storage.local.get(['webauthn', 'vaultKeyLock']).then((x) => JSON.stringify(x))`)) === before, '失敗時不能動到原本的鑰匙和金鑰');
   await restartBrowser();
   check(await w.eval('isLocked()'), '瀏覽器重開要鎖著');
-  check((await page.eval(`pkWebAuthn.unlock().then(() => 'ok', (e) => e.message)`)) === 'ok', '按系統驗證要解得開');
+  check((await page.eval(`PK.webauthnClient.unlock().then(() => 'ok', (e) => e.message)`)) === 'ok', '按系統驗證要解得開');
   const after = await passwordsNow();
   check(!after.locked && after.passwords[0] === 'right', '解鎖後要讀得到帳密：' + JSON.stringify(after));
   await page.eval(`document.querySelector('#tab-settings > details.card').open = true; renderLock()`);
@@ -2846,7 +2846,7 @@ test('系統驗證加密：虛擬驗證器給 PRF 秘密值，瀏覽器重開後
   check((await setMode({ mode: 'password', setup: { password: MASTER } })) === 'ok', '改成自訂密碼加密要成功');
   check(!(await w.eval(`chrome.storage.local.get('webauthn').then((x) => 'webauthn' in x)`)), '系統驗證的鑰匙要刪掉');
   await w.eval('setLocked(true)');
-  check((await page.eval(`pkWebAuthn.unlock().then(() => 'ok', (e) => e.message)`)) !== 'ok', '系統驗證不能解開自訂密碼加密');
+  check((await page.eval(`PK.webauthnClient.unlock().then(() => 'ok', (e) => e.message)`)) !== 'ok', '系統驗證不能解開自訂密碼加密');
   check((await unlockPassword(MASTER)) === 'ok', '打自訂密碼要解得開');
   await closePage(page);
 });
@@ -2986,12 +2986,20 @@ test('管理頁：保護方式有三張卡片，沒設自動備份密碼選加�
   await setBackupPassword();
   await page.eval('renderLock()');
   check(await until(async () => (await notes()).every((n) => !n[1]), 2000), '設好自動備份密碼，提示要拿掉：' + JSON.stringify(await notes()));
-  // 走管理頁選自訂密碼加密的流程：問密碼的對話框直接回答，系統驗證一叫就記下來
+  // 走管理頁選自訂密碼加密的流程：問密碼的對話框一打開就填好按確定，系統驗證一叫就記下來
   const viaPage = await page.eval(`(async () => {
     const calls = [];
-    for (const name of ['create', 'setupHello', 'assertion']) pkWebAuthn[name] = async () => { calls.push(name); throw new Error(name); };
-    askMasterPassword = async () => ${JSON.stringify(MASTER)};
+    for (const name of ['create', 'setupHello', 'assertion']) PK.webauthnClient[name] = async () => { calls.push(name); throw new Error(name); };
+    const dlg = document.getElementById('pwDialog');
+    const answer = new MutationObserver(() => {
+      if (!dlg.open) return;
+      document.getElementById('pw1').value = ${JSON.stringify(MASTER)};
+      document.getElementById('pw2').value = ${JSON.stringify(MASTER)};
+      document.getElementById('pwOk').click();
+    });
+    answer.observe(dlg, { attributes: true, attributeFilter: ['open'] });
     const result = await changeLockMode('password').catch((e) => e.message);
+    answer.disconnect();
     return { result, calls };
   })()`);
   check(viaPage.result === 'done' && viaPage.calls.length === 0, '選自訂密碼加密不能叫系統驗證：' + JSON.stringify(viaPage));
@@ -3522,7 +3530,7 @@ test('語言：英文的瀏覽器也能選繁體中文', async () => {
 
 const FAKE_GH = ORIGIN + '/fake-gh/latest';
 const GH_RELEASES = 'https://github.com/Mukula1221/PasswordKeeperExtension/releases/';
-const useFakeGitHub = (url) => w.eval(`(updateApi = ${JSON.stringify(url)}, true)`);
+const useFakeGitHub = (url) => w.eval(`(useUpdateApi(${JSON.stringify(url)}), true)`);
 const checkNow = () => w.eval(`handlers['update.check']()`);
 
 test('檢查新版：開發版不自動問，按立即檢查才問；有新版時小視窗和管理頁都會提醒', async () => {
@@ -3601,7 +3609,7 @@ test('檢查新版：開發版不自動問，按立即檢查才問；有新版�
     check(offline.error === '連不到 GitHub，檢查網路之後再試。', '連不上要寫原因：' + offline.error);
     check(offline.available && offline.latest.version === '99.0.0', '一時連不上不能把新版提醒弄掉');
   } finally {
-    await w.eval(`(updateApi = 'https://api.github.com/repos/' + UPDATE_REPO + '/releases/latest', chrome.storage.local.remove('updateInfo').then(() => true))`);
+    await w.eval(`(useUpdateApi(null), chrome.storage.local.remove('updateInfo').then(() => true))`);
     if (popup) await closePage(popup);
     if (options) await closePage(options);
   }

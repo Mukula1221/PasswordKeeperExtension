@@ -1,7 +1,11 @@
+'use strict';
 // 管理頁、小視窗、解鎖小視窗共用：叫作業系統的驗證器（WebAuthn）建鑰匙、驗證，再把結果交給背景程式核對。
 // 不綁特定作業系統：Windows 跳 Windows Hello，Mac 跳 Touch ID，沒有內建驗證器的（Linux）就讓瀏覽器問安全金鑰或手機。
 // 頁面要先載 i18n.js，這裡的文字都用 t() 拿。
-const pkWebAuthn = (() => {
+(() => {
+  const PK = (globalThis.PK ??= {});
+  const { t } = PK.i18n;
+
   function send(msg) {
     return new Promise((resolve) => {
       chrome.runtime.sendMessage(msg, (res) => {
@@ -33,9 +37,9 @@ const pkWebAuthn = (() => {
   // 這台電腦叫什麼：按鈕文字用的
   // Windows Hello、Touch ID 是產品名稱，不翻
   function label() {
-    const p = ((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '').toLowerCase();
-    if (p.includes('win')) return 'Windows Hello';
-    if (p.includes('mac')) return 'Touch ID';
+    const os = PK.platform.osName();
+    if (os === 'windows') return 'Windows Hello';
+    if (os === 'mac') return 'Touch ID';
     return t('wa_security_key_or_phone');
   }
 
@@ -170,5 +174,5 @@ const pkWebAuthn = (() => {
     return r.data;
   }
 
-  return { label, supported, hasPlatformAuthenticator, create, setupHello, assertion, unlock };
+  PK.webauthnClient = { label, supported, hasPlatformAuthenticator, create, setupHello, assertion, unlock };
 })();

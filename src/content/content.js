@@ -1,3 +1,4 @@
+'use strict';
 // 注入到每個網頁的腳本。做這幾件事：
 // 1. 找出登入欄位（帳號、密碼）
 // 2. 使用者按登入時把帳密交給背景程式暫存，跳頁後再問要不要儲存
@@ -5,10 +6,17 @@
 // 4. 點帳號或密碼欄時跳出帳號清單讓使用者選（可以用鍵盤操作）
 // 5. 設新密碼的表單裡提供「產生強密碼」
 // 6. 讓使用者選一顆按鈕，之後開到那一頁就自動點（自動點選）
-// 所有畫面都畫在 shadow DOM 裡，網頁本身的 CSS 和 JS 碰不到。
+// 所有畫面都畫在 shadow DOM 裡，網頁本身的 CSS 和 JS 碰不到（見 ui.js）。找欄位在 fields.js，自動點選找按鈕在 click-target.js。
 (() => {
-  if (window.__pkLoaded) return;
-  window.__pkLoaded = true;
+  const PK = (globalThis.PK ??= {});
+  // 同一個環境載入第二次時不要重複掛事件
+  if (PK.contentLoaded) return;
+  PK.contentLoaded = true;
+  const { browserLocale, chosenLocale, t, uiLocale, useLocale } = PK.i18n;
+  const { baseDomain, rulePathMatches } = PK.domain;
+  const { el, refreshShadowStyle, toast, ui } = PK.contentUi;
+  const { attrText, canFill, detectGroups, isTextInput, isUsable, isVisible, setValue, usableInputs } = PK.contentFields;
+  const { CLICKABLE, clickableOf, elementText, findClickTarget, fireClick, selectorFor } = PK.clickTarget;
 
   const HOST = location.hostname.toLowerCase();
   const ORIGIN = location.origin;
@@ -126,12 +134,6 @@
     refreshShadowStyle();
   }
 
-  function refreshShadowStyle() {
-    if (!shadowStyle) return;
-    if (shadowStyle instanceof CSSStyleSheet) shadowStyle.replaceSync(CSS());
-    else shadowStyle.textContent = CSS();
-  }
-
   // 拿不到就先照瀏覽器的語言，畫面還是看得懂
   const followChosenLanguage = () =>
     loadChosenLanguage().catch((err) => console.warn(TAG, '讀不到指定的語言，先照瀏覽器的語言', err)); // i18n-ignore：給開發者看的
@@ -140,19 +142,6 @@
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && changes.uiLanguage) followChosenLanguage();
   });
-
-  // ---- 網域判斷（和 background.js 的 baseDomain 一樣，content script 不能 import 所以抄一份）----
-
-  const SECOND_LEVEL = new Set(['com', 'net', 'org', 'gov', 'edu', 'co', 'ac', 'ne', 'or', 'idv', 'game', 'ebiz', 'club', 'mil', 'biz', 'info']);
-  function baseDomain(host) {
-    host = (host || '').toLowerCase();
-    if (/^[\d.]+$/.test(host) || host.includes(':') || !host.includes('.')) return host;
-    const labels = host.split('.');
-    if (labels.length <= 2) return host;
-    const [second, last] = labels.slice(-2);
-    const take = last.length === 2 && SECOND_LEVEL.has(second) ? 3 : 2;
-    return labels.slice(-take).join('.');
-  }
 
   // 內嵌在別人網站裡的 iframe 不自動填，避免惡意網頁偷偷把登入頁框進來騙密碼。
   // 同一個網站自己的 iframe 可以填。
@@ -174,124 +163,7 @@
   }
   const TRUSTED = frameIsTrusted();
 
-  // ---- 找登入欄位 ----
-
-  const TEXT_TYPES = new Set(['text', 'email', 'tel']);
-  const USER_HINT = /user|email|mail|login|log-in|signin|sign-in|account|acct|member|identity|uid|帳號|账号|信箱|郵件|邮箱|使用者|用户|ユーザー|ユーザ|メール|アカウント/i;
-  const SKIP_HINT = /captcha|otp|one-time|verification|verify|vcode|search|query|token|sms|\bpin\b/i;
-
-  function attrText(el) {
-    return [el.name, el.id, el.getAttribute('autocomplete'), el.placeholder, el.getAttribute('aria-label')]
-      .filter(Boolean)
-      .join(' ');
-  }
-
-  function isVisible(el) {
-    if (!el.isConnected) return false;
-    const r = el.getBoundingClientRect();
-    if (r.width < 2 || r.height < 2) return false;
-    const cs = getComputedStyle(el);
-    return cs.visibility !== 'hidden' && cs.display !== 'none';
-  }
-
-  function isUsable(el) {
-    return !el.disabled && !el.readOnly && isVisible(el);
-  }
-
-  function isTextInput(el) {
-    return el instanceof HTMLInputElement && TEXT_TYPES.has(el.type);
-  }
-
-  function looksLikeUsername(el) {
-    return el.getAttribute('autocomplete') === 'username' || el.type === 'email' || USER_HINT.test(attrText(el));
-  }
-
-  function usableInputs(scope) {
-    return Array.from(scope.querySelectorAll('input'));
-  }
-
-  function precedes(a, b) {
-    return !!(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
-  }
-
-  // 密碼欄的「範圍」：有 form 就用 form，沒有就往上找到第一個還包著其他文字欄位的祖先。
-  // 這樣網頁頂端的搜尋框才不會被當成帳號欄。
-  function containerFor(passEl) {
-    if (passEl.form) return passEl.form;
-    let node = passEl.parentElement;
-    for (let depth = 0; node && depth < 10; depth++, node = node.parentElement) {
-      const others = usableInputs(node).filter((el) => el !== passEl && isTextInput(el) && isUsable(el));
-      if (others.length) return node;
-    }
-    return document.body || document.documentElement;
-  }
-
-  function findUsernameFor(passEl, scope) {
-    const candidates = usableInputs(scope).filter(
-      (el) =>
-        el !== passEl &&
-        isTextInput(el) &&
-        isUsable(el) &&
-        precedes(el, passEl) &&
-        !SKIP_HINT.test(attrText(el)) &&
-        el.getAttribute('autocomplete') !== 'one-time-code'
-    );
-    if (!candidates.length) return null;
-    const hinted = candidates.filter(looksLikeUsername);
-    const pool = hinted.length ? hinted : candidates;
-    // 離密碼欄最近的那個
-    return pool[pool.length - 1];
-  }
-
-  // 回傳頁面上的登入群組：{ kind, user, pass, passList, container }
-  // kind: 'login' 一般登入；'signup' 有兩個以上密碼欄（註冊、改密碼）；'useronly' 只有帳號欄（兩段式登入第一頁）
-  function detectGroups() {
-    const groups = [];
-    const seen = new Set();
-    const passFields = Array.from(document.querySelectorAll('input[type=password]')).filter(isUsable);
-    for (const pass of passFields) {
-      const container = containerFor(pass);
-      if (seen.has(container)) continue;
-      seen.add(container);
-      const passList = Array.from(container.querySelectorAll('input[type=password]')).filter(isUsable);
-      const user = findUsernameFor(passList[0], container);
-      groups.push({ kind: passList.length >= 2 ? 'signup' : 'login', user, pass: passList[0], passList, container });
-    }
-    if (passFields.length === 0) {
-      for (const el of usableInputs(document)) {
-        if (!isTextInput(el) || !isUsable(el)) continue;
-        if (SKIP_HINT.test(attrText(el))) continue;
-        const strong = el.getAttribute('autocomplete') === 'username';
-        if (!strong && !looksLikeUsername(el)) continue;
-        const container = el.form || el.closest('form') || el.parentElement || document.body;
-        const texts = usableInputs(container).filter((x) => isTextInput(x) && isUsable(x));
-        // 一堆文字欄位的通常是註冊或聯絡表單，不是登入
-        if (texts.length > 2) continue;
-        groups.push({ kind: 'useronly', user: el, pass: null, passList: [], container, strong });
-        break;
-      }
-    }
-    return groups;
-  }
-
   // ---- 填值 ----
-
-  const nativeValueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-  const filledValue = new WeakMap();
-
-  function setValue(el, value) {
-    // React 會攔截 input.value 的 setter，直接設 el.value 它不會發現值變了，要用原生的 setter 再補發事件。
-    nativeValueSetter.call(el, value);
-    el.dispatchEvent(new Event('input', { bubbles: true }));
-    el.dispatchEvent(new Event('change', { bubbles: true }));
-    el.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
-    filledValue.set(el, value);
-  }
-
-  // force=false 時不覆蓋使用者自己打的字，只填空的或我們之前自動填的
-  function canFill(el, force) {
-    return force || !el.value || filledValue.get(el) === el.value;
-  }
 
   function fillGroup(group, entry, force) {
     let did = false;
@@ -320,100 +192,6 @@
     // res.data：entries、autoFillEntry、autoFill、autoSubmit、locked
     cache = { at: Date.now(), ...res.data };
     return cache;
-  }
-
-  // ---- 畫面：shadow DOM ----
-
-  // 日文介面要用日文字型：用中文字型的話，假名會排得很開、標點在字的正中間，按鈕也會擠到換行。
-  // 韓文、泰文也指定各自的字型，跟 ui.css 一樣。
-  const FONTS = {
-    ja: '"Yu Gothic UI", Meiryo, "Hiragino Sans", "Noto Sans JP"',
-    ko: '"Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR"',
-    th: '"Leelawadee UI", Thonburi, "Noto Sans Thai"',
-  };
-  const fontStack = () => '-apple-system, "Segoe UI", ' + (FONTS[uiLocale()] || '"Microsoft JhengHei", "PingFang TC", "Noto Sans TC"') + ', sans-serif';
-
-  // 每次重新產生：管理頁換了語言，字型要跟著換
-  const CSS = () => `
-    :host { all: initial; }
-    * { box-sizing: border-box; font-family: ${fontStack()}; font-size: 14px; line-height: 1.4; color: #1f2937; }
-    .banner { position: fixed; top: 12px; right: 12px; width: 340px; max-width: calc(100vw - 24px); background: #fff; border: 1px solid #d1d5db; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.18); padding: 14px; }
-    .banner h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-    .banner h2 .logo { width: 18px; height: 18px; border-radius: 5px; background: #2563eb; display: inline-block; }
-    .site { color: #6b7280; font-size: 12px; margin-bottom: 6px; word-break: break-all; }
-    label { display: block; font-size: 12px; color: #6b7280; margin-top: 8px; }
-    input { width: 100%; padding: 7px 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #fff; color: #111; outline: none; }
-    input:focus { border-color: #2563eb; }
-    .pwwrap { position: relative; }
-    .pwwrap input { padding-right: 64px; }
-    .pwwrap button { position: absolute; right: 4px; top: 4px; padding: 3px 8px; background: transparent; color: #2563eb; }
-    .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; justify-content: flex-end; align-items: center; }
-    button { border: 0; border-radius: 6px; padding: 7px 12px; cursor: pointer; font-size: 13px; background: #e5e7eb; color: #111; white-space: nowrap; }
-    button:hover { filter: brightness(.95); }
-    button.primary { background: #2563eb; color: #fff; }
-    button.link { background: transparent; color: #6b7280; margin-right: auto; padding-left: 0; font-size: 12px; }
-    .dropdown { position: fixed; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.15); min-width: 220px; max-width: 360px; overflow: hidden; }
-    .dropdown .head { padding: 5px 12px; font-size: 11px; color: #6b7280; background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
-    .dropdown .item { padding: 8px 12px; cursor: pointer; }
-    .dropdown .item:hover, .dropdown .item.active { background: #eff6ff; }
-    .dropdown .item.gen { color: #2563eb; border-bottom: 1px solid #e5e7eb; }
-    .dropdown .item.locked { color: #92400e; background: #fef3c7; cursor: default; font-size: 13px; }
-    .dropdown .item.gen .u { color: #2563eb; }
-    .dropdown .item .u { font-weight: 600; word-break: break-all; }
-    .dropdown .item .h { font-size: 11px; color: #6b7280; }
-    .toast { position: fixed; top: 12px; right: 12px; background: #111827; color: #fff; padding: 10px 14px; border-radius: 8px; font-size: 13px; box-shadow: 0 6px 18px rgba(0,0,0,.2); }
-    .pick-box { position: fixed; border: 3px solid #f97316; background: rgba(249,115,22,.25); box-shadow: 0 0 0 1px #fff; border-radius: 4px; pointer-events: none; }
-    .pick-hint { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; box-shadow: 0 6px 18px rgba(0,0,0,.2); pointer-events: none; }
-    .picked { font-weight: 600; word-break: break-all; }
-    label.radio { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #1f2937; margin-top: 6px; cursor: pointer; }
-    label.radio input { width: auto; margin: 0; padding: 0; }
-    .note { font-size: 12px; color: #92400e; margin-top: 6px; }
-    .note:empty { display: none; }
-  `;
-
-  let shadowHost = null;
-  let shadow = null;
-  // CSSStyleSheet 或 <style>，換語言時用 refreshShadowStyle() 換字型
-  let shadowStyle = null;
-
-  function ui() {
-    if (shadow && shadowHost.isConnected) return shadow;
-    if (!shadow) {
-      shadowHost = document.createElement('div');
-      shadowHost.style.cssText = 'all:initial; position:fixed; top:0; left:0; width:0; height:0; z-index:2147483647;';
-      shadow = shadowHost.attachShadow({ mode: 'closed' });
-      // 有些網站的 CSP 會擋掉 <style>，adoptedStyleSheets 不受 CSP 管，優先用它。
-      try {
-        shadowStyle = new CSSStyleSheet();
-        shadowStyle.replaceSync(CSS());
-        shadow.adoptedStyleSheets = [shadowStyle];
-      } catch {
-        shadowStyle = document.createElement('style');
-        shadowStyle.textContent = CSS();
-        shadow.appendChild(shadowStyle);
-      }
-    }
-    // 掛在 <html> 底下而不是 <body>，網頁整個換掉 body 時才不會跟著消失
-    document.documentElement.appendChild(shadowHost);
-    return shadow;
-  }
-
-  function el(tag, className, text) {
-    const node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text != null) node.textContent = text;
-    return node;
-  }
-
-  let toastTimer = null;
-  function toast(text) {
-    const root = ui();
-    const old = root.querySelector('.toast');
-    if (old) old.remove();
-    const box = el('div', 'toast', text);
-    root.appendChild(box);
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => box.remove(), 2500);
   }
 
   // ---- 「要儲存嗎？」卡片 ----
@@ -649,7 +427,7 @@
     'mousedown',
     (e) => {
       if (!dropdown) return;
-      if (e.target === shadowHost || e.target === dropdown.anchor) return;
+      if (e.target === PK.contentUi.host() || e.target === dropdown.anchor) return;
       closeDropdown();
     },
     true
@@ -805,7 +583,7 @@
       if (!dropdown) onFieldFocus(field, group);
     });
     field.addEventListener('blur', () => setTimeout(() => {
-      if (dropdown && dropdown.anchor === field && shadow && !shadow.activeElement) closeDropdown();
+      if (dropdown && dropdown.anchor === field && PK.contentUi.root() && !PK.contentUi.root().activeElement) closeDropdown();
     }, 150));
   }
 
@@ -888,157 +666,6 @@
     return false;
   }
 
-  // ---- 自動點選：找到使用者選的按鈕 ----
-
-  const CLICKABLE = 'button, a, input, label, summary, [role=button], [role=link], [role=menuitem], [role=tab], [onclick]';
-
-  // 使用者常常點到按鈕裡面的文字或圖示，要往外找到真正的按鈕
-  function clickableOf(node) {
-    const hit = node.closest(CLICKABLE);
-    if (hit && hit !== document.body && hit !== document.documentElement) return hit;
-    // 非標準的按鈕常常是 <div> 加 cursor: pointer。游標樣式會往內層繼承，所以一路往外找到最外層還是 pointer 的那個。
-    if (getComputedStyle(node).cursor !== 'pointer') return node;
-    let cur = node;
-    while (cur.parentElement && cur.parentElement !== document.body && getComputedStyle(cur.parentElement).cursor === 'pointer') {
-      cur = cur.parentElement;
-    }
-    return cur;
-  }
-
-  // 只有按鈕類的 input 才讀 value。文字欄和密碼欄的 value 是使用者打的內容，不能存進規則。
-  function elementText(node) {
-    let text = '';
-    if (node.matches('input[type=submit], input[type=button], input[type=reset]')) text = node.value;
-    else if (!node.matches('input, textarea, select')) text = node.innerText || node.textContent || '';
-    if (!text.trim()) text = node.getAttribute('aria-label') || node.getAttribute('title') || node.getAttribute('alt') || '';
-    return text.replace(/\s+/g, ' ').trim().slice(0, 80);
-  }
-
-  // 自動產生的 id、class 每次載入都可能變（像 ember123、css-1a2b3c、j_idt45），不能當定位依據
-  const UNSTABLE_NAME = /\d{3,}|[0-9a-f]{8}|^(ember|ext-gen|j_idt|css-|sc-|jss|ng-)|-\d+$/i;
-  // 這些 class 會隨狀態出現或消失，例如按鈕要等帳密填好才拿掉 disabled。
-  // 選按鈕時滑鼠一定停在按鈕上，Ext JS 這時會多一個 x-btn-over，記下來下次就對不上。
-  const STATE_CLASS = /(^|[-_])(active|hover|over|focus|focused|focusvisible|disabled|selected|pressed|open|show|loading)($|[-_])|^(is|has)-/i;
-
-  // 這支檔案的 CSS 是產生畫面樣式表的函式，瀏覽器內建的 CSS 物件要寫 window.CSS
-  const escapeCss = (text) => window.CSS.escape(text);
-
-  function isUniqueSelector(selector, node) {
-    const found = document.querySelectorAll(selector);
-    return found.length === 1 && found[0] === node;
-  }
-
-  function selectorFor(node) {
-    const tag = escapeCss(node.tagName.toLowerCase());
-    if (node.id && !UNSTABLE_NAME.test(node.id)) {
-      const byId = '#' + escapeCss(node.id);
-      if (isUniqueSelector(byId, node)) return byId;
-    }
-    for (const attr of ['name', 'data-testid', 'data-test', 'data-qa', 'aria-label', 'title']) {
-      const value = node.getAttribute(attr);
-      if (!value || UNSTABLE_NAME.test(value)) continue;
-      const byAttr = tag + '[' + attr + '="' + escapeCss(value) + '"]';
-      if (isUniqueSelector(byAttr, node)) return byAttr;
-    }
-    const classes = Array.from(node.classList).filter((c) => !UNSTABLE_NAME.test(c) && !STATE_CLASS.test(c));
-    if (classes.length) {
-      const byClass = tag + classes.map((c) => '.' + escapeCss(c)).join('');
-      if (isUniqueSelector(byClass, node)) return byClass;
-    }
-    // 都不夠唯一，就從最近有穩定 id 的祖先開始，一層一層記第幾個
-    const parts = [];
-    let cur = node;
-    while (cur && cur !== document.documentElement) {
-      if (cur !== node && cur.id && !UNSTABLE_NAME.test(cur.id) && isUniqueSelector('#' + escapeCss(cur.id), cur)) {
-        parts.unshift('#' + escapeCss(cur.id));
-        break;
-      }
-      const curTag = escapeCss(cur.tagName.toLowerCase());
-      const twins = cur.parentElement ? Array.from(cur.parentElement.children).filter((c) => c.tagName === cur.tagName) : [cur];
-      parts.unshift(twins.length > 1 ? curTag + ':nth-of-type(' + (twins.indexOf(cur) + 1) + ')' : curTag);
-      cur = cur.parentElement;
-    }
-    return parts.join(' > ');
-  }
-
-  // pointer-events: none 真人也按不到，Nexus 的按鈕還不能按時就是這樣
-  function clickReady(node) {
-    return isVisible(node) && !node.disabled && node.getAttribute('aria-disabled') !== 'true' && getComputedStyle(node).pointerEvents !== 'none';
-  }
-
-  // 跟欄位的共同祖先越深，表示離得越近
-  function sharedDepth(node, field) {
-    let shared = node;
-    while (shared && !shared.contains(field)) shared = shared.parentElement;
-    let depth = 0;
-    for (; shared; shared = shared.parentElement) depth++;
-    return depth;
-  }
-
-  // 量按鈕中心點最上面是誰。不在視窗內的量不出來，當作沒被遮。
-  function onTop(node) {
-    const r = node.getBoundingClientRect();
-    const x = r.left + r.width / 2;
-    const y = r.top + r.height / 2;
-    if (x < 0 || y < 0 || x >= window.innerWidth || y >= window.innerHeight) return true;
-    const hit = document.elementFromPoint(x, y);
-    return !hit || hit === shadowHost || node.contains(hit);
-  }
-
-  // 同樣文字的按鈕不只一顆時（Nexus 右上角和登入框都叫 Sign in），留下離剛填好的欄位最近、沒被遮住的
-  function narrowTargets(list, group) {
-    if (list.length < 2) return list;
-    const field = group && (group.pass || group.user);
-    let rest = list;
-    if (field) {
-      const depths = list.map((node) => sharedDepth(node, field));
-      const deepest = Math.max(...depths);
-      rest = list.filter((node, i) => depths[i] === deepest);
-    }
-    return rest.length < 2 ? rest : rest.filter(onTop);
-  }
-
-  // 先用選的時候記下的位置找，文字也要對得上。網站改版後同一個位置可能變成別的按鈕，這時改用文字找，留下剛好一個才算數。
-  // 還不能按的按鈕也要算進來一起比，不然它在等帳密驗證的時候，會改點到別顆同名的。
-  function findClickTarget(rule, group) {
-    const sameText = (node) => !rule.text || elementText(node) === rule.text;
-    let found = [];
-    try {
-      found = Array.from(document.querySelectorAll(rule.selector)).filter(sameText);
-    } catch (err) {
-      console.warn(TAG, '自動點選的位置寫法有問題', rule.selector, err); // i18n-ignore：console 訊息給開發者看
-    }
-    // 按鈕在但還不能按（像要等帳密填好），就等它，不要改點別顆
-    if (found.length) return narrowTargets(found.filter(isVisible), group).find(clickReady) || null;
-    if (!rule.text) return null;
-    const byText = narrowTargets(Array.from(document.querySelectorAll(CLICKABLE)).filter((node) => sameText(node) && isVisible(node)), group);
-    return byText.length === 1 && clickReady(byText[0]) ? byText[0] : null;
-  }
-
-  // 非標準的按鈕常常綁在 mousedown 或 pointerdown，只發 click 不會有反應，所以照真的滑鼠點一下的順序全部發一次
-  function fireClick(target) {
-    const r = target.getBoundingClientRect();
-    const init = {
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-      view: window,
-      button: 0,
-      clientX: r.left + r.width / 2,
-      clientY: r.top + r.height / 2,
-    };
-    const pointer = { ...init, pointerType: 'mouse', isPrimary: true };
-    target.dispatchEvent(new PointerEvent('pointerdown', { ...pointer, buttons: 1 }));
-    target.dispatchEvent(new MouseEvent('mousedown', { ...init, buttons: 1 }));
-    if (typeof target.focus === 'function') target.focus({ preventScroll: true });
-    target.dispatchEvent(new PointerEvent('pointerup', pointer));
-    target.dispatchEvent(new MouseEvent('mouseup', init));
-    // 最後一下交給 page-click.js 按，它收到會 preventDefault。沒收到（測試頁沒載它）才自己按。
-    const detail = JSON.stringify({ clientX: init.clientX, clientY: init.clientY });
-    const handled = !target.dispatchEvent(new CustomEvent('__pkClick', { cancelable: true, detail }));
-    if (!handled) target.dispatchEvent(new MouseEvent('click', init));
-  }
-
   // ---- 自動點選：開頁面時等按鈕出現就點 ----
 
   const CLICK_WAIT_MS = 15000;
@@ -1058,24 +685,6 @@
   function currentRoute() {
     const route = /^#[/!]/.test(location.hash) ? location.hash.split('?')[0] : '';
     return location.pathname + route;
-  }
-
-  // 和 background.js 的 rulePathMatches 一樣，content script 不能 import 所以抄一份
-  function rulePathMatches(pattern, url) {
-    let u;
-    try {
-      u = new URL(url);
-    } catch {
-      return false;
-    }
-    let target = u.pathname;
-    if (pattern.includes('?')) target += u.search + u.hash;
-    else if (pattern.includes('#')) target += u.hash.split('?')[0];
-    const body = pattern
-      .split('*')
-      .map((part) => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&'))
-      .join('.*');
-    return new RegExp('^' + body + '$', 'i').test(target);
   }
 
   function getClickRules() {
@@ -1306,7 +915,7 @@
   // 用座標找而不是看 e.target：滑鼠在 disabled 的按鈕上時，瀏覽器不一定把事件發給它
   function pickTargetAt(e) {
     const node = document.elementFromPoint(e.clientX, e.clientY);
-    if (!node || node === shadowHost || node === document.documentElement) return null;
+    if (!node || node === PK.contentUi.host() || node === document.documentElement) return null;
     const pointerless = node.closest(CLICKABLE) ? null : pointerlessButtonAt(node, e.clientX, e.clientY);
     if (pointerless) return pointerless;
     return node === document.body ? null : clickableOf(node);

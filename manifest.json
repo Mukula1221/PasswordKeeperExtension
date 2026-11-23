@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_ext_name__",
   "short_name": "__MSG_ext_name__",
-  "version": "1.17.1",
+  "version": "1.18.0",
   "description": "__MSG_ext_description__",
   "default_locale": "en",
   "minimum_chrome_version": "111",
@@ -21,7 +21,15 @@
     },
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["src/shared/i18n.js", "src/content/content.js"],
+      "js": [
+        "src/shared/platform.js",
+        "src/shared/i18n.js",
+        "src/shared/domain.js",
+        "src/content/ui.js",
+        "src/content/fields.js",
+        "src/content/click-target.js",
+        "src/content/content.js"
+      ],
       "run_at": "document_idle",
       "all_frames": true
     }

@@ -79,10 +79,16 @@
     },
   };
   let zhMessages = null;
-  // background.js 在測試頁不會跑 importScripts，content.js 也沒有 manifest 幫它先載 i18n.js，
-  // 所以在這裡插進去，排在測試頁後面那幾個 script 前面
+  // content.js 沒有 manifest 幫它先載共用檔和 content/ 的其他檔，所以在這裡插進去，排在測試頁後面那幾個 script 前面
+  document.write('<script src="../src/shared/platform.js"><\/script>');
   document.write('<script src="../src/shared/i18n.js"><\/script>');
-  window.importScripts = () => {};
+  document.write('<script src="../src/shared/domain.js"><\/script>');
+  for (const f of ['ui.js', 'fields.js', 'click-target.js']) document.write('<script src="../src/content/' + f + '"><\/script>');
+  // background.js 用 importScripts 依序載入背景程式的各檔。測試頁用 document.write 插 script，
+  // 會排在 background.js 後面、依序執行，跟 importScripts 一樣是一個跑完才換下一個。路徑從 src/background 算。
+  window.importScripts = (...files) => {
+    for (const f of files) document.write('<script src="../src/background/' + f + '"><\/script>');
+  };
   window.__pkLog = log;
   // 測試時方便從 console 叫背景程式
   window.__pkSend = (msg) => new Promise((resolve) => chrome.runtime.sendMessage(msg, resolve));

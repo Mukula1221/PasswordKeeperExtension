@@ -12,6 +12,9 @@ const EXT_ORIGIN = 'chrome-extension://' + EXT_ID;
 const ZH = JSON.parse(fs.readFileSync(path.join(ROOT, '_locales', 'zh_TW', 'messages.json'), 'utf8'));
 const MANIFEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'manifest.json'), 'utf8'));
 
+// PK 底下各檔匯出的東西攤平成一個物件
+const FLAT_PK = 'Object.assign({}, ...Object.values(globalThis.PK || {}))';
+
 function memoryStorage() {
   const data = {};
   return {
@@ -126,8 +129,10 @@ function loadBackground() {
     // 背景程式啟動時會在背後改設定（例如 migrateLock），測試要直接改 storage 前先等它跑完。
     // 假的 storage 不會真的等，排一個 setTimeout 就能讓前面所有的 Promise 跑完。
     settle: () => new Promise((resolve) => setTimeout(resolve, 0)),
-    // 拿背景程式裡的 const、function，例如 run('MESSAGE_RULES')
-    run: (code) => vm.runInContext(code, context),
+    // 拿背景程式裡的 const、function，例如 run('MESSAGE_RULES')。
+    // 背景程式的函式都在 PK.<檔名> 底下，這裡用 with 攤平成這次執行的區域名稱，不會變成全域。
+    run: (code) => vm.runInContext('(function () { with (' + FLAT_PK + ') { return (' + code + '); } })()', context),
+    pk: () => vm.runInContext('globalThis.PK', context),
     text: (key, ...subs) => chrome.i18n.getMessage(key, subs),
   };
 }
