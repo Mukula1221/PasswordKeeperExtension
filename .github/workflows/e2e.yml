@@ -1,6 +1,6 @@
 name: E2E
 
-# 把擴充功能裝進真的 Edge、Chrome 跑完整流程，一個瀏覽器大約 3 分鐘。要用時到 Actions 頁面按「Run workflow」。
+# 把擴充功能裝進真的 Edge、Chrome 跑完整流程，一個瀏覽器大約 3 分鐘，Firefox 另外跑主要流程。要用時到 Actions 頁面按「Run workflow」。
 on:
   workflow_dispatch:
 
@@ -34,4 +34,26 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: e2e-shots-${{ matrix.browser }}
+          path: ${{ runner.temp }}/pk-e2e/shots/
+
+  # Firefox 用 WebDriver BiDi 控制，只跑 Firefox 跟 Edge、Chrome 不一樣、或最容易壞的流程
+  firefox:
+    name: firefox
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+          check-latest: true
+      - name: 主要流程
+        run: node test/e2e/firefox.js
+        env:
+          TEMP: ${{ runner.temp }}
+          TMP: ${{ runner.temp }}
+      - name: 上傳截圖
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-shots-firefox
           path: ${{ runner.temp }}/pk-e2e/shots/

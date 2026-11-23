@@ -3615,6 +3615,87 @@ test('檢查新版：開發版不自動問，按立即檢查才問；有新版�
   }
 });
 
+// ---- 三種版本：商店版由商店更新。從商店裝的測不到，把 management.getSelf 換成回 normal ----
+
+test('商店版：不連 GitHub，版本分頁只寫由商店更新', async () => {
+  const kind = await w.eval(`typeof (chrome.management && chrome.management.getSelf)`);
+  check(kind === 'function', '沒要 management 權限也要叫得到 management.getSelf：' + kind);
+  const dev = await w.eval(`handlers['update.status']().then((s) => s.channel)`);
+  check(dev === 'dev', '載入原始碼資料夾的要算開發版：' + dev);
+  let options = null;
+  try {
+    await w.eval(`(globalThis.__pkRealGetSelf = chrome.management.getSelf, chrome.management.getSelf = async () => ({ installType: 'normal' }), true)`);
+    await useFakeGitHub(FAKE_GH + '?v=99.0.0');
+    const before = hitCount('/fake-gh/');
+    const blocked = await w.eval(`handlers['update.check']().then(() => 'checked', (e) => e.message)`);
+    check(blocked === '從商店安裝的版本由商店更新，不會到 GitHub 檢查。', '商店版不能到 GitHub 檢查：' + blocked);
+    await w.eval(`handlers['update.setAuto']({ enabled: true }).then(() => true)`);
+    check(hitCount('/fake-gh/') === before, '商店版打開自動檢查也不能連 GitHub');
+
+    options = await open('chrome-extension://' + extId + '/src/options/options.html#versions', 1200);
+    const view = await options.eval(`(() => {
+      const shown = (id) => document.getElementById(id).checkVisibility();
+      return {
+        state: document.getElementById('updateState').textContent,
+        check: shown('updateCheckNow'),
+        auto: shown('updateAutoWrap'),
+        dev: shown('updateDev'),
+        hintHidden: document.getElementById('browserHint').hidden,
+        versionNow: document.getElementById('versionNow').textContent,
+      };
+    })()`);
+    check(view.state === '這是從商店安裝的版本，商店會自動更新。', '要寫由商店更新：' + view.state);
+    check(view.versionNow === '目前版本 ' + (await w.eval('chrome.runtime.getManifest().version')) + '。', '目前版本那一行不提重新載入：' + view.versionNow);
+    check(!view.check && !view.auto && !view.dev && view.hintHidden, '檢查新版的按鈕、勾選框、開發版說明、重新載入說明都不顯示：' + JSON.stringify(view));
+    await options.screenshot(path.join(SHOTS, 'update-store.png'));
+  } finally {
+    await w.eval(`(chrome.management.getSelf = globalThis.__pkRealGetSelf, useUpdateApi(null), chrome.storage.local.remove('updateInfo').then(() => true))`);
+    if (options) await closePage(options);
+  }
+});
+
+// ---- 網站存取權：使用者在瀏覽器收回網站權限時，小視窗提示要權限 ----
+
+test('網站存取權：被收回時小視窗提示，按了只要這個網站的權限', async () => {
+  const target = await open(T + 'harness.html', 800);
+  // 小視窗用分頁開，「目前的分頁」改成測試網站那一頁
+  const asPopup = `const q = chrome.tabs.query.bind(chrome.tabs);
+    chrome.tabs.query = async (info) => (info && info.active && info.currentWindow ? q({ url: '*://127.0.0.1/*' }) : q(info));
+    window.close = () => {};`;
+  let popup = null;
+  try {
+    // 真的權限：安裝時就給了所有網站，不該提示。也確認不帶連接埠的網址規則瀏覽器收。
+    popup = await openPage(b.cdp, 'about:blank', `{ ${asPopup} }`);
+    await popup.goto('chrome-extension://' + extId + '/src/popup/popup.html', 1200);
+    const site = await popup.eval(`document.getElementById('site').textContent`);
+    check(site === '127.0.0.1', '小視窗要對到測試網站：' + site);
+    const real = await popup.eval(`chrome.permissions.contains({ origins: ['http://127.0.0.1/*'] })`);
+    check(real === true, '安裝時給的權限要包含測試網站');
+    check(!(await popup.eval(`document.getElementById('accessBar').checkVisibility()`)), '有權限不該提示');
+    await closePage(popup);
+
+    const revoked = `{ ${asPopup}
+      window.__pkRequests = [];
+      chrome.permissions.contains = async () => false;
+      chrome.permissions.request = async (p) => (window.__pkRequests.push(p), true);
+    }`;
+    popup = await openPage(b.cdp, 'about:blank', revoked);
+    await popup.send('Emulation.setDeviceMetricsOverride', { width: 360, height: 480, deviceScaleFactor: 1, mobile: false });
+    await popup.goto('chrome-extension://' + extId + '/src/popup/popup.html', 1200);
+    const bar = await popup.eval(`(() => { const b = document.getElementById('accessBar'); return b.checkVisibility() ? b.textContent : ''; })()`);
+    check(bar === '密碼小管家不能在這個網站填入和儲存密碼，點這裡允許。', '沒權限要提示：' + bar);
+    await popup.screenshot(path.join(SHOTS, 'popup-site-access.png'));
+    await popup.click('#accessBar');
+    const asked = await until(() => popup.eval(`window.__pkRequests.length ? JSON.stringify(window.__pkRequests) : ''`), 3000);
+    check(asked === JSON.stringify([{ origins: ['http://127.0.0.1/*'] }]), '只要這個網站、不帶連接埠：' + asked);
+    const after = await popup.eval(`({ bar: document.getElementById('accessBar').checkVisibility(), toast: document.getElementById('toast').textContent })`);
+    check(!after.bar && after.toast === '已允許，重新整理網頁後就能用。', '允許後收掉提示、說要重新整理：' + JSON.stringify(after));
+  } finally {
+    if (popup) await closePage(popup);
+    await closePage(target);
+  }
+});
+
 // ---- 跑 ----
 
 // 只有這份腳本用得到的頁面

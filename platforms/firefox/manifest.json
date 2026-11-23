@@ -2,7 +2,11 @@
   "minimum_chrome_version": null,
   "browser_specific_settings": {
     "gecko": {
-      "strict_min_version": "128.0"
+      "id": "{abde6172-a3db-4533-b9cd-59c288d8529a}",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   }
 }

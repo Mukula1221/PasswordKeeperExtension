@@ -29,7 +29,16 @@
 
   const SEMVER = /^\d+\.\d+\.\d+$/;
 
-  const isReleaseBuild = () => chrome.runtime.id === RELEASE_ID;
+  // 三種版本：
+  //   github：從 Releases 下載、載入解壓縮的正式版，ID 是 RELEASE_ID，每天到 GitHub 問有沒有新版。
+  //   store：從商店裝的。商店會自己更新，Edge 商店也規定只能透過商店更新，所以完全不連 GitHub。
+  //   dev：直接載入原始碼資料夾的開發版，不自動問，按「立即檢查」才問。
+  // management.getSelf 不用另外要 management 權限。installType 是 development 代表載入解壓縮。
+  async function releaseChannel() {
+    const self = await chrome.management.getSelf();
+    if (self.installType !== 'development') return 'store';
+    return chrome.runtime.id === RELEASE_ID ? 'github' : 'dev';
+  }
 
   function compareVersions(a, b) {
     const x = a.split('.').map(Number);
@@ -69,6 +78,7 @@
   async function checkUpdateOnce() {
     // 錯誤訊息要用管理頁指定的語言，背景程式剛醒來時語言可能還沒讀好
     await PK.locale.localeReady();
+    if ((await releaseChannel()) === 'store') throw new Error(t('bg_update_store'));
     const { updateInfo } = await chrome.storage.local.get('updateInfo');
     const info = { checkedAt: Date.now(), latest: null, error: '' };
     try {
@@ -105,9 +115,11 @@
     const { updateInfo } = await chrome.storage.local.get('updateInfo');
     const info = updateInfo || { checkedAt: 0, latest: null, error: '' };
     const current = chrome.runtime.getManifest().version;
+    const channel = await releaseChannel();
     return {
       auto: !!settings.updateCheck,
-      release: isReleaseBuild(),
+      channel,
+      release: channel === 'github',
       current,
       checkedAt: info.checkedAt || 0,
       error: info.error || '',
@@ -119,7 +131,7 @@
   // 背景程式每次醒來都看一次，距離上次檢查超過一天才問。關機、瀏覽器沒開錯過的，下次醒來就補。
   async function updateTick() {
     const settings = await PK.settings.getSettings();
-    if (!settings.updateCheck || !isReleaseBuild()) return;
+    if (!settings.updateCheck || (await releaseChannel()) !== 'github') return;
     const { updateInfo } = await chrome.storage.local.get('updateInfo');
     if (updateInfo && Math.abs(Date.now() - updateInfo.checkedAt) < PK.vault.DAY_MS) return;
     await checkUpdate();

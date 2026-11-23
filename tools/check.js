@@ -7,7 +7,7 @@ const FILES = require('./files');
 const { ROOT, CHANGELOG_JS, readManifest, readChangelog, packageFiles, renderChangelogMd } = require('./lib/project');
 const { LOCALES, CHANGELOG_LOCALES, checkMessages, checkLocaleLists, usedKeys, untranslatedInJs, checkHtml } = require('./lib/i18n-check');
 const { checkGlobals } = require('./lib/globals-check');
-const { targetManifest } = require('./build');
+const { targetManifest, TARGETS } = require('./build');
 
 const problems = [];
 const SEMVER = /^\d+\.\d+\.\d+$/;
@@ -140,6 +140,27 @@ function checkPackage(manifest) {
   }
 }
 
+// 各版本的 manifest，見 tools/build.js 的 TARGETS。
+// 權限要一樣：哪個商店版多要了權限，使用者在那個商店看到的說明就跟其他地方不一樣。
+const PERMISSION_FIELDS = ['permissions', 'host_permissions', 'optional_permissions', 'optional_host_permissions'];
+
+function checkTargets(manifest) {
+  if ('key' in manifest) problems.push('manifest.json 不能放 key：開發版的 ID 跟資料夾綁在一起，GitHub 版的 key 由 tools/build.js 加');
+  const permissionsOf = (m) => JSON.stringify(PERMISSION_FIELDS.map((f) => m[f] || []));
+  for (const target of Object.keys(TARGETS)) {
+    const m = targetManifest(target, manifest);
+    if (permissionsOf(m) !== permissionsOf(manifest)) problems.push(target + ' 版要的權限跟 manifest.json 不一樣，各版本要一樣');
+    if (target !== 'github' && 'key' in m) problems.push(target + ' 版不能有 key，商店會給自己的 ID');
+  }
+  const gecko = ((targetManifest('firefox', manifest).browser_specific_settings || {}).gecko) || {};
+  if (!gecko.id) problems.push('Firefox 版要有 browser_specific_settings.gecko.id，上架後不能換');
+  // 上架 AMO 的版本由 AMO 更新，有 update_url 會被退
+  if (gecko.update_url) problems.push('Firefox 版不能有 gecko.update_url，AMO 不收');
+  const data = gecko.data_collection_permissions;
+  if (!data || !Array.isArray(data.required)) problems.push('Firefox 版要宣告 gecko.data_collection_permissions，AMO 才收');
+  else if (data.required.join() !== 'none') problems.push('Firefox 版的 data_collection_permissions 要是 ["none"]，擴充功能不蒐集任何資料。要改的話先改 PRIVACY.md');
+}
+
 function jsFilesUnder(rel) {
   const full = path.join(ROOT, rel);
   if (!fs.existsSync(full)) return [];
@@ -204,6 +225,7 @@ function checkSyntax() {
 const manifest = readManifest();
 checkVersions(manifest);
 checkPackage(manifest);
+checkTargets(manifest);
 checkI18n(manifest);
 checkUnsafeCode();
 checkScopes();

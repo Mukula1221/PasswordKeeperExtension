@@ -193,5 +193,17 @@ chrome.runtime.sendMessage = (msg, cb) =>
     });
   });
 
+// 從哪裡裝的：測試頁當成直接載入資料夾的開發版。要模擬商店版就把 window.__pkInstallType 設成 'normal'。
+chrome.management = { getSelf: async () => ({ installType: window.__pkInstallType || 'development' }) };
+
+// 網站存取權：要模擬使用者收回權限就把 window.__pkSiteAccess 設成 false，要過的權限記在 __pkPermissionRequests
+chrome.permissions = {
+  contains: async () => window.__pkSiteAccess !== false,
+  async request(p) {
+    (window.__pkPermissionRequests = window.__pkPermissionRequests || []).push(p);
+    return true;
+  },
+};
+
 // 版本分頁要讀 manifest 的版本號，測試頁由 page-harness 先抓好放在 window.__pkManifestVersion
 chrome.runtime.getManifest = () => ({ version: window.__pkManifestVersion || '0.0.0' });

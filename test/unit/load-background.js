@@ -39,7 +39,7 @@ function events() {
   return { listeners, addListener: (fn) => listeners.push(fn), removeListener() {} };
 }
 
-function fakeChrome() {
+function fakeChrome(origin) {
   const local = memoryStorage();
   const session = memoryStorage();
   const onMessage = events();
@@ -48,7 +48,7 @@ function fakeChrome() {
     runtime: {
       id: EXT_ID,
       lastError: undefined,
-      getURL: (p) => EXT_ORIGIN + '/' + p,
+      getURL: (p) => origin + '/' + p,
       getManifest: () => structuredClone(MANIFEST),
       onMessage,
       onStartup: events(),
@@ -81,11 +81,14 @@ function fakeChrome() {
     webRequest: { onAuthRequired: events() },
     downloads: { download: async () => 1, search: async () => [], removeFile: async () => undefined },
     windows: { create: async () => ({ id: 9 }) },
+    // 載入解壓縮的開發版。測試商店版時改成 normal。
+    management: { getSelf: async () => ({ installType: 'development' }) },
   };
 }
 
-function loadBackground() {
-  const chrome = fakeChrome();
+// origin 是擴充功能自己的網址開頭，要模擬 Firefox 就給 moz-extension://<UUID>
+function loadBackground({ origin = EXT_ORIGIN } = {}) {
+  const chrome = fakeChrome(origin);
   const sandbox = {
     chrome,
     console,
@@ -101,7 +104,7 @@ function loadBackground() {
     setInterval,
     clearInterval,
     queueMicrotask,
-    location: { href: EXT_ORIGIN + '/src/background/background.js' },
+    location: { href: origin + '/src/background/background.js' },
     // 測試不該連網，有人叫到就讓它失敗
     fetch: async (url) => {
       throw new Error('unit test: fetch is not allowed: ' + url);
@@ -134,6 +137,8 @@ function loadBackground() {
     run: (code) => vm.runInContext('(function () { with (' + FLAT_PK + ') { return (' + code + '); } })()', context),
     pk: () => vm.runInContext('globalThis.PK', context),
     text: (key, ...subs) => chrome.i18n.getMessage(key, subs),
+    // 這個背景程式的管理頁。origin 不是預設的時候，用下面匯出的 OPTIONS 會被當成別人的頁面。
+    OPTIONS: { url: origin + '/src/options/options.html', tab: { id: 50, url: origin + '/src/options/options.html' } },
   };
 }
 

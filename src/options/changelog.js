@@ -9,6 +9,35 @@
   const PK = (globalThis.PK ??= {});
   PK.changelog = [
     {
+      version: '1.19.0',
+      date: '2026-11-23',
+      items: {
+        zh_TW: [
+          '為上架各瀏覽器的商店做準備：同一份程式可以打包成 GitHub 版、Chrome 和 Edge 的商店版、Firefox 版。',
+          '瀏覽器收回了某個網站的權限時，小視窗會提醒「點這裡允許」。收回權限的網站不會跳儲存提示，也不會自動填入。',
+          '從商店安裝的版本由商店自動更新，不會到 GitHub 檢查新版。',
+          'Firefox 版的工具鎖定不顯示系統驗證加密。私密視窗不能用，因為 Firefox 的附加元件規定不能儲存私密瀏覽的資料。鎖螢幕後要等閒置時間到才會鎖。',
+        ],
+        en: [
+          'Preparing for browser stores: the same code can now be packaged as the GitHub version, a Chrome and Edge store version, and a Firefox version.',
+          'If the browser has taken away access to a site, the popup now shows "Click here to allow it." Sites without access don\'t get the save prompt or autofill.',
+          'Versions installed from a store are updated by the store and don\'t check GitHub for new versions.',
+          'In the Firefox version, App lock doesn\'t show system verification encryption. It can\'t be used in private windows, because Firefox\'s add-on policies don\'t allow storing data from private browsing. Locking the screen locks the extension only when the idle time is up.',
+        ],
+        ja: [
+          'ブラウザーのストアでの公開に向けた準備をしました。同じコードから GitHub 版、Chrome と Edge のストア版、Firefox 版を作れるようになりました。',
+          'ブラウザーがサイトへのアクセスを取り消している場合、ポップアップに「ここをクリックして許可してください」と表示されます。アクセスのないサイトでは、保存の確認も自動入力も行われません。',
+          'ストアからインストールしたバージョンはストアが自動で更新し、GitHub に新しいバージョンを確認しません。',
+          'Firefox 版のアプリロックには、システム認証での暗号化は表示されません。また、Firefox のアドオンのポリシーでプライベートブラウジングのデータは保存できないため、プライベートウィンドウでは使えません。画面をロックしても、アイドル時間が過ぎるまでロックされません。',
+        ],
+      },
+      notes: {
+        zh_TW: ['這一版還沒上架任何商店。從 GitHub 下載的版本，除了網站權限的提醒，用起來跟 1.18.0 一樣。'],
+        en: ['This version isn\'t in any store yet. Apart from the site access reminder, the GitHub version works the same as 1.18.0.'],
+        ja: ['このバージョンはまだどのストアにも公開していません。GitHub 版はサイトアクセスのお知らせ以外、1.18.0 と同じように使えます。'],
+      },
+    },
+    {
       version: '1.18.0',
       date: '2026-11-23',
       items: {

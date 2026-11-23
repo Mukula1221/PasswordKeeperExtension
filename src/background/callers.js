@@ -39,5 +39,11 @@
     return new Error(t('bg_site_not_allowed'));
   }
 
-  PK.callers = { callerHost, contentSaveSites, fromExtensionPage, requireExtensionPage, siteNotAllowed };
+  // 私密分頁裡的 content.js 送來的，而且這個瀏覽器不能在私密視窗用（見 platform.js 的 privateWindows）。
+  // content.js 在這種分頁一開始就停了，這裡是第二道。管理頁不算：管理的是已經存好的帳號，不是私密瀏覽的資料。
+  function fromBlockedPrivateTab(sender) {
+    return !fromExtensionPage(sender) && PK.platform.privateBlocked(sender && sender.tab && sender.tab.incognito);
+  }
+
+  PK.callers = { callerHost, contentSaveSites, fromBlockedPrivateTab, fromExtensionPage, requireExtensionPage, siteNotAllowed };
 })();

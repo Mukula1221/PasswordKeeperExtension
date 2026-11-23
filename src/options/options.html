@@ -428,7 +428,7 @@ CSV 的格式和 Chrome、Edge 匯出的一樣。">?</span></div>
                 <span class="lock-card-how" data-i18n="opt_lock_how_password">解鎖都打自訂密碼，要多記一組密碼</span>
                 <span class="lock-card-note" data-i18n="opt_lock_needs_backup_password" hidden>先到「備份」分頁設定自動備份密碼。</span>
               </label>
-              <label class="lock-card">
+              <label id="lockCardHello" class="lock-card">
                 <span class="lock-card-head"><input type="radio" name="lockMode" value="hello"> <span id="lockModeHello" data-i18n="opt_lock_mode_hello">系統驗證加密</span><span id="lockRecommend" class="lock-badge" data-i18n="opt_lock_recommended" hidden>建議</span></span>
                 <span class="lock-check"><span data-i18n="opt_lock_guard_peek">防旁人偷看</span><span class="sr-only" data-i18n="opt_lock_guard_yes">有</span></span>
                 <span class="lock-check"><span data-i18n="opt_lock_guard_copy">防資料被拷走</span><span class="sr-only" data-i18n="opt_lock_guard_yes">有</span></span>
@@ -441,7 +441,7 @@ CSV 的格式和 Chrome、Edge 匯出的一樣。">?</span></div>
             <div class="row wrap" style="margin-top:6px"><button id="lockChangePw" class="small" hidden data-i18n="opt_lock_change_password">更改自訂密碼</button></div>
             <h3 data-i18n="opt_lock_when_title">什麼時候自動鎖上</h3>
             <div class="row wrap">
-              <label class="inline"><span data-i18n="opt_lock_idle_before">閒置</span> <input id="lockMinutes" class="num" type="number" min="1" max="720"> <span data-i18n="opt_lock_idle_after">分鐘沒碰電腦就鎖</span></label>
+              <label class="inline"><span data-i18n="opt_lock_idle_before">閒置</span> <input id="lockMinutes" class="num" type="number" min="1" max="720"> <span data-i18n="opt_lock_idle_after">分鐘沒碰電腦就鎖</span><span id="lockIdleTip" class="tip" hidden data-i18n-tip="opt_lock_idle_no_screen_tip" data-tip="這個瀏覽器不會通知鎖螢幕，鎖螢幕後要等閒置時間到才會鎖。">?</span></label>
               <label class="inline"><input type="checkbox" id="lockOnStartup"> <span data-i18n="opt_lock_on_startup">瀏覽器重開就鎖</span></label>
             </div>
             <div class="help" data-i18n="opt_lock_manual_help">小視窗右上角的「鎖定」可以隨時手動鎖上。</div>
@@ -593,7 +593,7 @@ CSV 的格式和 Chrome、Edge 匯出的一樣。">?</span></div>
               <button id="updatePage" class="link" hidden data-i18n="opt_update_release_page">看這一版的說明</button>
               <button id="updateCheckNow" data-i18n="opt_update_check_now">立即檢查</button>
             </div>
-            <label class="inline update-auto"><input type="checkbox" id="updateAuto"> <span data-i18n="opt_update_auto">每天自動檢查一次</span><span class="tip" data-i18n-tip="opt_update_auto_tip" data-tip="只會連到 GitHub 問最新的版本號，不會送出任何密碼、帳號或設定。
+            <label id="updateAutoWrap" class="inline update-auto"><input type="checkbox" id="updateAuto"> <span data-i18n="opt_update_auto">每天自動檢查一次</span><span class="tip" data-i18n-tip="opt_update_auto_tip" data-tip="只會連到 GitHub 問最新的版本號，不會送出任何密碼、帳號或設定。
 瀏覽器不讓自己載入的擴充功能自己換成新版，所以有新版時只會在這裡和小視窗提醒，下載和載入要自己按。">?</span></label>
             <div id="updateDev" class="help" hidden data-i18n="opt_update_dev">這是直接載入原始碼資料夾的開發版，不會自動檢查。開發版請用 git 更新，不要用下載的 zip 蓋掉原始碼資料夾。</div>
           </div>

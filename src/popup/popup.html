@@ -44,6 +44,10 @@
     <input id="search" type="search" placeholder="搜尋所有網站的帳號，Enter 開啟網站" data-i18n-placeholder="pop_search_placeholder" autocomplete="off">
     <div id="searchList" class="list" hidden></div>
 
+    <div id="privateScreen" class="card" hidden>
+      <span data-i18n="pop_private_blocked">私密視窗不能用密碼小管家。</span><span class="tip" data-i18n-tip="pop_private_blocked_tip" data-tip="Firefox 的附加元件規定不能儲存私密瀏覽的資料，所以私密視窗不會自動填入，也不會問要不要儲存。">?</span>
+    </div>
+
     <div id="lockScreen" class="card" hidden>
       <h2 data-i18n="pop_locked_title">已鎖定</h2>
       <div class="muted" data-i18n="pop_locked_hint">驗證過才能自動填入和看密碼。</div>
@@ -51,6 +55,7 @@
     </div>
 
     <div id="main">
+      <div id="accessBar" class="warn" hidden></div>
       <div id="updateBar" class="info" hidden></div>
       <div id="backupBar" class="warn" hidden></div>
       <div id="status" class="error"></div>

@@ -36,6 +36,12 @@
   "pop_locked_hint": {
     "message": "自動入力やパスワードの表示には認証が必要です。"
   },
+  "pop_private_blocked": {
+    "message": "プライベートウィンドウではパスワードキーパーを使えません。"
+  },
+  "pop_private_blocked_tip": {
+    "message": "Firefox のアドオンのポリシーでプライベートブラウジングのデータは保存できないため、プライベートウィンドウでは自動入力も保存の確認も行いません。"
+  },
   "pop_add_title": {
     "message": "このサイトのアカウントを追加"
   },
@@ -274,6 +280,12 @@
   "pop_update_bar": {
     "message": "新しいバージョン $1 があります。ここをクリックして更新方法を確認してください。",
     "description": "$1 = version number like 1.14.0. Update reminder bar in the popup."
+  },
+  "pop_site_access_off": {
+    "message": "このサイトではパスワードキーパーがパスワードを入力・保存できません。ここをクリックして許可してください。"
+  },
+  "pop_site_access_granted": {
+    "message": "許可しました。ページを再読み込みすると使えます。"
   },
   "pop_unsupported_page": {
     "message": "このページでは使えません。http と https のページだけに対応しています。",
@@ -1491,6 +1503,9 @@
     "message": "分続いたらロック",
     "description": "After the minutes input. See opt_lock_idle_before."
   },
+  "opt_lock_idle_no_screen_tip": {
+    "message": "このブラウザーは画面ロックを通知しないため、画面をロックしても、アイドル時間が過ぎるまでロックされません。"
+  },
   "opt_lock_on_startup": {
     "message": "ブラウザーの再起動時にロック"
   },
@@ -1837,6 +1852,9 @@
     "message": "現在のバージョンは $1 です。プログラムを更新したら、拡張機能ページで「再読み込み」を押してください。",
     "description": "$1 = version number like 1.12.0."
   },
+  "opt_version_now_store": {
+    "message": "現在のバージョンは $1 です。"
+  },
   "opt_version_current": {
     "message": "現在のバージョン",
     "description": "Badge next to the installed version in the list."
@@ -1902,6 +1920,9 @@
   },
   "opt_update_dev": {
     "message": "これはソースフォルダーを直接読み込んだ開発版なので、自動では確認しません。開発版は git で更新し、ダウンロードした zip をソースフォルダーに上書きしないでください。"
+  },
+  "opt_update_store": {
+    "message": "ストアからインストールしたバージョンです。更新はストアが自動で行います。"
   },
   "opt_dialog_add_title": {
     "message": "パスワードを追加"
@@ -2312,6 +2333,9 @@
   "bg_site_not_allowed": {
     "message": "現在のサイトに対してのみ実行できます"
   },
+  "bg_private_window_blocked": {
+    "message": "プライベートウィンドウではパスワードキーパーを使えません。"
+  },
   "bg_auto_backup_not_ready": {
     "message": "ロック中で、バックアップできる内容がまだありません。ロックを解除してからもう一度お試しください"
   },
@@ -2379,6 +2403,9 @@
   },
   "bg_update_busy": {
     "message": "GitHub が一時的に問い合わせを制限しています。しばらくしてから、もう一度お試しください。"
+  },
+  "bg_update_store": {
+    "message": "ストアからインストールしたバージョンはストアが更新するため、GitHub は確認しません。"
   },
   "bg_update_http": {
     "message": "GitHub からエラーが返されました（$1）。",

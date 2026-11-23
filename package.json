@@ -11,7 +11,8 @@
     "test:unit": "node --test test/unit/*.test.js",
     "test": "node test/e2e/run.js edge",
     "test:chrome": "node test/e2e/run.js chrome",
-    "test:package": "node test/e2e/package.js edge"
+    "test:package": "node test/e2e/package.js edge",
+    "test:firefox": "node test/e2e/firefox.js"
   },
   "engines": {
     "node": ">=22"

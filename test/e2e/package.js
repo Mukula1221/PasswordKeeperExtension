@@ -10,11 +10,14 @@ const { build } = require('../../tools/build');
 
 const RELEASE_ID = 'fgmjnolhbeohanamhnomcpmolhdapdkg';
 
-// 用 Windows 內建的解壓縮，確認一般使用者「解壓縮全部」解得開
+// 用 Windows 內建的解壓縮，確認一般使用者「解壓縮全部」解得開。
+// 不帶 PSModulePath：從 PowerShell 7 叫 node 時，這個變數會帶著 7 的模組路徑，Windows PowerShell 會載入 7 的 Expand-Archive，
+// 解完資料夾是空的、也不報錯。
 function unzip(zipFile, dest) {
   fs.rmSync(dest, { recursive: true, force: true });
+  const env = Object.fromEntries(Object.entries(process.env).filter(([k]) => k.toLowerCase() !== 'psmodulepath'));
   execFileSync('powershell', ['-NoProfile', '-NonInteractive', '-Command', 'Expand-Archive -LiteralPath $env:PK_ZIP -DestinationPath $env:PK_DEST -Force'], {
-    env: { ...process.env, PK_ZIP: zipFile, PK_DEST: dest },
+    env: { ...env, PK_ZIP: zipFile, PK_DEST: dest },
     stdio: 'pipe',
   });
 }

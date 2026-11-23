@@ -43,8 +43,9 @@
     return t('wa_security_key_or_phone');
   }
 
+  // Firefox 有 PublicKeyCredential，但擴充功能頁面不能用擴充功能 ID 當 RP ID，見 platform.js
   function supported() {
-    return !!window.PublicKeyCredential;
+    return !!window.PublicKeyCredential && PK.platform.can('extensionWebAuthn');
   }
 
   // 有沒有內建的驗證器（Windows Hello、Touch ID）。沒有的話建鑰匙時就不限定，讓瀏覽器問安全金鑰或手機。

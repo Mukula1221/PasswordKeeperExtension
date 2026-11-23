@@ -38,6 +38,23 @@ To check that the download hasn't been changed, compute its hash in PowerShell a
 Get-FileHash password-keeper-1.14.0.zip
 ```
 
+### Firefox (for testing)
+
+The Firefox version isn't published yet. To try it now, load it temporarily in Firefox. A temporarily loaded extension is removed when you close Firefox, so you have to load it again next time. Don't keep the only copy of your passwords in it, and export an encrypted backup of anything you want to keep.
+
+1. Get the Firefox zip in one of these ways:
+   - With Node.js installed: run `node tools/build.js firefox` in the project folder. The file is `dist/store/password-keeper-<version>-firefox.zip`.
+   - Without Node.js: open this project's [Actions](../../../actions) page, click the latest "CI" run, and download `password-keeper-<version>-firefox.zip` from Artifacts at the bottom. You need to be signed in to GitHub.
+2. Type `about:debugging#/runtime/this-firefox` in Firefox's address bar.
+3. Click "Load Temporary Add-on…" and choose the zip. You don't need to extract it.
+4. Reload any tabs that were open before you loaded it.
+
+How the Firefox version differs from the Edge and Chrome versions:
+
+- App lock has no system verification encryption. You can choose off or custom password encryption.
+- It can't be used in private windows. Firefox's add-on policies don't allow storing data from private browsing, so private windows get no autofill and no offer to save passwords.
+- Locking the screen locks the extension only when the idle time is up.
+
 ## Update
 
 Release versions check GitHub for a new version once a day. When one is available, a green notice appears at the top of the popup, and the Versions tab on the manager page lets you download the new zip or click "Check now". Browsers don't let extensions you loaded yourself replace themselves, so after downloading, install it with the steps below.
@@ -96,7 +113,7 @@ Your passwords exist only in this browser. If you remove the extension, or clear
 - **No encryption by default.** When the protection method is "Off" or the old "Lock screen only", passwords are stored in the browser profile with only simple encryption, and the key is kept in the same place, so anyone who gets into your Windows account can see all your passwords. To protect against this, choose custom password or system verification encryption under "App lock". Encrypted backup files are different: they can't be opened without the backup password.
 - **Developer mode is required.** If your company has also locked developer mode, you can't install the extension. Edge and Chrome may warn about developer mode extensions when they start; choose to keep the extension.
 - **Checking for updates connects to GitHub.** Release versions ask `api.github.com` for the latest version number once a day. It's a single request without cookies, and it never sends passwords, sites, or settings. You can turn it off in the Versions tab on the manager page. Development versions don't check automatically.
-- **Firefox isn't supported.** Firefox background scripts work differently and would need changes.
+- **The Firefox version isn't published yet.** To try it now, load it temporarily as described in "Firefox (for testing)" under Install.
 - **Sites are matched by their full domain.** jira.example.com and gitlab.example.com are two sites, and their accounts don't show up on each other. www.example.com and example.com also count as two.
 - **Verification is tied to the extension ID.** the release version isn't affected by changing folders, but the development version needs app lock set up again after its folder moves. If system verification stops working (for example, your company turns off Windows Hello) or you forget the custom password, you can't unlock. Click "Forgot the custom password, or system verification isn't working?" on the unlock screen to clear your data; with the old lock screen only setting, remove and reinstall the extension. Either way, import a backup afterward, so keep auto backup on. Auto backup still runs while locked.
 - **No autofill in cross-site iframes.** For safety, sign-in pages framed inside another site aren't filled in automatically, but you can still click a field and choose an account.

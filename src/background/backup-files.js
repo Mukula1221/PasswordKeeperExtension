@@ -109,17 +109,29 @@
     });
   }
 
-  // service worker 沒有 URL.createObjectURL，檔案內容用 data URL 交給下載。
+  // 檔案內容交給下載的網址：
+  // Edge、Chrome 的背景程式是 service worker，沒有 URL.createObjectURL，只能用 data URL。
+  // Firefox 的下載不收 data URL（Access denied），背景程式是一般網頁，可以用 blob URL。
+  function contentUrl(content, mime) {
+    if (typeof URL.createObjectURL === 'function') return URL.createObjectURL(new Blob([content], { type: mime }));
+    return 'data:' + mime + ';base64,' + bytesToB64(new TextEncoder().encode(content));
+  }
+
   // 下載編號也回傳，備份紀錄存起來，之後刪紀錄時才找得到檔案。
   async function saveFile({ content, filename, mime, saveAs }) {
-    const url = 'data:' + mime + ';base64,' + bytesToB64(new TextEncoder().encode(content));
-    let id;
+    const url = contentUrl(content, mime);
     try {
-      id = await chrome.downloads.download({ url, filename, saveAs: !!saveAs, conflictAction: 'uniquify' });
-    } catch (err) {
-      throw new Error(/cancel/i.test(err.message) ? t('common_cancelled') : t('bg_download_failed', err.message));
+      let id;
+      try {
+        id = await chrome.downloads.download({ url, filename, saveAs: !!saveAs, conflictAction: 'uniquify' });
+      } catch (err) {
+        throw new Error(/cancel/i.test(err.message) ? t('common_cancelled') : t('bg_download_failed', err.message));
+      }
+      return { id, path: await waitForDownload(id) };
+    } finally {
+      // blob URL 要等下載結束才能釋放，提早釋放會下載失敗
+      if (url.startsWith('blob:')) URL.revokeObjectURL(url);
     }
-    return { id, path: await waitForDownload(id) };
   }
 
   // 手動匯出（加密備份、CSV、挑選匯出）都走這裡：跳另存新檔讓使用者選位置，存完記一筆紀錄
