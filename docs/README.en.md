@@ -2,20 +2,25 @@
 
 [繁體中文](../README.md) | English | [日本語](README.ja.md)
 
-A browser extension that brings back "save passwords" and "autofill" when the browser's own password manager has been turned off. Works in Edge and Chrome.
+A browser extension that brings back "save passwords" and "autofill" when the browser's own password manager has been turned off. Works in Edge and Chrome. The Firefox version is still in testing.
 
-Passwords are stored only in this computer's browser and are never uploaded anywhere. The only time the extension connects to anything outside is once a day, when it asks GitHub whether there's a new version. It sends no data, and you can turn it off.
+Passwords are stored only in this computer's browser and are never uploaded anywhere. The Edge and Chrome versions downloaded from GitHub ask GitHub once a day whether there's a new version. They send no data, and you can turn this off. The Firefox version asks only when you click "Check now". [PRIVACY.md](../PRIVACY.md#privacy-policy) explains what data the extension handles.
 
 ## Features
 
 - Offers to save your password after you sign in, and fills it in the next time you open the sign-in page.
+- Press `Ctrl+Shift+L` to fill in the account you used most recently on the current site.
 - Handles two-step sign-in (username first, password on the next page) and the browser's own sign-in prompts.
 - Generates strong passwords. You choose the length and which characters to use.
+- Quick sign-in: search the accounts for every site from the popup, and press Enter to open that site and fill in the account.
+- Sign in automatically: after autofill, it clicks the sign-in button for you. You choose this for each site.
 - Auto-click: after your username and password are filled in, it clicks a button you picked, such as a single sign-on button.
 - App lock: lock it when you leave your desk, and encrypt your saved passwords with a custom password or with Windows Hello or Touch ID.
-- Encrypted backups and auto backup. You can also move passwords to and from Chrome, Edge, and Firefox with CSV files.
+- Previous passwords and Trash: the last 5 passwords of each account are kept, and deleted accounts stay in the Trash for 30 days, so you can still get them back.
+- Password health check: lists passwords used on several sites, weak passwords, and passwords not changed for over a year.
+- Encrypted backups and auto backup. You can also move passwords to and from Chrome, Edge, and Firefox with CSV files, or export just a few accounts as an encrypted file for a colleague.
 - The interface is available in Traditional Chinese, Taiwanese Hokkien, English, Japanese, Korean, German, Russian, and Thai. It follows your browser language by default, and you can change it at the top right of the manager page. Taiwanese Hokkien can only be chosen there, since browsers have no Taiwanese Hokkien interface.
-- When a new version is out, the popup and the manager page let you know, and you can download it right from the manager page.
+- For versions downloaded from GitHub, the popup and the manager page let you know when a new version is out, and you can download it right from the manager page.
 
 ## Install
 
@@ -107,6 +112,20 @@ Your passwords exist only in this browser. If you remove the extension, or clear
 - **CSV**: "Export CSV" saves an unencrypted CSV file with the same columns that Chrome and Edge use (`name,url,username,password,note`). Chrome, Edge, and Firefox can import it directly. Keep it somewhere safe. More than 3000 accounts are split into several files, because Chrome and Edge import at most 3000 at a time. "Import CSV" reads these files and the password files exported by Chrome, Edge, Firefox, and Safari, including files saved by Excel in Big5.
 - **Move passwords to and from the browser**: Extensions can't read or write the browser's built-in passwords directly, so passwords can only be moved with CSV files, and nothing syncs automatically. The browser password pages are Chrome `chrome://password-manager/settings`, Edge `edge://settings/passwords`, and Firefox `about:logins`; look for export and import there. When you import here, accounts with the same site and username are merged. If the file has an old password that was already changed here, or a Firefox file records an earlier change time, the one here is kept, so moving back and forth won't replace a newer password with an older one. A file without notes won't clear the notes here. Passwords for mobile apps (starting with `android://`) aren't imported. Delete the CSV file when you're done.
 - **Reminder**: If you haven't backed up for more than 30 days and passwords were added or changed in that time, a yellow reminder appears at the top of the toolbar popup. Change the number of days in the "Backup" section of the manager page; 0 turns it off.
+
+## Permissions
+
+| Permission | What it's for |
+| --- | --- |
+| All sites (`http://*/*`, `https://*/*`) | Sign-in forms can be on any site, so the extension needs to find sign-in fields, offer to save, autofill and auto-click on web pages. |
+| `storage` | Keeps your accounts, passwords, settings and backup history in this computer's browser. |
+| `activeTab` | Tells the extension which site the current tab is on when you click the toolbar icon or press the shortcut. |
+| `downloads` | Saves exports and auto backups to your computer, and can also delete a backup file when you delete its history entry. |
+| `alarms` | Wakes the extension at the set time for auto backup and for the GitHub version's daily update check. |
+| `idle` | With app lock on, locks the extension when you haven't used the computer for a while or the screen locks. |
+| `webRequest`, `webRequestAuthProvider` | Answers the browser's own sign-in prompt with a saved account, without looking at any other requests. |
+
+Each page only gets the accounts for its own site. The extension decides which site it is from the address the browser reports, not from anything the page sends. Page content is never sent anywhere.
 
 ## Good to know
 
