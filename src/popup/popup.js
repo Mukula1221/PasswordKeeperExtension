@@ -247,6 +247,13 @@
     }
   });
 
+  // ---- 私密視窗：不能在私密視窗用的瀏覽器只顯示提示，見 platform.js 的 privateWindows ----
+
+  function showPrivateBlocked() {
+    for (const id of ['search', 'searchList', 'main', 'lockScreen', 'lockNow']) $(id).hidden = true;
+    $('privateScreen').hidden = false;
+  }
+
   // ---- 工具鎖定：系統驗證或自訂密碼，都在獨立的解鎖視窗裡做 ----
 
   function showLocked(locked) {
@@ -378,9 +385,31 @@
     });
   }
 
+  // ---- 網站存取權：使用者在瀏覽器收回這個網站的權限後，網頁上不會跳儲存提示，也不會自動填入 ----
+  // Firefox 可以逐站收回，Chrome 可以改成「點選時」。要權限一定要在使用者點擊時叫，所以做成提示列。
+  // 權限的網址規則不能寫連接埠，用通訊協定加主機名稱，同一台主機的每個連接埠都算。
+
+  async function renderAccessBar(url) {
+    const u = new URL(url);
+    const pattern = u.protocol + '//' + u.hostname + '/*';
+    if (await chrome.permissions.contains({ origins: [pattern] })) return;
+    const bar = $('accessBar');
+    bar.textContent = t('pop_site_access_off');
+    bar.hidden = false;
+    bar.addEventListener('click', async () => {
+      if (!(await chrome.permissions.request({ origins: [pattern] }))) return;
+      bar.hidden = true;
+      toast(t('pop_site_access_granted'));
+    });
+  }
+
   (async function init() {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     tab = tabs[0] || null;
+    if (tab && PK.platform.privateBlocked(tab.incognito)) {
+      showPrivateBlocked();
+      return;
+    }
     const site = tab ? siteOf(tab.url || '') : null;
     const settings = await send({ type: 'settings.get' });
     if (settings.ok) writeGenOptions(settings.data.generator);
@@ -398,6 +427,9 @@
     host = site.host;
     origin = site.origin;
     $('site').textContent = host;
-    if (!lock.locked) await render();
+    if (!lock.locked) {
+      renderAccessBar(tab.url);
+      await render();
+    }
   })();
 })();

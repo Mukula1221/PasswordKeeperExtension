@@ -36,6 +36,12 @@
   "pop_locked_hint": {
     "message": "愛驗證過才會當自動填入佮看密碼。"
   },
+  "pop_private_blocked": {
+    "message": "私密視窗袂當用密碼小管家。"
+  },
+  "pop_private_blocked_tip": {
+    "message": "Firefox 的附加元件規定袂當儲存私密瀏覽的資料，所以私密視窗袂自動填入，嘛袂問欲儲存無。"
+  },
   "pop_add_title": {
     "message": "新增這个網站的帳號"
   },
@@ -274,6 +280,12 @@
   "pop_update_bar": {
     "message": "有新版 $1，揤遮看按怎更新。",
     "description": "$1 = version number like 1.14.0. Update reminder bar in the popup."
+  },
+  "pop_site_access_off": {
+    "message": "密碼小管家袂當佇這个網站填入佮儲存密碼，揤遮允准。"
+  },
+  "pop_site_access_granted": {
+    "message": "已經允准，網頁重新整理了後就會當用。"
   },
   "pop_unsupported_page": {
     "message": "這个頁面袂當用，干焦支援 http 佮 https 的網頁",
@@ -1491,6 +1503,9 @@
     "message": "分鐘無動電腦就鎖起來",
     "description": "After the minutes input. See opt_lock_idle_before."
   },
+  "opt_lock_idle_no_screen_tip": {
+    "message": "這个瀏覽器袂通知鎖螢幕，鎖螢幕了後愛等閒置時間到才會鎖。"
+  },
   "opt_lock_on_startup": {
     "message": "瀏覽器重開就鎖起來"
   },
@@ -1837,6 +1852,9 @@
     "message": "這馬的版本是 $1。更新程式了後愛去擴充功能管理頁揤「重新載入」。",
     "description": "$1 = version number like 1.12.0."
   },
+  "opt_version_now_store": {
+    "message": "這馬的版本是 $1。"
+  },
   "opt_version_current": {
     "message": "這馬的版本",
     "description": "Badge next to the installed version in the list."
@@ -1902,6 +1920,9 @@
   },
   "opt_update_dev": {
     "message": "這是直接載入原始碼資料夾的開發版，袂自動檢查。開發版請用 git 更新，莫用下載的 zip 蓋掉原始碼資料夾。"
+  },
+  "opt_update_store": {
+    "message": "這是對商店安裝的版本，商店會自動更新。"
   },
   "opt_dialog_add_title": {
     "message": "新增密碼"
@@ -2312,6 +2333,9 @@
   "bg_site_not_allowed": {
     "message": "干焦會當處理這馬這个網站"
   },
+  "bg_private_window_blocked": {
+    "message": "私密視窗袂當用密碼小管家。"
+  },
   "bg_auto_backup_not_ready": {
     "message": "鎖起來矣，而且猶無會當備份的內容。解鎖了後才閣試一擺"
   },
@@ -2379,6 +2403,9 @@
   },
   "bg_update_busy": {
     "message": "GitHub 暫時毋予查，較停仔才閣試。"
+  },
+  "bg_update_store": {
+    "message": "對商店安裝的版本由商店更新，袂去 GitHub 檢查。"
   },
   "bg_update_http": {
     "message": "GitHub 回應錯誤（$1）。",

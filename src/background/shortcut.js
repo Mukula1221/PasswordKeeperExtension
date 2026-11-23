@@ -9,6 +9,8 @@
     if (command !== 'fill-login') return;
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab || tab.id == null) return;
+    // 不能在私密視窗用的瀏覽器，私密分頁按快捷鍵不填，見 platform.js 的 privateWindows
+    if (PK.platform.privateBlocked(tab.incognito)) return;
     const host = hostFromUrl(tab.url || '');
     if (!host) return;
     if (await PK.lock.isLocked()) {

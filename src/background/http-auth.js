@@ -10,6 +10,8 @@
 
   async function handleAuthRequired(details) {
     if (details.isProxy) return {};
+    // 不能在私密視窗用的瀏覽器，私密分頁的驗證視窗照常跳，見 platform.js 的 privateWindows
+    if (PK.platform.privateBlocked(details.incognito)) return {};
     const host = ((details.challenger && details.challenger.host) || '').toLowerCase();
     if (!host) return {};
     // 同一個請求只回答一次。回答錯了瀏覽器會再問，第二次就放給瀏覽器的視窗，不然會無限重試。

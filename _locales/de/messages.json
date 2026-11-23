@@ -36,6 +36,12 @@
   "pop_locked_hint": {
     "message": "Bestätigen Sie Ihre Identität, um Passwörter automatisch auszufüllen und anzuzeigen."
   },
+  "pop_private_blocked": {
+    "message": "Passwort-Hüter kann in privaten Fenstern nicht verwendet werden."
+  },
+  "pop_private_blocked_tip": {
+    "message": "Laut den Firefox-Richtlinien für Add-ons dürfen Daten aus dem privaten Modus nicht gespeichert werden. In privaten Fenstern wird daher weder automatisch ausgefüllt noch das Speichern angeboten."
+  },
   "pop_add_title": {
     "message": "Konto für diese Website hinzufügen"
   },
@@ -274,6 +280,12 @@
   "pop_update_bar": {
     "message": "Version $1 ist verfügbar. Hier klicken, um zu sehen, wie Sie aktualisieren.",
     "description": "$1 = version number like 1.14.0. Update reminder bar in the popup."
+  },
+  "pop_site_access_off": {
+    "message": "Passwort-Hüter kann auf dieser Website keine Passwörter ausfüllen oder speichern. Hier klicken, um es zu erlauben."
+  },
+  "pop_site_access_granted": {
+    "message": "Erlaubt. Laden Sie die Seite neu, um es zu nutzen."
   },
   "pop_unsupported_page": {
     "message": "Auf dieser Seite nicht verfügbar. Nur http- und https-Seiten werden unterstützt.",
@@ -1491,6 +1503,9 @@
     "message": "Minuten Inaktivität sperren",
     "description": "After the minutes input. See opt_lock_idle_before."
   },
+  "opt_lock_idle_no_screen_tip": {
+    "message": "Dieser Browser meldet keine Bildschirmsperre. Nach dem Sperren des Bildschirms wird erst gesperrt, wenn die Leerlaufzeit abgelaufen ist."
+  },
   "opt_lock_on_startup": {
     "message": "Bei Browserneustart sperren"
   },
@@ -1837,6 +1852,9 @@
     "message": "Aktuelle Version: $1. Klicken Sie nach dem Aktualisieren der Dateien auf der Erweiterungsseite auf „Neu laden“.",
     "description": "$1 = version number like 1.12.0."
   },
+  "opt_version_now_store": {
+    "message": "Aktuelle Version: $1."
+  },
   "opt_version_current": {
     "message": "Aktuell",
     "description": "Badge next to the installed version in the list."
@@ -1902,6 +1920,9 @@
   },
   "opt_update_dev": {
     "message": "Dies ist die Entwicklerversion, die direkt aus dem Quellordner geladen wurde. Sie prüft daher nicht automatisch. Aktualisieren Sie sie mit git und entpacken Sie keine heruntergeladene ZIP-Datei über den Quellordner."
+  },
+  "opt_update_store": {
+    "message": "Diese Version wurde aus einem Store installiert und wird von dort automatisch aktualisiert."
   },
   "opt_dialog_add_title": {
     "message": "Passwort hinzufügen"
@@ -2312,6 +2333,9 @@
   "bg_site_not_allowed": {
     "message": "Das geht nur für die aktuelle Website"
   },
+  "bg_private_window_blocked": {
+    "message": "Passwort-Hüter kann in privaten Fenstern nicht verwendet werden."
+  },
   "bg_auto_backup_not_ready": {
     "message": "Gesperrt, und es sind noch keine Daten zum Sichern bereit. Entsperren Sie und versuchen Sie es erneut."
   },
@@ -2379,6 +2403,9 @@
   },
   "bg_update_busy": {
     "message": "GitHub begrenzt gerade die Anfragen. Versuchen Sie es später noch einmal."
+  },
+  "bg_update_store": {
+    "message": "Aus einem Store installierte Versionen werden vom Store aktualisiert und prüfen nicht bei GitHub."
   },
   "bg_update_http": {
     "message": "GitHub hat einen Fehler gemeldet ($1).",

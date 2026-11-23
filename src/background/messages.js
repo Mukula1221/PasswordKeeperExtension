@@ -608,6 +608,7 @@
     await PK.locale.localeReady();
     const rule = MESSAGE_RULES[msg.type];
     if (rule.from !== 'any' && !PK.callers.fromExtensionPage(sender)) throw new Error(t('bg_extension_page_only'));
+    if (PK.callers.fromBlockedPrivateTab(sender)) throw new Error(t('bg_private_window_blocked'));
     if (!rule.whenLocked && (await PK.lock.isLocked())) throw PK.lock.lockedError();
     return handlers[msg.type](msg, sender);
   }

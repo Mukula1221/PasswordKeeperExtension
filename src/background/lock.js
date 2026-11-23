@@ -147,6 +147,8 @@
     const current = settings.lock.mode;
     // 只鎖畫面留給 1.15.0 以前的舊設定照常用，不能新選
     if (mode === 'screen' && current !== 'screen') throw new Error(t('bg_lock_mode_unknown'));
+    // 管理頁在這種瀏覽器不顯示，這裡再擋一次，見 platform.js 的 extensionWebAuthn
+    if (mode === 'hello' && !PK.platform.can('extensionWebAuthn')) throw new Error(t('wa_unsupported'));
     // 先做完所有檢查才動資料，中途失敗不會留下改一半的狀態
     if (needsProof(current, mode)) await checkProof(current, proof);
     if (isEncryptedMode(mode) && !(await PK.autoBackup.getAutoBackupKey())) throw new Error(t('bg_lock_needs_backup_password'));

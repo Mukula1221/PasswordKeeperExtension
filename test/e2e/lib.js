@@ -14,10 +14,26 @@ const WORK = path.join(os.tmpdir(), 'pk-e2e');
 const BROWSER_PATHS = {
   edge: ['C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', 'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe'],
   chrome: ['C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'],
+  // 最後一個是從 Microsoft Store 裝的 Firefox，執行檔是 WindowsApps 底下的捷徑
+  firefox: [
+    'C:\\Program Files\\Mozilla Firefox\\firefox.exe',
+    'C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe',
+    path.join(process.env.LOCALAPPDATA || '', 'Microsoft', 'WindowsApps', 'firefox.exe'),
+  ],
 };
 
+// Microsoft Store 裝的程式，執行檔是 WindowsApps 底下的捷徑，existsSync 跟過去會找不到，要用 lstat 看捷徑本身
+function fileExists(p) {
+  try {
+    fs.lstatSync(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function findBrowser(nameOrPath) {
-  const found = (BROWSER_PATHS[nameOrPath] || [nameOrPath]).find((p) => fs.existsSync(p));
+  const found = (BROWSER_PATHS[nameOrPath] || [nameOrPath]).find(fileExists);
   if (!found) throw new Error('找不到瀏覽器：' + nameOrPath + '。可以直接給執行檔的完整路徑');
   return found;
 }

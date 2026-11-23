@@ -1,6 +1,7 @@
 name: Release
 
-# 推上 v1.2.3 這種標籤時：確認標籤跟 manifest.json 的版本一樣、打包，建立 GitHub Release 並附上 zip
+# 推上 v1.2.3 這種標籤時：確認標籤跟 manifest.json 的版本一樣、打包，建立 GitHub Release 並附上 GitHub 版的 zip。
+# 商店版不放上 Release，放在這次執行的 Artifacts，從那裡下載後手動上傳到各商店的後台。
 on:
   push:
     tags: ['v*.*.*']
@@ -24,7 +25,15 @@ jobs:
       - name: 單元測試
         run: node --test test/unit/*.test.js
       - name: 打包
-        run: node tools/build.js
+        run: node tools/build.js all
+      - uses: actions/upload-artifact@v7
+        with:
+          path: dist/store/*-chromium-store.zip
+          archive: false
+      - uses: actions/upload-artifact@v7
+        with:
+          path: dist/store/*-firefox.zip
+          archive: false
       - name: 產生這一版的說明
         run: node tools/release-notes.js "$GITHUB_REF_NAME" > release-notes.md
       - name: 建立 Release 並附上打包檔

@@ -1,8 +1,10 @@
-// 打包正式版，旁邊附一個 .sha256 讓下載的人核對檔案沒被改過。解壓縮出來的資料夾可以直接在擴充功能頁「載入解壓縮」。
+// 打包正式版，旁邊附一個 .sha256 讓下載的人核對檔案沒被改過。
 // 用法：
-//   node tools/build.js           Edge、Chrome 版：dist/password-keeper-<版本>.zip
-//   node tools/build.js firefox   Firefox 版（還沒正式支援，只給測試）：dist/firefox/password-keeper-<版本>-firefox.zip
-// 各瀏覽器打包的檔案一樣，只有 manifest.json 不同，程式裡不同的地方集中在 src/shared/platform.js。
+//   node tools/build.js                  GitHub 版：dist/password-keeper-<版本>.zip，Edge、Chrome「載入解壓縮」用
+//   node tools/build.js chromium-store   Chromium 商店版：dist/store/password-keeper-<版本>-chromium-store.zip
+//   node tools/build.js firefox          Firefox 版：dist/store/password-keeper-<版本>-firefox.zip
+//   node tools/build.js all              三種都打包
+// 各版本打包的檔案一樣，只有 manifest.json 不同，程式裡不同的地方集中在 src/shared/platform.js。
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -36,14 +38,23 @@ function overlay(base, patch) {
   return out;
 }
 
+// 商店版放 dist/store/，發版時不會跟 GitHub 版的 zip 一起放上 Releases
 const TARGETS = {
-  chromium: {
+  // GitHub Releases 的 zip，Edge、Chrome 載入解壓縮。檔名不能改：舊版檢查新版時，找的就是這個檔名。
+  github: {
     dir: 'dist',
     zip: zipName,
     manifest: (m) => ({ ...m, key: RELEASE_KEY }),
   },
+  // Chrome Web Store、Edge Add-ons、Opera 共用。不放 key：商店會給自己的 ID，Chrome Web Store 新建項目時也不收 key。
+  'chromium-store': {
+    dir: 'dist/store',
+    zip: (version) => 'password-keeper-' + version + '-chromium-store.zip',
+    manifest: (m) => ({ ...m }),
+  },
+  // Firefox 的商店 AMO。Firefox 不支援 service worker 寫法，背景程式改列在 background.scripts。
   firefox: {
-    dir: 'dist/firefox',
+    dir: 'dist/store',
     zip: (version) => 'password-keeper-' + version + '-firefox.zip',
     manifest: (m) => {
       const patch = JSON.parse(fs.readFileSync(path.join(ROOT, 'platforms', 'firefox', 'manifest.json'), 'utf8'));
@@ -57,12 +68,12 @@ function targetManifest(target, manifest = readManifest()) {
   return TARGETS[target].manifest(manifest);
 }
 
-function build(target = 'chromium') {
+function build(target = 'github') {
   const manifest = readManifest();
   const entry = readChangelog().find((v) => v.version === manifest.version);
   if (!entry) throw new Error('changelog.js 沒有 ' + manifest.version + ' 這一版，先補版本說明再打包');
-  const t = TARGETS[target];
   const finalManifest = targetManifest(target, manifest);
+  const t = TARGETS[target];
   const entries = packageFiles().map((name) => ({
     name,
     data: name === 'manifest.json' ? Buffer.from(JSON.stringify(finalManifest, null, 2) + '\n') : fs.readFileSync(path.join(ROOT, name)),
@@ -80,9 +91,12 @@ function build(target = 'chromium') {
 }
 
 if (require.main === module) {
-  const r = build(process.argv[2] || 'chromium');
-  console.log('已打包 ' + path.relative(ROOT, r.file) + '（' + r.count + ' 個檔案，' + r.bytes + ' bytes）');
-  console.log('SHA-256 ' + r.sha256);
+  const arg = process.argv[2] || 'github';
+  for (const target of arg === 'all' ? Object.keys(TARGETS) : [arg]) {
+    const r = build(target);
+    console.log('已打包 ' + path.relative(ROOT, r.file) + '（' + r.count + ' 個檔案，' + r.bytes + ' bytes）');
+    console.log('SHA-256 ' + r.sha256);
+  }
 }
 
 module.exports = { build, targetManifest, backgroundScripts, RELEASE_KEY, TARGETS };

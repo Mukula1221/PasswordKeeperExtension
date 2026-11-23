@@ -21,6 +21,8 @@
   const HOST = location.hostname.toLowerCase();
   const ORIGIN = location.origin;
   if (!HOST || !/^https?:$/.test(location.protocol)) return;
+  // 不能在私密視窗用的瀏覽器，私密分頁裡什麼都不做：不填入、不問要不要儲存。見 platform.js 的 privateWindows
+  if (PK.platform.privateBlocked(PK.platform.inPrivateContext())) return;
 
   const TAG = '[密碼小管家]'; // i18n-ignore：console 訊息的前綴，給開發者看的
   const IS_TOP = window.top === window;

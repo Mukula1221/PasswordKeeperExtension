@@ -1107,17 +1107,16 @@
     $('lockHowHello').textContent = t('opt_lock_how_hello', name);
     // 舊的只鎖畫面沒有卡片，三張都不會選到，上面多一行請使用者改選
     $('lockLegacy').hidden = st.mode !== 'screen';
-    for (const radio of document.querySelectorAll('input[name="lockMode"]')) {
-      radio.checked = radio.value === st.mode;
-      // 不支援系統驗證的瀏覽器只能選關閉和自訂密碼加密
-      radio.disabled = !pkWebAuthn.supported() && radio.value === 'hello';
-    }
+    for (const radio of document.querySelectorAll('input[name="lockMode"]')) radio.checked = radio.value === st.mode;
+    // 不支援系統驗證的瀏覽器（例如 Firefox，見 platform.js）不顯示系統驗證加密，只能選關閉和自訂密碼加密
+    $('lockCardHello').hidden = !pkWebAuthn.supported();
     $('lockChangePw').hidden = st.mode !== 'password';
     const encrypted = isEncryptedLock(st.mode);
     $('lockMinutes').value = st.idleMinutes;
     // 加密的保護方式，瀏覽器重開後金鑰就不在記憶體，一定要重新解鎖，不給取消
     $('lockOnStartup').checked = encrypted || !!st.onStartup;
     $('lockMinutes').disabled = !st.enabled;
+    $('lockIdleTip').hidden = PK.platform.can('screenLockEvents');
     $('lockOnStartup').disabled = !st.enabled || encrypted;
     $('lockInfo').textContent = pkWebAuthn.supported() ? '' : t('opt_lock_info_no_hello');
     // 沒有 Windows Hello、Touch ID 的電腦，系統驗證加密要靠安全金鑰或手機，就不推薦
@@ -1214,6 +1213,7 @@
       }
       // 失敗或取消時，選項要回到實際的保護方式
       await renderLock();
+      for (const r of document.querySelectorAll('input[name="lockMode"]')) r.disabled = false;
     });
   }
 
@@ -2168,6 +2168,18 @@
     else if (!latest) state.textContent = t('opt_update_no_release');
     else state.textContent = t('opt_update_latest');
     $('updateCheckedAt').textContent = info.checkedAt ? t('opt_update_checked_at', fmtDate(info.checkedAt)) : '';
+    // 商店版由商店更新，不連 GitHub，檢查新版的東西都不顯示
+    const store = info.channel === 'store';
+    if (store) {
+      state.className = '';
+      state.textContent = t('opt_update_store');
+      $('updateCheckedAt').textContent = '';
+      $('versionNow').textContent = t('opt_version_now_store', info.current);
+    }
+    $('updateCheckNow').hidden = store;
+    $('updateAutoWrap').hidden = store;
+    // 商店版不用自己重新載入，說明擴充功能管理頁在哪的那一行也收掉
+    $('browserHint').hidden = store;
     $('updateSteps').hidden = !info.available;
     $('updateDownload').hidden = !(info.available && latest.zipUrl);
     $('updateExtensions').hidden = !info.available;
@@ -2175,7 +2187,7 @@
     // 開發版不會自動檢查，勾選框照實際情況顯示沒勾；設定本身留著，換成正式版時照舊
     $('updateAuto').checked = info.auto && info.release;
     $('updateAuto').disabled = !info.release;
-    $('updateDev').hidden = info.release;
+    $('updateDev').hidden = info.channel !== 'dev';
     $('headerUpdate').hidden = !info.available;
     if (info.available) $('headerUpdate').title = t('opt_header_update_title', latest.version);
   }
