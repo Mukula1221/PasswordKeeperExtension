@@ -2309,6 +2309,9 @@
   "bg_extension_page_only": {
     "message": "Nur die eigenen Seiten von Passwort-Hüter können das tun"
   },
+  "bg_site_not_allowed": {
+    "message": "Das geht nur für die aktuelle Website"
+  },
   "bg_auto_backup_not_ready": {
     "message": "Gesperrt, und es sind noch keine Daten zum Sichern bereit. Entsperren Sie und versuchen Sie es erneut."
   },

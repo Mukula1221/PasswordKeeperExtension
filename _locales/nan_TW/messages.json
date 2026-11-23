@@ -2309,6 +2309,9 @@
   "bg_extension_page_only": {
     "message": "干焦密碼小管家家己的頁面會當做這件事"
   },
+  "bg_site_not_allowed": {
+    "message": "干焦會當處理這馬這个網站"
+  },
   "bg_auto_backup_not_ready": {
     "message": "鎖起來矣，而且猶無會當備份的內容。解鎖了後才閣試一擺"
   },

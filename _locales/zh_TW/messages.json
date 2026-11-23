@@ -2309,6 +2309,9 @@
   "bg_extension_page_only": {
     "message": "只有密碼小管家自己的頁面可以做這件事"
   },
+  "bg_site_not_allowed": {
+    "message": "只能處理目前這個網站"
+  },
   "bg_auto_backup_not_ready": {
     "message": "已鎖定，而且還沒有可以備份的內容。解鎖後再試一次"
   },

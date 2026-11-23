@@ -59,9 +59,20 @@ test/                測試頁和 e2e 測試
 | `tools/make-icons.js` | 產生圖示，只有改圖示時才需要。 |
 | `test/` | 開發時用的測試頁，正式版不會帶。 |
 | `test/e2e/` | 把擴充功能裝進真的瀏覽器跑完整流程的測試。 |
+| `test/unit/` | 不開瀏覽器的單元測試，把背景程式載進 Node 測訊息規則和計算用的函式。 |
 | `.github/workflows/` | GitHub Actions：推上去或開 PR 時檢查和打包、推 `v` 開頭的標籤時建立 Release、手動跑 e2e。 |
 
 `src/` 裡的頁面用相對路徑載入別的檔案，例如 `../shared/ui.css`、`../../icons/icon32.png`。背景程式的 `importScripts` 也是從 `background.js` 所在的資料夾算。只有 `chrome.runtime.getURL` 要寫從最外層算的完整路徑，例如 `src/options/options.html`。
+
+## 背景程式的訊息
+
+小視窗、管理頁、解鎖視窗和網頁裡的 `content.js` 都用 `chrome.runtime.sendMessage` 送 `{ type: 'entries.forHost', ... }` 這種訊息給背景程式。網頁的執行程序被攻破時，攻擊者可以冒充 `content.js` 送任何訊息，所以背景程式要檢查是誰送來的。
+
+- 每種訊息都要在 `background.js` 的 `MESSAGE_RULES` 寫一行，沒寫的訊息一律拒絕。
+- `from: 'any'` 是 `content.js` 也能叫，`from: 'extension'` 只收擴充功能自己的頁面。`content.js` 用不到的訊息一律寫 `'extension'`。
+- 鎖住時也要能叫的訊息加 `whenLocked: true`，沒寫就要先解鎖。
+- `content.js` 送來的網站一律用 `callerHost()` 從瀏覽器給的 `sender.url` 算，不信訊息裡帶的 `host`。存帳號、設成永遠不問只能是 `contentSaveSites()` 列的網站。
+- `test/unit/` 會比對 `MESSAGE_RULES` 和實際的訊息是不是一對一，也會比對 `from: 'any'` 的訊息和 `content.js` 送得出去的訊息是不是同一批。
 
 ## 介面文字和多國語系
 
@@ -95,17 +106,22 @@ test/                測試頁和 e2e 測試
 
 ## 檢查和測試
 
-改完送出之前，至少跑前兩項：
+改完送出之前，至少跑前三項：
 
 ```bash
 node tools/check.js
 ```
 
 ```bash
+node --test test/unit/*.test.js
+```
+
+```bash
 node test/e2e/run.js
 ```
 
-- `node tools/check.js`：檢查版本號、版本紀錄、打包清單和程式語法。
+- `node tools/check.js`：檢查版本號、版本紀錄、打包清單和程式語法。要打包的程式裡出現 `innerHTML`、`eval`、`new Function`、`document.write` 這類會把字串當成 HTML 或程式執行的寫法也會擋下來，畫面一律用 `textContent`、`createElement` 建。
+- `node --test test/unit/*.test.js`：不開瀏覽器，幾秒鐘跑完。把 `background.js` 載進 Node，配一份放在記憶體的假 chrome API，測訊息規則和計算用的函式。CI 每次都會跑。
 - `node test/e2e/run.js`：把擴充功能裝進真的 Edge 跑完整流程，大約 3 分鐘。看不到視窗，也不會動到平常用的瀏覽器設定。後面加 `chrome` 改測 Chrome，再加一個關鍵字只跑名稱含那個字的案例，例如 `node test/e2e/run.js edge 解鎖視窗`。
 - `node test/e2e/package.js`：打包之後解壓縮載入，確認擴充功能 ID 固定，解壓縮到別的資料夾裝新版時資料還在。
 

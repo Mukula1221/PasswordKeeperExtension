@@ -56,7 +56,10 @@ function check(cond, label) {
     let { w, id } = await workerOf(b);
     check(id === RELEASE_ID, '擴充功能 ID 要固定是 ' + RELEASE_ID + '，實際 ' + id);
     console.log('PASS 解壓縮後可以直接載入，ID ' + id);
-    await w.eval(`handlers['entries.save']({ entry: { host: 'example.test', origin: 'https://example.test', username: 'package-test', password: 'not-a-real-one' } }).then(() => true)`);
+    // 背景程式會看 sender 是誰，這裡假裝是管理頁送來的
+    await w.eval(
+      `handlers['entries.save']({ entry: { host: 'example.test', origin: 'https://example.test', username: 'package-test', password: 'not-a-real-one' } }, { url: extensionOrigin() + '/src/options/options.html' }).then(() => true)`
+    );
 
     const { id: loadedId } = await b.cdp.send('Extensions.loadUnpacked', { path: next });
     check(loadedId === RELEASE_ID, '從別的資料夾載入新版，ID 要一樣，實際 ' + loadedId);

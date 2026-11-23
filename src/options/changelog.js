@@ -5,6 +5,29 @@
 // 翻譯直接寫在這裡、不用 t()：tools/ 產生 CHANGELOG.md 和 GitHub Release 說明時也會讀這個檔，那裡沒有 chrome.i18n。
 const CHANGELOG = [
   {
+    version: '1.17.1',
+    date: '2026-11-23',
+    items: {
+      zh_TW: [
+        '加強安全：網頁上的自動填入和「要儲存這組密碼嗎？」只能讀寫目前網站的帳號。就算瀏覽器分頁被惡意程式攻破，也拿不到其他網站存著的密碼。',
+        '讀全部密碼、匯出備份、改設定、換保護方式，只接受工具列小視窗和管理頁的要求。',
+      ],
+      en: [
+        'Security hardening: autofill and the "Save this password?" prompt on web pages can only read and save accounts for the current site. Even if malicious code takes over a browser tab, it can\'t get the passwords saved for other sites.',
+        'Reading all passwords, exporting backups, changing settings, and changing the protection method are only accepted from the toolbar popup and the manager page.',
+      ],
+      ja: [
+        'セキュリティを強化しました。Web ページ上の自動入力と「このパスワードを保存しますか？」は、現在のサイトのアカウントだけを読み書きできます。ブラウザーのタブが悪意のあるコードに乗っ取られても、ほかのサイトに保存されたパスワードは取得できません。',
+        'すべてのパスワードの読み取り、バックアップのエクスポート、設定の変更、保護方式の変更は、ツールバーのポップアップと管理ページからの要求だけを受け付けます。',
+      ],
+    },
+    notes: {
+      zh_TW: ['平常的用法沒有改變。'],
+      en: ['Nothing changes in everyday use.'],
+      ja: ['普段の使い方は変わりません。'],
+    },
+  },
+  {
     version: '1.17.0',
     date: '2026-11-22',
     items: {

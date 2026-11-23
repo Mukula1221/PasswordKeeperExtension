@@ -2309,6 +2309,9 @@
   "bg_extension_page_only": {
     "message": "この操作はパスワードキーパー自身のページでのみ実行できます"
   },
+  "bg_site_not_allowed": {
+    "message": "現在のサイトに対してのみ実行できます"
+  },
   "bg_auto_backup_not_ready": {
     "message": "ロック中で、バックアップできる内容がまだありません。ロックを解除してからもう一度お試しください"
   },

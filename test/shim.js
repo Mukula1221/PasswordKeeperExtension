@@ -38,7 +38,9 @@
           responded = true;
           if (cb) setTimeout(() => cb(r), 0);
         };
-        for (const fn of listeners) fn(msg, { tab: { id: 1 } }, respond);
+        // 測試頁把小視窗、管理頁、content.js 放在同一頁，背景程式一律當成擴充功能自己的頁面
+        const sender = { tab: { id: 1, url: location.href }, url: location.href };
+        for (const fn of listeners) fn(msg, sender, respond);
       },
       openOptionsPage() {},
     },

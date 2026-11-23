@@ -8,6 +8,7 @@
     "build": "node tools/build.js",
     "changelog": "node tools/changelog.js",
     "release-notes": "node tools/release-notes.js",
+    "test:unit": "node --test test/unit/*.test.js",
     "test": "node test/e2e/run.js edge",
     "test:chrome": "node test/e2e/run.js chrome",
     "test:package": "node test/e2e/package.js edge"

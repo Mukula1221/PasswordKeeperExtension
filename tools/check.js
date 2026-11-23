@@ -141,6 +141,25 @@ function jsFilesUnder(rel) {
   return fs.readdirSync(full).flatMap((name) => jsFilesUnder(rel + '/' + name));
 }
 
+// 擴充功能會碰到網頁上的字串，這幾種寫法會讓字串被當成 HTML 或程式執行，一律不准出現在要打包的程式裡。
+// 畫面一律用 textContent、createElement 建。
+const UNSAFE_CODE = [
+  [/\.(?:innerHTML|outerHTML)\b|\binsertAdjacentHTML\s*\(|\bsetHTMLUnsafe\s*\(|\bcreateContextualFragment\s*\(/, '用 HTML 字串建畫面'],
+  [/\beval\s*\(|\bnew\s+Function\s*\(/, '把字串當程式執行'],
+  [/\bdocument\.write(?:ln)?\s*\(/, '用 document.write'],
+  [/\bset(?:Timeout|Interval)\s*\(\s*['"`]/, '把字串傳給 setTimeout、setInterval'],
+];
+
+function checkUnsafeCode() {
+  for (const file of packageFiles().filter((f) => f.endsWith('.js'))) {
+    readText(file)
+      .split('\n')
+      .forEach((line, i) => {
+        for (const [re, what] of UNSAFE_CODE) if (re.test(line)) problems.push(file + ':' + (i + 1) + ' 不能' + what);
+      });
+  }
+}
+
 function checkSyntax() {
   const files = [...packageFiles().filter((f) => f.endsWith('.js')), ...jsFilesUnder('tools'), ...jsFilesUnder('test')];
   for (const file of files) {
@@ -157,6 +176,7 @@ const manifest = readManifest();
 checkVersions(manifest);
 checkPackage(manifest);
 checkI18n(manifest);
+checkUnsafeCode();
 const checked = checkSyntax();
 if (problems.length) {
   console.error('檢查沒過：');

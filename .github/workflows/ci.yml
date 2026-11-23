@@ -19,6 +19,8 @@ jobs:
           check-latest: true
       - name: 檢查
         run: node tools/check.js
+      - name: 單元測試
+        run: node --test test/unit/*.test.js
       - name: 打包
         run: node tools/build.js
       # 打包檔放在這次執行頁面最下面的 Artifacts，名稱就是 zip 的檔名。
