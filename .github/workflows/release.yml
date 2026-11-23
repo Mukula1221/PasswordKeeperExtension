@@ -1,7 +1,7 @@
 name: Release
 
-# 推上 v1.2.3 這種標籤時：確認標籤跟 manifest.json 的版本一樣、打包，建立 GitHub Release 並附上 GitHub 版的 zip。
-# 商店版不放上 Release，放在這次執行的 Artifacts，從那裡下載後手動上傳到各商店的後台。
+# 推上 v1.2.3 這種標籤時：確認標籤跟 manifest.json 的版本一樣、打包，建立標題是 v1.2.3 的 GitHub Release。
+# Release 附上三種 zip 和各自的 .sha256：GitHub 版給使用者裝，Chromium 商店版和 Firefox 版從這裡下載後手動上傳到各商店的後台。
 on:
   push:
     tags: ['v*.*.*']
@@ -26,17 +26,9 @@ jobs:
         run: node --test test/unit/*.test.js
       - name: 打包
         run: node tools/build.js all
-      - uses: actions/upload-artifact@v7
-        with:
-          path: dist/store/*-chromium-store.zip
-          archive: false
-      - uses: actions/upload-artifact@v7
-        with:
-          path: dist/store/*-firefox.zip
-          archive: false
       - name: 產生這一版的說明
         run: node tools/release-notes.js "$GITHUB_REF_NAME" > release-notes.md
       - name: 建立 Release 並附上打包檔
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/*.zip dist/*.sha256 --title "密碼小管家 ${GITHUB_REF_NAME#v}" --notes-file release-notes.md
+        run: gh release create "$GITHUB_REF_NAME" dist/*.zip dist/*.sha256 dist/store/*.zip dist/store/*.sha256 --title "$GITHUB_REF_NAME" --notes-file release-notes.md

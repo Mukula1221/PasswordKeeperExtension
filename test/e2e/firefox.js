@@ -9,7 +9,7 @@ const path = require('path');
 const { findBrowser, startServer, sleep, WORK } = require('./lib');
 const { launchFirefox, openTab } = require('./bidi');
 const PACKAGE_FILES = require('../../tools/files');
-const { targetManifest } = require('../../tools/build');
+const { targetManifest, build } = require('../../tools/build');
 
 const ROOT = path.join(__dirname, '..', '..');
 // 跟 run.js、package.js 錯開，同時跑也不會搶
@@ -26,6 +26,22 @@ const EXT = 'moz-extension://' + UUID + '/';
 
 const MASTER = 'firefox-master-123';
 const BACKUP_PASSWORD = 'firefox-backup-123';
+
+const GH_RELEASES = 'https://github.com/Mukula1221/PasswordKeeperExtension/releases/';
+
+// 假的 GitHub /releases/latest，?v= 是版本號。附檔跟 release.yml 放上去的一樣。
+const ROUTES = {
+  '/fake-gh/latest': (url) => {
+    const v = url.searchParams.get('v');
+    const asset = (name) => ({ name, browser_download_url: GH_RELEASES + 'download/v' + v + '/' + name });
+    return JSON.stringify({
+      tag_name: 'v' + v,
+      html_url: GH_RELEASES + 'tag/v' + v,
+      published_at: '2026-11-23T04:00:00Z',
+      assets: ['.zip', '.zip.sha256', '-firefox.zip', '-firefox.zip.sha256'].map((ext) => asset('password-keeper-' + v + ext)),
+    });
+  },
+};
 
 fs.mkdirSync(SHOTS, { recursive: true });
 
@@ -88,13 +104,13 @@ let options;
 const send = (msg) => options.eval(`new Promise((resolve) => chrome.runtime.sendMessage(${JSON.stringify(msg)}, resolve))`);
 const t = (key, ...subs) => options.eval(`PK.i18n.t(${JSON.stringify(key)}, ...${JSON.stringify(subs)})`);
 
-test('裝得起來：背景程式收得到訊息，認得出是 Firefox、開發版', async () => {
+test('裝得起來：背景程式收得到訊息，認得出是 Firefox、暫時載入的 Firefox 版', async () => {
   const st = await send({ type: 'lock.status' });
   check(st && st.ok, '背景程式要回 lock.status：' + JSON.stringify(st));
   check((await options.eval('PK.platform.engine()')) === 'firefox', '要認得出是 Firefox');
   check((await options.eval('PK.platform.extensionOrigin()')) === EXT.slice(0, -1), '擴充功能網址要是 moz-extension://');
   const up = await send({ type: 'update.status' });
-  check(up.ok && up.data.channel === 'dev', '暫時載入的要算開發版：' + JSON.stringify(up));
+  check(up.ok && up.data.channel === 'firefox', '暫時載入的要算 Firefox 版：' + JSON.stringify(up));
   const title = await options.eval(`document.querySelector('h1').textContent`);
   check(title === (await t('ext_name')), '管理頁要套上介面文字：' + title);
 });
@@ -215,6 +231,57 @@ test('小視窗：打得開，畫面有套上介面文字', async () => {
   }
 });
 
+// Firefox 的背景程式是一般頁面，管理頁拿得到，可以把 GitHub 換成 ROUTES 的假 GitHub
+const useUpdateApi = (url) => options.eval(`chrome.runtime.getBackgroundPage().then((bg) => (bg.PK.update.useUpdateApi(${JSON.stringify(url)}), true))`);
+
+test('版本分頁：寫明是暫時載入的 Firefox 版，有新版時下載 Firefox 版的 zip', async () => {
+  let page = null;
+  try {
+    await useUpdateApi(ORIGIN + '/fake-gh/latest?v=99.0.0');
+    const res = await send({ type: 'update.check' });
+    check(res.ok && res.data.available && !res.data.release, '要看出有新版，自動檢查不能打開：' + JSON.stringify(res));
+    check(res.data.latest.zipUrl === GH_RELEASES + 'download/v99.0.0/password-keeper-99.0.0-firefox.zip', '要下載 Firefox 版的 zip：' + res.data.latest.zipUrl);
+    page = await openTab(fx.bidi, EXT + 'src/options/options.html#versions', 1500);
+    const view = await page.eval(`(() => {
+      const shown = (id) => document.getElementById(id).checkVisibility();
+      return {
+        firefox: shown('updateFirefox'),
+        dev: shown('updateDev'),
+        stepsFirefox: shown('updateStepsFirefox'),
+        steps: shown('updateSteps'),
+        download: shown('updateDownload'),
+        extensions: shown('updateExtensions'),
+        autoDisabled: document.getElementById('updateAuto').disabled,
+      };
+    })()`);
+    check(view.firefox && !view.dev, '要說是暫時載入的 Firefox 版，不是開發版：' + JSON.stringify(view));
+    check(view.stepsFirefox && !view.steps && view.download, '要寫 Firefox 的載入步驟，給下載按鈕：' + JSON.stringify(view));
+    check(!view.extensions && view.autoDisabled, 'Firefox 開不了擴充功能管理頁，不顯示那顆按鈕，自動檢查不能勾：' + JSON.stringify(view));
+    await page.screenshot(path.join(SHOTS, 'ff-update-available.png'));
+  } finally {
+    await useUpdateApi(null);
+    await options.eval(`chrome.storage.local.remove('updateInfo').then(() => true)`);
+    if (page) await page.close();
+  }
+});
+
+// 照「版本」分頁寫的步驟：拿打包出來的 Firefox 版 zip 本身，再暫時載入一次。
+// 會重新啟動擴充功能，所以排在一般視窗的最後一個。
+test('載入新版：Firefox 版的 zip 再暫時載入一次，存的帳號和工具鎖定都還在', async () => {
+  const { file } = build('firefox');
+  await fx.bidi.send('webExtension.install', { extensionData: { type: 'archivePath', path: file } });
+  await sleep(1500);
+  options = await openTab(fx.bidi, EXT + 'src/options/options.html', 1500);
+  const st = await send({ type: 'lock.status' });
+  check(st.ok && st.data.mode === 'password', '工具鎖定要還是自訂密碼加密：' + JSON.stringify(st && st.data));
+  if (st.data.locked) {
+    const unlocked = await send({ type: 'lock.unlockPassword', password: MASTER });
+    check(unlocked.ok && !unlocked.data.locked, '打原本的自訂密碼要解得開：' + JSON.stringify(unlocked));
+  }
+  const all = await send({ type: 'entries.all' });
+  check(all.ok && all.data.some((e) => e.username === 'test-user@example.test'), '存的帳號要還在');
+});
+
 // ---- 私密視窗：Firefox 版整個停用，AMO 規定不能儲存私密瀏覽的資料。另外開一個整個都是私密瀏覽的 Firefox ----
 
 // 前提：擴充功能有在私密視窗跑，不然下面的案例什麼都沒測到也會過
@@ -325,7 +392,7 @@ async function runSuite(firefoxPath, extDir, { prefs: extraPrefs = {}, files = {
     console.error(err.message);
     process.exit(2);
   }
-  const { server } = await startServer(PORT);
+  const { server } = await startServer(PORT, ROUTES);
   fs.rmSync(DOWNLOADS, { recursive: true, force: true });
   fs.mkdirSync(DOWNLOADS, { recursive: true });
   const extDir = copyFirefoxExtension();

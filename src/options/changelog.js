@@ -9,6 +9,29 @@
   const PK = (globalThis.PK ??= {});
   PK.changelog = [
     {
+      version: '1.19.1',
+      date: '2026-11-23',
+      items: {
+        zh_TW: [
+          'GitHub Releases 也附上 Firefox 版和商店版的 zip。Firefox 版可以直接下載，在 Firefox 暫時載入。',
+          'Firefox 版的管理頁「版本」分頁會寫明是暫時載入的 Firefox 版。有新版時下載的是 Firefox 版的 zip，也會寫怎麼在 Firefox 載入。',
+        ],
+        en: [
+          'GitHub Releases now include the Firefox and store zips. You can download the Firefox zip and load it temporarily in Firefox.',
+          'In the Firefox version, the Versions tab on the manager page says it\'s the temporarily loaded Firefox version. When there\'s a new version, it downloads the Firefox zip and explains how to load it in Firefox.',
+        ],
+        ja: [
+          'GitHub の Releases に Firefox 版とストア版の zip も載せました。Firefox 版はダウンロードして、Firefox に一時的に読み込めます。',
+          'Firefox 版では、管理ページの「バージョン」タブに、一時的に読み込んだ Firefox 版であることを表示します。新しいバージョンがあるときは Firefox 版の zip をダウンロードし、Firefox での読み込み方も表示します。',
+        ],
+      },
+      notes: {
+        zh_TW: ['Edge、Chrome 版用起來跟 1.19.0 一樣。'],
+        en: ['The Edge and Chrome versions work the same as 1.19.0.'],
+        ja: ['Edge 版と Chrome 版は 1.19.0 と同じように使えます。'],
+      },
+    },
+    {
       version: '1.19.0',
       date: '2026-11-23',
       items: {

@@ -1890,6 +1890,9 @@
   "opt_update_steps": {
     "message": "下載了後解壓縮，佇擴充功能管理頁揤「載入解壓縮」揀彼个資料夾，就會換做新版，存的密碼佮設定攏會留咧。嘛會當解壓縮蓋掉原本的資料夾，才閣揤這个工具卡片頂的「重新載入」。"
   },
+  "opt_update_steps_firefox": {
+    "message": "下載了後去 about:debugging#/runtime/this-firefox 揤「載入暫時附加元件」，揀下載的 zip，免解壓縮。存的密碼佮設定攏會留咧。"
+  },
   "opt_update_download": {
     "message": "下載新版"
   },
@@ -1920,6 +1923,9 @@
   },
   "opt_update_dev": {
     "message": "這是直接載入原始碼資料夾的開發版，袂自動檢查。開發版請用 git 更新，莫用下載的 zip 蓋掉原始碼資料夾。"
+  },
+  "opt_update_firefox": {
+    "message": "這是暫時載入的 Firefox 版，袂自動檢查，關掉 Firefox 就會移除。"
   },
   "opt_update_store": {
     "message": "這是對商店安裝的版本，商店會自動更新。"

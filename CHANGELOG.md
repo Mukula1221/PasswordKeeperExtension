@@ -4,6 +4,15 @@
 
 版本號照[語意化版本](https://semver.org/lang/zh-TW/)：只修問題加第三碼，加功能加第二碼，舊資料或舊設定不能直接沿用時加第一碼。
 
+## 1.19.1 - 2026-11-23
+
+- GitHub Releases 也附上 Firefox 版和商店版的 zip。Firefox 版可以直接下載，在 Firefox 暫時載入。
+- Firefox 版的管理頁「版本」分頁會寫明是暫時載入的 Firefox 版。有新版時下載的是 Firefox 版的 zip，也會寫怎麼在 Firefox 載入。
+
+### 要注意
+
+- Edge、Chrome 版用起來跟 1.19.0 一樣。
+
 ## 1.19.0 - 2026-11-23
 
 - 為上架各瀏覽器的商店做準備：同一份程式可以打包成 GitHub 版、Chrome 和 Edge 的商店版、Firefox 版。

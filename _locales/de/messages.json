@@ -1890,6 +1890,9 @@
   "opt_update_steps": {
     "message": "Entpacken Sie die heruntergeladene ZIP-Datei, klicken Sie auf der Erweiterungsseite auf „Entpackte Erweiterung laden“ und wählen Sie diesen Ordner. Die neue Version ersetzt diese, Ihre gespeicherten Passwörter und Einstellungen bleiben erhalten. Sie können die Datei auch über den aktuellen Ordner entpacken und auf der Karte dieser Erweiterung auf „Neu laden“ klicken."
   },
+  "opt_update_steps_firefox": {
+    "message": "Öffnen Sie nach dem Herunterladen about:debugging#/runtime/this-firefox, klicken Sie auf „Temporäres Add-on laden…“ und wählen Sie die heruntergeladene ZIP-Datei. Sie müssen sie nicht entpacken. Ihre gespeicherten Passwörter und Einstellungen bleiben erhalten."
+  },
   "opt_update_download": {
     "message": "Herunterladen"
   },
@@ -1920,6 +1923,9 @@
   },
   "opt_update_dev": {
     "message": "Dies ist die Entwicklerversion, die direkt aus dem Quellordner geladen wurde. Sie prüft daher nicht automatisch. Aktualisieren Sie sie mit git und entpacken Sie keine heruntergeladene ZIP-Datei über den Quellordner."
+  },
+  "opt_update_firefox": {
+    "message": "Dies ist die vorübergehend geladene Firefox-Version. Sie prüft nicht automatisch und wird entfernt, wenn Sie Firefox schließen."
   },
   "opt_update_store": {
     "message": "Diese Version wurde aus einem Store installiert und wird von dort automatisch aktualisiert."

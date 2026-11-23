@@ -23,21 +23,36 @@
   // 正式版 zip 的 manifest 有固定的公鑰，ID 一定是這個，見 tools/build.js
   const RELEASE_ID = 'fgmjnolhbeohanamhnomcpmolhdapdkg';
 
+  // Firefox 版的 ID 是 platforms/firefox/manifest.json 的 gecko.id，改那邊要一起改，單元測試會比對
+  const FIREFOX_ID = '{abde6172-a3db-4533-b9cd-59c288d8529a}';
+
   const UPDATE_ALARM = 'update-check';
 
   const UPDATE_TIMEOUT_MS = 15000;
 
   const SEMVER = /^\d+\.\d+\.\d+$/;
 
-  // 三種版本：
-  //   github：從 Releases 下載、載入解壓縮的正式版，ID 是 RELEASE_ID，每天到 GitHub 問有沒有新版。
-  //   store：從商店裝的。商店會自己更新，Edge 商店也規定只能透過商店更新，所以完全不連 GitHub。
-  //   dev：直接載入原始碼資料夾的開發版，不自動問，按「立即檢查」才問。
-  // management.getSelf 不用另外要 management 權限。installType 是 development 代表載入解壓縮。
+  // 自己載入的版本：用 ID 認出是哪一種、有新版時下載 Releases 上的哪個檔、會不會每天自動問。
+  //   github：從 Releases 下載、Edge 和 Chrome 載入解壓縮的正式版。
+  //   firefox：Firefox 暫時載入的 Firefox 版。跟開發版一樣按「立即檢查」才問。
+  //   dev：直接載入原始碼資料夾的開發版，ID 跟著資料夾變，表裡不寫 id。用 git 更新，按「立即檢查」才問。
+  // 從商店裝的不在表裡：商店會自己更新，Edge 商店也規定只能透過商店更新，所以完全不連 GitHub。
+  const CHANNELS = {
+    github: { id: RELEASE_ID, zip: (version) => 'password-keeper-' + version + '.zip', autoCheck: true },
+    firefox: { id: FIREFOX_ID, zip: (version) => 'password-keeper-' + version + '-firefox.zip', autoCheck: false },
+    dev: { id: null, zip: (version) => 'password-keeper-' + version + '.zip', autoCheck: false },
+  };
+
+  // 回傳 store，或 CHANNELS 裡的名稱。
+  // management.getSelf 不用另外要 management 權限。installType 是 development 代表載入解壓縮或 Firefox 暫時載入。
   async function releaseChannel() {
     const self = await chrome.management.getSelf();
     if (self.installType !== 'development') return 'store';
-    return chrome.runtime.id === RELEASE_ID ? 'github' : 'dev';
+    return Object.keys(CHANNELS).find((name) => CHANNELS[name].id === chrome.runtime.id) || 'dev';
+  }
+
+  function autoChecks(channel) {
+    return !!(CHANNELS[channel] && CHANNELS[channel].autoCheck);
   }
 
   function compareVersions(a, b) {
@@ -54,10 +69,10 @@
   }
 
   // GitHub 的 /releases/latest 只會回正式發布的版本，草稿和預先發行版不算
-  function parseRelease(data) {
+  function parseRelease(data, channel) {
     const version = String((data && data.tag_name) || '').replace(/^v/, '');
     if (!SEMVER.test(version)) throw new Error(t('bg_update_bad_reply'));
-    const zipName = 'password-keeper-' + version + '.zip';
+    const zipName = CHANNELS[channel].zip(version);
     const asset = (Array.isArray(data.assets) ? data.assets : []).find((a) => a && a.name === zipName);
     return {
       version,
@@ -78,7 +93,8 @@
   async function checkUpdateOnce() {
     // 錯誤訊息要用管理頁指定的語言，背景程式剛醒來時語言可能還沒讀好
     await PK.locale.localeReady();
-    if ((await releaseChannel()) === 'store') throw new Error(t('bg_update_store'));
+    const channel = await releaseChannel();
+    if (channel === 'store') throw new Error(t('bg_update_store'));
     const { updateInfo } = await chrome.storage.local.get('updateInfo');
     const info = { checkedAt: Date.now(), latest: null, error: '' };
     try {
@@ -92,7 +108,7 @@
       if (res.status !== 404) {
         if (res.status === 403 || res.status === 429) throw new Error(t('bg_update_busy'));
         if (!res.ok) throw new Error(t('bg_update_http', res.status));
-        info.latest = parseRelease(await res.json());
+        info.latest = parseRelease(await res.json(), channel);
       }
     } catch (err) {
       info.error = updateErrorText(err);
@@ -119,7 +135,8 @@
     return {
       auto: !!settings.updateCheck,
       channel,
-      release: channel === 'github',
+      // 會不會每天自動問。管理頁照這個決定「每天自動檢查」能不能勾。
+      release: autoChecks(channel),
       current,
       checkedAt: info.checkedAt || 0,
       error: info.error || '',
@@ -131,7 +148,7 @@
   // 背景程式每次醒來都看一次，距離上次檢查超過一天才問。關機、瀏覽器沒開錯過的，下次醒來就補。
   async function updateTick() {
     const settings = await PK.settings.getSettings();
-    if (!settings.updateCheck || (await releaseChannel()) !== 'github') return;
+    if (!settings.updateCheck || !autoChecks(await releaseChannel())) return;
     const { updateInfo } = await chrome.storage.local.get('updateInfo');
     if (updateInfo && Math.abs(Date.now() - updateInfo.checkedAt) < PK.vault.DAY_MS) return;
     await checkUpdate();
@@ -148,5 +165,5 @@
 
   updateTick().catch((err) => console.warn('[密碼小管家] 檢查新版失敗', err)); // i18n-ignore：給開發者看的
 
-  PK.update = { RELEASE_ID, UPDATE_REPO, checkUpdate, updateStatus, updateTick, useUpdateApi };
+  PK.update = { RELEASE_ID, FIREFOX_ID, UPDATE_REPO, checkUpdate, updateStatus, updateTick, useUpdateApi };
 })();

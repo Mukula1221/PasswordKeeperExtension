@@ -2180,14 +2180,17 @@
     $('updateAutoWrap').hidden = store;
     // 商店版不用自己重新載入，說明擴充功能管理頁在哪的那一行也收掉
     $('browserHint').hidden = store;
-    $('updateSteps').hidden = !info.available;
+    const firefox = info.channel === 'firefox';
+    $('updateSteps').hidden = !info.available || firefox;
+    $('updateStepsFirefox').hidden = !info.available || !firefox;
     $('updateDownload').hidden = !(info.available && latest.zipUrl);
-    $('updateExtensions').hidden = !info.available;
+    $('updateExtensions').hidden = !info.available || !PK.platform.can('openExtensionsPage');
     $('updatePage').hidden = !(info.available && latest.pageUrl);
     // 開發版不會自動檢查，勾選框照實際情況顯示沒勾；設定本身留著，換成正式版時照舊
     $('updateAuto').checked = info.auto && info.release;
     $('updateAuto').disabled = !info.release;
     $('updateDev').hidden = info.channel !== 'dev';
+    $('updateFirefox').hidden = !firefox;
     $('headerUpdate').hidden = !info.available;
     if (info.available) $('headerUpdate').title = t('opt_header_update_title', latest.version);
   }

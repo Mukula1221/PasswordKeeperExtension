@@ -20,7 +20,7 @@ Firefox 不能直接載入專案資料夾，因為專案的 `manifest.json` 是 
 2. Firefox 網址列輸入 `about:debugging#/runtime/this-firefox`，按「載入暫時附加元件」，選那個 zip，不用解壓縮。
 3. 改了程式要重新打包，再按那個附加元件的「重新載入」。關掉 Firefox 後暫時附加元件就會移除，下次要再載入一次。
 
-給沒裝 Node.js 的人試用的步驟寫在 README 的「Firefox（測試用）」，zip 從 CI 的 Artifacts 下載。
+給一般使用者試用的步驟寫在 README 的「Firefox（測試用）」，zip 從 Releases 下載。
 
 ## 專案結構
 
@@ -116,10 +116,11 @@ test/                測試頁、單元測試和 e2e 測試
 | 版本 | 怎麼裝 | 怎麼更新 |
 | --- | --- | --- |
 | GitHub 版 | 從 Releases 下載 zip，用「載入解壓縮」裝。 | 每天問 GitHub，有新版時使用者自己下載。 |
+| Firefox 版（暫時載入） | 從 Releases 下載 Firefox 版的 zip，在 `about:debugging` 暫時載入。 | 按「立即檢查」才問 GitHub，有新版時使用者自己下載，再暫時載入一次。 |
 | 商店版 | 從 Chrome、Edge、Firefox 的商店安裝。 | 商店自動更新。 |
 | 開發版 | 直接載入專案資料夾。 | 用 git 更新。 |
 
-程式用 `src/background/update.js` 的 `releaseChannel()` 分辨是哪一種：`chrome.management.getSelf()` 的 `installType` 是 `development` 代表載入解壓縮，再用擴充功能 ID 分出 GitHub 版和開發版，其他都算商店版。商店版完全不連 GitHub：Edge 商店規定擴充功能只能透過商店更新，不連網也讓隱私權政策可以寫成「不連任何外部伺服器」。
+程式用 `src/background/update.js` 的 `releaseChannel()` 分辨是哪一種：`chrome.management.getSelf()` 的 `installType` 是 `development` 代表載入解壓縮或 Firefox 暫時載入，再用擴充功能 ID 對 `CHANNELS` 表分出 GitHub 版、Firefox 版和開發版，其他都算商店版。`CHANNELS` 也寫了各版本到 Releases 找哪個 zip、會不會每天自動問。商店版完全不連 GitHub：Edge 商店規定擴充功能只能透過商店更新，不連網也讓隱私權政策可以寫成「不連任何外部伺服器」。
 
 ### 打包
 
@@ -129,9 +130,9 @@ test/                測試頁、單元測試和 e2e 測試
 | --- | --- | --- | --- |
 | `github` | `node tools/build.js` | GitHub Releases，Edge、Chrome 載入解壓縮。 | 加固定公鑰 `key`，見「正式版的擴充功能 ID」。 |
 | `chromium-store` | `node tools/build.js chromium-store` | Chrome Web Store、Edge Add-ons、Opera。 | 一樣。 |
-| `firefox` | `node tools/build.js firefox` | Firefox 的商店 AMO。 | 蓋上 `platforms/firefox/manifest.json`，背景程式改列在 `background.scripts`。 |
+| `firefox` | `node tools/build.js firefox` | Firefox 的商店 AMO，也附在 GitHub Releases 給人暫時載入。 | 蓋上 `platforms/firefox/manifest.json`，背景程式改列在 `background.scripts`。 |
 
-`node tools/build.js all` 三種都打包。商店版放在 `dist/store/`，發版時不會放上 Releases。
+`node tools/build.js all` 三種都打包。GitHub 版放在 `dist/`，另外兩種放在 `dist/store/`。發版時三種都附在 Releases。
 
 - 商店版不放 `key`：商店會給自己的 ID，Chrome Web Store 新建項目時也不收 `key`。
 - Firefox 不支援 service worker 寫法，背景程式改成 `background.scripts`，清單從 `src/background/background.js` 的 `importScripts` 讀出來，不用另外維護。
@@ -150,6 +151,7 @@ test/                測試頁、單元測試和 e2e 測試
 | `extensionWebAuthn` | 可以 | 不行 | 管理頁不顯示系統驗證加密的卡片，背景程式也擋。 |
 | `screenLockEvents` | 可以 | 不行 | 管理頁閒置時間旁邊多一個「?」說明。 |
 | `privateWindows` | 可以 | 不行 | 私密視窗整個停用，見下面。 |
+| `openExtensionsPage` | 可以 | 不行 | 「版本」分頁不顯示「打開擴充功能管理頁」按鈕，步驟裡直接寫網址。 |
 
 - **系統驗證加密不能用**：Firefox 150 起才讓擴充功能的頁面用 WebAuthn，而且 RP ID 只能填一般網站的網域，不能用擴充功能自己的。用網域的話，那個網站也叫得出同一把鑰匙，所以 Firefox 版只提供「關閉」和「自訂密碼加密」。
 - **鎖螢幕不會馬上鎖**：Firefox 的閒置偵測只回報使用中和閒置，不回報鎖螢幕，要等閒置時間到才會鎖。
@@ -158,6 +160,7 @@ test/                測試頁、單元測試和 e2e 測試
   - 背景程式收到私密分頁裡的 `content.js` 送來的訊息一律拒絕（`callers.js` 的 `fromBlockedPrivateTab()`），是第二道。管理頁照常能用，管理頁管的是已經存好的帳號，不是私密瀏覽的資料。
   - 瀏覽器的帳密視窗、快捷鍵、工具列數字在私密分頁都不動作。
   - 小視窗只顯示「私密視窗不能用密碼小管家。」
+- **開不了擴充功能管理頁**：Firefox 不讓擴充功能用 `tabs.create` 開 `about:debugging`、`about:addons`，會回 `Illegal URL`。
 - **下載備份用 blob 網址**：Firefox 的下載不收 `data:` 網址。`src/background/backup-files.js` 看有沒有 `URL.createObjectURL` 決定用哪一種，不判斷瀏覽器。
 - **背景程式是一般網頁**：Firefox 的背景程式有 `document`，網址是瀏覽器產生的 `/_generated_background_page.html`。`isExtensionPage()` 只認 `src/` 底下的畫面，背景程式才不會被當成畫面去套介面文字。
 
@@ -168,7 +171,9 @@ Firefox 可以逐站收回擴充功能的網站權限，Chrome 也能改成「�
 ### 上架
 
 - 隱私權政策是 `PRIVACY.md`。Chrome Web Store 和 Edge Add-ons 規定處理帳密的擴充功能要有隱私權政策，就算資料只存在本機。
-- 一開始手動上傳：從發版那次執行的 Artifacts 下載商店版的 zip，到各商店的後台上傳。三個商店都有上傳用的 API，但金鑰能直接把新版推給所有使用者，被偷就等於別人能推惡意版本，所以先不放進 CI。
+- 一開始手動上傳，檔案都從 Release 下載：Chrome、Edge 商店用 `-chromium-store.zip`，AMO 用 `-firefox.zip`。
+- 不要把 GitHub 版的 zip 傳到商店。GitHub 版的 manifest 有 `key`，Edge Add-ons 會擋下來，訊息是「資訊清單不應該包含 key 欄位」。
+- 三個商店都有上傳用的 API，但金鑰能直接把新版推給所有使用者，被偷就等於別人能推惡意版本，所以先不放進 CI。
 - 各商店的帳號都要開兩步驟驗證。
 
 ## 背景程式的訊息
@@ -231,7 +236,7 @@ node test/e2e/run.js
 - `node --test test/unit/*.test.js`：不開瀏覽器，幾秒鐘跑完。把 `background.js` 載進 Node，配一份放在記憶體的假 chrome API，測訊息規則和計算用的函式。CI 每次都會跑。
 - `node test/e2e/run.js`：把擴充功能裝進真的 Edge 跑完整流程，大約 3 分鐘。看不到視窗，也不會動到平常用的瀏覽器設定。後面加 `chrome` 改測 Chrome，再加一個關鍵字只跑名稱含那個字的案例，例如 `node test/e2e/run.js edge 解鎖視窗`。
 - `node test/e2e/package.js`：打包之後解壓縮載入，確認擴充功能 ID 固定，解壓縮到別的資料夾裝新版時資料還在。
-- `node test/e2e/firefox.js`：把 Firefox 版裝進真的 Firefox，跑 Firefox 跟 Edge、Chrome 不一樣、或最容易壞的流程，大約 1 分鐘。私密視窗的案例會另外開一個整個都是私密瀏覽的 Firefox（`browser.privatebrowsing.autostart`），並先在設定檔的 `extension-preferences.json` 記好允許擴充功能在私密視窗執行，跟使用者在附加元件管理員打開一樣。Firefox 已經拿掉 CDP，所以改用 WebDriver BiDi 控制，連線的程式在 `test/e2e/bidi.js`。BiDi 預設不准開 `moz-extension://` 的頁面，測試啟動 Firefox 時會設 `MOZ_REMOTE_ALLOW_SYSTEM_ACCESS=1`。
+- `node test/e2e/firefox.js`：把 Firefox 版裝進真的 Firefox，跑 Firefox 跟 Edge、Chrome 不一樣、或最容易壞的流程，大約 1 分鐘。一般視窗的最後一個案例會打包 Firefox 版的 zip，用 zip 本身再暫時載入一次，確認放上 Release 的檔案能用、存的資料留著。私密視窗的案例會另外開一個整個都是私密瀏覽的 Firefox（`browser.privatebrowsing.autostart`），並先在設定檔的 `extension-preferences.json` 記好允許擴充功能在私密視窗執行，跟使用者在附加元件管理員打開一樣。Firefox 已經拿掉 CDP，所以改用 WebDriver BiDi 控制，連線的程式在 `test/e2e/bidi.js`。BiDi 預設不准開 `moz-extension://` 的頁面，測試啟動 Firefox 時會設 `MOZ_REMOTE_ALLOW_SYSTEM_ACCESS=1`。
 
 `test/*.html` 是配假 chrome API 的測試頁，測不到 content script 隔離環境才有的問題，例如 CSP。要確認行為，以 `test/e2e/` 的結果為準。
 
@@ -259,8 +264,8 @@ node test/e2e/run.js
    git push origin main --tags
    ```
 
-6. GitHub Actions 會再檢查一次，確認標籤跟 `manifest.json` 的版本一樣，接著打包並建立 Release，附上 `password-keeper-1.14.0.zip` 和 `.sha256`。Release 頁面上 GitHub 自己加的「Source code (zip)」是原始碼，不能直接載入，要下載的是 `password-keeper-版本號.zip`。
-7. 商店版的 zip 在那次執行頁面最下面的 Artifacts，下載後到各商店的後台上傳，見「各瀏覽器的版本」的「上架」。
+6. GitHub Actions 會再檢查一次，確認標籤跟 `manifest.json` 的版本一樣，接著打包並建立標題是 `v1.14.0` 的 Release，附上 `password-keeper-1.14.0.zip`、`password-keeper-1.14.0-chromium-store.zip`、`password-keeper-1.14.0-firefox.zip` 和各自的 `.sha256`。Release 頁面上 GitHub 自己加的「Source code (zip)」是原始碼，不能直接載入，要下載的是 `password-keeper-版本號.zip`。
+7. 從 Release 下載 `-chromium-store.zip` 和 `-firefox.zip`，到各商店的後台上傳，見「各瀏覽器的版本」的「上架」。
 
 想在本機先看打包結果，執行 `node tools/build.js`，檔案會在 `dist/`。同一版每次打包出來的 zip 都一模一樣。
 
@@ -271,10 +276,10 @@ node test/e2e/run.js
 正式版每天到 GitHub 問一次 `releases/latest`，有比自己新的版本就在小視窗和管理頁提醒。要能運作有幾個條件：
 
 - repo 要是公開的。私人 repo 沒登入問不到，擴充功能會當作「還沒有發布正式版」。
-- Release 要附上 `password-keeper-版本號.zip`，檔名對不上就不會出現下載按鈕。照上面的流程發布就會有。
+- Release 要附上 `password-keeper-版本號.zip` 和 `password-keeper-版本號-firefox.zip`，檔名對不上就不會出現下載按鈕。照上面的流程發布就會有。檔名寫在 `tools/lib/project.js` 和 `src/background/update.js` 的 `CHANNELS`，兩邊要一起改。
 - repo 改名或搬家時，改 `src/background/update.js` 的 `UPDATE_REPO`。
 
-只有 GitHub 版（載入解壓縮、擴充功能 ID 是 `fgmjnolhbeohanamhnomcpmolhdapdkg`）才會自動檢查。開發版只能在「版本」分頁手動按「立即檢查」。商店版完全不檢查，「版本」分頁只寫由商店更新。e2e 測試用 `useUpdateApi()` 換成本機的假 GitHub，不會真的連出去。
+只有 GitHub 版（載入解壓縮、擴充功能 ID 是 `fgmjnolhbeohanamhnomcpmolhdapdkg`）才會自動檢查。開發版和 Firefox 版只能在「版本」分頁手動按「立即檢查」，Firefox 版有新版時下載的是 Firefox 版的 zip。商店版完全不檢查，「版本」分頁只寫由商店更新。e2e 測試用 `useUpdateApi()` 換成本機的假 GitHub，不會真的連出去。Firefox 的 e2e 從管理頁用 `chrome.runtime.getBackgroundPage()` 拿到背景程式再叫 `useUpdateApi()`。
 
 ## 正式版的擴充功能 ID
 

@@ -587,6 +587,7 @@ CSV 的格式和 Chrome、Edge 匯出的一樣。">?</span></div>
             <div id="updateState"></div>
             <div id="updateCheckedAt" class="muted"></div>
             <div id="updateSteps" class="help" hidden data-i18n="opt_update_steps">下載後解壓縮，在擴充功能管理頁按「載入解壓縮」選那個資料夾，就會換成新版，存的密碼和設定都會留著。也可以解壓縮蓋掉原本的資料夾，再按這個工具卡片上的「重新載入」。</div>
+            <div id="updateStepsFirefox" class="help" hidden data-i18n="opt_update_steps_firefox">下載後到 about:debugging#/runtime/this-firefox 按「載入暫時附加元件」，選下載的 zip，不用解壓縮。存的密碼和設定都會留著。</div>
             <div class="row wrap update-actions">
               <button id="updateDownload" class="primary" hidden data-i18n="opt_update_download">下載新版</button>
               <button id="updateExtensions" hidden data-i18n="opt_update_open_extensions">打開擴充功能管理頁</button>
@@ -596,6 +597,7 @@ CSV 的格式和 Chrome、Edge 匯出的一樣。">?</span></div>
             <label id="updateAutoWrap" class="inline update-auto"><input type="checkbox" id="updateAuto"> <span data-i18n="opt_update_auto">每天自動檢查一次</span><span class="tip" data-i18n-tip="opt_update_auto_tip" data-tip="只會連到 GitHub 問最新的版本號，不會送出任何密碼、帳號或設定。
 瀏覽器不讓自己載入的擴充功能自己換成新版，所以有新版時只會在這裡和小視窗提醒，下載和載入要自己按。">?</span></label>
             <div id="updateDev" class="help" hidden data-i18n="opt_update_dev">這是直接載入原始碼資料夾的開發版，不會自動檢查。開發版請用 git 更新，不要用下載的 zip 蓋掉原始碼資料夾。</div>
+            <div id="updateFirefox" class="help" hidden data-i18n="opt_update_firefox">這是暫時載入的 Firefox 版，不會自動檢查，關掉 Firefox 就會移除。</div>
           </div>
         </details>
 
