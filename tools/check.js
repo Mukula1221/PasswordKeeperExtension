@@ -6,6 +6,8 @@ const { execFileSync } = require('child_process');
 const FILES = require('./files');
 const { ROOT, CHANGELOG_JS, readManifest, readChangelog, packageFiles, renderChangelogMd } = require('./lib/project');
 const { LOCALES, CHANGELOG_LOCALES, checkMessages, checkLocaleLists, usedKeys, untranslatedInJs, checkHtml } = require('./lib/i18n-check');
+const { checkGlobals } = require('./lib/globals-check');
+const { targetManifest } = require('./build');
 
 const problems = [];
 const SEMVER = /^\d+\.\d+\.\d+$/;
@@ -132,6 +134,10 @@ function checkPackage(manifest) {
   for (const ref of referencedFiles(manifest)) {
     if (!packaged.has(ref)) problems.push(ref + ' 有用到，但沒列在 tools/files.js，打包會漏掉');
   }
+  // Firefox 版的背景程式清單是從 background.js 的 importScripts 產生的
+  for (const ref of targetManifest('firefox', manifest).background.scripts) {
+    if (!packaged.has(ref)) problems.push('Firefox 版的背景程式要載入 ' + ref + '，但打包裡沒有這個檔');
+  }
 }
 
 function jsFilesUnder(rel) {
@@ -160,6 +166,29 @@ function checkUnsafeCode() {
   }
 }
 
+// 每個檔都開嚴格模式，而且不定義全域的名稱（只留 PK），見 tools/lib/globals-check.js
+function checkScopes() {
+  for (const file of packageFiles().filter((f) => f.endsWith('.js'))) {
+    const text = readText(file);
+    if (!/^(\s*\/\/[^\n]*\n)*\s*'use strict';/.test(text)) problems.push(file + ' 第一句要是 \'use strict\';');
+    problems.push(...checkGlobals(file, text));
+  }
+}
+
+// 瀏覽器、作業系統的判斷集中在 platform.js，換瀏覽器時只要改那一個檔。註解裡提到不算。
+const PLATFORM_FILE = 'src/shared/platform.js';
+const PLATFORM_ONLY = /\buserAgent(?:Data)?\b|\bnavigator\.platform\b|\b(?:chrome|moz)-extension:/;
+
+function checkPlatformCode() {
+  for (const file of packageFiles().filter((f) => f.endsWith('.js') && f !== PLATFORM_FILE)) {
+    readText(file)
+      .split('\n')
+      .forEach((line, i) => {
+        if (!line.trim().startsWith('//') && PLATFORM_ONLY.test(line)) problems.push(file + ':' + (i + 1) + ' 判斷瀏覽器或作業系統要寫在 ' + PLATFORM_FILE);
+      });
+  }
+}
+
 function checkSyntax() {
   const files = [...packageFiles().filter((f) => f.endsWith('.js')), ...jsFilesUnder('tools'), ...jsFilesUnder('test')];
   for (const file of files) {
@@ -177,6 +206,8 @@ checkVersions(manifest);
 checkPackage(manifest);
 checkI18n(manifest);
 checkUnsafeCode();
+checkScopes();
+checkPlatformCode();
 const checked = checkSyntax();
 if (problems.length) {
   console.error('檢查沒過：');

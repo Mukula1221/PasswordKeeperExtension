@@ -12,12 +12,12 @@ function readManifest() {
   return JSON.parse(fs.readFileSync(path.join(ROOT, 'manifest.json'), 'utf8'));
 }
 
-// changelog.js 是給管理頁用的瀏覽器腳本，在 vm 裡跑一次把 CHANGELOG 拿出來
+// changelog.js 是給管理頁用的瀏覽器腳本，在 vm 裡跑一次，從 PK.changelog 拿出來
 function readChangelog() {
   const code = fs.readFileSync(path.join(ROOT, CHANGELOG_JS), 'utf8');
   const sandbox = {};
-  vm.runInNewContext(code + '\nglobalThis.__changelog = CHANGELOG;', sandbox, { filename: CHANGELOG_JS });
-  return sandbox.__changelog;
+  vm.runInNewContext(code, sandbox, { filename: CHANGELOG_JS });
+  return sandbox.PK.changelog;
 }
 
 // 作業系統和雲端硬碟自己產生的檔案，資料夾展開時跳過，不要打包進去

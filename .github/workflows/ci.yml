@@ -29,3 +29,10 @@ jobs:
         with:
           path: dist/*.zip
           archive: false
+      # Firefox 版還沒正式支援、也還沒簽章，只能在 Firefox 的 about:debugging 暫時載入測試，不會放上 Releases
+      - name: 打包 Firefox 測試版
+        run: node tools/build.js firefox
+      - uses: actions/upload-artifact@v7
+        with:
+          path: dist/firefox/*.zip
+          archive: false

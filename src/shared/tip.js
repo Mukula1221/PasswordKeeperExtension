@@ -1,6 +1,9 @@
-// 欄位旁邊的「?」說明，管理頁和小視窗共用。HTML 裡寫 <span class="tip" data-tip="說明">?</span>，程式裡用 tipIcon('說明')。
+'use strict';
+// 欄位旁邊的「?」說明，管理頁和小視窗共用。HTML 裡寫 <span class="tip" data-tip="說明">?</span>，程式裡用 PK.tip.tipIcon('說明')。
 // 瀏覽器內建的 title 要停約一秒才出現，鍵盤也叫不出來，所以自己畫。
-const tipIcon = (() => {
+(() => {
+  const PK = (globalThis.PK ??= {});
+
   const GAP = 6;
   const box = document.createElement('div');
   box.className = 'tip-box';
@@ -83,12 +86,14 @@ const tipIcon = (() => {
 
   document.querySelectorAll('.tip').forEach(setUp);
 
-  return (text) => {
+  function tipIcon(text) {
     const icon = document.createElement('span');
     icon.className = 'tip';
     icon.dataset.tip = text;
     icon.textContent = '?';
     setUp(icon);
     return icon;
-  };
+  }
+
+  PK.tip = { tipIcon };
 })();

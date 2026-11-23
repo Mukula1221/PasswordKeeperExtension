@@ -26,6 +26,45 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+// 擴充功能的程式都包在閉包裡，只留全域的 PK，函式在 PK.<檔名> 底下（例如 PK.settings.getSettings）。
+// 測試照舊寫 getSettings()：這裡用 with 讓 PK 底下的名稱變成這次執行看得到的名稱。
+// 不放進全域，正式程式漏寫 PK. 的地方才不會被測試蓋過去。網頁裡沒有 PK 時就是一般的執行。
+// 用 Proxy 而不是複製一份：測試寫 saveFile = 假的函式 時，要換到 PK.backupFiles.saveFile 本身。
+const PK_SCOPE = `new Proxy(Object.create(null), {
+  has(_, k) { return typeof k === 'string' && !!pkOwner(k); },
+  get(_, k) { const o = typeof k === 'string' && pkOwner(k); return o ? o[k] : undefined; },
+  set(_, k, v) { pkOwner(k)[k] = v; return true; },
+})`;
+const PK_OWNER = `function pkOwner(k) {
+  return Object.values(globalThis.PK || {}).find((o) => o && typeof o === 'object' && !Array.isArray(o) && Object.hasOwn(o, k));
+}`;
+
+// 把最外層的分號切開，最後一句當回傳值，跟 Runtime.evaluate 原本回傳最後一句的值一樣
+function splitLast(code) {
+  let depth = 0;
+  let quote = null;
+  let cut = -1;
+  for (let i = 0; i < code.length; i++) {
+    const c = code[i];
+    if (quote) {
+      if (c === '\\') i++;
+      else if (c === quote) quote = null;
+      continue;
+    }
+    if (c === "'" || c === '"' || c === '`') quote = c;
+    else if ('([{'.includes(c)) depth++;
+    else if (')]}'.includes(c)) depth--;
+    else if (c === ';' && depth === 0 && code.slice(i + 1).trim()) cut = i;
+  }
+  const last = (cut < 0 ? code : code.slice(cut + 1)).replace(/;\s*$/, '');
+  return { head: cut < 0 ? '' : code.slice(0, cut + 1), last };
+}
+
+function withPk(expression) {
+  const { head, last } = splitLast(expression);
+  return '(function () { ' + PK_OWNER + '\nwith (' + PK_SCOPE + ') {\n' + head + '\nreturn (' + last + '\n); } })()';
+}
+
 // 複製到暫存資料夾再載入，不讓瀏覽器直接開雲端硬碟裡的檔案。
 // 只帶 tools/files.js 列的檔案，跟正式版 zip 裡的一樣，漏列的檔案在測試就會出問題。
 function copyExtension() {
@@ -195,7 +234,7 @@ class Page {
     return this.cdp.send(method, params, this.sessionId);
   }
   async eval(expression) {
-    const r = await this.send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true });
+    const r = await this.send('Runtime.evaluate', { expression: withPk(expression), awaitPromise: true, returnByValue: true });
     if (r.exceptionDetails) throw new Error('eval 失敗：' + (r.exceptionDetails.exception?.description || r.exceptionDetails.text));
     return r.result.value;
   }
@@ -318,7 +357,7 @@ async function attachWorker(cdp, sw) {
   return {
     console: logs,
     async eval(expression) {
-      const r = await cdp.send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true }, sessionId);
+      const r = await cdp.send('Runtime.evaluate', { expression: withPk(expression), awaitPromise: true, returnByValue: true }, sessionId);
       if (r.exceptionDetails) throw new Error('背景程式 eval 失敗：' + (r.exceptionDetails.exception?.description || r.exceptionDetails.text));
       return r.result.value;
     },
