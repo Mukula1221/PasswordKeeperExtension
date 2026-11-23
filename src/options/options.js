@@ -1696,6 +1696,12 @@
     await load();
   });
 
+  $('moveHow').addEventListener('click', () => {
+    const move = $('browserMove');
+    move.open = true;
+    move.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
   async function renderBackup() {
     const res = await send({ type: 'backup.status' });
     const box = $('backupStatus');
@@ -1704,13 +1710,14 @@
       return;
     }
     const s = res.data;
-    box.classList.toggle('due', !!s.due);
+    box.classList.toggle('warn', s.count > 0 && (!!s.due || !s.lastBackupAt));
     if (!s.count) {
-      box.textContent = t('opt_backup_status_empty');
+      box.textContent = '';
     } else if (!s.lastBackupAt) {
       box.textContent = t('opt_backup_status_never');
     } else {
-      const last = fmtDate(s.lastBackupAt);
+      // 放在標題旁邊，只寫日期。幾點備份的看「備份紀錄」。
+      const last = new Date(s.lastBackupAt).toLocaleDateString(formatLang());
       box.textContent = s.due ? tn('opt_backup_status_due', s.days, last) : tn('opt_backup_status_last', s.days, last);
     }
     renderAutoBackup(s.autoBackup || {});
@@ -2157,42 +2164,65 @@
 
   let updateInfo = null;
 
+  // 標題旁邊寫的版本種類，channel 見 background/update.js 的 releaseChannel()
+  function channelName(channel) {
+    if (channel === 'store') return t('opt_update_channel_store');
+    if (channel === 'github') return t('opt_update_channel_github');
+    if (channel === 'firefox') return t('opt_update_channel_firefox');
+    return t('opt_update_channel_dev');
+  }
+
   function renderUpdate(info) {
     updateInfo = info;
     const state = $('updateState');
     const latest = info.latest;
-    state.className = info.available ? 'available' : info.error ? 'failed' : '';
-    if (info.available) state.textContent = t('opt_update_available', latest.version, latest.publishedAt ? new Date(latest.publishedAt).toLocaleDateString(formatLang()) : '—');
-    else if (info.error) state.textContent = t('opt_update_failed', info.error);
-    else if (!info.checkedAt) state.textContent = t('opt_update_never');
-    else if (!latest) state.textContent = t('opt_update_no_release');
-    else state.textContent = t('opt_update_latest');
-    $('updateCheckedAt').textContent = info.checkedAt ? t('opt_update_checked_at', fmtDate(info.checkedAt)) : '';
     // 商店版由商店更新，不連 GitHub，檢查新版的東西都不顯示
     const store = info.channel === 'store';
-    if (store) {
-      state.className = '';
-      state.textContent = t('opt_update_store');
-      $('updateCheckedAt').textContent = '';
-      $('versionNow').textContent = t('opt_version_now_store', info.current);
+    const firefox = info.channel === 'firefox';
+    const available = !store && info.available;
+    const failed = !store && !available && !!info.error;
+    let kind = '';
+    if (store) state.textContent = t('opt_update_store');
+    else if (available) {
+      kind = 'available';
+      state.textContent = t('opt_update_available', latest.version, latest.publishedAt ? new Date(latest.publishedAt).toLocaleDateString(formatLang()) : '—');
+    } else if (failed) {
+      kind = 'failed';
+      state.textContent = t('opt_update_failed', info.error);
+    } else if (!info.checkedAt) {
+      kind = 'never';
+      state.textContent = t('opt_update_never');
+    } else if (!latest) state.textContent = t('opt_update_no_release');
+    else {
+      kind = 'ok';
+      state.textContent = t('opt_update_latest');
     }
+    state.className = kind;
+    // 狀態卡片：有新版是淡綠底，檢查失敗是淡紅底
+    $('updateBox').className = 'update-box' + (available ? ' available' : failed ? ' failed' : '');
+    $('updateCheckedAt').textContent = !store && info.checkedAt ? t('opt_update_checked_at', fmtDate(info.checkedAt)) : '';
+    // 標題旁邊的字區塊收起來也看得到。有新版時換成綠色標籤
+    const summary = $('updateSummary');
+    summary.classList.toggle('available', available);
+    summary.textContent = available ? t('opt_update_summary_available', latest.version) : t('opt_update_summary', channelName(info.channel), info.current);
+    if (store) $('versionNow').textContent = t('opt_version_now_store', info.current);
     $('updateCheckNow').hidden = store;
-    $('updateAutoWrap').hidden = store;
     // 商店版不用自己重新載入，說明擴充功能管理頁在哪的那一行也收掉
     $('browserHint').hidden = store;
-    const firefox = info.channel === 'firefox';
-    $('updateSteps').hidden = !info.available || firefox;
-    $('updateStepsFirefox').hidden = !info.available || !firefox;
-    $('updateDownload').hidden = !(info.available && latest.zipUrl);
-    $('updateExtensions').hidden = !info.available || !PK.platform.can('openExtensionsPage');
-    $('updatePage').hidden = !(info.available && latest.pageUrl);
-    // 開發版不會自動檢查，勾選框照實際情況顯示沒勾；設定本身留著，換成正式版時照舊
+    $('updateGet').hidden = !available;
+    $('updateSteps').hidden = !available || firefox;
+    $('updateStepsFirefox').hidden = !available || !firefox;
+    $('updateDownload').hidden = !(available && latest.zipUrl);
+    $('updateExtensions').hidden = !available || !PK.platform.can('openExtensionsPage');
+    $('updatePage').hidden = !(available && latest.pageUrl);
+    // 只有正式版會每天自動檢查，其他版本不顯示勾選框。設定本身留著，換成正式版時照舊
+    $('updateAutoWrap').hidden = !info.release;
     $('updateAuto').checked = info.auto && info.release;
     $('updateAuto').disabled = !info.release;
     $('updateDev').hidden = info.channel !== 'dev';
     $('updateFirefox').hidden = !firefox;
-    $('headerUpdate').hidden = !info.available;
-    if (info.available) $('headerUpdate').title = t('opt_header_update_title', latest.version);
+    $('headerUpdate').hidden = !available;
+    if (available) $('headerUpdate').title = t('opt_header_update_title', latest.version);
   }
 
   async function loadUpdate() {

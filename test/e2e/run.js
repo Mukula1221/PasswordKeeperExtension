@@ -3561,12 +3561,15 @@ test('檢查新版：開發版不自動問，按立即檢查才問；有新版�
         header: shown('headerUpdate'),
         dev: shown('updateDev'),
         autoDisabled: document.getElementById('updateAuto').disabled,
+        autoShown: shown('updateAutoWrap'),
+        summary: document.getElementById('updateSummary').textContent,
       };
     })()`);
     check(view.state.includes('99.0.0'), '要寫出新版的版本號：' + view.state);
     check(view.download && view.extensions && view.page && view.steps, '有新版時要有下載、管理頁、說明和步驟：' + JSON.stringify(view));
     check(view.header, '頁首要有「有新版」');
-    check(view.dev && view.autoDisabled, '開發版要說明不會自動檢查，自動檢查的勾選框不能按：' + JSON.stringify(view));
+    check(view.dev && view.autoDisabled && !view.autoShown, '開發版要說明不會自動檢查，不顯示自動檢查的勾選框：' + JSON.stringify(view));
+    check(view.summary.includes('99.0.0'), '標題旁邊要寫有新版：' + view.summary);
     await options.screenshot(path.join(SHOTS, 'update-available.png'));
 
     popup = await open('chrome-extension://' + extId + '/src/popup/popup.html', 1200);
@@ -3579,7 +3582,7 @@ test('檢查新版：開發版不自動問，按立即檢查才問；有新版�
     await useFakeGitHub(FAKE_GH + '?v=' + current);
     await options.click('#updateCheckNow');
     const stateNow = () => options.eval(`document.getElementById('updateState').textContent`);
-    check(await until(async () => (await stateNow()) === '已經是最新版。', 4000), '一樣的版本要寫已經是最新版：' + (await stateNow()));
+    check(await until(async () => (await stateNow()) === '已經是最新版', 4000), '一樣的版本要寫已經是最新版：' + (await stateNow()));
     const after = await options.eval(`(() => ({
       header: document.getElementById('headerUpdate').checkVisibility(),
       download: document.getElementById('updateDownload').checkVisibility(),
@@ -3642,9 +3645,11 @@ test('商店版：不連 GitHub，版本分頁只寫由商店更新', async () =
         dev: shown('updateDev'),
         hintHidden: document.getElementById('browserHint').hidden,
         versionNow: document.getElementById('versionNow').textContent,
+        summary: document.getElementById('updateSummary').textContent,
       };
     })()`);
-    check(view.state === '這是從商店安裝的版本，商店會自動更新。', '要寫由商店更新：' + view.state);
+    check(view.state === '商店會自動更新。', '要寫由商店更新：' + view.state);
+    check(view.summary.startsWith('商店版 v'), '標題旁邊要寫是商店版：' + view.summary);
     check(view.versionNow === '目前版本 ' + (await w.eval('chrome.runtime.getManifest().version')) + '。', '目前版本那一行不提重新載入：' + view.versionNow);
     check(!view.check && !view.auto && !view.dev && view.hintHidden, '檢查新版的按鈕、勾選框、開發版說明、重新載入說明都不顯示：' + JSON.stringify(view));
     await options.screenshot(path.join(SHOTS, 'update-store.png'));

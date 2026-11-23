@@ -391,7 +391,7 @@
     "message": "Passwörter auf diesem Computer löschen?"
   },
   "opt_lock_reset_text": {
-    "message": "Wenn Sie nicht entsperren können, bleibt nur das Löschen. Stellen Sie danach im Tab „Sicherung“ mit „Verschlüsselte Sicherung importieren“ wieder her. Das Löschen lässt sich nicht rückgängig machen."
+    "message": "Wenn Sie nicht entsperren können, bleibt nur das Löschen. Stellen Sie danach im Tab „Sicherung“ unter „Verschlüsselte Sicherung“ mit „Importieren“ wieder her. Das Löschen lässt sich nicht rückgängig machen."
   },
   "opt_lock_reset_confirm": {
     "message": "Löschen"
@@ -415,7 +415,7 @@
     "message": "Geben Sie „$1“ ein, um fortzufahren"
   },
   "opt_lock_reset_done": {
-    "message": "Gelöscht. Klicken Sie auf „Verschlüsselte Sicherung importieren“ und wählen Sie eine Sicherungsdatei zum Wiederherstellen."
+    "message": "Gelöscht. Klicken Sie unter „Verschlüsselte Sicherung“ auf „Importieren“ und wählen Sie eine Sicherungsdatei zum Wiederherstellen."
   },
   "opt_no_response": {
     "message": "Die Erweiterung hat nicht reagiert"
@@ -786,12 +786,37 @@
   "opt_import_csv": {
     "message": "CSV importieren"
   },
-  "opt_backup_help": {
-    "message": "Verschlüsselte Sicherungen werden empfohlen. Wenn Sie das Sicherungspasswort vergessen, lässt sich die Datei nicht öffnen."
+  "opt_export": {
+    "message": "Exportieren"
   },
-  "opt_backup_tip": {
-    "message": "Beim Exportieren öffnet sich „Speichern unter“, damit Sie den Speicherort wählen können.\nCSV-Dateien sind nicht verschlüsselt. Wer sie öffnet, sieht die Passwörter. Bewahren Sie sie daher sicher auf.\nDas CSV-Format entspricht dem Export von Chrome und Edge.",
+  "opt_import": {
+    "message": "Importieren"
+  },
+  "opt_backup_enc_title": {
+    "message": "Verschlüsselte Sicherung"
+  },
+  "opt_backup_recommended": {
+    "message": "Empfohlen"
+  },
+  "opt_backup_enc_desc": {
+    "message": "Lässt sich nur mit dem Sicherungspasswort öffnen"
+  },
+  "opt_backup_enc_tip": {
+    "message": "Beim Exportieren öffnet sich „Speichern unter“, damit Sie den Speicherort wählen können.\nWenn Sie das Sicherungspasswort vergessen, lässt sich die Datei nicht öffnen.",
     "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_backup_csv_title": {
+    "message": "CSV-Datei"
+  },
+  "opt_backup_csv_desc": {
+    "message": "Unverschlüsselt, für den Austausch mit dem Browser"
+  },
+  "opt_backup_csv_tip": {
+    "message": "Beim Exportieren öffnet sich „Speichern unter“, damit Sie den Speicherort wählen können.\nWer die Datei öffnet, sieht die Passwörter. Bewahren Sie sie daher sicher auf.\nDas Format entspricht dem Export von Chrome und Edge.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_backup_move_how": {
+    "message": "Anleitung"
   },
   "opt_move_title": {
     "message": "Passwörter mit dem Browser austauschen"
@@ -823,13 +848,13 @@
     "description": "'Export passwords' is the browser's own button name."
   },
   "opt_move_in_3": {
-    "message": "Kehren Sie hierher zurück, klicken Sie oben auf „CSV importieren“ und wählen Sie diese Datei. Exportdateien aus Chrome, Edge, Firefox und Safari werden erkannt."
+    "message": "Kehren Sie hierher zurück, klicken Sie oben unter „CSV-Datei“ auf „Importieren“ und wählen Sie diese Datei. Exportdateien aus Chrome, Edge, Firefox und Safari werden erkannt."
   },
   "opt_move_out_title": {
     "message": "Passwörter von hier zurück in den Browser übertragen"
   },
   "opt_move_out_1": {
-    "message": "Klicken Sie oben auf „CSV exportieren“, um eine Datei zu speichern. Mehr als 3000 Einträge werden auf mehrere Dateien verteilt, weil Chrome und Edge höchstens 3000 auf einmal annehmen."
+    "message": "Klicken Sie oben unter „CSV-Datei“ auf „Exportieren“, um eine Datei zu speichern. Mehr als 3000 Einträge werden auf mehrere Dateien verteilt, weil Chrome und Edge höchstens 3000 auf einmal annehmen."
   },
   "opt_move_out_2": {
     "message": "Öffnen Sie die Passwortseite des Browsers (Adresse wie oben), suchen Sie „Passwörter importieren“ und wählen Sie die eben gespeicherte Datei.",
@@ -1052,11 +1077,8 @@
     "message": "Sicherungsstatus konnte nicht geladen werden: $1",
     "description": "$1 = error message."
   },
-  "opt_backup_status_empty": {
-    "message": "Noch keine Passwörter, daher nichts zu sichern."
-  },
   "opt_backup_status_never": {
-    "message": "Noch nie gesichert. Ihre Passwörter gibt es nur in diesem Browser. Wenn Sie die Erweiterung entfernen oder Browserdaten löschen, sind sie weg."
+    "message": "Noch nie gesichert"
   },
   "opt_backup_status_last_one": {
     "message": "Letzte Sicherung: $2 (vor $1 Tag)",
@@ -1067,11 +1089,11 @@
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_backup_status_due_one": {
-    "message": "Letzte Sicherung: $2 (vor $1 Tag). Seitdem wurden Passwörter geändert. Zeit für eine neue Sicherung.",
+    "message": "Letzte Sicherung: $2 (vor $1 Tag), seitdem Passwörter geändert",
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_backup_status_due_other": {
-    "message": "Letzte Sicherung: $2 (vor $1 Tagen). Seitdem wurden Passwörter geändert. Zeit für eine neue Sicherung.",
+    "message": "Letzte Sicherung: $2 (vor $1 Tagen), seitdem Passwörter geändert",
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_import_done": {
@@ -1866,8 +1888,28 @@
   "opt_update_title": {
     "message": "Updates"
   },
+  "opt_update_summary": {
+    "message": "$1 v$2",
+    "description": "$1 = kind of install (release, development, ...), $2 = current version number."
+  },
+  "opt_update_summary_available": {
+    "message": "Version $1 verfügbar",
+    "description": "$1 = new version number."
+  },
+  "opt_update_channel_github": {
+    "message": "Release-Version"
+  },
+  "opt_update_channel_dev": {
+    "message": "Entwicklerversion"
+  },
+  "opt_update_channel_firefox": {
+    "message": "Firefox (temporär)"
+  },
+  "opt_update_channel_store": {
+    "message": "Store-Version"
+  },
   "opt_update_available": {
-    "message": "Version $1 ist verfügbar (veröffentlicht am $2).",
+    "message": "Version $1 ist verfügbar (veröffentlicht am $2)",
     "description": "$1 = version number, $2 = release date."
   },
   "opt_update_failed": {
@@ -1875,23 +1917,31 @@
     "description": "$1 = error message."
   },
   "opt_update_never": {
-    "message": "Noch nicht geprüft."
+    "message": "Noch nicht geprüft"
   },
   "opt_update_no_release": {
-    "message": "Auf GitHub wurde noch keine Version veröffentlicht."
+    "message": "Auf GitHub wurde noch keine Version veröffentlicht"
   },
   "opt_update_latest": {
-    "message": "Sie verwenden die neueste Version."
+    "message": "Sie verwenden die neueste Version"
   },
   "opt_update_checked_at": {
     "message": "Zuletzt geprüft: $1",
     "description": "$1 = date and time."
   },
   "opt_update_steps": {
-    "message": "Entpacken Sie die heruntergeladene ZIP-Datei, klicken Sie auf der Erweiterungsseite auf „Entpackte Erweiterung laden“ und wählen Sie diesen Ordner. Die neue Version ersetzt diese, Ihre gespeicherten Passwörter und Einstellungen bleiben erhalten. Sie können die Datei auch über den aktuellen Ordner entpacken und auf der Karte dieser Erweiterung auf „Neu laden“ klicken."
+    "message": "Entpacken Sie die ZIP-Datei, klicken Sie auf der Erweiterungsseite auf „Entpackte Erweiterung laden“ und wählen Sie diesen Ordner."
+  },
+  "opt_update_steps_tip": {
+    "message": "Ihre gespeicherten Passwörter und Einstellungen bleiben erhalten.\nSie können die Datei auch über den aktuellen Ordner entpacken und auf der Karte dieser Erweiterung auf „Neu laden“ klicken.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_steps_firefox": {
-    "message": "Öffnen Sie nach dem Herunterladen about:debugging#/runtime/this-firefox, klicken Sie auf „Temporäres Add-on laden…“ und wählen Sie die heruntergeladene ZIP-Datei. Sie müssen sie nicht entpacken. Ihre gespeicherten Passwörter und Einstellungen bleiben erhalten."
+    "message": "Öffnen Sie about:debugging#/runtime/this-firefox, klicken Sie auf „Temporäres Add-on laden…“ und wählen Sie die heruntergeladene ZIP-Datei."
+  },
+  "opt_update_steps_firefox_tip": {
+    "message": "Sie müssen sie nicht entpacken.\nIhre gespeicherten Passwörter und Einstellungen bleiben erhalten.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_download": {
     "message": "Herunterladen"
@@ -1922,13 +1972,21 @@
     "message": "Fragt nur bei GitHub die neueste Versionsnummer ab. Es werden keine Passwörter, Konten oder Einstellungen gesendet.\nBrowser lassen Erweiterungen, die über „Entpackte Erweiterung laden“ hinzugefügt wurden, sich nicht selbst aktualisieren. Eine neue Version wird deshalb nur hier und im Pop-up angezeigt. Herunterladen und laden müssen Sie sie selbst."
   },
   "opt_update_dev": {
-    "message": "Dies ist die Entwicklerversion, die direkt aus dem Quellordner geladen wurde. Sie prüft daher nicht automatisch. Aktualisieren Sie sie mit git und entpacken Sie keine heruntergeladene ZIP-Datei über den Quellordner."
+    "message": "Die Entwicklerversion prüft nur, wenn Sie auf „Jetzt prüfen“ klicken."
+  },
+  "opt_update_dev_tip": {
+    "message": "Die direkt aus dem Quellordner geladene Version ist die Entwicklerversion.\nAktualisieren Sie sie mit git und entpacken Sie keine heruntergeladene ZIP-Datei über den Quellordner.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_firefox": {
-    "message": "Dies ist die vorübergehend geladene Firefox-Version. Sie prüft nicht automatisch und wird entfernt, wenn Sie Firefox schließen."
+    "message": "Die vorübergehend geladene Firefox-Version prüft nur, wenn Sie auf „Jetzt prüfen“ klicken."
+  },
+  "opt_update_firefox_tip": {
+    "message": "Firefox entfernt sie beim Schließen. Sie müssen sie beim nächsten Mal erneut laden.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_store": {
-    "message": "Diese Version wurde aus einem Store installiert und wird von dort automatisch aktualisiert."
+    "message": "Der Store aktualisiert sie automatisch."
   },
   "opt_dialog_add_title": {
     "message": "Passwort hinzufügen"

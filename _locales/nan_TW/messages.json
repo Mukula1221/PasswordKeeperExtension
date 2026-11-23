@@ -391,7 +391,7 @@
     "message": "欲共這台電腦的密碼清掉無？"
   },
   "opt_lock_reset_text": {
-    "message": "若解袂開，就干焦會當清掉，才閣去「備份」分頁用「匯入加密備份」還原。清掉了後無法度復原。"
+    "message": "若解袂開，就干焦會當清掉，才閣去「備份」分頁揤加密備份的「匯入」還原。清掉了後無法度復原。"
   },
   "opt_lock_reset_confirm": {
     "message": "清掉"
@@ -415,7 +415,7 @@
     "message": "愛輸入「$1」才會當繼續"
   },
   "opt_lock_reset_done": {
-    "message": "清掉矣。請揤「匯入加密備份」揀備份檔還原。"
+    "message": "清掉矣。請揤加密備份的「匯入」揀備份檔還原。"
   },
   "opt_no_response": {
     "message": "背景程式無回應"
@@ -786,12 +786,37 @@
   "opt_import_csv": {
     "message": "匯入 CSV"
   },
-  "opt_backup_help": {
-    "message": "建議用加密備份。備份密碼若袂記得，就拍袂開。"
+  "opt_export": {
+    "message": "匯出"
   },
-  "opt_backup_tip": {
-    "message": "匯出的時會跳出「另存新檔」予你揀位置。\nCSV 無加密，拍開就看會著密碼，愛囥佇安全的所在。\nCSV 的格式佮 Chrome、Edge 匯出的仝款。",
+  "opt_import": {
+    "message": "匯入"
+  },
+  "opt_backup_enc_title": {
+    "message": "加密備份"
+  },
+  "opt_backup_recommended": {
+    "message": "建議"
+  },
+  "opt_backup_enc_desc": {
+    "message": "愛有備份密碼才拍會開"
+  },
+  "opt_backup_enc_tip": {
+    "message": "匯出的時會跳出「另存新檔」予你揀位置。\n備份密碼若袂記得，就拍袂開。",
     "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_backup_csv_title": {
+    "message": "CSV 檔"
+  },
+  "opt_backup_csv_desc": {
+    "message": "無加密，會使搬轉去瀏覽器"
+  },
+  "opt_backup_csv_tip": {
+    "message": "匯出的時會跳出「另存新檔」予你揀位置。\n拍開就看會著密碼，愛囥佇安全的所在。\n格式佮 Chrome、Edge 匯出的仝款。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_backup_move_how": {
+    "message": "按怎搬？"
   },
   "opt_move_title": {
     "message": "佮瀏覽器互相搬密碼"
@@ -823,13 +848,13 @@
     "description": "'Export passwords' is the browser's own button name."
   },
   "opt_move_in_3": {
-    "message": "轉來遮揤頂懸的「匯入 CSV」，揀彼个檔。Chrome、Edge、Firefox、Safari 匯出的檔案攏看有。"
+    "message": "轉來遮揤頂懸 CSV 檔的「匯入」，揀彼个檔。Chrome、Edge、Firefox、Safari 匯出的檔案攏看有。"
   },
   "opt_move_out_title": {
     "message": "共遮的密碼搬轉去瀏覽器"
   },
   "opt_move_out_1": {
-    "message": "揤頂懸的「匯出 CSV」存檔。超過 3000 筆會分做幾若个檔，因為 Chrome、Edge 一擺上濟收 3000 筆。"
+    "message": "揤頂懸 CSV 檔的「匯出」存檔。超過 3000 筆會分做幾若个檔，因為 Chrome、Edge 一擺上濟收 3000 筆。"
   },
   "opt_move_out_2": {
     "message": "開瀏覽器的密碼頁（網址佮頂懸仝款），揣「匯入密碼」，揀拄才存的檔。",
@@ -1052,11 +1077,8 @@
     "message": "讀取備份狀態無成功：$1",
     "description": "$1 = error message."
   },
-  "opt_backup_status_empty": {
-    "message": "猶未有任何密碼，免備份。"
-  },
   "opt_backup_status_never": {
-    "message": "猶未備份過。密碼干焦瀏覽器內底這份，若移除擴充功能抑是清除瀏覽資料就無去矣。"
+    "message": "猶未備份過"
   },
   "opt_backup_status_last_one": {
     "message": "頂擺備份：$2（$1 工前）",
@@ -1067,11 +1089,11 @@
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_backup_status_due_one": {
-    "message": "頂擺備份：$2（$1 工前），了後有改過密碼，該閣備份一擺矣。",
+    "message": "頂擺備份：$2（$1 工前），了後有改過密碼",
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_backup_status_due_other": {
-    "message": "頂擺備份：$2（$1 工前），了後有改過密碼，該閣備份一擺矣。",
+    "message": "頂擺備份：$2（$1 工前），了後有改過密碼",
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_import_done": {
@@ -1866,8 +1888,28 @@
   "opt_update_title": {
     "message": "檢查新版"
   },
+  "opt_update_summary": {
+    "message": "$1 v$2",
+    "description": "$1 = kind of install (release, development, ...), $2 = current version number."
+  },
+  "opt_update_summary_available": {
+    "message": "有新版 $1",
+    "description": "$1 = new version number."
+  },
+  "opt_update_channel_github": {
+    "message": "正式版"
+  },
+  "opt_update_channel_dev": {
+    "message": "開發版"
+  },
+  "opt_update_channel_firefox": {
+    "message": "Firefox 暫時載入版"
+  },
+  "opt_update_channel_store": {
+    "message": "商店版"
+  },
   "opt_update_available": {
-    "message": "有新版 $1（$2 發布的）。",
+    "message": "有新版 $1（$2 發布的）",
     "description": "$1 = version number, $2 = release date."
   },
   "opt_update_failed": {
@@ -1875,23 +1917,31 @@
     "description": "$1 = error message."
   },
   "opt_update_never": {
-    "message": "猶未檢查過。"
+    "message": "猶未檢查過"
   },
   "opt_update_no_release": {
-    "message": "GitHub 頂懸猶未發布正式版。"
+    "message": "GitHub 頂懸猶未發布正式版"
   },
   "opt_update_latest": {
-    "message": "已經是上新的版本矣。"
+    "message": "已經是上新的版本矣"
   },
   "opt_update_checked_at": {
     "message": "頂擺檢查：$1",
     "description": "$1 = date and time."
   },
   "opt_update_steps": {
-    "message": "下載了後解壓縮，佇擴充功能管理頁揤「載入解壓縮」揀彼个資料夾，就會換做新版，存的密碼佮設定攏會留咧。嘛會當解壓縮蓋掉原本的資料夾，才閣揤這个工具卡片頂的「重新載入」。"
+    "message": "解壓縮了後，去擴充功能管理頁揤「載入解壓縮」揀彼个資料夾。"
+  },
+  "opt_update_steps_tip": {
+    "message": "存的密碼佮設定攏會留咧。\n嘛會當解壓縮蓋掉原本的資料夾，才閣揤這个工具卡片頂的「重新載入」。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_steps_firefox": {
-    "message": "下載了後去 about:debugging#/runtime/this-firefox 揤「載入暫時附加元件」，揀下載的 zip，免解壓縮。存的密碼佮設定攏會留咧。"
+    "message": "去 about:debugging#/runtime/this-firefox 揤「載入暫時附加元件」，揀下載的 zip。"
+  },
+  "opt_update_steps_firefox_tip": {
+    "message": "免解壓縮。\n存的密碼佮設定攏會留咧。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_download": {
     "message": "下載新版"
@@ -1922,13 +1972,21 @@
     "message": "干焦會連去 GitHub 問上新的版本號，袂送出任何密碼、帳號抑是設定。\n瀏覽器毋予家己載入的擴充功能家己換做新版，所以有新版的時干焦會佇遮佮小視窗提醒，下載佮載入愛家己揤。"
   },
   "opt_update_dev": {
-    "message": "這是直接載入原始碼資料夾的開發版，袂自動檢查。開發版請用 git 更新，莫用下載的 zip 蓋掉原始碼資料夾。"
+    "message": "開發版愛揤「這馬檢查」才會檢查。"
+  },
+  "opt_update_dev_tip": {
+    "message": "直接載入原始碼資料夾的就是開發版。\n開發版請用 git 更新，莫用下載的 zip 蓋掉原始碼資料夾。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_firefox": {
-    "message": "這是暫時載入的 Firefox 版，袂自動檢查，關掉 Firefox 就會移除。"
+    "message": "暫時載入的 Firefox 版愛揤「這馬檢查」才會檢查。"
+  },
+  "opt_update_firefox_tip": {
+    "message": "關掉 Firefox 就會移除，後擺愛閣載入一擺。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_store": {
-    "message": "這是對商店安裝的版本，商店會自動更新。"
+    "message": "商店會自動更新。"
   },
   "opt_dialog_add_title": {
     "message": "新增密碼"

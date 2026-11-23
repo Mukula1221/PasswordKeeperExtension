@@ -129,8 +129,17 @@
     #choiceList li .muted { display: block; }
     .folder { width: 200px; padding: 4px 6px; font: inherit; border: 1px solid var(--border); border-radius: 6px; }
     select { font: inherit; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
-    #backupStatus { font-size: 13px; }
-    #backupStatus.due { color: #92400e; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 8px 10px; }
+    /* inline-block：視窗窄時整塊換到下一行，黃底才不會斷成兩截 */
+    #backupStatus.warn { display: inline-block; color: #92400e; background: #fef3c7; border-radius: 8px; padding: 1px 8px; }
+    /* 加密備份和 CSV 是兩種不同的東西，分成兩張卡片並排。框線和圓角跟工具鎖定的卡片一樣。 */
+    .backup-kinds { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    @media (max-width: 640px) { .backup-kinds { grid-template-columns: minmax(0, 1fr); } }
+    .backup-kind { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; }
+    .backup-kind-head { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
+    .backup-kind-head .grow { flex: 1; }
+    .backup-badge { padding: 1px 8px; border-radius: 999px; background: #dbeafe; color: #1e40af; font-size: 11px; font-weight: 600; }
+    .backup-kind .row { margin-top: 10px; }
+    .backup-kind .row .link { margin-left: auto; }
     .health-item { display: flex; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
     .health-item:last-child { border-bottom: 0; }
     .health-item .what { flex: 1; min-width: 0; }
@@ -180,11 +189,28 @@
     /* 有新版時頁首版本號旁邊的提示，跟版本分頁「有新版」那行同一個綠色 */
     .update-pill { background: #dcfce7; color: #166534; border-color: #86efac; border-radius: 999px; font-weight: 600; }
     .update-pill:hover { background: #bbf7d0; }
-    #updateState.available { color: #166534; font-weight: 600; }
+    /* 檢查新版：標題旁邊寫目前是哪一種版本，有新版時換成跟頁首一樣的綠色標籤 */
+    #updateSummary.available { color: #166534; background: #dcfce7; border-radius: 999px; padding: 1px 8px; font-weight: 600; }
+    /* 狀態、上次檢查、「立即檢查」包成一張卡片，狀態在左、按鈕在右。視窗窄時按鈕換到下面 */
+    .update-box { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+    .update-box.available { background: #f0fdf4; border-color: #86efac; }
+    .update-box.failed { background: #fef2f2; border-color: #fecaca; }
+    .update-head { display: flex; align-items: center; gap: 12px; }
+    .update-head .grow { flex: 1; min-width: 0; }
+    @media (max-width: 640px) { .update-head { flex-wrap: wrap; } }
+    #updateState { font-weight: 600; }
+    #updateState.ok::before { content: "✓" / ""; margin-right: 6px; color: #15803d; font-weight: 700; }
+    #updateState.available { color: #166534; }
     #updateState.failed { color: var(--danger); }
-    #updateSteps { margin-top: 8px; }
-    .update-actions { margin-top: 10px; }
-    .update-auto { margin-top: 12px; }
+    #updateState.never { color: var(--muted); font-weight: 400; }
+    /* 有新版時的兩步：① 下載、② 載入 */
+    .update-get { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #bbf7d0; }
+    .update-step { display: flex; align-items: flex-start; gap: 8px; }
+    .update-step .no { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; margin-top: 5px; border-radius: 999px; background: #166534; color: #fff; font-size: 12px; font-weight: 600; }
+    .update-step .body { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+    .update-step .body.stack { flex-direction: column; align-items: flex-start; padding-top: 5px; font-size: 13px; }
+    .update-auto { margin-top: 10px; }
+    .update-note { margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -268,21 +294,40 @@
 
       <section id="tab-backup" class="tabpane" hidden>
         <details class="card" open>
-          <summary data-i18n="opt_block_backup">備份</summary>
+          <summary><span data-i18n="opt_block_backup">備份</span> <span id="backupStatus" class="muted"></span></summary>
           <div>
-            <div id="backupStatus"></div>
-            <div class="row wrap">
-              <button id="exportBak" class="primary" data-i18n="opt_export_backup">匯出加密備份</button>
-              <button id="importBak" data-i18n="opt_import_backup">匯入加密備份</button>
-              <span class="sep"></span>
-              <button id="export" data-i18n="opt_export_csv">匯出 CSV</button>
-              <button id="import" data-i18n="opt_import_csv">匯入 CSV</button>
-              <input id="file" type="file" accept=".csv,text/csv" hidden>
-              <input id="bakFile" type="file" accept=".pkbak,.json,application/json" hidden>
+            <div class="backup-kinds">
+              <div class="backup-kind">
+                <div class="backup-kind-head">
+                  <span class="grow" data-i18n="opt_backup_enc_title">加密備份</span>
+                  <span class="backup-badge" data-i18n="opt_backup_recommended">建議</span>
+                  <span class="tip" data-i18n-tip="opt_backup_enc_tip" data-tip="匯出時會跳「另存新檔」讓你選位置。
+備份密碼忘了就打不開。">?</span>
+                </div>
+                <div class="muted" data-i18n="opt_backup_enc_desc">要有備份密碼才打得開</div>
+                <div class="row">
+                  <!-- 按鈕上只寫「匯出」「匯入」，讀螢幕軟體念完整名稱，才分得出是哪一張卡片的 -->
+                  <button id="exportBak" class="primary" aria-label="匯出加密備份" data-i18n-aria-label="opt_export_backup" data-i18n="opt_export">匯出</button>
+                  <button id="importBak" aria-label="匯入加密備份" data-i18n-aria-label="opt_import_backup" data-i18n="opt_import">匯入</button>
+                </div>
+              </div>
+              <div class="backup-kind">
+                <div class="backup-kind-head">
+                  <span class="grow" data-i18n="opt_backup_csv_title">CSV 檔</span>
+                  <span class="tip" data-i18n-tip="opt_backup_csv_tip" data-tip="匯出時會跳「另存新檔」讓你選位置。
+打開就看得到密碼，要放在安全的地方。
+格式和 Chrome、Edge 匯出的一樣。">?</span>
+                </div>
+                <div class="muted" data-i18n="opt_backup_csv_desc">沒有加密，可以搬回瀏覽器</div>
+                <div class="row">
+                  <button id="export" aria-label="匯出 CSV" data-i18n-aria-label="opt_export_csv" data-i18n="opt_export">匯出</button>
+                  <button id="import" aria-label="匯入 CSV" data-i18n-aria-label="opt_import_csv" data-i18n="opt_import">匯入</button>
+                  <button id="moveHow" class="link small" data-i18n="opt_backup_move_how">怎麼搬？</button>
+                </div>
+              </div>
             </div>
-            <div class="help"><span data-i18n="opt_backup_help">建議用加密備份。備份密碼忘了就打不開。</span><span class="tip" data-i18n-tip="opt_backup_tip" data-tip="匯出時會跳「另存新檔」讓你選位置。
-CSV 沒有加密，打開就看得到密碼，要放在安全的地方。
-CSV 的格式和 Chrome、Edge 匯出的一樣。">?</span></div>
+            <input id="file" type="file" accept=".csv,text/csv" hidden>
+            <input id="bakFile" type="file" accept=".pkbak,.json,application/json" hidden>
             <div id="backupResult" class="muted" style="margin-top:6px"></div>
           </div>
         </details>
@@ -295,11 +340,11 @@ CSV 的格式和 Chrome、Edge 匯出的一樣。">?</span></div>
             <ol>
               <li><span data-i18n="opt_move_in_1a">開瀏覽器的密碼頁：Chrome 在網址列打</span> <code>chrome://password-manager/settings</code><span data-i18n="opt_move_in_1b">，Edge 打</span> <code>edge://settings/passwords</code><span data-i18n="opt_move_in_1c">，Firefox 打</span> <code>about:logins</code><span data-i18n="opt_move_in_1d">。</span></li>
               <li data-i18n="opt_move_in_2">找「匯出密碼」，存成 CSV 檔。瀏覽器可能會先要你驗證 Windows 密碼或 PIN。</li>
-              <li data-i18n="opt_move_in_3">回到這裡按上面的「匯入 CSV」，選那個檔。Chrome、Edge、Firefox、Safari 匯出的檔案都看得懂。</li>
+              <li data-i18n="opt_move_in_3">回到這裡按上面 CSV 檔的「匯入」，選那個檔。Chrome、Edge、Firefox、Safari 匯出的檔案都看得懂。</li>
             </ol>
             <h3 data-i18n="opt_move_out_title">把這裡的密碼搬回瀏覽器</h3>
             <ol>
-              <li data-i18n="opt_move_out_1">按上面的「匯出 CSV」存檔。超過 3000 筆會分成幾個檔，因為 Chrome、Edge 一次最多收 3000 筆。</li>
+              <li data-i18n="opt_move_out_1">按上面 CSV 檔的「匯出」存檔。超過 3000 筆會分成幾個檔，因為 Chrome、Edge 一次最多收 3000 筆。</li>
               <li data-i18n="opt_move_out_2">開瀏覽器的密碼頁（網址同上），找「匯入密碼」，選剛剛存的檔。</li>
               <li data-i18n="opt_move_out_3">瀏覽器裡已經有同網站同帳號、密碼卻不一樣的，新版 Chrome 會列出來讓你選要不要換掉；沒問的話，瀏覽器會保留它原本的那組。</li>
             </ol>
@@ -582,22 +627,41 @@ CSV 的格式和 Chrome、Edge 匯出的一樣。">?</span></div>
 
       <section id="tab-versions" class="tabpane" hidden>
         <details class="card" open>
-          <summary data-i18n="opt_update_title">檢查新版</summary>
+          <summary><span data-i18n="opt_update_title">檢查新版</span> <span id="updateSummary" class="muted"></span></summary>
           <div>
-            <div id="updateState"></div>
-            <div id="updateCheckedAt" class="muted"></div>
-            <div id="updateSteps" class="help" hidden data-i18n="opt_update_steps">下載後解壓縮，在擴充功能管理頁按「載入解壓縮」選那個資料夾，就會換成新版，存的密碼和設定都會留著。也可以解壓縮蓋掉原本的資料夾，再按這個工具卡片上的「重新載入」。</div>
-            <div id="updateStepsFirefox" class="help" hidden data-i18n="opt_update_steps_firefox">下載後到 about:debugging#/runtime/this-firefox 按「載入暫時附加元件」，選下載的 zip，不用解壓縮。存的密碼和設定都會留著。</div>
-            <div class="row wrap update-actions">
-              <button id="updateDownload" class="primary" hidden data-i18n="opt_update_download">下載新版</button>
-              <button id="updateExtensions" hidden data-i18n="opt_update_open_extensions">打開擴充功能管理頁</button>
-              <button id="updatePage" class="link" hidden data-i18n="opt_update_release_page">看這一版的說明</button>
-              <button id="updateCheckNow" data-i18n="opt_update_check_now">立即檢查</button>
+            <div id="updateBox" class="update-box">
+              <div class="update-head">
+                <div class="grow">
+                  <div id="updateState"></div>
+                  <div id="updateCheckedAt" class="muted"></div>
+                </div>
+                <button id="updateCheckNow" data-i18n="opt_update_check_now">立即檢查</button>
+              </div>
+              <div id="updateGet" class="update-get" hidden>
+                <div class="update-step">
+                  <span class="no">1</span>
+                  <div class="body">
+                    <button id="updateDownload" class="primary" hidden data-i18n="opt_update_download">下載新版</button>
+                    <button id="updatePage" class="link" hidden data-i18n="opt_update_release_page">看這一版的說明</button>
+                  </div>
+                </div>
+                <div class="update-step">
+                  <span class="no">2</span>
+                  <div class="body stack">
+                    <span id="updateSteps" hidden><span data-i18n="opt_update_steps">解壓縮後，到擴充功能管理頁按「載入解壓縮」選那個資料夾。</span><span class="tip" data-i18n-tip="opt_update_steps_tip" data-tip="存的密碼和設定都會留著。
+也可以解壓縮蓋掉原本的資料夾，再按這個工具卡片上的「重新載入」。">?</span></span>
+                    <span id="updateStepsFirefox" hidden><span data-i18n="opt_update_steps_firefox">到 about:debugging#/runtime/this-firefox 按「載入暫時附加元件」，選下載的 zip。</span><span class="tip" data-i18n-tip="opt_update_steps_firefox_tip" data-tip="不用解壓縮。
+存的密碼和設定都會留著。">?</span></span>
+                    <button id="updateExtensions" hidden data-i18n="opt_update_open_extensions">打開擴充功能管理頁</button>
+                  </div>
+                </div>
+              </div>
             </div>
             <label id="updateAutoWrap" class="inline update-auto"><input type="checkbox" id="updateAuto"> <span data-i18n="opt_update_auto">每天自動檢查一次</span><span class="tip" data-i18n-tip="opt_update_auto_tip" data-tip="只會連到 GitHub 問最新的版本號，不會送出任何密碼、帳號或設定。
 瀏覽器不讓自己載入的擴充功能自己換成新版，所以有新版時只會在這裡和小視窗提醒，下載和載入要自己按。">?</span></label>
-            <div id="updateDev" class="help" hidden data-i18n="opt_update_dev">這是直接載入原始碼資料夾的開發版，不會自動檢查。開發版請用 git 更新，不要用下載的 zip 蓋掉原始碼資料夾。</div>
-            <div id="updateFirefox" class="help" hidden data-i18n="opt_update_firefox">這是暫時載入的 Firefox 版，不會自動檢查，關掉 Firefox 就會移除。</div>
+            <div id="updateDev" class="help update-note" hidden><span data-i18n="opt_update_dev">開發版要按「立即檢查」才會檢查。</span><span class="tip" data-i18n-tip="opt_update_dev_tip" data-tip="直接載入原始碼資料夾的就是開發版。
+開發版請用 git 更新，不要用下載的 zip 蓋掉原始碼資料夾。">?</span></div>
+            <div id="updateFirefox" class="help update-note" hidden><span data-i18n="opt_update_firefox">暫時載入的 Firefox 版要按「立即檢查」才會檢查。</span><span class="tip" data-i18n-tip="opt_update_firefox_tip" data-tip="關掉 Firefox 就會移除，下次要再載入一次。">?</span></div>
           </div>
         </details>
 
