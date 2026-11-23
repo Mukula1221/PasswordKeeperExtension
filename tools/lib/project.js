@@ -37,7 +37,11 @@ function packageFiles() {
   return FILES.flatMap(walk);
 }
 
+// 放上 GitHub Releases 的三個 zip。
+// GitHub 版和 Firefox 版的檔名不能改：已經裝好的版本檢查新版時，照檔名找自己要下載的那個（src/background/update.js 的 CHANNELS）。
 const zipName = (version) => 'password-keeper-' + version + '.zip';
+const firefoxZipName = (version) => 'password-keeper-' + version + '-firefox.zip';
+const chromiumStoreZipName = (version) => 'password-keeper-' + version + '-chromium-store.zip';
 
 // changelog.js 每一版的 items、notes 是 { zh_TW: [...], en: [...], ja: [...] }，notes 可以省略
 const linesOf = (byLocale, locale) => (byLocale && byLocale[locale]) || [];
@@ -70,21 +74,36 @@ const RELEASE_TEXT = {
     items: '這一版改了什麼',
     notes: '要注意',
     install: '安裝或更新',
-    steps: (zip) => ['下載下面的 `' + zip + '`，解壓縮後在擴充功能管理頁按「載入解壓縮」選那個資料夾。', '已經裝過正式版的話，照一樣的步驟載入新版，存的密碼和設定會留著。'],
+    steps: (zip, firefoxZip, storeZip) => [
+      'Edge、Chrome：下載下面的 `' + zip + '`，解壓縮後在擴充功能管理頁按「載入解壓縮」選那個資料夾。',
+      '已經裝過正式版的話，照一樣的步驟載入新版，存的密碼和設定會留著。',
+      'Firefox：下載下面的 `' + firefoxZip + '`，在 `about:debugging#/runtime/this-firefox` 按「載入暫時附加元件」選那個 zip。關掉 Firefox 就會移除，下次要再載入。',
+      '`' + storeZip + '` 是上傳到 Chrome、Edge 商店用的，自己安裝請用上面的檔案。',
+    ],
     readme: ['README.md', '#下載安裝', '完整步驟：'],
   },
   en: {
     items: "What's new",
     notes: 'Notes',
     install: 'Install or update',
-    steps: (zip) => ['Download `' + zip + '` below, extract it, then click "Load unpacked" on the extensions page and pick that folder.', 'If you already use a release version, load the new one the same way. Your saved passwords and settings stay.'],
+    steps: (zip, firefoxZip, storeZip) => [
+      'Edge and Chrome: Download `' + zip + '` below, extract it, then click "Load unpacked" on the extensions page and pick that folder.',
+      'If you already use a release version, load the new one the same way. Your saved passwords and settings stay.',
+      'Firefox: Download `' + firefoxZip + '` below, open `about:debugging#/runtime/this-firefox`, click "Load Temporary Add-on…", and choose that zip. Firefox removes it when it closes, so you have to load it again next time.',
+      '`' + storeZip + '` is for uploading to the Chrome and Edge stores. To install it yourself, use the files above.',
+    ],
     readme: ['docs/README.en.md', '#install', 'Full steps: '],
   },
   ja: {
     items: '変更内容',
     notes: '注意',
     install: 'インストールと更新',
-    steps: (zip) => ['下の `' + zip + '` をダウンロードして展開し、拡張機能ページの「パッケージ化されていない拡張機能を読み込む」でそのフォルダーを選びます。', 'リリース版をすでに使っている場合も同じ手順で読み込みます。保存したパスワードと設定はそのまま残ります。'],
+    steps: (zip, firefoxZip, storeZip) => [
+      'Edge、Chrome：下の `' + zip + '` をダウンロードして展開し、拡張機能ページの「パッケージ化されていない拡張機能を読み込む」でそのフォルダーを選びます。',
+      'リリース版をすでに使っている場合も同じ手順で読み込みます。保存したパスワードと設定はそのまま残ります。',
+      'Firefox：下の `' + firefoxZip + '` をダウンロードし、`about:debugging#/runtime/this-firefox` で「一時的なアドオンを読み込む」を押してその zip を選びます。Firefox を閉じると削除されるため、次回また読み込む必要があります。',
+      '`' + storeZip + '` は Chrome と Edge のストアにアップロードするためのものです。自分でインストールするときは上のファイルを使ってください。',
+    ],
     readme: ['docs/README.ja.md', '#インストール', '詳しい手順：'],
   },
 };
@@ -103,10 +122,10 @@ function renderReleaseNotes(entry, repoUrl) {
     const [file, anchor, label] = text.readme;
     // HEAD 會指到預設分支，不用管分支叫 main 還是 master
     const link = repoUrl ? repoUrl + '/blob/HEAD/' + file + anchor : file;
-    lines.push('', '### ' + text.install, '', ...text.steps(zipName(entry.version)), '', label + '[' + file + '](' + link + ')', '', '---', '');
+    lines.push('', '### ' + text.install, '', ...text.steps(zipName(entry.version), firefoxZipName(entry.version), chromiumStoreZipName(entry.version)), '', label + '[' + file + '](' + link + ')', '', '---', '');
   }
   // 每種語言後面都接一條分隔線，最後一條不用
   return lines.join('\n').replace(/\n+---\n*$/, '\n');
 }
 
-module.exports = { ROOT, CHANGELOG_JS, readManifest, readChangelog, packageFiles, zipName, renderChangelogMd, renderReleaseNotes };
+module.exports = { ROOT, CHANGELOG_JS, readManifest, readChangelog, packageFiles, zipName, firefoxZipName, chromiumStoreZipName, renderChangelogMd, renderReleaseNotes };

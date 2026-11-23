@@ -32,9 +32,11 @@
   //   screenLockEvents：閒置偵測會回報「鎖螢幕」。Firefox 只回報使用中和閒置，鎖螢幕後要等閒置時間到才會鎖。
   //   privateWindows：能在私密視窗用。AMO 規定 "Data from private browsing sessions must not be stored."，
   //     所以 Firefox 版在私密視窗整個停用，見 privateBlocked()。
+  //   openExtensionsPage：擴充功能能用 tabs.create 開瀏覽器的擴充功能管理頁。
+  //     Firefox 的 about:debugging、about:addons 都會被拒絕（Illegal URL），只能請使用者自己打網址。
   const CAPABILITIES = {
-    chromium: { extensionWebAuthn: true, screenLockEvents: true, privateWindows: true },
-    firefox: { extensionWebAuthn: false, screenLockEvents: false, privateWindows: false },
+    chromium: { extensionWebAuthn: true, screenLockEvents: true, privateWindows: true, openExtensionsPage: true },
+    firefox: { extensionWebAuthn: false, screenLockEvents: false, privateWindows: false, openExtensionsPage: false },
   };
 
   function can(capability) {

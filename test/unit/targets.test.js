@@ -75,13 +75,71 @@ test('從商店裝的：商店版，不連 GitHub', async () => {
 });
 
 const FIREFOX = { origin: 'moz-extension://3b6f7c1e-0000-4000-8000-000000000001' };
+const GECKO_ID = targetManifest('firefox').browser_specific_settings.gecko.id;
+const GH_RELEASES = 'https://github.com/Mukula1221/PasswordKeeperExtension/releases/';
 
-test('能力表：Edge、Chrome 都可以，Firefox 三項都不行，寫錯名稱直接報錯', () => {
+// 假的 GitHub /releases/latest，附檔跟 release.yml 放上去的一樣。Firefox 版的排前面，確定是照檔名找，不是拿第一個 zip。
+function fakeRelease(version) {
+  const asset = (name) => ({ name, browser_download_url: GH_RELEASES + 'download/v' + version + '/' + name });
+  return {
+    tag_name: 'v' + version,
+    html_url: GH_RELEASES + 'tag/v' + version,
+    published_at: '2026-11-23T04:00:00Z',
+    assets: [
+      asset('password-keeper-' + version + '-firefox.zip'),
+      asset('password-keeper-' + version + '-firefox.zip.sha256'),
+      asset('password-keeper-' + version + '.zip'),
+      asset('password-keeper-' + version + '.zip.sha256'),
+    ],
+  };
+}
+
+// 把背景程式的 fetch 換成回 fakeRelease，回傳問過的網址。
+// 假的背景程式沒有 AbortSignal，平常叫 fetch 之前就會出錯，這裡才補上。
+function answerWithRelease(bg, version) {
+  const asked = [];
+  const bgGlobal = bg.run('globalThis');
+  bgGlobal.AbortSignal = AbortSignal;
+  bgGlobal.fetch = async (url) => {
+    asked.push(url);
+    return { status: 200, ok: true, json: async () => fakeRelease(version) };
+  };
+  return asked;
+}
+
+test('Firefox 版的 ID：背景程式認的跟 platforms/firefox/manifest.json 一樣', () => {
+  assert.equal(loadBackground().run('FIREFOX_ID'), GECKO_ID);
+});
+
+test('Firefox 暫時載入的：Firefox 版，按立即檢查才問，下載 Firefox 版的 zip', async () => {
+  const ff = loadBackground(FIREFOX);
+  ff.chrome.runtime.id = GECKO_ID;
+  const st = await ff.send({ type: 'update.status' }, ff.OPTIONS);
+  assert.equal(st.data.channel, 'firefox');
+  assert.equal(st.data.release, false);
+  const asked = answerWithRelease(ff, '99.0.0');
+  await ff.send({ type: 'update.setAuto', enabled: true }, ff.OPTIONS);
+  assert.equal(asked.length, 0, '自動檢查打開也不會問');
+  const res = await ff.send({ type: 'update.check' }, ff.OPTIONS);
+  assert.equal(asked.length, 1);
+  assert.equal(res.data.available, true);
+  assert.equal(res.data.latest.zipUrl, GH_RELEASES + 'download/v99.0.0/password-keeper-99.0.0-firefox.zip');
+});
+
+test('GitHub 版：Release 上也有 Firefox 版的 zip 時，只下載自己的', async () => {
+  const bg = loadBackground();
+  bg.chrome.runtime.id = bg.run('RELEASE_ID');
+  answerWithRelease(bg, '99.0.0');
+  const res = await bg.send({ type: 'update.check' }, OPTIONS);
+  assert.equal(res.data.latest.zipUrl, GH_RELEASES + 'download/v99.0.0/password-keeper-99.0.0.zip');
+});
+
+test('能力表：Edge、Chrome 都可以，Firefox 都不行，寫錯名稱直接報錯', () => {
   const bg = loadBackground();
   const ff = loadBackground(FIREFOX);
   assert.equal(bg.run('engine()'), 'chromium');
   assert.equal(ff.run('engine()'), 'firefox');
-  for (const name of ['extensionWebAuthn', 'screenLockEvents', 'privateWindows']) {
+  for (const name of ['extensionWebAuthn', 'screenLockEvents', 'privateWindows', 'openExtensionsPage']) {
     assert.equal(bg.run(`can('${name}')`), true, name);
     assert.equal(ff.run(`can('${name}')`), false, name);
   }

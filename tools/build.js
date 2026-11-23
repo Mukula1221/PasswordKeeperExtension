@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { createZip } = require('./lib/zip');
-const { ROOT, readManifest, readChangelog, packageFiles, zipName } = require('./lib/project');
+const { ROOT, readManifest, readChangelog, packageFiles, zipName, firefoxZipName, chromiumStoreZipName } = require('./lib/project');
 
 // 正式版的 manifest 多放這把公鑰，擴充功能 ID 就固定是 fgmjnolhbeohanamhnomcpmolhdapdkg，不會跟著解壓縮的資料夾變。
 // 換資料夾裝新版時，存的密碼和工具鎖定才會留著。改掉這把公鑰，已經裝過正式版的人會變成另一個擴充功能、看不到原本的資料。
@@ -38,9 +38,9 @@ function overlay(base, patch) {
   return out;
 }
 
-// 商店版放 dist/store/，發版時不會跟 GitHub 版的 zip 一起放上 Releases
+// GitHub 版放 dist/，上傳商店的放 dist/store/。發版時三種都附在 Releases，見 .github/workflows/release.yml。
 const TARGETS = {
-  // GitHub Releases 的 zip，Edge、Chrome 載入解壓縮。檔名不能改：舊版檢查新版時，找的就是這個檔名。
+  // GitHub Releases 的 zip，Edge、Chrome 載入解壓縮。
   github: {
     dir: 'dist',
     zip: zipName,
@@ -49,13 +49,14 @@ const TARGETS = {
   // Chrome Web Store、Edge Add-ons、Opera 共用。不放 key：商店會給自己的 ID，Chrome Web Store 新建項目時也不收 key。
   'chromium-store': {
     dir: 'dist/store',
-    zip: (version) => 'password-keeper-' + version + '-chromium-store.zip',
+    zip: chromiumStoreZipName,
     manifest: (m) => ({ ...m }),
   },
-  // Firefox 的商店 AMO。Firefox 不支援 service worker 寫法，背景程式改列在 background.scripts。
+  // 上傳到 Firefox 的商店 AMO，同一個檔也附在 GitHub Releases 給人暫時載入。
+  // Firefox 不支援 service worker 寫法，背景程式改列在 background.scripts。
   firefox: {
     dir: 'dist/store',
-    zip: (version) => 'password-keeper-' + version + '-firefox.zip',
+    zip: firefoxZipName,
     manifest: (m) => {
       const patch = JSON.parse(fs.readFileSync(path.join(ROOT, 'platforms', 'firefox', 'manifest.json'), 'utf8'));
       return overlay(m, { ...patch, background: { service_worker: null, scripts: backgroundScripts() } });

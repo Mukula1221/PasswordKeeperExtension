@@ -1890,6 +1890,9 @@
   "opt_update_steps": {
     "message": "Extract the downloaded zip, then click \"Load unpacked\" on the extensions page and pick that folder. The new version replaces this one, and your saved passwords and settings stay. You can also extract it over the current folder and click \"Reload\" on this extension's card."
   },
+  "opt_update_steps_firefox": {
+    "message": "After downloading, go to about:debugging#/runtime/this-firefox, click \"Load Temporary Add-on…\", and choose the downloaded zip. You don't need to extract it. Your saved passwords and settings stay."
+  },
   "opt_update_download": {
     "message": "Download"
   },
@@ -1920,6 +1923,9 @@
   },
   "opt_update_dev": {
     "message": "This is the development version loaded straight from the source folder, so it doesn't check automatically. Update it with git, and don't extract a downloaded zip over the source folder."
+  },
+  "opt_update_firefox": {
+    "message": "This is the Firefox version loaded as a temporary add-on. It doesn't check automatically, and Firefox removes it when it closes."
   },
   "opt_update_store": {
     "message": "This version was installed from a store, which updates it automatically."

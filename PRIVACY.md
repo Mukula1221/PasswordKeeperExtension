@@ -20,7 +20,7 @@
 ## 會不會連到外面
 
 - 從瀏覽器商店安裝的版本，完全不連到外面。
-- 從 GitHub Releases 下載的版本，每天一次到 GitHub（`api.github.com`）問最新的版本號。這個請求不帶 cookie，不會送出任何帳號、密碼、網站或設定，可以在管理頁「版本」分頁關掉。
+- 從 GitHub Releases 下載的 Edge、Chrome 版，每天一次到 GitHub（`api.github.com`）問最新的版本號，可以在管理頁「版本」分頁關掉。從 GitHub Releases 下載的 Firefox 版，只在使用者按「立即檢查」時才問。這個請求不帶 cookie，不會送出任何帳號、密碼、網站或設定。
 
 ## 不做的事
 
@@ -53,7 +53,7 @@ Password Keeper is a browser extension that saves and fills in your usernames an
 ## Network connections
 
 - Versions installed from a browser store never connect to anything outside the browser.
-- Versions downloaded from GitHub Releases ask GitHub (`api.github.com`) for the latest version number once a day. The request carries no cookies and sends no usernames, passwords, sites, or settings. You can turn it off in the Versions tab on the manager page.
+- The Edge and Chrome versions downloaded from GitHub Releases ask GitHub (`api.github.com`) for the latest version number once a day. You can turn it off in the Versions tab on the manager page. The Firefox version from GitHub Releases asks only when you click "Check now". The request carries no cookies and sends no usernames, passwords, sites, or settings.
 
 ## What the extension never does
 
@@ -86,7 +86,7 @@ Open an issue on the [GitHub project](https://github.com/Mukula1221/PasswordKeep
 ## 外部への接続
 
 - ブラウザーのストアからインストールした版は、外部に一切接続しません。
-- GitHub Releases からダウンロードした版は、1 日 1 回 GitHub（`api.github.com`）に最新のバージョン番号を問い合わせます。この通信には Cookie を付けず、ユーザー名、パスワード、サイト、設定は送信しません。管理ページの「バージョン」タブでオフにできます。
+- GitHub Releases からダウンロードした Edge 版と Chrome 版は、1 日 1 回 GitHub（`api.github.com`）に最新のバージョン番号を問い合わせます。管理ページの「バージョン」タブでオフにできます。GitHub Releases の Firefox 版は「今すぐ確認」を押したときだけ問い合わせます。この通信には Cookie を付けず、ユーザー名、パスワード、サイト、設定は送信しません。
 
 ## 行わないこと
 

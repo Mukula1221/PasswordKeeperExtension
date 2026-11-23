@@ -19,7 +19,7 @@ Passwords are stored only in this computer's browser and are never uploaded anyw
 
 ## Install
 
-1. Go to [Releases](../../../releases) and download the latest `password-keeper-<version>.zip`.
+1. Go to [Releases](../../../releases) and download the latest `password-keeper-<version>.zip`. The file ending in `-firefox` is the Firefox version; see "Firefox (for testing)" below. The file ending in `-chromium-store` is for uploading to the stores, so don't install it.
 2. Extract it to a folder you won't delete, such as a "Password Keeper" folder under Documents. The browser loads the extension from this folder every time it starts, so deleting the folder stops the extension from working.
 3. Open the extensions page:
    - Edge: type `edge://extensions` in the address bar
@@ -42,12 +42,12 @@ Get-FileHash password-keeper-1.14.0.zip
 
 The Firefox version isn't published yet. To try it now, load it temporarily in Firefox. A temporarily loaded extension is removed when you close Firefox, so you have to load it again next time. Don't keep the only copy of your passwords in it, and export an encrypted backup of anything you want to keep.
 
-1. Get the Firefox zip in one of these ways:
-   - With Node.js installed: run `node tools/build.js firefox` in the project folder. The file is `dist/store/password-keeper-<version>-firefox.zip`.
-   - Without Node.js: open this project's [Actions](../../../actions) page, click the latest "CI" run, and download `password-keeper-<version>-firefox.zip` from Artifacts at the bottom. You need to be signed in to GitHub.
+1. Go to [Releases](../../../releases) and download the latest `password-keeper-<version>-firefox.zip`. It's available from 1.19.1.
 2. Type `about:debugging#/runtime/this-firefox` in Firefox's address bar.
 3. Click "Load Temporary Add-on…" and choose the zip. You don't need to extract it.
 4. Reload any tabs that were open before you loaded it.
+
+The Firefox version doesn't check for updates automatically. Click "Check now" in the Versions tab on the manager page. When a new version is out, click "Download", then load the downloaded zip with steps 2 and 3 above. Your saved passwords and settings stay.
 
 How the Firefox version differs from the Edge and Chrome versions:
 
@@ -57,14 +57,14 @@ How the Firefox version differs from the Edge and Chrome versions:
 
 ## Update
 
-Release versions check GitHub for a new version once a day. When one is available, a green notice appears at the top of the popup, and the Versions tab on the manager page lets you download the new zip or click "Check now". Browsers don't let extensions you loaded yourself replace themselves, so after downloading, install it with the steps below.
+Edge and Chrome release versions check GitHub for a new version once a day. For the Firefox version, see "Firefox (for testing)" above. When one is available, a green notice appears at the top of the popup, and the Versions tab on the manager page lets you download the new zip or click "Check now". Browsers don't let extensions you loaded yourself replace themselves, so after downloading, install it with the steps below.
 
 1. First export an encrypted backup from the "Backup" tab on the manager page, just in case.
 2. Download the new zip and extract it. You can extract it over the old folder or into a new folder.
 3. If you replaced the old folder, click "Reload" on the Password Keeper card on the extensions page. If you used a new folder, click "Load unpacked" and pick it, then delete the old folder once the new version works.
 4. Refresh any open tabs once.
 
-Release versions downloaded from Releases always have the extension ID `fgmjnolhbeohanamhnomcpmolhdapdkg`. A new version installed from a different folder is still the same extension, so your saved passwords, settings, and app lock stay. If a new version needs new permissions, the browser asks once.
+Edge and Chrome release versions downloaded from Releases always have the extension ID `fgmjnolhbeohanamhnomcpmolhdapdkg`. A new version installed from a different folder is still the same extension, so your saved passwords, settings, and app lock stay. If a new version needs new permissions, the browser asks once.
 
 Loading the source folder directly gives you a development version. Its ID depends on the folder location, so it's a different extension from the release version and they don't share data. To switch from the development version to the release version, export an encrypted backup from the development version, install the release version, import the backup, and set up app lock again. Don't keep both versions turned on at the same time, or both will autofill.
 
@@ -112,7 +112,7 @@ Your passwords exist only in this browser. If you remove the extension, or clear
 
 - **No encryption by default.** When the protection method is "Off" or the old "Lock screen only", passwords are stored in the browser profile with only simple encryption, and the key is kept in the same place, so anyone who gets into your Windows account can see all your passwords. To protect against this, choose custom password or system verification encryption under "App lock". Encrypted backup files are different: they can't be opened without the backup password.
 - **Developer mode is required.** If your company has also locked developer mode, you can't install the extension. Edge and Chrome may warn about developer mode extensions when they start; choose to keep the extension.
-- **Checking for updates connects to GitHub.** Release versions ask `api.github.com` for the latest version number once a day. It's a single request without cookies, and it never sends passwords, sites, or settings. You can turn it off in the Versions tab on the manager page. Development versions don't check automatically.
+- **Checking for updates connects to GitHub.** Edge and Chrome release versions ask `api.github.com` for the latest version number once a day. It's a single request without cookies, and it never sends passwords, sites, or settings. You can turn it off in the Versions tab on the manager page. The Firefox version and development versions don't check automatically; they ask only when you click "Check now".
 - **The Firefox version isn't published yet.** To try it now, load it temporarily as described in "Firefox (for testing)" under Install.
 - **Sites are matched by their full domain.** jira.example.com and gitlab.example.com are two sites, and their accounts don't show up on each other. www.example.com and example.com also count as two.
 - **Verification is tied to the extension ID.** the release version isn't affected by changing folders, but the development version needs app lock set up again after its folder moves. If system verification stops working (for example, your company turns off Windows Hello) or you forget the custom password, you can't unlock. Click "Forgot the custom password, or system verification isn't working?" on the unlock screen to clear your data; with the old lock screen only setting, remove and reinstall the extension. Either way, import a backup afterward, so keep auto backup on. Auto backup still runs while locked.
