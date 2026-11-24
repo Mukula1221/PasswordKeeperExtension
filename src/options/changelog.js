@@ -9,6 +9,38 @@
   const PK = (globalThis.PK ??= {});
   PK.changelog = [
     {
+      version: '1.19.2',
+      date: '2026-11-24',
+      items: {
+        zh_TW: [
+          '管理頁「備份」分頁最上面的區塊改版：加密備份和 CSV 分成兩張卡片，各有自己的「匯出」「匯入」按鈕。',
+          '上次備份的日期移到「備份」標題旁邊，區塊收起來也看得到。還沒備份過、或備份後又改過密碼時，用黃底標出來。',
+          'CSV 卡片的「怎麼搬？」會打開下面「和瀏覽器互搬密碼」的步驟。',
+          '管理頁「版本」分頁的「檢查新版」區塊改版：狀態和「立即檢查」放在同一張卡片，有新版時分成「下載」「載入」兩步。標題旁邊寫目前是哪一種版本，有新版時換成綠色標籤。',
+          '「每天自動檢查一次」只在正式版顯示。開發版和 Firefox 版的說明改成一句話，細節放進「?」。',
+        ],
+        en: [
+          'Redesigned the top section of the Backup tab on the manager page: encrypted backups and CSV files now have separate cards, each with its own "Export" and "Import" buttons.',
+          'The last backup date now appears next to the "Backup" heading, so you can see it even when the section is collapsed. It\'s highlighted in yellow if you\'ve never backed up or have changed passwords since the last backup.',
+          '"How to move?" on the CSV card opens the steps for moving passwords to and from the browser.',
+          'Redesigned the "Updates" section of the Versions tab: the status and "Check now" share one card, and a new version is split into two steps, download and load. The heading shows which kind of install you have, and turns into a green tag when a new version is out.',
+          '"Check automatically once a day" only appears in the release version. The notes for the development and Firefox versions are now one sentence each, with details in the "?".',
+        ],
+        ja: [
+          '管理ページの「バックアップ」タブの一番上を作り直しました。暗号化バックアップと CSV を 2 枚のカードに分け、それぞれに「エクスポート」と「インポート」のボタンを置きました。',
+          '前回のバックアップ日を「バックアップ」の見出しの横に移したので、セクションを閉じていても見えます。まだバックアップしていないときや、バックアップ後にパスワードを変更したときは黄色で表示します。',
+          'CSV カードの「移行方法」を押すと、下の「ブラウザーとのパスワードの移行」の手順が開きます。',
+          '管理ページの「バージョン」タブの「アップデート」を作り直しました。状態と「今すぐ確認」を 1 枚のカードにまとめ、新しいバージョンがあるときは「ダウンロード」「読み込み」の 2 段階に分けました。見出しの横にインストールの種類を表示し、新しいバージョンがあるときは緑のラベルに変わります。',
+          '「1 日 1 回自動で確認する」はリリース版だけに表示します。開発版と Firefox 版の説明は 1 文にまとめ、詳しくは「?」に入れました。',
+        ],
+      },
+      notes: {
+        zh_TW: ['按鈕上的字改成「匯出」「匯入」，按下去做的事跟以前一樣。'],
+        en: ['The buttons now just say "Export" and "Import". They do the same things as before.'],
+        ja: ['ボタンの表示を「エクスポート」「インポート」に短くしました。動作はこれまでと同じです。'],
+      },
+    },
+    {
       version: '1.19.1',
       date: '2026-11-23',
       items: {

@@ -391,7 +391,7 @@
     "message": "このパソコンのパスワードを消去しますか？"
   },
   "opt_lock_reset_text": {
-    "message": "ロックを解除できない場合は、消去してから「バックアップ」タブの「暗号化バックアップをインポート」で復元するしかありません。元に戻すことはできません。"
+    "message": "ロックを解除できない場合は、消去してから「バックアップ」タブの暗号化バックアップの「インポート」で復元するしかありません。元に戻すことはできません。"
   },
   "opt_lock_reset_confirm": {
     "message": "消去する"
@@ -415,7 +415,7 @@
     "message": "続けるには「$1」と入力してください"
   },
   "opt_lock_reset_done": {
-    "message": "消去しました。「暗号化バックアップをインポート」を押して、バックアップファイルを選んで復元してください。"
+    "message": "消去しました。暗号化バックアップの「インポート」を押して、バックアップファイルを選んで復元してください。"
   },
   "opt_no_response": {
     "message": "拡張機能から応答がありません"
@@ -786,12 +786,37 @@
   "opt_import_csv": {
     "message": "CSV をインポート"
   },
-  "opt_backup_help": {
-    "message": "暗号化バックアップをおすすめします。バックアップ用パスワードを忘れると開けません。"
+  "opt_export": {
+    "message": "エクスポート"
   },
-  "opt_backup_tip": {
-    "message": "エクスポートすると「名前を付けて保存」が開き、保存先を選べます。\nCSV は暗号化されていないため、開くとパスワードが見えます。安全な場所に保管してください。\nCSV の形式は Chrome、Edge でエクスポートしたものと同じです。",
+  "opt_import": {
+    "message": "インポート"
+  },
+  "opt_backup_enc_title": {
+    "message": "暗号化バックアップ"
+  },
+  "opt_backup_recommended": {
+    "message": "おすすめ"
+  },
+  "opt_backup_enc_desc": {
+    "message": "バックアップ用パスワードがないと開けません"
+  },
+  "opt_backup_enc_tip": {
+    "message": "エクスポートすると「名前を付けて保存」が開き、保存先を選べます。\nバックアップ用パスワードを忘れると開けません。",
     "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_backup_csv_title": {
+    "message": "CSV ファイル"
+  },
+  "opt_backup_csv_desc": {
+    "message": "暗号化されていません。ブラウザーに移せます"
+  },
+  "opt_backup_csv_tip": {
+    "message": "エクスポートすると「名前を付けて保存」が開き、保存先を選べます。\n開くとパスワードが見えるため、安全な場所に保管してください。\n形式は Chrome、Edge でエクスポートしたものと同じです。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_backup_move_how": {
+    "message": "移行方法"
   },
   "opt_move_title": {
     "message": "ブラウザーとのパスワードの移行"
@@ -823,13 +848,13 @@
     "description": "'Export passwords' is the browser's own button name."
   },
   "opt_move_in_3": {
-    "message": "ここに戻って上の「CSV をインポート」を押し、そのファイルを選びます。Chrome、Edge、Firefox、Safari でエクスポートしたファイルに対応しています。"
+    "message": "ここに戻って上の CSV ファイルの「インポート」を押し、そのファイルを選びます。Chrome、Edge、Firefox、Safari でエクスポートしたファイルに対応しています。"
   },
   "opt_move_out_title": {
     "message": "ここのパスワードをブラウザーに戻す"
   },
   "opt_move_out_1": {
-    "message": "上の「CSV をエクスポート」を押して保存します。Chrome と Edge は一度に 3000 件までしか受け付けないため、3000 件を超えると複数のファイルに分かれます。"
+    "message": "上の CSV ファイルの「エクスポート」を押して保存します。Chrome と Edge は一度に 3000 件までしか受け付けないため、3000 件を超えると複数のファイルに分かれます。"
   },
   "opt_move_out_2": {
     "message": "ブラウザーのパスワードページ（URL は上と同じ）を開き、「パスワードをインポート」を探して、保存したファイルを選びます。",
@@ -1052,11 +1077,8 @@
     "message": "バックアップの状態を読み込めませんでした：$1",
     "description": "$1 = error message."
   },
-  "opt_backup_status_empty": {
-    "message": "まだパスワードがないため、バックアップは不要です。"
-  },
   "opt_backup_status_never": {
-    "message": "まだバックアップしていません。パスワードはこのブラウザーにしかないため、拡張機能を削除したり閲覧データを消去したりすると失われます。"
+    "message": "まだバックアップしていません"
   },
   "opt_backup_status_last_one": {
     "message": "前回のバックアップ：$2（$1 日前）",
@@ -1067,11 +1089,11 @@
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_backup_status_due_one": {
-    "message": "前回のバックアップ：$2（$1 日前）。その後パスワードが変更されたので、もう一度バックアップしてください。",
+    "message": "前回のバックアップ：$2（$1 日前）、その後パスワードを変更",
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_backup_status_due_other": {
-    "message": "前回のバックアップ：$2（$1 日前）。その後パスワードが変更されたので、もう一度バックアップしてください。",
+    "message": "前回のバックアップ：$2（$1 日前）、その後パスワードを変更",
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_import_done": {
@@ -1866,8 +1888,28 @@
   "opt_update_title": {
     "message": "アップデート"
   },
+  "opt_update_summary": {
+    "message": "$1 v$2",
+    "description": "$1 = kind of install (release, development, ...), $2 = current version number."
+  },
+  "opt_update_summary_available": {
+    "message": "新バージョン $1",
+    "description": "$1 = new version number."
+  },
+  "opt_update_channel_github": {
+    "message": "リリース版"
+  },
+  "opt_update_channel_dev": {
+    "message": "開発版"
+  },
+  "opt_update_channel_firefox": {
+    "message": "Firefox 一時読み込み版"
+  },
+  "opt_update_channel_store": {
+    "message": "ストア版"
+  },
   "opt_update_available": {
-    "message": "新しいバージョン $1 があります（$2 公開）。",
+    "message": "新しいバージョン $1 があります（$2 公開）",
     "description": "$1 = version number, $2 = release date."
   },
   "opt_update_failed": {
@@ -1875,23 +1917,31 @@
     "description": "$1 = error message."
   },
   "opt_update_never": {
-    "message": "まだ確認していません。"
+    "message": "まだ確認していません"
   },
   "opt_update_no_release": {
-    "message": "GitHub にはまだリリース版が公開されていません。"
+    "message": "GitHub にはまだリリース版が公開されていません"
   },
   "opt_update_latest": {
-    "message": "最新バージョンです。"
+    "message": "最新バージョンです"
   },
   "opt_update_checked_at": {
     "message": "最終確認：$1",
     "description": "$1 = date and time."
   },
   "opt_update_steps": {
-    "message": "ダウンロードした zip を展開し、拡張機能ページの「パッケージ化されていない拡張機能を読み込む」でそのフォルダーを選ぶと、新しいバージョンに置き換わります。保存したパスワードと設定はそのまま残ります。今のフォルダーに上書きで展開して、この拡張機能のカードの「再読み込み」を押す方法もあります。"
+    "message": "zip を展開し、拡張機能ページの「パッケージ化されていない拡張機能を読み込む」でそのフォルダーを選びます。"
+  },
+  "opt_update_steps_tip": {
+    "message": "保存したパスワードと設定はそのまま残ります。\n今のフォルダーに上書きで展開して、この拡張機能のカードの「再読み込み」を押す方法もあります。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_steps_firefox": {
-    "message": "ダウンロードしたら about:debugging#/runtime/this-firefox で「一時的なアドオンを読み込む」を押し、ダウンロードした zip を選びます。展開する必要はありません。保存したパスワードと設定はそのまま残ります。"
+    "message": "about:debugging#/runtime/this-firefox で「一時的なアドオンを読み込む」を押し、ダウンロードした zip を選びます。"
+  },
+  "opt_update_steps_firefox_tip": {
+    "message": "展開する必要はありません。\n保存したパスワードと設定はそのまま残ります。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_download": {
     "message": "ダウンロード"
@@ -1922,13 +1972,21 @@
     "message": "GitHub に最新のバージョン番号を問い合わせるだけで、パスワード、アカウント、設定は送信しません。\nブラウザーは自分で読み込んだ拡張機能を自動で新しいバージョンに置き換えないため、新しいバージョンはこことポップアップでお知らせするだけです。ダウンロードと読み込みはご自身で行ってください。"
   },
   "opt_update_dev": {
-    "message": "これはソースフォルダーを直接読み込んだ開発版なので、自動では確認しません。開発版は git で更新し、ダウンロードした zip をソースフォルダーに上書きしないでください。"
+    "message": "開発版は「今すぐ確認」を押したときだけ確認します。"
+  },
+  "opt_update_dev_tip": {
+    "message": "ソースフォルダーを直接読み込んだものが開発版です。\n開発版は git で更新し、ダウンロードした zip をソースフォルダーに上書きしないでください。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_firefox": {
-    "message": "一時的に読み込んだ Firefox 版です。自動では確認せず、Firefox を閉じると削除されます。"
+    "message": "一時的に読み込んだ Firefox 版は「今すぐ確認」を押したときだけ確認します。"
+  },
+  "opt_update_firefox_tip": {
+    "message": "Firefox を閉じると削除されるため、次回また読み込む必要があります。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_store": {
-    "message": "ストアからインストールしたバージョンです。更新はストアが自動で行います。"
+    "message": "更新はストアが自動で行います。"
   },
   "opt_dialog_add_title": {
     "message": "パスワードを追加"

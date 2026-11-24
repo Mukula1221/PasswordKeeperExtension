@@ -252,11 +252,12 @@ test('版本分頁：寫明是暫時載入的 Firefox 版，有新版時下載 F
         download: shown('updateDownload'),
         extensions: shown('updateExtensions'),
         autoDisabled: document.getElementById('updateAuto').disabled,
+        autoShown: shown('updateAutoWrap'),
       };
     })()`);
     check(view.firefox && !view.dev, '要說是暫時載入的 Firefox 版，不是開發版：' + JSON.stringify(view));
     check(view.stepsFirefox && !view.steps && view.download, '要寫 Firefox 的載入步驟，給下載按鈕：' + JSON.stringify(view));
-    check(!view.extensions && view.autoDisabled, 'Firefox 開不了擴充功能管理頁，不顯示那顆按鈕，自動檢查不能勾：' + JSON.stringify(view));
+    check(!view.extensions && view.autoDisabled && !view.autoShown, 'Firefox 開不了擴充功能管理頁，不顯示那顆按鈕，也不顯示自動檢查的勾選框：' + JSON.stringify(view));
     await page.screenshot(path.join(SHOTS, 'ff-update-available.png'));
   } finally {
     await useUpdateApi(null);

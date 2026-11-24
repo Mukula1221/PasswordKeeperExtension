@@ -391,7 +391,7 @@
     "message": "이 컴퓨터의 비밀번호를 지울까요?"
   },
   "opt_lock_reset_text": {
-    "message": "잠금을 해제할 수 없으면 비밀번호를 지운 다음 '백업' 탭에서 '암호화된 백업 가져오기'로 복원하는 수밖에 없습니다. 지운 후에는 되돌릴 수 없습니다."
+    "message": "잠금을 해제할 수 없으면 비밀번호를 지운 다음 '백업' 탭의 암호화된 백업에서 '가져오기'로 복원하는 수밖에 없습니다. 지운 후에는 되돌릴 수 없습니다."
   },
   "opt_lock_reset_confirm": {
     "message": "지우기"
@@ -415,7 +415,7 @@
     "message": "계속하려면 '$1'을(를) 입력하세요"
   },
   "opt_lock_reset_done": {
-    "message": "지웠습니다. '암호화된 백업 가져오기'를 눌러 백업 파일을 선택해 복원하세요."
+    "message": "지웠습니다. 암호화된 백업의 '가져오기'를 눌러 백업 파일을 선택해 복원하세요."
   },
   "opt_no_response": {
     "message": "확장 프로그램이 응답하지 않습니다"
@@ -786,12 +786,37 @@
   "opt_import_csv": {
     "message": "CSV 가져오기"
   },
-  "opt_backup_help": {
-    "message": "암호화된 백업을 권장합니다. 백업 비밀번호를 잊으면 파일을 열 수 없습니다."
+  "opt_export": {
+    "message": "내보내기"
   },
-  "opt_backup_tip": {
-    "message": "내보내면 '다른 이름으로 저장' 창이 열려 저장 위치를 선택할 수 있습니다.\nCSV는 암호화되지 않아 파일을 열면 비밀번호가 그대로 보이므로 안전한 곳에 보관하세요.\nCSV 형식은 Chrome, Edge에서 내보낸 파일과 같습니다.",
+  "opt_import": {
+    "message": "가져오기"
+  },
+  "opt_backup_enc_title": {
+    "message": "암호화된 백업"
+  },
+  "opt_backup_recommended": {
+    "message": "권장"
+  },
+  "opt_backup_enc_desc": {
+    "message": "백업 비밀번호가 있어야 열 수 있습니다"
+  },
+  "opt_backup_enc_tip": {
+    "message": "내보내면 '다른 이름으로 저장' 창이 열려 저장 위치를 선택할 수 있습니다.\n백업 비밀번호를 잊으면 파일을 열 수 없습니다.",
     "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_backup_csv_title": {
+    "message": "CSV 파일"
+  },
+  "opt_backup_csv_desc": {
+    "message": "암호화되지 않으며 브라우저로 옮길 수 있습니다"
+  },
+  "opt_backup_csv_tip": {
+    "message": "내보내면 '다른 이름으로 저장' 창이 열려 저장 위치를 선택할 수 있습니다.\n파일을 열면 비밀번호가 그대로 보이므로 안전한 곳에 보관하세요.\n형식은 Chrome, Edge에서 내보낸 파일과 같습니다.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_backup_move_how": {
+    "message": "옮기는 방법"
   },
   "opt_move_title": {
     "message": "브라우저와 비밀번호 주고받기"
@@ -823,13 +848,13 @@
     "description": "'Export passwords' is the browser's own button name."
   },
   "opt_move_in_3": {
-    "message": "여기로 돌아와 위의 'CSV 가져오기'를 누르고 그 파일을 선택합니다. Chrome, Edge, Firefox, Safari에서 내보낸 파일을 모두 읽을 수 있습니다."
+    "message": "여기로 돌아와 위의 CSV 파일에서 '가져오기'를 누르고 그 파일을 선택합니다. Chrome, Edge, Firefox, Safari에서 내보낸 파일을 모두 읽을 수 있습니다."
   },
   "opt_move_out_title": {
     "message": "여기 있는 비밀번호를 브라우저로 옮기기"
   },
   "opt_move_out_1": {
-    "message": "위의 'CSV 내보내기'를 눌러 파일을 저장합니다. Chrome과 Edge는 한 번에 최대 3000개까지만 받으므로, 3000개가 넘으면 여러 파일로 나눠 저장합니다."
+    "message": "위의 CSV 파일에서 '내보내기'를 눌러 파일을 저장합니다. Chrome과 Edge는 한 번에 최대 3000개까지만 받으므로, 3000개가 넘으면 여러 파일로 나눠 저장합니다."
   },
   "opt_move_out_2": {
     "message": "브라우저의 비밀번호 페이지(주소는 위와 같음)를 열고 '비밀번호 가져오기'를 찾아 방금 저장한 파일을 선택합니다.",
@@ -1052,11 +1077,8 @@
     "message": "백업 상태를 불러오지 못했습니다: $1",
     "description": "$1 = error message."
   },
-  "opt_backup_status_empty": {
-    "message": "아직 비밀번호가 없어 백업할 필요가 없습니다."
-  },
   "opt_backup_status_never": {
-    "message": "아직 백업한 적이 없습니다. 비밀번호가 이 브라우저에만 있어서, 확장 프로그램을 삭제하거나 인터넷 사용 기록을 삭제하면 사라집니다."
+    "message": "아직 백업하지 않음"
   },
   "opt_backup_status_last_one": {
     "message": "마지막 백업: $2($1일 전)",
@@ -1067,11 +1089,11 @@
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_backup_status_due_one": {
-    "message": "마지막 백업: $2($1일 전). 그 후 비밀번호가 바뀌었으니 다시 백업하세요.",
+    "message": "마지막 백업: $2($1일 전), 이후 비밀번호 변경됨",
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_backup_status_due_other": {
-    "message": "마지막 백업: $2($1일 전). 그 후 비밀번호가 바뀌었으니 다시 백업하세요.",
+    "message": "마지막 백업: $2($1일 전), 이후 비밀번호 변경됨",
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_import_done": {
@@ -1866,8 +1888,28 @@
   "opt_update_title": {
     "message": "업데이트 확인"
   },
+  "opt_update_summary": {
+    "message": "$1 v$2",
+    "description": "$1 = kind of install (release, development, ...), $2 = current version number."
+  },
+  "opt_update_summary_available": {
+    "message": "새 버전 $1",
+    "description": "$1 = new version number."
+  },
+  "opt_update_channel_github": {
+    "message": "정식 버전"
+  },
+  "opt_update_channel_dev": {
+    "message": "개발 버전"
+  },
+  "opt_update_channel_firefox": {
+    "message": "Firefox 임시 버전"
+  },
+  "opt_update_channel_store": {
+    "message": "스토어 버전"
+  },
   "opt_update_available": {
-    "message": "새 버전이 나왔습니다: $1($2 출시).",
+    "message": "새 버전이 나왔습니다: $1($2 출시)",
     "description": "$1 = version number, $2 = release date."
   },
   "opt_update_failed": {
@@ -1875,23 +1917,31 @@
     "description": "$1 = error message."
   },
   "opt_update_never": {
-    "message": "아직 확인하지 않았습니다."
+    "message": "아직 확인하지 않았습니다"
   },
   "opt_update_no_release": {
-    "message": "GitHub에 아직 정식 버전이 게시되지 않았습니다."
+    "message": "GitHub에 아직 정식 버전이 게시되지 않았습니다"
   },
   "opt_update_latest": {
-    "message": "최신 버전입니다."
+    "message": "최신 버전입니다"
   },
   "opt_update_checked_at": {
     "message": "마지막 확인: $1",
     "description": "$1 = date and time."
   },
   "opt_update_steps": {
-    "message": "다운로드한 zip의 압축을 푼 다음, 확장 프로그램 페이지에서 '압축해제된 확장 프로그램을 로드합니다'를 누르고 그 폴더를 선택하면 새 버전으로 바뀝니다. 저장한 비밀번호와 설정은 그대로 남습니다. 압축을 풀어 기존 폴더에 덮어쓴 다음 이 확장 프로그램 카드의 '새로고침'을 눌러도 됩니다."
+    "message": "zip의 압축을 푼 다음 확장 프로그램 페이지에서 '압축해제된 확장 프로그램을 로드합니다'를 누르고 그 폴더를 선택하세요."
+  },
+  "opt_update_steps_tip": {
+    "message": "저장한 비밀번호와 설정은 그대로 남습니다.\n압축을 풀어 기존 폴더에 덮어쓴 다음 이 확장 프로그램 카드의 '새로고침'을 눌러도 됩니다.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_steps_firefox": {
-    "message": "다운로드한 후 about:debugging#/runtime/this-firefox에서 '임시 부가 기능 로드'를 누르고 다운로드한 zip을 선택하세요. 압축을 풀 필요는 없습니다. 저장한 비밀번호와 설정은 그대로 남습니다."
+    "message": "about:debugging#/runtime/this-firefox에서 '임시 부가 기능 로드'를 누르고 다운로드한 zip을 선택하세요."
+  },
+  "opt_update_steps_firefox_tip": {
+    "message": "압축을 풀 필요는 없습니다.\n저장한 비밀번호와 설정은 그대로 남습니다.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_download": {
     "message": "새 버전 다운로드"
@@ -1922,13 +1972,21 @@
     "message": "GitHub에 최신 버전 번호만 물어보며, 비밀번호, 계정, 설정은 전혀 보내지 않습니다.\n브라우저는 직접 로드한 확장 프로그램이 스스로 새 버전으로 바뀌는 것을 허용하지 않습니다. 그래서 새 버전이 나오면 여기와 팝업에서 알려 주기만 하며, 다운로드와 로드는 직접 해야 합니다."
   },
   "opt_update_dev": {
-    "message": "소스 폴더를 바로 로드한 개발 버전이라 자동으로 확인하지 않습니다. 개발 버전은 git으로 업데이트하고, 다운로드한 zip을 소스 폴더에 덮어쓰지 마세요."
+    "message": "개발 버전은 '지금 확인'을 눌러야 확인합니다."
+  },
+  "opt_update_dev_tip": {
+    "message": "소스 폴더를 바로 로드한 것이 개발 버전입니다.\n개발 버전은 git으로 업데이트하고, 다운로드한 zip을 소스 폴더에 덮어쓰지 마세요.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_firefox": {
-    "message": "임시로 로드한 Firefox 버전이라 자동으로 확인하지 않으며, Firefox를 닫으면 제거됩니다."
+    "message": "임시로 로드한 Firefox 버전은 '지금 확인'을 눌러야 확인합니다."
+  },
+  "opt_update_firefox_tip": {
+    "message": "Firefox를 닫으면 제거되므로 다음에 다시 로드해야 합니다.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_store": {
-    "message": "스토어에서 설치한 버전입니다. 스토어가 자동으로 업데이트합니다."
+    "message": "스토어가 자동으로 업데이트합니다."
   },
   "opt_dialog_add_title": {
     "message": "비밀번호 추가"

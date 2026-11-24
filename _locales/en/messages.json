@@ -391,7 +391,7 @@
     "message": "Clear the passwords on this computer?"
   },
   "opt_lock_reset_text": {
-    "message": "If you can't unlock, the only option is to clear them, then restore with \"Import encrypted backup\" in the Backup tab. This can't be undone."
+    "message": "If you can't unlock, the only option is to clear them, then restore with \"Import\" under Encrypted backup in the Backup tab. This can't be undone."
   },
   "opt_lock_reset_confirm": {
     "message": "Clear"
@@ -415,7 +415,7 @@
     "message": "Type \"$1\" to continue"
   },
   "opt_lock_reset_done": {
-    "message": "Cleared. Click \"Import encrypted backup\" and choose a backup file to restore."
+    "message": "Cleared. Click \"Import\" under Encrypted backup and choose a backup file to restore."
   },
   "opt_no_response": {
     "message": "The extension didn't respond"
@@ -786,12 +786,37 @@
   "opt_import_csv": {
     "message": "Import CSV"
   },
-  "opt_backup_help": {
-    "message": "Encrypted backups are recommended. If you forget the backup password, the file can't be opened."
+  "opt_export": {
+    "message": "Export"
   },
-  "opt_backup_tip": {
-    "message": "When you export, a \"Save As\" dialog lets you choose where to save.\nCSV files aren't encrypted. Anyone who opens one can see the passwords, so keep it somewhere safe.\nThe CSV format is the same as what Chrome and Edge export.",
+  "opt_import": {
+    "message": "Import"
+  },
+  "opt_backup_enc_title": {
+    "message": "Encrypted backup"
+  },
+  "opt_backup_recommended": {
+    "message": "Recommended"
+  },
+  "opt_backup_enc_desc": {
+    "message": "Opens only with the backup password"
+  },
+  "opt_backup_enc_tip": {
+    "message": "When you export, a \"Save As\" dialog lets you choose where to save.\nIf you forget the backup password, the file can't be opened.",
     "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_backup_csv_title": {
+    "message": "CSV file"
+  },
+  "opt_backup_csv_desc": {
+    "message": "Not encrypted. Can be imported into browsers"
+  },
+  "opt_backup_csv_tip": {
+    "message": "When you export, a \"Save As\" dialog lets you choose where to save.\nAnyone who opens the file can see the passwords, so keep it somewhere safe.\nThe format is the same as what Chrome and Edge export.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_backup_move_how": {
+    "message": "How to move?"
   },
   "opt_move_title": {
     "message": "Move passwords to and from the browser"
@@ -823,13 +848,13 @@
     "description": "'Export passwords' is the browser's own button name."
   },
   "opt_move_in_3": {
-    "message": "Come back here, click \"Import CSV\" above, and choose that file. Files exported from Chrome, Edge, Firefox, and Safari all work."
+    "message": "Come back here, click \"Import\" under CSV file above, and choose that file. Files exported from Chrome, Edge, Firefox, and Safari all work."
   },
   "opt_move_out_title": {
     "message": "Move passwords from here back to the browser"
   },
   "opt_move_out_1": {
-    "message": "Click \"Export CSV\" above to save a file. More than 3000 entries are split into several files, because Chrome and Edge accept at most 3000 at a time."
+    "message": "Click \"Export\" under CSV file above to save a file. More than 3000 entries are split into several files, because Chrome and Edge accept at most 3000 at a time."
   },
   "opt_move_out_2": {
     "message": "Open the browser's password page (same address as above), find \"Import passwords\", and choose the file you just saved.",
@@ -1052,11 +1077,8 @@
     "message": "Couldn't load the backup status: $1",
     "description": "$1 = error message."
   },
-  "opt_backup_status_empty": {
-    "message": "No passwords yet, so there's nothing to back up."
-  },
   "opt_backup_status_never": {
-    "message": "Never backed up. Your passwords exist only in this browser, so removing the extension or clearing browsing data deletes them."
+    "message": "Never backed up"
   },
   "opt_backup_status_last_one": {
     "message": "Last backup: $2 ($1 day ago)",
@@ -1067,11 +1089,11 @@
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_backup_status_due_one": {
-    "message": "Last backup: $2 ($1 day ago). Passwords have changed since then, so it's time to back up again.",
+    "message": "Last backup: $2 ($1 day ago), passwords changed since",
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_backup_status_due_other": {
-    "message": "Last backup: $2 ($1 days ago). Passwords have changed since then, so it's time to back up again.",
+    "message": "Last backup: $2 ($1 days ago), passwords changed since",
     "description": "$1 = days since the last backup, $2 = date and time."
   },
   "opt_import_done": {
@@ -1866,8 +1888,28 @@
   "opt_update_title": {
     "message": "Updates"
   },
+  "opt_update_summary": {
+    "message": "$1 v$2",
+    "description": "$1 = kind of install (release, development, ...), $2 = current version number."
+  },
+  "opt_update_summary_available": {
+    "message": "Version $1 available",
+    "description": "$1 = new version number."
+  },
+  "opt_update_channel_github": {
+    "message": "Release"
+  },
+  "opt_update_channel_dev": {
+    "message": "Development"
+  },
+  "opt_update_channel_firefox": {
+    "message": "Firefox (temporary)"
+  },
+  "opt_update_channel_store": {
+    "message": "Store"
+  },
   "opt_update_available": {
-    "message": "Version $1 is available (released $2).",
+    "message": "Version $1 is available (released $2)",
     "description": "$1 = version number, $2 = release date."
   },
   "opt_update_failed": {
@@ -1875,23 +1917,31 @@
     "description": "$1 = error message."
   },
   "opt_update_never": {
-    "message": "Not checked yet."
+    "message": "Not checked yet"
   },
   "opt_update_no_release": {
-    "message": "No release has been published on GitHub yet."
+    "message": "No release has been published on GitHub yet"
   },
   "opt_update_latest": {
-    "message": "You're on the latest version."
+    "message": "You're on the latest version"
   },
   "opt_update_checked_at": {
     "message": "Last checked: $1",
     "description": "$1 = date and time."
   },
   "opt_update_steps": {
-    "message": "Extract the downloaded zip, then click \"Load unpacked\" on the extensions page and pick that folder. The new version replaces this one, and your saved passwords and settings stay. You can also extract it over the current folder and click \"Reload\" on this extension's card."
+    "message": "Extract the zip, then click \"Load unpacked\" on the extensions page and pick that folder."
+  },
+  "opt_update_steps_tip": {
+    "message": "Your saved passwords and settings stay.\nYou can also extract it over the current folder and click \"Reload\" on this extension's card.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_steps_firefox": {
-    "message": "After downloading, go to about:debugging#/runtime/this-firefox, click \"Load Temporary Add-on…\", and choose the downloaded zip. You don't need to extract it. Your saved passwords and settings stay."
+    "message": "Go to about:debugging#/runtime/this-firefox, click \"Load Temporary Add-on…\", and choose the downloaded zip."
+  },
+  "opt_update_steps_firefox_tip": {
+    "message": "You don't need to extract it.\nYour saved passwords and settings stay.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_download": {
     "message": "Download"
@@ -1922,13 +1972,21 @@
     "message": "It only asks GitHub for the latest version number. No passwords, accounts, or settings are sent.\nBrowsers don't let extensions added with \"Load unpacked\" update themselves, so a new version is only announced here and in the popup. You download and load it yourself."
   },
   "opt_update_dev": {
-    "message": "This is the development version loaded straight from the source folder, so it doesn't check automatically. Update it with git, and don't extract a downloaded zip over the source folder."
+    "message": "The development version only checks when you click \"Check now\"."
+  },
+  "opt_update_dev_tip": {
+    "message": "Loading the source folder directly gives you the development version.\nUpdate it with git, and don't extract a downloaded zip over the source folder.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_firefox": {
-    "message": "This is the Firefox version loaded as a temporary add-on. It doesn't check automatically, and Firefox removes it when it closes."
+    "message": "The temporarily loaded Firefox version only checks when you click \"Check now\"."
+  },
+  "opt_update_firefox_tip": {
+    "message": "Firefox removes it when it closes, so you'll need to load it again next time.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_update_store": {
-    "message": "This version was installed from a store, which updates it automatically."
+    "message": "The store updates it automatically."
   },
   "opt_dialog_add_title": {
     "message": "Add password"
