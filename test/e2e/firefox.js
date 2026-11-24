@@ -111,8 +111,8 @@ test('裝得起來：背景程式收得到訊息，認得出是 Firefox、暫時
   check((await options.eval('PK.platform.extensionOrigin()')) === EXT.slice(0, -1), '擴充功能網址要是 moz-extension://');
   const up = await send({ type: 'update.status' });
   check(up.ok && up.data.channel === 'firefox', '暫時載入的要算 Firefox 版：' + JSON.stringify(up));
-  const title = await options.eval(`document.querySelector('h1').textContent`);
-  check(title === (await t('ext_name')), '管理頁要套上介面文字：' + title);
+  const title = await options.eval(`document.querySelector('[data-tab="passwords"] span').textContent`);
+  check(title === (await t('opt_tab_passwords')), '管理頁要套上介面文字：' + title);
 });
 
 test('網站權限：安裝時就給了所有網站', async () => {
@@ -230,11 +230,26 @@ test('工具鎖定：自訂密碼加密，鎖上之後打自訂密碼解開', as
 test('小視窗：打得開，畫面有套上介面文字', async () => {
   const popup = await openTab(fx.bidi, EXT + 'src/popup/popup.html', 1200);
   try {
-    const manage = await popup.eval(`document.getElementById('manage').textContent`);
+    const manage = await popup.eval(`document.getElementById('manage').textContent.trim()`);
     check(manage === (await t('pop_manage')), '小視窗要套上介面文字：' + manage);
     await popup.screenshot(path.join(SHOTS, 'ff-popup.png'));
   } finally {
     await popup.close();
+  }
+});
+
+test('色系：選深色後，小視窗和管理頁打開就是深色', async () => {
+  await options.eval(`chrome.storage.local.set({ uiTheme: 'dark' }).then(() => true)`);
+  const popup = await openTab(fx.bidi, EXT + 'src/popup/popup.html', 1200);
+  try {
+    check((await popup.eval(`document.documentElement.dataset.theme`)) === 'dark', '小視窗要是深色');
+    await popup.screenshot(path.join(SHOTS, 'ff-popup-dark.png'));
+    await options.goto(EXT + 'src/options/options.html#passwords', 1500);
+    check((await options.eval(`document.documentElement.dataset.theme`)) === 'dark', '管理頁要是深色');
+    await options.screenshot(path.join(SHOTS, 'ff-options-dark.png'));
+  } finally {
+    await popup.close();
+    await options.eval(`(localStorage.removeItem('pk.uiTheme'), chrome.storage.local.remove('uiTheme')).then(() => true)`);
   }
 });
 

@@ -71,6 +71,9 @@
     "message": "Passwort generieren",
     "description": "Button that opens the password generator, and the title of that panel."
   },
+  "pop_gen_output": {
+    "message": "Generiertes Passwort"
+  },
   "pop_gen_mode_chars": {
     "message": "Zufällige Zeichen"
   },
@@ -144,10 +147,6 @@
     "message": "Erlaubte Sonderzeichen",
     "description": "Field listing which symbols the generator may use."
   },
-  "pop_gen_close": {
-    "message": "Schließen",
-    "description": "Collapses the password generator panel."
-  },
   "pop_copy": {
     "message": "Kopieren",
     "description": "Copies the generated password."
@@ -192,9 +191,15 @@
   "pop_pick_count_title": {
     "message": "Auto-Klick-Regeln auf der Verwaltungsseite ansehen"
   },
+  "pop_pick_start": {
+    "message": "Auswählen"
+  },
   "pop_manage": {
     "message": "Alle Passwörter verwalten",
     "description": "Popup footer link. Opens the manager page."
+  },
+  "pop_tabs_label": {
+    "message": "Bereiche des Pop-ups"
   },
   "pop_no_response": {
     "message": "Die Erweiterung hat nicht reagiert"
@@ -396,16 +401,9 @@
     "message": "Passwort-Hüter – Passwörter verwalten",
     "description": "Browser tab title of the manager page."
   },
-  "opt_header_note": {
-    "message": "Passwörter werden nur im Browser auf diesem Computer gespeichert und nirgendwohin hochgeladen."
-  },
   "opt_header_version_title": {
     "message": "Versionsverlauf ansehen",
     "description": "Tooltip of the version number in the page header."
-  },
-  "opt_header_update": {
-    "message": "Neue Version",
-    "description": "Small button next to the version number in the header."
   },
   "opt_header_update_title": {
     "message": "Version $1 ist verfügbar. Klicken Sie hier, um zu sehen, wie Sie aktualisieren",
@@ -485,6 +483,12 @@
   },
   "opt_tab_versions": {
     "message": "Versionen"
+  },
+  "opt_tab_about": {
+    "message": "Über"
+  },
+  "opt_tabs_label": {
+    "message": "Bereiche"
   },
   "opt_add_button": {
     "message": "+ Hinzufügen",
@@ -573,6 +577,42 @@
   "opt_search_placeholder": {
     "message": "Websites, Benutzernamen oder Notizen suchen"
   },
+  "opt_entry_count_one": {
+    "message": "$1 Konto"
+  },
+  "opt_entry_count_other": {
+    "message": "$1 Konten"
+  },
+  "opt_select_mode": {
+    "message": "Auswählen"
+  },
+  "opt_open_site": {
+    "message": "Website öffnen"
+  },
+  "opt_move_to_trash": {
+    "message": "In den Papierkorb"
+  },
+  "opt_detail_dates": {
+    "message": "Zuletzt verwendet $1 · Erstellt $2"
+  },
+  "opt_detail_empty": {
+    "message": "Wählen Sie links ein Konto, um die Details zu sehen"
+  },
+  "opt_note_empty": {
+    "message": "Keine Notiz"
+  },
+  "opt_note_write": {
+    "message": "Notiz hinzufügen"
+  },
+  "opt_note_saved": {
+    "message": "Notiz gespeichert"
+  },
+  "opt_note_failed": {
+    "message": "Notiz konnte nicht gespeichert werden: $1"
+  },
+  "opt_back_to_list": {
+    "message": "← Zurück zur Liste"
+  },
   "opt_export_selected_title": {
     "message": "Setzen Sie links Häkchen, um diese Einträge als verschlüsselte Datei für Kollegen zu exportieren"
   },
@@ -602,12 +642,8 @@
     "message": "Passwort",
     "description": "Table column."
   },
-  "opt_col_last_used": {
-    "message": "Zuletzt verwendet",
-    "description": "Table column: when the password was last filled in."
-  },
   "opt_empty": {
-    "message": "Noch keine Passwörter. Melden Sie sich einmal auf einer Website an, dann werden Sie oben rechts gefragt, ob Sie das Passwort speichern möchten."
+    "message": "Noch keine Passwörter. Melden Sie sich einmal auf einer Website an, dann werden Sie oben auf der Seite gefragt, ob Sie das Passwort speichern möchten."
   },
   "opt_history_toggle": {
     "message": "Frühere Passwörter ($1)",
@@ -632,13 +668,6 @@
   "opt_search_no_match": {
     "message": "Keine Ergebnisse für „$1“",
     "description": "$1 = search text."
-  },
-  "opt_health_show": {
-    "message": "Details anzeigen"
-  },
-  "opt_health_summary": {
-    "message": "Passwortcheck: $1.",
-    "description": "$1 = the problems found, joined with opt_health_part_sep."
   },
   "opt_health_part_sep": {
     "message": ", ",
@@ -672,9 +701,6 @@
   "opt_breach_none_other": {
     "message": "$1 Konten geprüft. Keines steht in einer Datenleck-Liste.",
     "description": "$1 = number of accounts checked."
-  },
-  "opt_health_hide": {
-    "message": "Details ausblenden"
   },
   "opt_health_ok": {
     "message": "Passwortcheck: Keine Passwörter brauchen Aufmerksamkeit."
@@ -727,6 +753,33 @@
     "message": "$1 Gruppen doppelter Einträge",
     "description": "$1 = number of duplicate groups. One part of the health check summary."
   },
+  "opt_health_filter_title": {
+    "message": "Nur Konten mit diesem Problem anzeigen. Erneut klicken, um alle anzuzeigen."
+  },
+  "opt_health_tag_breached": {
+    "message": "Geleakt"
+  },
+  "opt_health_tag_reused": {
+    "message": "Mehrfach"
+  },
+  "opt_health_tag_weak": {
+    "message": "Schwach"
+  },
+  "opt_health_tag_old": {
+    "message": "Alt"
+  },
+  "opt_health_tag_http": {
+    "message": "HTTP"
+  },
+  "opt_health_tag_dup": {
+    "message": "Doppelt"
+  },
+  "opt_health_reused_with": {
+    "message": "Mehrfach verwendet: Dieses Passwort wird auch für $1 benutzt"
+  },
+  "opt_health_dup_with": {
+    "message": "Doppelt: gleicher Benutzername und gleiches Passwort wie $1"
+  },
   "opt_health_breached_one": {
     "message": "Datenleck: $1-mal in Datenleck-Listen gefunden",
     "description": "$1 = how many times the password appears in breach lists."
@@ -752,14 +805,6 @@
   "opt_health_http_restore": {
     "message": "Alle wieder anzeigen"
   },
-  "opt_health_dup": {
-    "message": "Doppelt: Gruppe $1, $2 Konten mit gleichem Benutzernamen und Passwort",
-    "description": "$1 = group number, $2 = number of accounts in the group."
-  },
-  "opt_health_reused": {
-    "message": "Mehrfach verwendet: Passwortgruppe $1 wird an $2 Stellen verwendet",
-    "description": "$1 = group number, $2 = accounts using it (always 2 or more)."
-  },
   "opt_health_weak_short_one": {
     "message": "Schwach: nur $1 Zeichen",
     "description": "$1 = password length."
@@ -779,11 +824,11 @@
     "message": "Papierkorb"
   },
   "opt_trash_days_before": {
-    "message": "Gelöschte Konten hier",
+    "message": "Aufbewahren für",
     "description": "Before the days input: 'Keep deleted accounts here for [30] days, then remove them automatically'."
   },
   "opt_trash_days_after": {
-    "message": "Tage aufbewahren, dann automatisch entfernen",
+    "message": "Tage",
     "description": "After the days input. See opt_trash_days_before."
   },
   "opt_trash_restore_selected": {
@@ -811,20 +856,51 @@
   "opt_trash_empty": {
     "message": "Der Papierkorb ist leer."
   },
+  "opt_trash_page_sub": {
+    "message": "Gelöschte Konten warten hier und werden nach Ablauf automatisch entfernt. Bis dahin können Sie sie wiederherstellen."
+  },
+  "opt_trash_count_one": {
+    "message": "$1 Eintrag"
+  },
+  "opt_trash_count_other": {
+    "message": "$1 Einträge"
+  },
+  "opt_trash_deleted_ago_one": {
+    "message": "Vor $1 Tag gelöscht"
+  },
+  "opt_trash_deleted_ago_other": {
+    "message": "Vor $1 Tagen gelöscht"
+  },
+  "opt_trash_deleted_today": {
+    "message": "Heute gelöscht"
+  },
+  "opt_trash_left_one": {
+    "message": "Noch $1 Tag"
+  },
+  "opt_trash_left_other": {
+    "message": "Noch $1 Tage"
+  },
+  "opt_trash_left_tomorrow": {
+    "message": "Wird morgen entfernt"
+  },
+  "opt_trash_left_today": {
+    "message": "Wird heute entfernt"
+  },
+  "opt_trash_empty_sub_one": {
+    "message": "Gelöschte Konten bleiben hier $1 Tag."
+  },
+  "opt_trash_empty_sub_other": {
+    "message": "Gelöschte Konten bleiben hier $1 Tage."
+  },
+  "opt_trash_row_info": {
+    "message": "$1 · $2"
+  },
   "opt_trash_purge_all": {
     "message": "Papierkorb leeren"
   },
   "opt_trash_load_failed": {
     "message": "Papierkorb konnte nicht geladen werden: $1",
     "description": "$1 = error message."
-  },
-  "opt_trash_item_info_one": {
-    "message": "Gelöscht am $2. Wird in $1 Tag automatisch entfernt",
-    "description": "$1 = days left, $2 = date and time it was deleted."
-  },
-  "opt_trash_item_info_other": {
-    "message": "Gelöscht am $2. Wird in $1 Tagen automatisch entfernt",
-    "description": "$1 = days left, $2 = date and time it was deleted."
   },
   "opt_restore": {
     "message": "Wiederherstellen"
@@ -920,10 +996,6 @@
     "message": "Auf $1 Tage geändert. Gelöscht: $2",
     "description": "$1 = new number of days, $2 = accounts deleted because they were older."
   },
-  "opt_block_backup": {
-    "message": "Sicherung",
-    "description": "Section title on the Backup tab."
-  },
   "opt_export_backup": {
     "message": "Verschlüsselte Sicherung exportieren"
   },
@@ -966,7 +1038,7 @@
     "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_backup_move_how": {
-    "message": "Anleitung"
+    "message": "So tauschen Sie Passwörter mit dem Browser aus"
   },
   "opt_move_title": {
     "message": "Passwörter mit dem Browser austauschen"
@@ -1044,17 +1116,17 @@
     "message": "Jetzt sichern"
   },
   "opt_ab_run_now_tip": {
-    "message": "Speichert sofort eine Kopie im Ordner unter „3. Speichern in“. Funktioniert auch, wenn die automatische Sicherung aus ist.\nSpeichert auch, wenn sich keine Passwörter geändert haben.\nErfordert ein Sicherungspasswort.",
+    "message": "Speichert sofort eine Kopie im Ordner der automatischen Sicherung. Funktioniert auch, wenn die automatische Sicherung aus ist.\nSpeichert auch, wenn sich keine Passwörter geändert haben.\nErfordert ein Sicherungspasswort.",
     "description": "'3. Save to' must match opt_ab_step_folder."
   },
   "opt_ab_help": {
-    "message": "Speichert regelmäßig verschlüsselte Sicherungen in einem Ordner unter „Downloads“. Richten Sie dazu die Schritte 1 bis 4 ein."
+    "message": "Speichert regelmäßig eine verschlüsselte Sicherung, nur wenn sich etwas geändert hat"
   },
   "opt_ab_help_tip": {
     "message": "Speichert täglich oder wöchentlich zur festgelegten Zeit eine Kopie, aber nur, wenn sich Passwörter geändert haben.\nWird der Zeitpunkt verpasst, wird die Sicherung beim nächsten Öffnen des Browsers nachgeholt."
   },
   "opt_ab_step_password": {
-    "message": "1. Sicherungspasswort"
+    "message": "Sicherungspasswort"
   },
   "opt_ab_password_tip": {
     "message": "Alle automatischen Sicherungen werden mit diesem Passwort verschlüsselt.\nDie Erweiterung speichert dieses Passwort nicht. Wenn Sie es vergessen, lassen sich die Sicherungsdateien nicht öffnen.\nNach einer Änderung brauchen ältere Sicherungsdateien weiterhin das alte Passwort."
@@ -1074,7 +1146,7 @@
     "description": "Status of the auto backup password."
   },
   "opt_ab_step_when": {
-    "message": "2. Wann"
+    "message": "Wie oft"
   },
   "opt_ab_every_day": {
     "message": "Täglich"
@@ -1104,14 +1176,11 @@
     "message": "Sonntag"
   },
   "opt_ab_step_folder": {
-    "message": "3. Speichern in"
+    "message": "Speichern in"
   },
   "opt_ab_folder_prefix": {
     "message": "Downloads \\",
     "description": "Shown before the subfolder name input. Means the Downloads folder."
-  },
-  "opt_ab_step_switch": {
-    "message": "4. Ein/Aus"
   },
   "opt_ab_enable": {
     "message": "Automatische Sicherung aktivieren"
@@ -1230,21 +1299,59 @@
   "opt_backup_status_never": {
     "message": "Noch nie gesichert"
   },
-  "opt_backup_status_last_one": {
-    "message": "Letzte Sicherung: $2 (vor $1 Tag)",
-    "description": "$1 = days since the last backup, $2 = date and time."
+  "opt_backup_page_sub": {
+    "message": "Ihre Passwörter liegen nur auf diesem Computer. Bewahren Sie woanders eine Kopie auf, damit Sie sie bei einem Defekt wiederherstellen können."
   },
-  "opt_backup_status_last_other": {
-    "message": "Letzte Sicherung: $2 (vor $1 Tagen)",
-    "description": "$1 = days since the last backup, $2 = date and time."
+  "opt_backup_hero_empty": {
+    "message": "Noch keine Passwörter"
   },
-  "opt_backup_status_due_one": {
-    "message": "Letzte Sicherung: $2 (vor $1 Tag), seitdem Passwörter geändert",
-    "description": "$1 = days since the last backup, $2 = date and time."
+  "opt_backup_hero_empty_sub": {
+    "message": "Sichern Sie, sobald Sie Passwörter gespeichert haben."
   },
-  "opt_backup_status_due_other": {
-    "message": "Letzte Sicherung: $2 (vor $1 Tagen), seitdem Passwörter geändert",
-    "description": "$1 = days since the last backup, $2 = date and time."
+  "opt_backup_hero_never_sub": {
+    "message": "Der Browser hat die einzige Kopie. Wenn Sie die Erweiterung entfernen oder Browserdaten löschen, sind die Passwörter weg."
+  },
+  "opt_backup_hero_days_one": {
+    "message": "Letzte Sicherung vor $1 Tag"
+  },
+  "opt_backup_hero_days_other": {
+    "message": "Letzte Sicherung vor $1 Tagen"
+  },
+  "opt_backup_hero_today": {
+    "message": "Letzte Sicherung: heute"
+  },
+  "opt_backup_hero_sub_due": {
+    "message": "Zuletzt: $1. Seitdem haben sich Passwörter geändert – Zeit für eine neue Sicherung."
+  },
+  "opt_backup_hero_sub_auto": {
+    "message": "Zuletzt: $1. Die automatische Sicherung ist an und speichert erneut, wenn sich Passwörter ändern."
+  },
+  "opt_backup_hero_sub_manual": {
+    "message": "Zuletzt: $1. Die automatische Sicherung ist aus – denken Sie an regelmäßige Sicherungen."
+  },
+  "opt_backup_stat_accounts": {
+    "message": "Konten"
+  },
+  "opt_backup_stat_next": {
+    "message": "Nächste Sicherung"
+  },
+  "opt_backup_stat_off": {
+    "message": "Aus"
+  },
+  "opt_block_transfer": {
+    "message": "Export und Import"
+  },
+  "opt_block_transfer_sub": {
+    "message": "Für einen neuen Computer, Kollegen oder Ihren Browser"
+  },
+  "opt_backup_share_title": {
+    "message": "Einige an Kollegen weitergeben"
+  },
+  "opt_backup_share_desc": {
+    "message": "Klicken Sie im Tab „Passwörter“ auf „Auswählen“ und exportieren Sie einige als verschlüsselte Datei"
+  },
+  "opt_backup_share_go": {
+    "message": "Auswählen"
   },
   "opt_import_done": {
     "message": "Import abgeschlossen: $1 hinzugefügt, $2 aktualisiert, $3 übersprungen"
@@ -1452,11 +1559,11 @@
     "message": "Keine Einträge in dieser Kategorie."
   },
   "opt_log_count_one": {
-    "message": "($1 Eintrag)",
+    "message": "$1 Eintrag",
     "description": "Shown next to the section title."
   },
   "opt_log_count_other": {
-    "message": "($1 Einträge)",
+    "message": "$1 Einträge",
     "description": "Shown next to the section title."
   },
   "opt_kind_auto": {
@@ -1684,6 +1791,30 @@
   "opt_lock_manual_help": {
     "message": "Mit „Sperren“ oben rechts im Pop-up können Sie jederzeit manuell sperren."
   },
+  "opt_settings_page_sub": {
+    "message": "Hier stellen Sie App-Sperre, Autofill und Auto-Klick ein. Änderungen gelten sofort."
+  },
+  "opt_jump_label": {
+    "message": "Springen zu"
+  },
+  "opt_fill_sub": {
+    "message": "Füllt Benutzername und Passwort aus, wenn eine Anmeldeseite öffnet"
+  },
+  "opt_autofill_master_desc": {
+    "message": "Wenn aus, wird nirgends automatisch ausgefüllt. Kontoauswahl im Feld und Tastenkombination funktionieren weiter."
+  },
+  "opt_sites_hint": {
+    "message": "Auch in den Details im Tab „Passwörter“ umschaltbar"
+  },
+  "opt_never_desc": {
+    "message": "Websites, bei denen Sie beim Speichern „Nie für diese Website“ gewählt haben"
+  },
+  "opt_never_none": {
+    "message": "Keine"
+  },
+  "opt_danger_sub": {
+    "message": "Schwer rückgängig zu machende Aktionen"
+  },
   "opt_block_fill": {
     "message": "Autofill",
     "description": "Section title on the Settings tab. Holds the autofill master switch, per-site autofill settings and never-ask sites."
@@ -1752,13 +1883,6 @@
   "opt_never_title": {
     "message": "Auf diesen Websites nie fragen"
   },
-  "opt_never_empty": {
-    "message": "Noch keine. Websites erscheinen hier, wenn Sie in der Speicheranfrage auf „Nie für diese Website“ klicken.",
-    "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
-  },
-  "opt_clip_title": {
-    "message": "Passwörter kopieren"
-  },
   "opt_clip_label": {
     "message": "Zwischenablage nach dem Kopieren eines Passworts leeren"
   },
@@ -1798,9 +1922,6 @@
   },
   "opt_click_tip": {
     "message": "Hat eine Seite mehrere Regeln, wird der Reihe nach geklickt. Jede Regel wartet, bis die vorherige fertig ist.\nJede Regel wartet bis zu 15 Sekunden."
-  },
-  "opt_click_timing_title": {
-    "message": "Zeiteinstellungen"
   },
   "opt_click_interval_label": {
     "message": "Standardintervall"
@@ -2006,21 +2127,21 @@
     "message": "Alles in den Papierkorb verschoben"
   },
   "opt_help_title": {
-    "message": "So funktioniert es"
+    "message": "Erste Schritte"
   },
   "opt_help_1": {
-    "message": "Melden Sie sich einmal auf einer beliebigen Website an. Oben rechts werden Sie dann gefragt: „Dieses Passwort speichern?“",
+    "message": "Melden Sie sich einmal auf einer beliebigen Website an. Oben auf der Seite werden Sie dann gefragt: „Dieses Passwort speichern?“",
     "description": "The quoted text is the save prompt shown on web pages (content.js). Keep it the same as that prompt."
   },
   "opt_help_2": {
     "message": "Wenn Sie die Website das nächste Mal öffnen, werden Benutzername und Passwort automatisch ausgefüllt. Haben Sie mehrere Konten gespeichert, klicken Sie in das Feld für den Benutzernamen und wählen eines aus der Liste. Mit den Pfeiltasten auswählen, mit Enter ausfüllen."
   },
   "opt_help_3": {
-    "message": "Drücken Sie Strg+Umschalt+L (auf dem Mac Befehl+Umschalt+L), um Benutzername und Passwort für die aktuelle Website auszufüllen. Die Tastenkombination können Sie auf der Erweiterungsseite unter „Tastenkombinationen“ ändern.",
+    "message": "Drücken Sie auf einer Anmeldeseite die Tastenkombination unten, um das zuletzt verwendete Konto dieser Website auszufüllen.",
     "description": "'Keyboard shortcuts' is the browser's own page name."
   },
   "opt_help_4": {
-    "message": "Über das blaue Schloss-Symbol in der Symbolleiste sehen Sie die für die aktuelle Website gespeicherten Konten, können sie manuell ausfüllen, Passwörter kopieren und starke Passwörter generieren. Das Suchfeld oben im Pop-up durchsucht die Konten aller Websites. Mit Enter öffnen Sie die jeweilige Website."
+    "message": "Klicken Sie auf das Schloss-Symbol in der Symbolleiste, um das Pop-up zu öffnen. Dort sehen Sie die Konten dieser Website, können sie ausfüllen, Passwörter kopieren und Passwörter generieren. Das Suchfeld oben durchsucht alle Websites. Mit Enter öffnen Sie die jeweilige Website."
   },
   "opt_help_5": {
     "message": "Wenn Sie sich registrieren oder ein Passwort ändern, klicken Sie in das Feld für das neue Passwort. Dort erscheint „Starkes Passwort generieren“. Ein Klick darauf füllt das neue Passwort und das Bestätigungsfeld aus.",
@@ -2030,7 +2151,7 @@
     "message": "Um eine Schaltfläche automatisch zu klicken, klicken Sie im Pop-up auf „Auto-Klick-Schaltfläche wählen“ und wählen die Schaltfläche auf der Seite aus. Danach wird sie bei jedem Öffnen dieser Seite geklickt. Unter „Auto-Klick“ im Tab „Einstellungen“ können Sie Regeln auch manuell hinzufügen und anpassen."
   },
   "opt_help_7": {
-    "message": "Bei Konten mit geändertem Passwort finden Sie in der Passwortspalte „Frühere Passwörter“ zum Aufklappen. Gelöschte Konten kommen zuerst in den Papierkorb und bleiben dort standardmäßig 30 Tage. Die Anzahl der Tage können Sie im Tab „Papierkorb“ ändern."
+    "message": "Bei Konten mit geändertem Passwort klappen Sie rechts in den Details im Tab „Passwörter“ die „Früheren Passwörter“ auf. Gelöschte Konten kommen zuerst in den Papierkorb und bleiben dort standardmäßig 30 Tage."
   },
   "opt_help_8": {
     "message": "Ist „App-Sperre“ im Tab „Einstellungen“ aktiviert, müssen Sie die Systemauthentifizierung dieses Computers (Windows Hello, Touch ID) bestehen, bevor Sie die Erweiterung verwenden können. Sie wird gesperrt, wenn Sie inaktiv sind, der Browser neu startet oder Sie im Pop-up auf „Sperren“ klicken."
@@ -2038,12 +2159,315 @@
   "opt_help_9": {
     "message": "Sichern Sie regelmäßig oder aktivieren Sie die automatische Sicherung. Wenn Sie die Erweiterung entfernen, Browserdaten löschen oder den Ordner verschieben, gehen Ihre Passwörter verloren."
   },
+  "opt_help_page_sub": {
+    "message": "Neu hier? Beginnen Sie mit den neun Karten unten. Wenn etwas seltsam ist, sehen Sie in die häufigen Fragen ganz unten."
+  },
+  "opt_help_card_1": {
+    "message": "Passwörter speichern"
+  },
+  "opt_help_card_2": {
+    "message": "Autofill"
+  },
+  "opt_help_card_3": {
+    "message": "Tastenkombination"
+  },
+  "opt_help_card_4": {
+    "message": "Pop-up in der Symbolleiste"
+  },
+  "opt_help_card_5": {
+    "message": "Starke Passwörter generieren"
+  },
+  "opt_help_card_6": {
+    "message": "Auto-Klick"
+  },
+  "opt_help_card_7": {
+    "message": "Frühere Passwörter und Papierkorb"
+  },
+  "opt_help_card_8": {
+    "message": "App-Sperre"
+  },
+  "opt_help_card_9": {
+    "message": "Sicherung nicht vergessen"
+  },
+  "opt_help_link_shortcut": {
+    "message": "Tastenkombination ändern"
+  },
+  "opt_help_link_rules": {
+    "message": "Auto-Klick-Regeln ansehen"
+  },
+  "opt_help_link_lock": {
+    "message": "App-Sperre einrichten"
+  },
+  "opt_help_link_backup": {
+    "message": "Zur Sicherung"
+  },
+  "opt_help_no_shortcut": {
+    "message": "Keine Tastenkombination festgelegt"
+  },
+  "opt_faq_title": {
+    "message": "Häufige Fragen"
+  },
+  "opt_faq_q1": {
+    "message": "Warum wurde diese Website nicht automatisch ausgefüllt?"
+  },
+  "opt_faq_a1_1": {
+    "message": "Der Autofill-Hauptschalter in den Einstellungen oder Autofill für diese Website ist aus."
+  },
+  "opt_faq_a1_2": {
+    "message": "Die Adresse beginnt mit http://, das Konto wurde aber auf einer https://-Adresse gespeichert."
+  },
+  "opt_faq_a1_3": {
+    "message": "Das Anmeldeformular steckt in einem iframe einer anderen Website oder ist unsichtbar."
+  },
+  "opt_faq_a1_4": {
+    "message": "Die Erweiterung ist gesperrt. Entsperren Sie sie zuerst im Pop-up."
+  },
+  "opt_faq_q2": {
+    "message": "Warum wurde ich nach der Anmeldung nicht zum Speichern aufgefordert?"
+  },
+  "opt_faq_a2_1": {
+    "message": "Wenn Sie auf derselben Seite bleiben und das Formular noch da ist, gilt das als falsches Passwort und es wird noch nicht gefragt."
+  },
+  "opt_faq_a2_2": {
+    "message": "Die Website steht unter „Auf diesen Websites nie fragen“. Sie können sie in den Einstellungen unter „Autofill“ entfernen."
+  },
+  "opt_faq_a2_3": {
+    "message": "Bei Websites, die nie fragen, speichern Sie das Konto selbst über „Konto hinzufügen“ im Pop-up."
+  },
+  "opt_faq_q3": {
+    "message": "Was tun, wenn ich mein eigenes Passwort vergessen habe?"
+  },
+  "opt_faq_a3_1": {
+    "message": "Das eigene Passwort lässt sich nicht wiederherstellen, auch nicht von den Entwicklern."
+  },
+  "opt_faq_a3_2": {
+    "message": "Klicken Sie auf dem Entsperrbildschirm auf „Eigenes Passwort vergessen oder Systemauthentifizierung funktioniert nicht?“, um die Daten zu löschen."
+  },
+  "opt_faq_a3_3": {
+    "message": "Danach importieren Sie eine Sicherungsdatei. Deshalb sollte die automatische Sicherung immer an sein."
+  },
+  "opt_faq_q4": {
+    "message": "Bleibt ein kopiertes Passwort in der Zwischenablage?"
+  },
+  "opt_faq_a4_1": {
+    "message": "Aktivieren Sie in den Einstellungen unter „Autofill“ die Option „Zwischenablage nach dem Kopieren eines Passworts leeren“. Dann wird sie nach Ablauf geleert."
+  },
+  "opt_faq_a4_2": {
+    "message": "Geleert wird nur, wenn noch dieses Passwort in der Zwischenablage ist. Später Kopiertes bleibt unberührt."
+  },
+  "opt_faq_a4_3": {
+    "message": "Einträge im Windows-Zwischenablageverlauf (Win+V) lassen sich nicht löschen."
+  },
+  "opt_faq_q5": {
+    "message": "Wie nehme ich meine Passwörter auf einen neuen Computer mit?"
+  },
+  "opt_faq_a5_1": {
+    "message": "Exportieren Sie auf diesem Computer im Tab „Sicherung“ eine verschlüsselte Sicherung."
+  },
+  "opt_faq_a5_2": {
+    "message": "Installieren Sie die Erweiterung auf dem neuen Computer, importieren Sie die Datei im Tab „Sicherung“ und geben Sie das Sicherungspasswort ein."
+  },
+  "opt_faq_a5_3": {
+    "message": "Richten Sie App-Sperre und automatische Sicherung auf dem neuen Computer neu ein."
+  },
   "opt_browser_hint": {
     "message": "Sie verwenden $1. Die Erweiterungsseite finden Sie unter $2. Klicken Sie dort nach dem Aktualisieren der Dateien auf „Neu laden“.",
     "description": "$1 = 'Edge' or 'Chrome', $2 = edge://extensions or chrome://extensions. 'Reload' is the browser's own button name."
   },
+  "opt_about_github": {
+    "message": "Quellcode auf GitHub"
+  },
+  "opt_about_issue": {
+    "message": "Problem melden oder Idee vorschlagen"
+  },
+  "opt_about_mit": {
+    "message": "MIT-Lizenz"
+  },
+  "opt_about_data_title": {
+    "message": "Ihre Daten"
+  },
+  "opt_about_where_label": {
+    "message": "Speicherort"
+  },
+  "opt_about_where_value": {
+    "message": "Nur auf diesem Computer"
+  },
+  "opt_about_where_counts": {
+    "message": "Konten: $1 · Im Papierkorb: $2"
+  },
+  "opt_about_where_desc": {
+    "message": "Alles bleibt in diesem Browser. Nichts wird hochgeladen, auch die Entwickler sehen es nicht."
+  },
+  "opt_about_lock_hello": {
+    "message": "Passwörter auf dem Datenträger sind verschlüsselt und werden mit $1 entsperrt. Wer den Browserordner kopiert, kann sie nicht lesen."
+  },
+  "opt_about_lock_password": {
+    "message": "Passwörter auf dem Datenträger sind verschlüsselt und werden mit Ihrem eigenen Passwort entsperrt. Wer den Browserordner kopiert, kann sie nicht lesen."
+  },
+  "opt_about_lock_screen": {
+    "message": "Nur der Bildschirm ist gesperrt; Passwörter auf dem Datenträger sind nicht verschlüsselt. Wählen Sie in den Einstellungen eine verschlüsselte Option."
+  },
+  "opt_about_lock_off": {
+    "message": "Nicht verschlüsselt. Wer sich mit Ihrem Konto an diesem Computer anmelden kann, sieht Ihre Passwörter."
+  },
+  "opt_about_lock_action": {
+    "message": "Schutz ändern"
+  },
+  "opt_about_net_label": {
+    "message": "Verbindungen nach außen"
+  },
+  "opt_about_net_hibp_only": {
+    "message": "Nur ein Dienst"
+  },
+  "opt_about_net_both": {
+    "message": "Nur zwei Dienste"
+  },
+  "opt_about_net_github_auto": {
+    "message": "GitHub: fragt einmal täglich die neueste Versionsnummer ab. Im Tab „Versionen“ abschaltbar."
+  },
+  "opt_about_net_github_manual": {
+    "message": "GitHub: nur wenn Sie auf „Jetzt prüfen“ klicken."
+  },
+  "opt_about_net_github_store": {
+    "message": "GitHub: Die Store-Version verbindet sich nie."
+  },
+  "opt_about_net_hibp": {
+    "message": "Have I Been Pwned: nur wenn Sie auf „Auf Datenlecks prüfen“ klicken, und nur mit den ersten 5 Zeichen eines Hashes."
+  },
+  "opt_about_privacy": {
+    "message": "Datenschutzerklärung lesen"
+  },
+  "opt_about_links_title": {
+    "message": "Links"
+  },
+  "opt_about_link_source": {
+    "message": "Quellcode"
+  },
+  "opt_about_link_issues_desc": {
+    "message": "Issue auf GitHub eröffnen"
+  },
+  "opt_about_link_releases": {
+    "message": "Alle Versionen und Downloads"
+  },
+  "opt_about_link_releases_desc": {
+    "message": "GitHub Releases: ZIP und Hinweise jeder Version"
+  },
+  "opt_about_link_privacy": {
+    "message": "Datenschutzerklärung"
+  },
+  "opt_about_link_privacy_desc": {
+    "message": "Was gespeichert wird, wo und ob etwas gesendet wird"
+  },
+  "opt_about_link_security": {
+    "message": "Sicherheitsproblem melden"
+  },
+  "opt_about_link_security_desc": {
+    "message": "Bitte privat melden, nicht in einem öffentlichen Issue"
+  },
+  "opt_about_link_readme": {
+    "message": "Vollständige Anleitung"
+  },
+  "opt_about_link_readme_desc": {
+    "message": "Installation, Updates und alle Funktionen im Detail"
+  },
+  "opt_about_perm_title": {
+    "message": "Berechtigungen der Erweiterung"
+  },
+  "opt_about_perm_sub": {
+    "message": "Wozu sie dienen und ob sie gerade erteilt sind"
+  },
+  "opt_perm_hosts": {
+    "message": "Alle Websites"
+  },
+  "opt_perm_hosts_why": {
+    "message": "Anmeldeformulare können auf jeder Website sein: Felder finden, Speichern anbieten, Autofill und Auto-Klick"
+  },
+  "opt_perm_storage": {
+    "message": "Speicher"
+  },
+  "opt_perm_storage_why": {
+    "message": "Speichert Konten, Passwörter, Einstellungen und Sicherungsprotokoll in diesem Browser"
+  },
+  "opt_perm_active_tab": {
+    "message": "Aktueller Tab"
+  },
+  "opt_perm_active_tab_why": {
+    "message": "Erkennt die aktuelle Website, wenn Sie das Symbol anklicken oder die Tastenkombination drücken"
+  },
+  "opt_perm_downloads": {
+    "message": "Downloads"
+  },
+  "opt_perm_downloads_why": {
+    "message": "Speichert Exporte und Sicherungen und kann eine Sicherungsdatei mit dem Protokolleintrag löschen"
+  },
+  "opt_perm_alarms": {
+    "message": "Wecker"
+  },
+  "opt_perm_alarms_why": {
+    "message": "Startet Sicherung und Update-Prüfung zur richtigen Zeit"
+  },
+  "opt_perm_idle": {
+    "message": "Leerlauferkennung"
+  },
+  "opt_perm_idle_why": {
+    "message": "Sperrt die Erweiterung, wenn Sie abwesend sind oder der Bildschirm gesperrt wird"
+  },
+  "opt_perm_web_request": {
+    "message": "Anmeldedialoge beantworten"
+  },
+  "opt_perm_web_request_why": {
+    "message": "Beantwortet den Anmeldedialog des Browsers mit einem gespeicherten Konto und liest keine anderen Anfragen"
+  },
+  "opt_perm_clipboard": {
+    "message": "Zwischenablage"
+  },
+  "opt_perm_clipboard_why": {
+    "message": "Wird nur angefragt, wenn Sie „Zwischenablage nach dem Kopieren eines Passworts leeren“ aktivieren; löscht das kopierte Passwort"
+  },
+  "opt_perm_offscreen": {
+    "message": "Offscreen-Dokument"
+  },
+  "opt_perm_offscreen_why": {
+    "message": "Zum Leeren der Zwischenablage nötig; wird zusammen mit der Zwischenablage angefragt"
+  },
+  "opt_perm_always": {
+    "message": "Immer"
+  },
+  "opt_perm_granted": {
+    "message": "Erteilt"
+  },
+  "opt_perm_unused": {
+    "message": "Nicht genutzt"
+  },
+  "opt_about_credits_title": {
+    "message": "Lizenz und Danksagung"
+  },
+  "opt_about_credit_eff": {
+    "message": "Wortliste für einprägsame Passwörter, Electronic Frontier Foundation, CC BY 4.0"
+  },
+  "opt_about_credit_hibp": {
+    "message": "Daten für die Leak-Prüfung, von Have I Been Pwned"
+  },
   "opt_versions_title": {
     "message": "Versionsverlauf"
+  },
+  "opt_versions_page_sub": {
+    "message": "Nach Updates suchen und sehen, was sich in jeder Version geändert hat."
+  },
+  "opt_versions_more_one": {
+    "message": "$1 ältere Version anzeigen"
+  },
+  "opt_versions_more_other": {
+    "message": "$1 ältere Versionen anzeigen"
+  },
+  "opt_versions_less": {
+    "message": "Nur die neuesten 3 anzeigen"
+  },
+  "opt_update_step_download": {
+    "message": "Neue Version herunterladen"
+  },
+  "opt_update_step_load": {
+    "message": "Neue Version laden"
   },
   "opt_version_now": {
     "message": "Aktuelle Version: $1. Klicken Sie nach dem Aktualisieren der Dateien auf der Erweiterungsseite auf „Neu laden“.",
@@ -2239,6 +2663,9 @@
   "cs_banner_never_done": {
     "message": "Auf $1 wird nicht mehr gefragt. Sie können das auf der Verwaltungsseite ändern.",
     "description": "$1 is the site's host name, for example accounts.example.com."
+  },
+  "cs_banner_edit": {
+    "message": "Bearbeiten"
   },
   "cs_save_failed": {
     "message": "Speichern fehlgeschlagen: $1",
@@ -2663,8 +3090,35 @@
   "opt_lang_failed": {
     "message": "Sprache konnte nicht geändert werden: $1"
   },
+  "opt_lang_button": {
+    "message": "Sprache"
+  },
+  "opt_theme_label": {
+    "message": "Farbschema"
+  },
+  "opt_theme_system": {
+    "message": "Wie das System"
+  },
+  "opt_theme_system_hint": {
+    "message": "Petrol im hellen Modus, Dunkel im dunklen Modus"
+  },
+  "opt_theme_white": {
+    "message": "Weiß"
+  },
+  "opt_theme_dark": {
+    "message": "Dunkel"
+  },
+  "opt_theme_teal": {
+    "message": "Petrol"
+  },
+  "opt_theme_failed": {
+    "message": "Farbschema konnte nicht geändert werden: $1"
+  },
   "bg_language_invalid": {
     "message": "Diese Sprache wird nicht unterstützt"
+  },
+  "bg_theme_invalid": {
+    "message": "Dieses Farbschema wird nicht unterstützt"
   },
   "bg_update_offline": {
     "message": "GitHub ist nicht erreichbar. Prüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut."

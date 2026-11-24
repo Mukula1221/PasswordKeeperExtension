@@ -3,16 +3,137 @@
 <head>
   <meta charset="utf-8">
   <title data-i18n="opt_page_title">密碼小管家 – 管理密碼</title>
+  <script src="../shared/platform.js"></script>
+  <script src="../shared/theme.js"></script>
   <link rel="stylesheet" href="../shared/ui.css">
   <style>
-    .page { max-width: 900px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
-    .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
-    .tab { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; padding: 8px 14px; font-size: 14px; color: var(--muted); }
-    .tab:hover { background: transparent; color: var(--text); }
-    .tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
-    .tab .count { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 999px; background: #e5e7eb; color: var(--text); font-size: 11px; font-weight: 600; text-align: center; margin-left: 2px; }
+    /* 版面：左側欄 + 內容。視窗窄於 640px 時左側欄變成最上面的一排 */
+    .app { display: flex; flex-wrap: wrap; min-height: 100vh; }
+    .rail { flex: 0 0 84px; position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 0 10px; background: var(--chrome-bg); border-right: 1px solid var(--chrome-border); z-index: 5; }
+    .rail > .logo { width: 36px; height: 36px; border-radius: 10px; margin-bottom: 10px; }
+    .rail > .logo svg { width: 18px; height: 18px; }
+    .rail .grow { flex: 1; }
+    .tab { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 72px; padding: 8px 2px; border: 0; border-radius: 10px; background: transparent; color: var(--chrome-muted); font-size: 11px; line-height: 1.25; text-align: center; white-space: normal; overflow-wrap: anywhere; }
+    .tab svg { width: 18px; height: 18px; flex: none; }
+    .tab:hover { background: var(--chrome-hover); color: var(--chrome-text); }
+    .tab.active { background: var(--chrome-active); color: var(--chrome-active-text); font-weight: 600; }
+    .tab .count { position: absolute; top: 3px; right: 10px; min-width: 16px; padding: 0 4px; border-radius: 999px; background: var(--primary-soft); color: var(--primary-soft-text); font-size: 10px; font-weight: 700; line-height: 16px; }
     .tab .count:empty { display: none; }
+    /* 有新版時「版本」圖示上的綠點 */
+    .tab .dot { position: absolute; top: 6px; right: 22px; width: 8px; height: 8px; border-radius: 50%; background: var(--ok-text); box-shadow: 0 0 0 2px var(--chrome-bg); }
+    #headerVersion { font-size: 10px; font-weight: 400; opacity: 0.85; }
+    .content { flex: 999 1 560px; min-width: 0; }
+    /* 鎖住時只能換語言、色系 */
+    body.locked .rail .tab[data-tab] { visibility: hidden; }
+    @media (max-width: 640px) {
+      .rail { position: static; flex: 1 1 100%; height: auto; flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 8px; border-right: 0; border-bottom: 1px solid var(--chrome-border); }
+      .rail > .logo { margin: 0 6px 0 0; }
+      .rail .grow { display: none; }
+      .tab { width: auto; min-width: 60px; }
+    }
+
+    /* 語言、色系選單：從左側欄往右邊跳出來 */
+    .rail-menu { position: relative; }
+    .menu { position: fixed; z-index: 20; width: 280px; max-height: calc(100vh - 24px); overflow-y: auto; padding: 6px; background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 14px 34px var(--shadow); }
+    .menu-title { padding: 8px 10px 6px; font-size: 12px; font-weight: 700; color: var(--muted); }
+    .menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--text); text-align: left; white-space: normal; }
+    .menu button:hover, .menu button:focus-visible { background: var(--hover); outline: none; }
+    .menu button[aria-checked="true"] { background: var(--selected); }
+    .menu .name { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; }
+    .menu .name small { display: block; font-size: 11px; font-weight: 400; color: var(--muted); }
+    .menu .check { width: 16px; height: 16px; flex: none; color: var(--link); visibility: hidden; }
+    .menu button[aria-checked="true"] .check { visibility: visible; }
+    /* 色系的小圓點畫的是那一套的顏色，不跟著目前的色系換，所以直接寫顏色 */
+    .swatch { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border-strong); }
+    .swatch.system { background: linear-gradient(135deg, #0B7A6E 0 50%, #161B22 50% 100%); }
+    .swatch.white { background: linear-gradient(135deg, #FFFFFF 0 50%, #2563EB 50% 100%); }
+    .swatch.dark { background: linear-gradient(135deg, #0E1116 0 50%, #A99BFF 50% 100%); }
+    .swatch.teal { background: linear-gradient(135deg, #0F2A2E 0 50%, #19C2AD 50% 100%); }
+
+    /* 密碼以外的分頁：內容放在中間，最寬 940px */
     .tabpane { display: flex; flex-direction: column; gap: 14px; }
+    .tabpane.page { max-width: 940px; padding: 24px 28px 40px; }
+    #lockScreen { max-width: 420px; margin: 48px 28px; }
+    @media (max-width: 640px) { .tabpane.page { padding: 16px; } #lockScreen { margin: 16px; } }
+
+    /* 密碼分頁：左邊帳號清單，右邊詳細資料。視窗窄於 900px 時一次只顯示一邊 */
+    .split { display: flex; flex-direction: row; gap: 0; height: 100vh; }
+    .list-pane { flex: 0 1 380px; min-width: 300px; display: flex; flex-direction: column; background: var(--card); border-right: 1px solid var(--border); }
+    .list-head { flex: none; display: flex; flex-direction: column; gap: 10px; padding: 16px 16px 12px; border-bottom: 1px solid var(--divider); }
+    .list-head h1 { font-size: 18px; }
+    .list-head .row .grow { flex: 1; }
+    .search-box { display: flex; align-items: center; gap: 8px; height: 36px; margin: 0; padding: 0 10px; border: 1px solid var(--card-alt); border-radius: 9px; background: var(--card-alt); color: var(--muted); cursor: text; }
+    .search-box:focus-within { border-color: var(--primary); }
+    .search-box input[type="search"] { flex: 1; min-width: 0; padding: 0; border: 0; background: transparent; font-size: 13px; }
+    .chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; }
+    .chips .push { margin-left: auto; display: inline-flex; align-items: center; }
+    .chip-btn { padding: 3px 9px; border: 1px solid transparent; border-radius: 999px; background: var(--warn-bg); color: var(--warn-text); font-size: 12px; font-weight: 600; }
+    .chip-btn:hover { background: var(--warn-hover); }
+    .chip-btn[aria-pressed="true"] { border-color: var(--warn-text); }
+    .health-ok { color: var(--ok-text); }
+    .select-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; background: var(--card-alt); }
+    .select-bar .push { margin-left: auto; }
+    #status:empty { display: none; }
+    #status { padding: 0 16px; }
+    /* 只有帳號那幾列會捲，捲軸也只在那幾列旁邊 */
+    .entry-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+    .entry-row { display: flex; align-items: center; gap: 4px; padding-left: 12px; border-bottom: 1px solid var(--divider); }
+    .entry-row input[type="checkbox"] { flex: none; margin: 0 4px 0 2px; }
+    .entry-open { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 10px 16px 10px 4px; border: 0; border-radius: 0; background: transparent; color: var(--text); text-align: left; white-space: normal; }
+    .entry-open:hover { background: transparent; }
+    .entry-row:hover { background: var(--hover); }
+    .entry-row.current { background: var(--selected); }
+    .entry-open .texts { flex: 1; min-width: 0; }
+    .entry-open .host { display: block; font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .entry-open .user { display: block; font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .entry-open .tags { display: flex; gap: 4px; flex: none; }
+    .initial.big { width: 52px; height: 52px; border-radius: 14px; font-size: 22px; }
+    .detail-pane { flex: 1 1 420px; min-width: 0; overflow-y: auto; padding: 24px 28px 40px; }
+    .detail { max-width: 720px; display: flex; flex-direction: column; gap: 16px; }
+    .detail-head { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+    .detail-head .grow { flex: 1 1 200px; min-width: 0; }
+    .detail-head h2 { margin: 0; font-size: 20px; overflow-wrap: anywhere; }
+    a.button { display: inline-flex; align-items: center; height: 34px; padding: 0 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); font-size: 13px; text-decoration: none; }
+    a.button:hover { background: var(--hover); }
+    .detail-head button { height: 34px; }
+    .issue { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--warn-border); border-radius: 10px; background: var(--warn-bg); color: var(--warn-text); font-size: 13px; }
+    .issue .grow { flex: 1 1 200px; }
+    .issue button.link { color: var(--warn-text); text-decoration: underline; }
+    .fields { padding: 0; }
+    .field { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 52px; padding: 6px 16px; border-bottom: 1px solid var(--divider); }
+    html:not(:lang(zh)) .field { grid-template-columns: 130px minmax(0, 1fr) auto; }
+    .field .label { font-size: 12px; color: var(--muted); }
+    .field .value { font-size: 14px; overflow-wrap: anywhere; }
+    .field .value.mono { font-family: Consolas, "Courier New", monospace; }
+    .field .value.note { white-space: pre-wrap; }
+    .field .ops { display: flex; gap: 2px; }
+    .fields .more { padding: 8px 10px; }
+    .old { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 4px 6px; font-family: Consolas, "Courier New", monospace; font-size: 13px; }
+    .old .muted { font-family: inherit; }
+    .switches { padding: 0 16px; }
+    .switches .help { padding: 10px 0; }
+    .detail-empty { padding: 48px 0; color: var(--muted); text-align: center; }
+    .back { display: none; align-self: flex-start; }
+    @media (max-width: 900px) {
+      .split { display: block; height: auto; }
+      .list-pane { min-width: 0; border-right: 0; }
+      .entry-scroll { max-height: calc(100vh - 220px); }
+      .split.show-detail .list-pane { display: none; }
+      .split:not(.show-detail) .detail-pane { display: none; }
+      .detail-pane { padding: 16px; }
+      .back { display: inline-flex; }
+    }
+    /* 左側欄換到最上面時，整頁固定成視窗高度，內容在下面那塊自己捲，帳號清單才放得進視窗 */
+    @media (max-width: 640px) {
+      .app { flex-direction: column; flex-wrap: nowrap; height: 100vh; min-height: 0; }
+      .rail { flex: none; }
+      .content { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+      #pageMain { height: 100%; }
+      .split { display: flex; flex-direction: column; height: 100%; }
+      .list-pane, .detail-pane { flex: 1 1 auto; min-height: 0; }
+      .entry-scroll { max-height: none; }
+    }
+
     .toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .toolbar input[type="search"] { flex: 1; min-width: 200px; }
     .help { color: var(--muted); font-size: 12px; line-height: 1.5; }
@@ -21,10 +142,6 @@
     .card .row.wrap { margin-top: 8px; }
     .row.wrap label.inline { white-space: nowrap; }
     .form { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-    /* 語言選單放在頁首版本號左邊；視窗太窄時整排換行，不要把標題擠扁 */
-    .header { flex-wrap: wrap; }
-    .header label.lang-pick { display: inline-flex; align-items: center; gap: 6px; margin: 0 12px 0 0; font-size: 13px; color: var(--muted); }
-    .lang-pick select { font: inherit; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text); cursor: pointer; }
     .form-row { display: grid; grid-template-columns: 110px 1fr; gap: 10px; align-items: center; }
     /* 繁中以外的欄位名稱比較長，110px 會擠成兩行 */
     html:not(:lang(zh)) .form-row { grid-template-columns: 150px 1fr; }
@@ -34,74 +151,56 @@
     .form-field.nowrap { flex-wrap: nowrap; }
     .form-field .prefix { white-space: nowrap; }
     .form-field input.folder { width: auto; flex: 0 1 260px; min-width: 120px; }
-    .strip { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); padding: 0 2px; }
-    .strip.warn { color: #92400e; }
-    .strip.ok { color: #15803d; }
-    .strip .push { margin-left: auto; display: inline-flex; align-items: center; }
     .sep { width: 1px; height: 22px; background: var(--border); margin: 0 4px; }
-    table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 13px; }
-    th { background: #f3f4f6; font-weight: 600; color: var(--muted); font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--divider); vertical-align: middle; font-size: 13px; }
+    th { background: var(--card-alt); font-weight: 600; color: var(--muted); font-size: 12px; }
     tr:last-child td { border-bottom: 0; }
-    td.site a { text-decoration: none; word-break: break-all; }
-    td.pwcell { font-family: Consolas, "Courier New", monospace; white-space: nowrap; }
-    td.ops { white-space: nowrap; text-align: right; }
-    th.chk, td.chk { width: 28px; padding-right: 0; }
-    tr.hist td { background: #f9fafb; font-size: 12px; padding-left: 38px; }
-    tr.hist .old { display: flex; gap: 8px; align-items: center; padding: 3px 0; font-family: Consolas, "Courier New", monospace; }
-    dialog { border: 1px solid var(--border); border-radius: 10px; padding: 16px; width: 440px; max-width: calc(100vw - 32px); }
-    dialog::backdrop { background: rgba(0, 0, 0, 0.3); }
-    dialog .row.end { margin-top: 14px; }
     .never { display: flex; flex-wrap: wrap; gap: 6px; }
-    .chip { display: inline-flex; align-items: center; gap: 4px; background: #f3f4f6; border-radius: 999px; padding: 3px 6px 3px 10px; font-size: 12px; }
+    .chip { display: inline-flex; align-items: center; gap: 4px; background: var(--card-alt); border-radius: 999px; padding: 3px 6px 3px 10px; font-size: 12px; }
     .chip button { border: 0; background: transparent; padding: 0 4px; color: var(--muted); }
     .help-card ol, .help-card ul { margin: 6px 0 0 18px; padding: 0; }
     .help-card li { margin: 4px 0; }
-    .num { width: 64px; padding: 4px 6px; font: inherit; border: 1px solid var(--border); border-radius: 6px; }
-    .time { padding: 3px 6px; font: inherit; border: 1px solid var(--border); border-radius: 6px; }
-    .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-    .seg button { border: 0; border-radius: 0; padding: 4px 10px; font-size: 12px; }
-    .seg button + button { border-left: 1px solid var(--border); }
-    .seg button.active { background: var(--primary); color: #fff; }
+    .num { width: 64px; }
     .toolbar .push { margin-left: auto; }
     th.center, td.center { text-align: center; }
     .colbtns { display: flex; justify-content: center; gap: 2px; margin-top: 2px; }
     .colbtns button { font-weight: 400; }
-    tr.dirty td { background: #fffbeb; }
+    tr.dirty td { background: var(--warn-bg); }
     /* 列太多時表格自己捲，不用把整頁拉很長。標題固定在上面，「全選」「清除所有」才一直按得到。 */
     /* 外框的圓角交給 .table-scroll。table 自己留著 overflow: hidden 的話，標題固定不住。 */
-    .table-scroll { max-height: 360px; overflow: auto; margin-top: 8px; background: #fff; border: 1px solid var(--border); border-radius: 10px; }
+    .table-scroll { max-height: 360px; overflow: auto; margin-top: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
     .table-scroll table { border: 0; border-radius: 0; overflow: visible; }
     /* 表格的框線是共用的，不會跟著固定的標題走，所以底線用陰影畫 */
     .table-scroll th { position: sticky; top: 0; z-index: 1; box-shadow: inset 0 -1px 0 var(--border); }
-    /* 「密碼」表是那一頁的主角，高度跟著視窗走 */
-    .table-scroll.tall { max-height: 70vh; margin-top: 0; }
     #trashList { max-height: 60vh; overflow: auto; }
     #trashList > .entry { flex: none; }
-    .table-scroll::-webkit-scrollbar, #trashList::-webkit-scrollbar, #ruleSites::-webkit-scrollbar { width: 10px; height: 10px; }
-    .table-scroll::-webkit-scrollbar-thumb, #trashList::-webkit-scrollbar-thumb, #ruleSites::-webkit-scrollbar-thumb { background: #c4c8cf padding-box; border: 2px solid transparent; border-radius: 5px; }
-    .table-scroll::-webkit-scrollbar-thumb:hover, #trashList::-webkit-scrollbar-thumb:hover, #ruleSites::-webkit-scrollbar-thumb:hover { background-color: #9ca3af; }
+    .table-scroll::-webkit-scrollbar, #trashList::-webkit-scrollbar, #ruleSites::-webkit-scrollbar, .entry-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
+    .table-scroll::-webkit-scrollbar-thumb, #trashList::-webkit-scrollbar-thumb, #ruleSites::-webkit-scrollbar-thumb, .entry-scroll::-webkit-scrollbar-thumb { background: var(--scroll-thumb) padding-box; border: 2px solid transparent; border-radius: 5px; }
+    .table-scroll::-webkit-scrollbar-thumb:hover, #trashList::-webkit-scrollbar-thumb:hover, #ruleSites::-webkit-scrollbar-thumb:hover, .entry-scroll::-webkit-scrollbar-thumb:hover { background-color: var(--scroll-thumb-hover); }
     /* 捲動的只有資料列，捲軸從標題下面才開始。--head-height 是 options.js 量的。 */
     .table-scroll::-webkit-scrollbar-track:vertical { margin: var(--head-height) 0 4px; }
-    .table-frame { position: relative; }
+    .table-frame { position: relative; margin-top: 8px; }
+    /* .sec-body 是 flex，.table-scroll 的 margin 不會穿出外框，蓋捲軸的那塊會比標題高 7px，所以間距改放在外框 */
+    .table-frame > .table-scroll { margin-top: 0; }
     /* 軌道縮短後，標題旁邊那一段瀏覽器還是當捲軸，按了會往下捲一頁，所以蓋起來 */
     /* 顏色跟標題一樣，標題看起來才是整排的 */
-    .table-frame::after { content: ''; position: absolute; top: 1px; right: 1px; width: 10px; height: var(--head-height); background: #f3f4f6; box-shadow: inset 0 -1px 0 var(--border); border-top-right-radius: 9px; }
+    .table-frame::after { content: ''; position: absolute; top: 1px; right: 1px; width: 10px; height: var(--head-height); background: var(--card-alt); box-shadow: inset 0 -1px 0 var(--border); border-top-right-radius: 9px; }
     label.form-label { margin: 0; }
     /* 自動點選：一個網站一塊，可以收合。一條規則的欄位多，標籤直接放在欄位上面，不用表格的欄標題。 */
     #ruleSites { display: flex; flex-direction: column; gap: 8px; max-height: 70vh; overflow: auto; }
-    .rule-site { flex: none; background: #fff; border: 1px solid var(--border); border-radius: 10px; }
-    .rule-site > summary { padding: 8px 12px; background: #f3f4f6; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; }
-    .rule-site > summary:hover { background: #e5e7eb; }
+    .rule-site { flex: none; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+    .rule-site > summary { padding: 8px 12px; background: var(--card-alt); border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .rule-site > summary:hover { background: var(--hover); }
     .rule-site[open] > summary { border-bottom: 1px solid var(--border); border-radius: 9px 9px 0 0; }
     .rule-site > summary .muted { margin-left: 8px; font-weight: 400; }
     .rule-list { display: flex; flex-direction: column; gap: 8px; padding: 8px; }
     .rule-card { padding: 8px 10px 10px; border: 1px solid var(--border); border-radius: 8px; }
     /* 關掉的規則整塊變淡。啟用和刪除不在 .rule-fields 裡，還是看得清楚。 */
-    .rule-card.off { background: #f9fafb; }
+    .rule-card.off { background: var(--card-alt); }
     .rule-card.off .rule-fields { opacity: 0.6; }
     .rule-card.moved { animation: rule-moved 1.2s ease-out; }
-    @keyframes rule-moved { from { background: #dbeafe; } }
+    @keyframes rule-moved { from { background: var(--primary-soft); } }
     .rule-head { display: flex; align-items: center; gap: 4px; }
     .rule-no { margin-right: 6px; font-size: 13px; font-weight: 600; }
     .rule-head .push { margin-left: auto; margin-right: 8px; }
@@ -111,16 +210,20 @@
     .rule-field.third { grid-column: span 2; }
     .rule-field.full { grid-column: span 6; }
     .rule-field-name { display: block; margin-bottom: 2px; }
-    .rule-field input, .rule-field select, .rule-field textarea { display: block; width: 100%; padding: 5px 7px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text); font: inherit; font-size: 13px; }
+    .rule-field input, .rule-field select, .rule-field textarea { display: block; width: 100%; padding: 5px 7px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); font: inherit; font-size: 13px; }
     /* 選擇器可能很長：整段折行顯示，高度跟著內容，最多 5 行，再長就在框內捲動 */
     .rule-field textarea.rule-selector { min-height: 30px; max-height: calc(5 * 1.45em + 12px); overflow-y: auto; resize: none; font-family: Consolas, "Courier New", monospace; font-size: 12px; line-height: 1.45; word-break: break-all; field-sizing: content; }
     .rule-field .error { min-height: 0; margin-top: 2px; }
-    .rule-note { margin-top: 2px; color: #92400e; }
+    .rule-note { margin-top: 2px; color: var(--warn-text); }
     .rule-field .error:empty, .rule-note:empty { display: none; }
     .rule-add { align-self: flex-start; }
     .section-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 14px 0 6px; }
     .card .section-head h3 { margin: 0; }
+    dialog { padding: 18px; width: 440px; max-width: calc(100vw - 32px); }
+    dialog .row.end { margin-top: 14px; }
     #ruleDialog { width: 560px; }
+    dialog.wide { width: 640px; }
+    dialog h3 { margin: 14px 0 6px; font-size: 13px; }
     @media (max-width: 640px) {
       .rule-field.half, .rule-field.third { grid-column: span 6; }
     }
@@ -128,118 +231,333 @@
     #choiceList { margin: 8px 0 0; padding-left: 18px; max-height: 220px; overflow: auto; font-size: 12px; }
     #choiceList li { margin: 3px 0; word-break: break-all; }
     #choiceList li .muted { display: block; }
-    .folder { width: 200px; padding: 4px 6px; font: inherit; border: 1px solid var(--border); border-radius: 6px; }
-    select { font: inherit; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
-    /* inline-block：視窗窄時整塊換到下一行，黃底才不會斷成兩截 */
-    #backupStatus.warn { display: inline-block; color: #92400e; background: #fef3c7; border-radius: 8px; padding: 1px 8px; }
-    /* 加密備份和 CSV 是兩種不同的東西，分成兩張卡片並排。框線和圓角跟工具鎖定的卡片一樣。 */
-    .backup-kinds { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-    @media (max-width: 640px) { .backup-kinds { grid-template-columns: minmax(0, 1fr); } }
-    .backup-kind { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; }
-    .backup-kind-head { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
-    .backup-kind-head .grow { flex: 1; }
-    .backup-badge { padding: 1px 8px; border-radius: 999px; background: #dbeafe; color: #1e40af; font-size: 11px; font-weight: 600; }
-    .backup-kind .row { margin-top: 10px; }
-    .backup-kind .row .link { margin-left: auto; }
-    .health-item { display: flex; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-    .health-item:last-child { border-bottom: 0; }
-    .health-item .what { flex: 1; min-width: 0; }
-    .health-item .who { color: var(--muted); font-size: 12px; }
+    .folder { width: 200px; }
     details.card > summary { position: relative; cursor: pointer; font-size: 15px; font-weight: 600; }
     details.card > summary .muted { font-weight: 400; }
     details.card > :not(summary) { margin-top: 10px; }
-    /* 放在標題那一排的按鈕，區塊收起來也按得到。用定位是因為 summary 改成 flex 會少掉開合的三角形。 */
-    .card-action { position: absolute; top: 50%; right: 0; transform: translateY(-50%); display: flex; align-items: center; font-weight: 400; }
     #logTable td { font-size: 12px; word-break: break-all; }
     #logTable .nowrap { white-space: nowrap; word-break: normal; }
     .abErr { color: var(--danger); }
-    #lockScreen { max-width: 420px; }
     .lock-pw { margin-top: 10px; }
     .lock-pw label { display: block; margin-bottom: 4px; font-size: 13px; }
     .lock-pw input { flex: 1; min-width: 0; }
     /* 保護方式：三張卡片並排，每張都列同樣兩項擋不擋得住，不用點就能比 */
     .lock-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-    .lock-legacy { margin-bottom: 8px; padding: 8px 10px; border: 1px solid #fcd34d; border-radius: 8px; background: #fef3c7; color: #92400e; font-size: 13px; }
+    .lock-legacy { margin-bottom: 8px; padding: 8px 10px; border: 1px solid var(--warn-border); border-radius: 8px; background: var(--warn-bg); color: var(--warn-text); font-size: 13px; }
     @media (max-width: 640px) { .lock-modes { grid-template-columns: minmax(0, 1fr); } }
-    label.lock-card { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--text); font-size: 13px; cursor: pointer; }
-    label.lock-card:hover { border-color: #9ca3af; }
+    label.lock-card { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); font-size: 13px; cursor: pointer; }
+    label.lock-card:hover { border-color: var(--border-strong); }
     /* 框線加粗 1px，padding 就少 1px，選到時卡片不會跳 */
-    label.lock-card:has(input:checked) { border: 2px solid var(--primary); padding: 9px 11px; background: #eff6ff; }
+    label.lock-card:has(input:checked) { border: 2px solid var(--primary); padding: 9px 11px; background: var(--selected); }
     label.lock-card:has(input:disabled) { cursor: default; opacity: 0.55; }
     label.lock-card:has(input:focus-visible) { outline: 2px solid var(--primary); outline-offset: 2px; }
     .lock-card-head { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 14px; font-weight: 600; }
-    .lock-badge { margin-left: auto; padding: 1px 8px; border-radius: 999px; background: #dbeafe; color: #1e40af; font-size: 11px; font-weight: 600; }
+    .lock-badge { margin-left: auto; padding: 1px 8px; border-radius: 999px; background: var(--primary-soft); color: var(--primary-soft-text); font-size: 11px; font-weight: 600; }
     /* 打勾打叉只給眼睛看，讀螢幕軟體念的是後面藏起來的「有」「沒有」 */
-    .lock-check::before { content: "✓" / ""; display: inline-block; width: 18px; color: #15803d; font-weight: 700; }
+    .lock-check::before { content: "✓" / ""; display: inline-block; width: 18px; color: var(--ok-text); font-weight: 700; }
     .lock-check.no { color: var(--muted); }
     .lock-check.no::before { content: "✕" / ""; color: var(--danger); }
     .lock-card-how { margin-top: 4px; color: var(--muted); font-size: 12px; }
-    .lock-card-note { color: #92400e; font-size: 12px; }
-    .lock-step { margin-top: 8px; color: var(--primary); font-size: 13px; font-weight: 600; }
+    .lock-card-note { color: var(--warn-text); font-size: 12px; }
+    .lock-step { margin-top: 8px; color: var(--link); font-size: 13px; font-weight: 600; }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-    #headerVersion { cursor: pointer; font-size: 12px; }
-    #headerVersion:hover { color: var(--primary); }
-    .ver { padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .ver { padding: 12px 0; border-bottom: 1px solid var(--divider); }
     .ver:last-child { border-bottom: 0; }
     .ver h3 { margin: 0 0 4px; display: flex; gap: 8px; align-items: baseline; font-size: 14px; }
     .ver .date { font-weight: 400; color: var(--muted); font-size: 12px; }
-    .ver .tag { background: var(--primary); color: #fff; border-radius: 999px; padding: 1px 8px; font-size: 11px; font-weight: 600; }
+    .ver .tag { background: var(--primary); color: var(--on-primary); border-radius: 999px; padding: 1px 8px; font-size: 11px; font-weight: 600; }
     .ver ul { margin: 4px 0 0 18px; padding: 0; }
     .ver li { margin: 3px 0; font-size: 13px; }
-    .ver .note { font-size: 12px; color: #92400e; margin-top: 6px; }
-    /* 有新版時頁首版本號旁邊的提示，跟版本分頁「有新版」那行同一個綠色 */
-    .update-pill { background: #dcfce7; color: #166534; border-color: #86efac; border-radius: 999px; font-weight: 600; }
-    .update-pill:hover { background: #bbf7d0; }
-    /* 檢查新版：標題旁邊寫目前是哪一種版本，有新版時換成跟頁首一樣的綠色標籤 */
-    #updateSummary.available { color: #166534; background: #dcfce7; border-radius: 999px; padding: 1px 8px; font-weight: 600; }
+    .ver .note { font-size: 12px; color: var(--warn-text); margin-top: 6px; }
+    /* 檢查新版：標題旁邊寫目前是哪一種版本，有新版時換成綠色標籤 */
+    #updateSummary.available { color: var(--ok-text); background: var(--ok-bg); border-radius: 999px; padding: 1px 8px; font-weight: 600; }
     /* 狀態、上次檢查、「立即檢查」包成一張卡片，狀態在左、按鈕在右。視窗窄時按鈕換到下面 */
-    .update-box { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
-    .update-box.available { background: #f0fdf4; border-color: #86efac; }
-    .update-box.failed { background: #fef2f2; border-color: #fecaca; }
+    .update-box { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+    .update-box.available { background: var(--ok-bg); border-color: var(--ok-border); }
+    .update-box.failed { background: var(--danger-bg); border-color: var(--danger-border); }
     .update-head { display: flex; align-items: center; gap: 12px; }
     .update-head .grow { flex: 1; min-width: 0; }
     @media (max-width: 640px) { .update-head { flex-wrap: wrap; } }
     #updateState { font-weight: 600; }
-    #updateState.ok::before { content: "✓" / ""; margin-right: 6px; color: #15803d; font-weight: 700; }
-    #updateState.available { color: #166534; }
+    #updateState.ok::before { content: "✓" / ""; margin-right: 6px; color: var(--ok-text); font-weight: 700; }
+    #updateState.available { color: var(--ok-text); }
     #updateState.failed { color: var(--danger); }
     #updateState.never { color: var(--muted); font-weight: 400; }
     /* 有新版時的兩步：① 下載、② 載入 */
-    .update-get { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #bbf7d0; }
+    .update-get { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--ok-border); }
     .update-step { display: flex; align-items: flex-start; gap: 8px; }
-    .update-step .no { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; margin-top: 5px; border-radius: 999px; background: #166534; color: #fff; font-size: 12px; font-weight: 600; }
+    .update-step .no { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; margin-top: 5px; border-radius: 999px; background: var(--ok-text); color: var(--ok-bg); font-size: 12px; font-weight: 600; }
     .update-step .body { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
     .update-step .body.stack { flex-direction: column; align-items: flex-start; padding-top: 5px; font-size: 13px; }
     .update-auto { margin-top: 10px; }
     .update-note { margin-top: 10px; }
+
+    /* 每一頁開頭：標題、一句說明，這頁最主要的按鈕放右邊 */
+    .page-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
+    .page-head .grow { flex: 1 1 320px; min-width: 0; }
+    .page-head h1 { font-size: 24px; }
+    .page-sub { margin-top: 4px; font-size: 13px; color: var(--muted); }
+    .head-actions, .head-field { display: inline-flex; align-items: center; gap: 6px; }
+    .head-field { padding: 4px 4px 4px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); font-size: 13px; }
+    .head-count { font-size: 14px; font-weight: 400; color: var(--muted); }
+    button.big { height: 38px; padding: 0 18px; border-radius: 10px; font-size: 14px; }
+    .strong { font-weight: 600; color: var(--text); }
+
+    /* 狀態卡片：綠色是沒事，黃色是該處理了 */
+    .hero { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 18px 20px; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+    .hero .grow { flex: 1 1 300px; min-width: 0; }
+    .hero-icon { flex: none; display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 12px; background: var(--card-alt); color: var(--muted); }
+    .hero-icon svg { width: 24px; height: 24px; }
+    .hero-title { font-size: 18px; font-weight: 700; }
+    .hero-sub { margin-top: 2px; font-size: 13px; color: var(--muted); }
+    .hero.ok { background: var(--ok-bg); border-color: var(--ok-border); }
+    .hero.ok .hero-title, .hero.ok .hero-sub, .hero.ok .hero-icon { color: var(--ok-text); }
+    .hero.warn { background: var(--warn-bg); border-color: var(--warn-border); }
+    .hero.warn .hero-title, .hero.warn .hero-sub, .hero.warn .hero-icon { color: var(--warn-text); }
+    .hero.ok .hero-icon, .hero.warn .hero-icon { background: var(--card); }
+    .stats { display: flex; gap: 10px; }
+    .stat { min-width: 88px; padding: 8px 14px; border-radius: 10px; background: var(--card); text-align: center; }
+    .stat b { display: block; font-size: 18px; color: var(--text); }
+    .stat span { font-size: 11px; color: var(--muted); }
+
+    /* 大區塊：標題列是 <summary>，點了收合。圖示、標題、一句說明、狀態、按鈕、開合箭頭照格子排。
+       標題要是 <summary> 的第一個子元素，e2e 用它認區塊。圖示寫在標題後面，用 grid 排到最左邊。 */
+    details.card.section { padding: 0; overflow: hidden; scroll-margin-top: 12px; }
+    details.card.section > :not(summary) { margin-top: 0; }
+    details.card.section > summary { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto auto 14px; grid-template-rows: auto auto; column-gap: 12px; align-items: center; padding: 14px 18px; list-style: none; }
+    details.card.section > summary::-webkit-details-marker { display: none; }
+    details.card.section > summary::after { content: ""; grid-column: 5; grid-row: 1 / span 2; justify-self: center; width: 7px; height: 7px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(-45deg); transition: transform 0.15s; }
+    details.card.section[open] > summary::after { transform: rotate(45deg); }
+    details.card.section > summary:hover { background: var(--hover); }
+    details.card.section > summary:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+    .sec-icon { grid-column: 1; grid-row: 1 / span 2; display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primary-soft); color: var(--primary-soft-text); }
+    .sec-icon svg { width: 17px; height: 17px; }
+    .sec-title { grid-column: 2; grid-row: 1; align-self: end; font-size: 16px; font-weight: 700; }
+    summary:not(:has(.sec-sub)) > .sec-title { grid-row: 1 / span 2; align-self: center; }
+    .sec-sub { grid-column: 2; grid-row: 2; align-self: start; font-size: 12px; font-weight: 400; color: var(--muted); }
+    .sec-state { grid-column: 3; grid-row: 1 / span 2; font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .sec-state:not(:empty) { padding: 3px 10px; border-radius: 999px; background: var(--card-alt); color: var(--muted); }
+    .sec-state.ok, .sec-state.available { background: var(--ok-bg); color: var(--ok-text); }
+    .sec-state.warn { background: var(--warn-bg); color: var(--warn-text); }
+    .sec-action { grid-column: 4; grid-row: 1 / span 2; display: flex; align-items: center; gap: 6px; font-weight: 400; }
+    .sec-body { padding: 4px 18px 16px; display: flex; flex-direction: column; gap: 10px; }
+    .sec-body h3 { margin: 4px 0 0; }
+    .sec-foot { padding: 10px 18px 14px; border-top: 1px solid var(--divider); font-size: 12px; }
+    .sec-foot:empty { display: none; }
+    .sec-foot .muted + .muted { margin-top: 2px; }
+    /* 沒有底框的區塊：裡面本身就是一張張卡片（說明的卡片、關於的資料和連結） */
+    details.card.section.bare { overflow: visible; background: transparent; border: 0; border-radius: 0; }
+    details.card.section.bare > summary { padding: 4px 2px 12px; border-radius: 10px; }
+    details.card.section.danger-zone { border-color: var(--danger-border); }
+    .danger-zone .sec-icon { background: var(--danger-bg); color: var(--danger); }
+
+    /* 區塊裡一列一個設定：左邊名稱和一句說明，右邊放欄位、開關或按鈕 */
+    details.card.section > .form { gap: 0; margin: 0; }
+    details.card.section .form-row { grid-template-columns: 200px minmax(0, 1fr); min-height: 52px; padding: 10px 18px; border-top: 1px solid var(--divider); }
+    html:not(:lang(zh)) details.card.section .form-row { grid-template-columns: 240px minmax(0, 1fr); }
+    .grid-2 details.card.section .form-row { grid-template-columns: 110px minmax(0, 1fr); }
+    html:not(:lang(zh)) .grid-2 details.card.section .form-row { grid-template-columns: 150px minmax(0, 1fr); }
+    details.card.section .form-label { font-size: 13px; color: var(--text); }
+    .form-label small { display: block; margin-top: 2px; font-size: 12px; color: var(--muted); }
+    label.form-row { margin: 0; font-size: 13px; color: var(--text); }
+    details.card.section label.form-row.switch-line { grid-template-columns: minmax(0, 1fr) auto; cursor: pointer; }
+    .switch-line .form-field { justify-content: flex-end; }
+    .form-field .push { margin-left: auto; }
+    @media (max-width: 640px) {
+      details.card.section .form-row, html:not(:lang(zh)) details.card.section .form-row { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+      details.card.section > summary { grid-template-columns: 34px minmax(0, 1fr) auto 14px; }
+      .sec-state { display: none; }
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; align-items: start; }
+    @media (max-width: 1000px) { .grid-2 { grid-template-columns: minmax(0, 1fr); } }
+    .kind-row { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-top: 1px solid var(--divider); }
+    .kind-row .grow { flex: 1; min-width: 0; }
+    .kind-icon, .tile-icon { flex: none; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: var(--primary-soft); color: var(--primary-soft-text); }
+    .kind-icon svg, .tile-icon svg { width: 18px; height: 18px; }
+    .kind-name { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
+
+    /* 備份紀錄的篩選、設定分頁的快速跳轉 */
+    .chip-group { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+    .chip-group button { padding: 4px 10px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font-size: 12px; font-weight: 600; }
+    .chip-group button:hover { background: var(--hover); }
+    .chip-group button.active { background: var(--primary-soft); color: var(--primary-soft-text); }
+    .jump { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
+    .jump button { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 13px; font-weight: 600; }
+    .jump button:hover { background: var(--hover); color: var(--text); }
+    .jump svg { width: 15px; height: 15px; }
+    .tag.plain { background: var(--card-alt); color: var(--muted); }
+    .tag.ok { background: var(--ok-bg); color: var(--ok-text); }
+
+    /* 回收桶：一筆一列，右邊寫剩幾天，快清掉的用黃色 */
+    .list-card { padding: 0; overflow: hidden; }
+    .list-card > .select-bar { border-radius: 0; padding: 10px 16px; }
+    #trashList.list { gap: 0; }
+    .entry.trash-row { gap: 12px; padding: 10px 16px; border: 0; border-top: 1px solid var(--divider); border-radius: 0; }
+    .trash-row .texts { flex: 1; min-width: 0; }
+    .trash-row .host { font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+    .trash-row .muted { font-size: 12px; }
+    .icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border: 0; background: transparent; }
+    .icon-btn svg { width: 16px; height: 16px; }
+    .icon-btn.danger { color: var(--danger); }
+    .icon-btn.danger:hover { background: var(--danger-bg); }
+    .empty-state { display: flex; align-items: center; gap: 14px; padding: 18px 20px; border: 1px dashed var(--border-strong); border-radius: 14px; }
+    .empty-icon { flex: none; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: var(--card-alt); color: var(--muted); }
+    .empty-icon svg { width: 22px; height: 22px; }
+
+    /* 說明的卡片、關於的資料：一張一張排成格子 */
+    .tile-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    @media (max-width: 1000px) { .tile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 640px) { .tile-grid { grid-template-columns: minmax(0, 1fr); } }
+    .tile { display: flex; flex-direction: column; gap: 8px; padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+    .tile-head { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; }
+    .tile-body { font-size: 13px; line-height: 1.55; color: var(--muted); }
+    .tile-foot { margin-top: auto; }
+    .tile-foot button.link { padding: 4px 0; font-weight: 600; }
+    .tile-foot button.link:hover { background: transparent; text-decoration: underline; }
+    .tile-foot a { display: inline-block; padding: 4px 0; font-size: 13px; font-weight: 600; text-decoration: none; }
+    .tile-foot a:hover { text-decoration: underline; }
+    .keys { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+    kbd { display: inline-block; padding: 2px 8px; border: 1px solid var(--border-strong); border-bottom-width: 2px; border-radius: 6px; background: var(--card-alt); color: var(--text); font-family: Consolas, "Courier New", monospace; font-size: 12px; }
+    .faq-item { border-top: 1px solid var(--divider); }
+    .faq-item > summary { padding: 12px 18px; cursor: pointer; font-size: 14px; font-weight: 600; }
+    .faq-item > summary:hover { background: var(--hover); }
+    .faq-item ul { margin: 0 18px 12px 40px; padding: 0; font-size: 13px; line-height: 1.6; color: var(--muted); }
+    .note-line { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; background: var(--card-alt); font-size: 13px; color: var(--muted); }
+    .note-line svg { flex: none; width: 16px; height: 16px; }
+
+    /* 版本：狀態卡片在區塊裡，有新版時兩步並排；歷程是時間軸 */
+    details.card.section > .update-box { margin: 2px 18px 14px; }
+    .update-version { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
+    #updateCurrent { font-size: 26px; font-weight: 800; }
+    .update-box .update-get { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    @media (max-width: 760px) { .update-box .update-get { grid-template-columns: minmax(0, 1fr); } }
+    .update-get .update-step { padding: 12px; border: 1px solid var(--ok-border); border-radius: 12px; background: var(--card); }
+    .update-get .update-step .body { flex-direction: column; align-items: flex-start; }
+    .timeline .ver { position: relative; padding: 0 0 18px 28px; border: 0; }
+    .timeline .ver::before { content: ""; position: absolute; left: 5px; top: 22px; bottom: 0; width: 2px; background: var(--divider); }
+    .timeline .ver:last-child::before { display: none; }
+    .timeline .ver::after { content: ""; position: absolute; left: 0; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--border-strong); }
+    .timeline .ver.current::after { background: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+    #versionMore { align-self: flex-start; padding-left: 0; font-weight: 600; }
+
+    /* 關於 */
+    .about-hero { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; padding: 24px; border: 1px solid var(--chrome-border); border-radius: 18px; background: var(--chrome-bg); color: var(--chrome-text); }
+    .about-hero .grow { flex: 1 1 320px; min-width: 0; }
+    .about-logo { flex: none; display: flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 20px; background: var(--logo-bg); color: var(--logo-fg); }
+    .about-logo svg { width: 36px; height: 36px; }
+    .about-hero h1 { font-size: 26px; font-weight: 800; color: var(--chrome-text); }
+    .about-desc { margin-top: 4px; font-size: 14px; color: var(--chrome-muted); }
+    .about-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .about-badges span { padding: 3px 10px; border-radius: 999px; background: var(--chrome-active); color: var(--chrome-active-text); font-size: 12px; font-weight: 600; }
+    .about-actions { display: flex; flex-direction: column; gap: 8px; }
+    a.about-btn { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px; border: 1px solid var(--chrome-border); border-radius: 10px; color: var(--chrome-text); font-size: 14px; text-decoration: none; }
+    a.about-btn:hover { background: var(--chrome-hover); }
+    a.about-btn.primary { border-color: var(--logo-bg); background: var(--logo-bg); color: var(--logo-fg); font-weight: 700; }
+    a.about-btn.primary:hover { filter: brightness(1.06); }
+    .about-btn svg { flex: none; width: 16px; height: 16px; }
+    .fact-label { font-size: 12px; color: var(--muted); }
+    .fact-value { font-size: 16px; font-weight: 700; }
+    .fact-desc { font-size: 12px; line-height: 1.55; color: var(--muted); }
+    .tile.fact.warn { border-color: var(--warn-border); background: var(--warn-bg); }
+    .tile.fact.warn .fact-value { color: var(--warn-text); }
+    .tile-icon.ok { background: var(--ok-bg); color: var(--ok-text); }
+    .tile-icon.warn { background: var(--card); color: var(--warn-text); }
+    .link-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    @media (max-width: 760px) { .link-grid { grid-template-columns: minmax(0, 1fr); } }
+    a.link-card { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); color: var(--text); text-decoration: none; }
+    a.link-card:hover { border-color: var(--border-strong); background: var(--hover); }
+    .link-card .texts { flex: 1; min-width: 0; }
+    .link-card .title { display: block; font-size: 14px; font-weight: 600; }
+    .link-card .desc { display: block; overflow: hidden; font-size: 12px; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
+    .link-card .ext { flex: none; width: 15px; height: 15px; color: var(--muted); }
+    .perm-row { display: grid; grid-template-columns: 210px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 10px 18px; border-top: 1px solid var(--divider); }
+    .perm-row .name { font-size: 13px; font-weight: 600; }
+    .perm-row code { display: block; padding: 0; background: none; color: var(--muted); font-size: 11px; }
+    .perm-row .why { font-size: 13px; color: var(--muted); }
+    @media (max-width: 760px) { .perm-row { grid-template-columns: minmax(0, 1fr) auto; } .perm-row .why { grid-column: 1 / -1; } }
+    .credit-list { padding: 0 18px 14px; }
+    .credit { display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 6px 0; font-size: 13px; }
+    .credit a { font-weight: 600; }
+
+    /* 密碼分頁的備註：一直顯示，沒寫時是灰字；按「寫備註」原地變成輸入框 */
+    .field .value.empty { color: var(--muted); }
+    .field.editing { grid-template-columns: 96px minmax(0, 1fr); align-items: start; padding: 12px 16px; }
+    html:not(:lang(zh)) .field.editing { grid-template-columns: 130px minmax(0, 1fr); }
+    .field.editing .label { padding-top: 8px; }
+    .note-edit textarea { min-height: 76px; resize: vertical; }
+    .note-edit .row { margin-top: 8px; }
   </style>
 </head>
 <body>
-  <div class="header">
-    <img src="../../icons/icon48.png" alt="">
-    <div class="grow">
-      <h1 data-i18n="ext_name">密碼小管家</h1>
-      <div class="muted" data-i18n="opt_header_note">密碼只存在這台電腦的瀏覽器裡，不會上傳到任何地方。</div>
+  <div class="app">
+  <nav class="rail" aria-label="分頁" data-i18n-aria-label="opt_tabs_label">
+    <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+    <button class="tab" data-tab="passwords">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2L20 3m-3 3l3 3m-6 0l2 2"/></svg>
+      <span data-i18n="opt_tab_passwords">密碼</span>
+    </button>
+    <button class="tab" data-tab="backup">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"/></svg>
+      <span data-i18n="opt_tab_backup">備份</span>
+    </button>
+    <button class="tab" data-tab="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+      <span data-i18n="opt_tab_settings">設定</span>
+    </button>
+    <button class="tab" data-tab="trash">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>
+      <span data-i18n="opt_tab_trash">回收桶</span><span id="trashCount" class="count"></span>
+    </button>
+    <button class="tab" data-tab="help">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg>
+      <span data-i18n="opt_tab_help">說明</span>
+    </button>
+    <button class="tab" data-tab="versions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2"/></svg>
+      <span data-i18n="opt_tab_versions">版本</span>
+      <span id="headerVersion" title="看版本功能歷程" data-i18n-title="opt_header_version_title"></span>
+      <span id="headerUpdate" class="dot" hidden></span>
+    </button>
+    <button class="tab" data-tab="about">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-18 0a9 9 0 1 1 18 0zM12 11v6M12 7.5h.01"/></svg>
+      <span data-i18n="opt_tab_about">關於</span>
+    </button>
+    <div class="grow"></div>
+    <div class="rail-menu">
+      <button id="langButton" class="tab" aria-haspopup="menu" aria-expanded="false" aria-controls="langMenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg>
+        <span data-i18n="opt_lang_button">語言</span>
+      </button>
+      <div id="langMenu" class="menu" role="menu" aria-label="介面語言" data-i18n-aria-label="opt_lang_label" hidden>
+        <div class="menu-title" data-i18n="opt_lang_label">介面語言</div>
+        <button role="menuitemradio" aria-checked="false" data-lang="auto"><span class="name" id="langAuto"></span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+        <button role="menuitemradio" aria-checked="false" data-lang="zh_TW"><span class="name" data-i18n="lang_name_zh_TW">繁體中文</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+        <button role="menuitemradio" aria-checked="false" data-lang="nan_TW"><span class="name" data-i18n="lang_name_nan_TW">台語</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+        <button role="menuitemradio" aria-checked="false" data-lang="en"><span class="name" data-i18n="lang_name_en">English</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+        <button role="menuitemradio" aria-checked="false" data-lang="ja"><span class="name" data-i18n="lang_name_ja">日本語</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+        <button role="menuitemradio" aria-checked="false" data-lang="ko"><span class="name" data-i18n="lang_name_ko">한국어</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+        <button role="menuitemradio" aria-checked="false" data-lang="de"><span class="name" data-i18n="lang_name_de">Deutsch</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+        <button role="menuitemradio" aria-checked="false" data-lang="ru"><span class="name" data-i18n="lang_name_ru">Русский</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+        <button role="menuitemradio" aria-checked="false" data-lang="th"><span class="name" data-i18n="lang_name_th">ไทย</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+      </div>
     </div>
-    <label class="lang-pick" title="介面語言" data-i18n-title="opt_lang_label">
-      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="8" r="6.3" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M1.8 8h12.4M8 1.7c1.9 2 1.9 10.6 0 12.6M8 1.7c-1.9 2-1.9 10.6 0 12.6" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
-      <select id="langSelect" aria-label="介面語言" data-i18n-aria-label="opt_lang_label">
-        <option value="auto" id="langAuto"></option>
-        <option value="zh_TW" data-i18n="lang_name_zh_TW">繁體中文</option>
-        <option value="nan_TW" data-i18n="lang_name_nan_TW">台語</option>
-        <option value="en" data-i18n="lang_name_en">English</option>
-        <option value="ja" data-i18n="lang_name_ja">日本語</option>
-        <option value="ko" data-i18n="lang_name_ko">한국어</option>
-        <option value="de" data-i18n="lang_name_de">Deutsch</option>
-        <option value="ru" data-i18n="lang_name_ru">Русский</option>
-        <option value="th" data-i18n="lang_name_th">ไทย</option>
-      </select>
-    </label>
-    <button id="headerUpdate" class="small update-pill" hidden data-i18n="opt_header_update">有新版</button>
-    <div id="headerVersion" class="muted" title="看版本功能歷程" data-i18n-title="opt_header_version_title"></div>
-  </div>
+    <div class="rail-menu">
+      <button id="themeButton" class="tab" aria-haspopup="menu" aria-expanded="false" aria-controls="themeMenu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>
+        <span data-i18n="opt_theme_label">色系</span>
+      </button>
+      <div id="themeMenu" class="menu" role="menu" aria-label="色系" data-i18n-aria-label="opt_theme_label" hidden>
+        <div class="menu-title" data-i18n="opt_theme_label">色系</div>
+        <button role="menuitemradio" aria-checked="false" data-theme-choice="system"><span class="swatch system" aria-hidden="true"></span><span class="name"><span data-i18n="opt_theme_system">跟著系統</span><small data-i18n="opt_theme_system_hint">淺色模式用青綠，深色模式用深色</small></span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+        <button role="menuitemradio" aria-checked="false" data-theme-choice="white"><span class="swatch white" aria-hidden="true"></span><span class="name" data-i18n="opt_theme_white">白色</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+        <button role="menuitemradio" aria-checked="false" data-theme-choice="dark"><span class="swatch dark" aria-hidden="true"></span><span class="name" data-i18n="opt_theme_dark">深色</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+        <button role="menuitemradio" aria-checked="false" data-theme-choice="teal"><span class="swatch teal" aria-hidden="true"></span><span class="name" data-i18n="opt_theme_teal">青綠</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+      </div>
+    </div>
+  </nav>
 
-  <div class="page">
+  <div class="content">
     <div id="lockScreen" class="card" hidden>
       <h2 data-i18n="opt_lock_title">先驗證身分</h2>
       <div class="help" data-i18n="opt_lock_help">驗證過才看得到密碼和設定。</div>
@@ -256,137 +574,124 @@
     </div>
 
     <div id="pageMain">
-      <nav class="tabs">
-        <button class="tab" data-tab="passwords" data-i18n="opt_tab_passwords">密碼</button>
-        <button class="tab" data-tab="backup" data-i18n="opt_tab_backup">備份</button>
-        <button class="tab" data-tab="settings" data-i18n="opt_tab_settings">設定</button>
-        <button class="tab" data-tab="trash"><span data-i18n="opt_tab_trash">回收桶</span> <span id="trashCount" class="count"></span></button>
-        <button class="tab" data-tab="help" data-i18n="opt_tab_help">說明</button>
-        <button class="tab" data-tab="versions" data-i18n="opt_tab_versions">版本</button>
-      </nav>
-
-      <section id="tab-passwords" class="tabpane">
-        <div class="toolbar">
-          <input id="search" type="search" placeholder="搜尋網站、帳號或備註" data-i18n-placeholder="opt_search_placeholder">
-          <button id="add" class="primary" data-i18n="opt_add_button">＋ 新增</button>
-          <button id="exportSelected" disabled title="勾選左邊的方框，把那幾筆匯出成加密檔給同事" data-i18n-title="opt_export_selected_title" data-i18n="opt_export_selected">匯出勾選的（加密）</button>
-        </div>
-        <div id="status" class="error"></div>
-        <div id="healthStrip" class="strip">
-          <span id="healthSummary"></span>
-          <button id="healthToggle" class="link small" hidden data-i18n="opt_health_show">看詳細</button>
-          <span id="breachWrap" class="push" hidden><button id="breachCheck" class="small" data-i18n="opt_breach_check">檢查有沒有外洩</button><span class="tip" data-i18n-tip="opt_breach_tip" data-tip="會連到 Have I Been Pwned（api.pwnedpasswords.com），每組密碼只送雜湊值的前 5 碼，對方猜不出是哪組密碼。
+      <section id="tab-passwords" class="tabpane split">
+        <div class="list-pane">
+          <div class="list-head">
+            <div class="row">
+              <h1 data-i18n="opt_tab_passwords">密碼</h1>
+              <span id="entryCount" class="muted"></span>
+              <span class="grow"></span>
+              <button id="selectMode" class="small" title="勾選左邊的方框，把那幾筆匯出成加密檔給同事" data-i18n-title="opt_export_selected_title" data-i18n="opt_select_mode">勾選</button>
+              <button id="add" class="primary small" data-i18n="opt_add_button">＋ 新增</button>
+            </div>
+            <label class="search-box">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+              <input id="search" type="search" placeholder="搜尋網站、帳號或備註" data-i18n-placeholder="opt_search_placeholder" aria-label="搜尋網站、帳號或備註" data-i18n-aria-label="opt_search_placeholder">
+            </label>
+            <div id="healthStrip" class="chips">
+              <span id="healthSummary"></span>
+              <span id="healthChips" class="chips"></span>
+              <span id="breachWrap" class="push" hidden><button id="breachCheck" class="link small" data-i18n="opt_breach_check">檢查有沒有外洩</button><span class="tip" data-i18n-tip="opt_breach_tip" data-tip="會連到 Have I Been Pwned（api.pwnedpasswords.com），每組密碼只送雜湊值的前 5 碼，對方猜不出是哪組密碼。
 按了才會連，平常不連。
 結果不會存，關掉管理頁要重新檢查。">?</span></span>
-        </div>
-        <div id="healthList" class="card" hidden></div>
-        <div class="table-frame">
-          <div id="passwordTableWrap" class="table-scroll tall">
-            <table>
-              <thead>
-                <tr>
-                  <th class="chk"><input type="checkbox" id="checkAll" title="全選目前列出的" data-i18n-title="opt_check_all_title"></th>
-                  <th data-i18n="opt_col_site">網站</th><th data-i18n="opt_col_username">帳號</th><th data-i18n="opt_col_password">密碼</th><th data-i18n="opt_col_last_used">最後使用</th><th></th>
-                </tr>
-              </thead>
-              <tbody id="rows"></tbody>
-            </table>
+            </div>
+            <div id="selectBar" class="select-bar" hidden>
+              <label class="inline"><input type="checkbox" id="checkAll" title="全選目前列出的" data-i18n-title="opt_check_all_title"> <span data-i18n="opt_select_all">全選</span></label>
+              <button id="exportSelected" class="primary small push" disabled data-i18n="opt_export_selected">匯出勾選的（加密）</button>
+              <button id="selectCancel" class="small" data-i18n="opt_cancel">取消</button>
+            </div>
+          </div>
+          <div id="status" class="error"></div>
+          <div id="passwordTableWrap" class="entry-scroll">
+            <div id="rows" role="list"></div>
+            <div id="empty" class="empty" hidden data-i18n="opt_empty">還沒有任何密碼。到網站登入一次，畫面上方會問你要不要儲存。</div>
           </div>
         </div>
-        <div id="empty" class="empty" hidden data-i18n="opt_empty">還沒有任何密碼。到網站登入一次，畫面右上角會問你要不要儲存。</div>
+        <div id="detailPane" class="detail-pane" aria-live="polite"></div>
       </section>
 
-      <section id="tab-backup" class="tabpane" hidden>
-        <details class="card" open>
-          <summary><span data-i18n="opt_block_backup">備份</span> <span id="backupStatus" class="muted"></span></summary>
-          <div>
-            <div class="backup-kinds">
-              <div class="backup-kind">
-                <div class="backup-kind-head">
-                  <span class="grow" data-i18n="opt_backup_enc_title">加密備份</span>
-                  <span class="backup-badge" data-i18n="opt_backup_recommended">建議</span>
-                  <span class="tip" data-i18n-tip="opt_backup_enc_tip" data-tip="匯出時會跳「另存新檔」讓你選位置。
-備份密碼忘了就打不開。">?</span>
-                </div>
+      <section id="tab-backup" class="tabpane page" hidden>
+        <div class="page-head">
+          <div class="grow">
+            <h1 data-i18n="opt_tab_backup">備份</h1>
+            <div class="page-sub" data-i18n="opt_backup_page_sub">密碼只存在這台電腦。留一份在別的地方，電腦壞了才救得回來。</div>
+          </div>
+          <span class="head-actions">
+            <button id="abRunNow" class="primary big" data-i18n="opt_ab_run_now">立即備份</button>
+            <span class="tip" data-i18n-tip="opt_ab_run_now_tip" data-tip="馬上存一份到自動備份的資料夾，沒打開自動備份也能用。
+沒改過密碼也會存。
+要先設定備份密碼。">?</span>
+          </span>
+        </div>
+
+        <div id="backupHero" class="hero">
+          <span class="hero-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6zM8.5 12l2.5 2.5 4.5-5"/></svg></span>
+          <div class="grow">
+            <div id="backupHeroTitle" class="hero-title"></div>
+            <div id="backupHeroSub" class="hero-sub"></div>
+          </div>
+          <div class="stats">
+            <div class="stat"><b id="backupStatCount"></b><span data-i18n="opt_backup_stat_accounts">個帳號</span></div>
+            <div class="stat"><b id="backupStatNext"></b><span data-i18n="opt_backup_stat_next">下次自動備份</span></div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <details class="card section" open>
+            <summary><span class="sec-title" data-i18n="opt_block_transfer">匯出與匯入</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v13M3 13l4 4 4-4M17 20V7M13 11l4-4 4 4"/></svg></span><span class="sec-sub" data-i18n="opt_block_transfer_sub">換電腦、給同事、搬回瀏覽器都在這裡</span></summary>
+            <div class="kind-row">
+              <span class="kind-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+              <div class="grow">
+                <div class="kind-name"><span data-i18n="opt_backup_enc_title">加密備份</span><span class="tag" data-i18n="opt_backup_recommended">建議</span><span class="tip" data-i18n-tip="opt_backup_enc_tip" data-tip="匯出時會跳「另存新檔」讓你選位置。
+備份密碼忘了就打不開。">?</span></div>
                 <div class="muted" data-i18n="opt_backup_enc_desc">要有備份密碼才打得開</div>
-                <div class="row">
-                  <!-- 按鈕上只寫「匯出」「匯入」，讀螢幕軟體念完整名稱，才分得出是哪一張卡片的 -->
-                  <button id="exportBak" class="primary" aria-label="匯出加密備份" data-i18n-aria-label="opt_export_backup" data-i18n="opt_export">匯出</button>
-                  <button id="importBak" aria-label="匯入加密備份" data-i18n-aria-label="opt_import_backup" data-i18n="opt_import">匯入</button>
-                </div>
               </div>
-              <div class="backup-kind">
-                <div class="backup-kind-head">
-                  <span class="grow" data-i18n="opt_backup_csv_title">CSV 檔</span>
-                  <span class="tip" data-i18n-tip="opt_backup_csv_tip" data-tip="匯出時會跳「另存新檔」讓你選位置。
+              <!-- 按鈕上只寫「匯出」「匯入」，讀螢幕軟體念完整名稱，才分得出是哪一列的 -->
+              <button id="exportBak" class="primary small" aria-label="匯出加密備份" data-i18n-aria-label="opt_export_backup" data-i18n="opt_export">匯出</button>
+              <button id="importBak" class="small" aria-label="匯入加密備份" data-i18n-aria-label="opt_import_backup" data-i18n="opt_import">匯入</button>
+            </div>
+            <div class="kind-row">
+              <span class="kind-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16"/></svg></span>
+              <div class="grow">
+                <div class="kind-name"><span data-i18n="opt_backup_csv_title">CSV 檔</span><span class="tip" data-i18n-tip="opt_backup_csv_tip" data-tip="匯出時會跳「另存新檔」讓你選位置。
 打開就看得到密碼，要放在安全的地方。
-格式和 Chrome、Edge 匯出的一樣。">?</span>
-                </div>
+格式和 Chrome、Edge 匯出的一樣。">?</span></div>
                 <div class="muted" data-i18n="opt_backup_csv_desc">沒有加密，可以搬回瀏覽器</div>
-                <div class="row">
-                  <button id="export" aria-label="匯出 CSV" data-i18n-aria-label="opt_export_csv" data-i18n="opt_export">匯出</button>
-                  <button id="import" aria-label="匯入 CSV" data-i18n-aria-label="opt_import_csv" data-i18n="opt_import">匯入</button>
-                  <button id="moveHow" class="link small" data-i18n="opt_backup_move_how">怎麼搬？</button>
-                </div>
               </div>
+              <button id="export" class="small" aria-label="匯出 CSV" data-i18n-aria-label="opt_export_csv" data-i18n="opt_export">匯出</button>
+              <button id="import" class="small" aria-label="匯入 CSV" data-i18n-aria-label="opt_import_csv" data-i18n="opt_import">匯入</button>
+            </div>
+            <div class="kind-row">
+              <span class="kind-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5a3 3 0 1 1 0 6a3 3 0 1 1 0-6zM7 10a3 3 0 1 1 0 6a3 3 0 1 1 0-6zM16 15a3 3 0 1 1 0 6a3 3 0 1 1 0-6zM9.6 11.6l3.8-2.2M9.6 14.4l3.8 2.2"/></svg></span>
+              <div class="grow">
+                <div class="kind-name" data-i18n="opt_backup_share_title">給同事幾筆</div>
+                <div class="muted" data-i18n="opt_backup_share_desc">到「密碼」分頁按「勾選」，挑幾筆匯出成加密檔</div>
+              </div>
+              <button id="shareGo" class="small" data-i18n="opt_backup_share_go">去勾選</button>
+            </div>
+            <div class="sec-foot">
+              <button id="moveHow" class="link small" data-i18n="opt_backup_move_how">怎麼和瀏覽器互搬？</button>
+              <div id="backupResult" class="muted"></div>
             </div>
             <input id="file" type="file" accept=".csv,text/csv" hidden>
             <input id="bakFile" type="file" accept=".pkbak,.json,application/json" hidden>
-            <div id="backupResult" class="muted" style="margin-top:6px"></div>
-          </div>
-        </details>
+          </details>
 
-        <details class="card help-card" id="browserMove">
-          <summary data-i18n="opt_move_title">和瀏覽器互搬密碼</summary>
-          <div>
-            <div class="help" data-i18n="opt_move_help">用 CSV 檔和瀏覽器內建的密碼來回搬，不會自動同步。搬完記得刪掉 CSV 檔，也清掉資源回收筒。</div>
-            <h3 data-i18n="opt_move_in_title">把瀏覽器的密碼搬進來</h3>
-            <ol>
-              <li><span data-i18n="opt_move_in_1a">開瀏覽器的密碼頁：Chrome 在網址列打</span> <code>chrome://password-manager/settings</code><span data-i18n="opt_move_in_1b">，Edge 打</span> <code>edge://settings/passwords</code><span data-i18n="opt_move_in_1c">，Firefox 打</span> <code>about:logins</code><span data-i18n="opt_move_in_1d">。</span></li>
-              <li data-i18n="opt_move_in_2">找「匯出密碼」，存成 CSV 檔。瀏覽器可能會先要你驗證 Windows 密碼或 PIN。</li>
-              <li data-i18n="opt_move_in_3">回到這裡按上面 CSV 檔的「匯入」，選那個檔。Chrome、Edge、Firefox、Safari 匯出的檔案都看得懂。</li>
-            </ol>
-            <h3 data-i18n="opt_move_out_title">把這裡的密碼搬回瀏覽器</h3>
-            <ol>
-              <li data-i18n="opt_move_out_1">按上面 CSV 檔的「匯出」存檔。超過 3000 筆會分成幾個檔，因為 Chrome、Edge 一次最多收 3000 筆。</li>
-              <li data-i18n="opt_move_out_2">開瀏覽器的密碼頁（網址同上），找「匯入密碼」，選剛剛存的檔。</li>
-              <li data-i18n="opt_move_out_3">瀏覽器裡已經有同網站同帳號、密碼卻不一樣的，新版 Chrome 會列出來讓你選要不要換掉；沒問的話，瀏覽器會保留它原本的那組。</li>
-            </ol>
-            <h3 data-i18n="opt_move_what_title">來回搬時會怎樣</h3>
-            <ul>
-              <li data-i18n="opt_move_what_1">同網站同帳號會合併，不會多出一筆。密碼不一樣的換成檔案裡的，原本的留在「舊密碼」裡。</li>
-              <li data-i18n="opt_move_what_2">檔案裡的密碼如果是這裡已經換掉的舊密碼，會保留這裡的，不會蓋回去。</li>
-              <li data-i18n="opt_move_what_3">檔案裡沒有備註的，不會把這裡寫的備註清掉。</li>
-              <li><span data-i18n="opt_move_what_4a">手機 App 的密碼（</span><code>android://</code> <span data-i18n="opt_move_what_4b">開頭）和其他不是網站的項目不會匯入，會算在「略過」裡。</span></li>
-              <li data-i18n="opt_move_what_5">公司關掉瀏覽器的密碼管理時，瀏覽器那邊可能找不到匯出、匯入。</li>
-            </ul>
-          </div>
-        </details>
-
-        <details class="card" open>
-          <summary><span data-i18n="opt_block_auto_backup">自動備份</span>
-            <span class="card-action">
-              <button id="abRunNow" class="primary" data-i18n="opt_ab_run_now">立即備份</button>
-              <span class="tip" data-i18n-tip="opt_ab_run_now_tip" data-tip="馬上存一份到「3. 存到」的資料夾，沒打開自動備份也能用。
-沒改過密碼也會存。
-要先設定備份密碼。">?</span>
-            </span>
-          </summary>
-          <div>
-            <div class="help"><span data-i18n="opt_ab_help">定時把加密備份存到「下載」資料夾底下。照 1 到 4 設定。</span><span class="tip" data-i18n-tip="opt_ab_help_tip" data-tip="每天或每週在指定時間存一份，沒改過密碼就不存。
-錯過時間會在下次開瀏覽器時補做。">?</span></div>
+          <details class="card section" open>
+            <summary><span class="sec-title" data-i18n="opt_block_auto_backup">自動備份</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-18 0a9 9 0 1 1 18 0zM12 7v5l3 2"/></svg></span><span class="sec-sub" data-i18n="opt_ab_help">定時存一份加密備份，沒改過密碼就不存</span><span class="sec-action"><input type="checkbox" id="abEnabled" class="switch" role="switch" aria-label="啟用自動備份" data-i18n-aria-label="opt_ab_enable"></span></summary>
             <div class="form">
               <div class="form-row">
-                <div class="form-label"><span data-i18n="opt_ab_step_password">1. 備份密碼</span><span class="tip" data-i18n-tip="opt_ab_password_tip" data-tip="自動備份都用這組密碼加密。
+                <div class="form-label"><span data-i18n="opt_ab_step_password">備份密碼</span><span class="tip" data-i18n-tip="opt_ab_password_tip" data-tip="自動備份都用這組密碼加密。
 擴充功能不會記住這組密碼，忘了就打不開備份檔。
 改密碼後，舊的備份檔還是要用舊密碼開。">?</span></div>
                 <div class="form-field">
                   <span id="abPwStatus" class="muted"></span>
-                  <button id="abPassword" class="small" data-i18n="opt_ab_set_password">設定密碼</button>
+                  <button id="abPassword" class="link small push" data-i18n="opt_ab_set_password">設定密碼</button>
                 </div>
               </div>
               <div class="form-row">
-                <div class="form-label" data-i18n="opt_ab_step_when">2. 什麼時候</div>
+                <div class="form-label"><span data-i18n="opt_ab_step_when">多久一次</span><span class="tip" data-i18n-tip="opt_ab_help_tip" data-tip="每天或每週在指定時間存一份，沒改過密碼就不存。
+錯過時間會在下次開瀏覽器時補做。">?</span></div>
                 <div class="form-field">
                   <select id="abEvery"><option value="day" data-i18n="opt_ab_every_day">每天</option><option value="week" data-i18n="opt_ab_every_week">每週</option></select>
                   <select id="abWeekday" hidden>
@@ -402,66 +707,76 @@
                 </div>
               </div>
               <div class="form-row">
-                <div class="form-label" data-i18n="opt_ab_step_folder">3. 存到</div>
+                <label class="form-label" for="abFolder" data-i18n="opt_ab_step_folder">存到</label>
                 <div class="form-field nowrap">
                   <span class="muted prefix" data-i18n="opt_ab_folder_prefix">下載 \</span>
                   <input id="abFolder" type="text" class="folder">
                 </div>
               </div>
               <div class="form-row">
-                <div class="form-label" data-i18n="opt_ab_step_switch">4. 開關</div>
+                <div class="form-label" data-i18n="opt_reminder_title">提醒</div>
                 <div class="form-field">
-                  <label class="inline"><input type="checkbox" id="abEnabled"> <span data-i18n="opt_ab_enable">啟用自動備份</span></label>
+                  <span data-i18n="opt_reminder_before">超過</span> <input id="reminderDays" class="num" type="number" min="0" max="365"> <span data-i18n="opt_reminder_after">天沒備份，就在小視窗提醒</span><span class="tip" data-i18n-tip="opt_reminder_tip" data-tip="這段期間沒改過密碼就不提醒。
+填 0 關掉。">?</span>
                 </div>
               </div>
             </div>
-            <div style="margin-top:8px">
+            <div class="sec-foot">
               <div id="abNext" class="muted"></div>
               <div id="abInfo" class="muted"></div>
             </div>
-            <h3 data-i18n="opt_reminder_title">提醒</h3>
-            <label class="inline">
-              <span data-i18n="opt_reminder_before">超過</span> <input id="reminderDays" class="num" type="number" min="0" max="365"> <span data-i18n="opt_reminder_after">天沒備份，就在小視窗提醒</span><span class="tip" data-i18n-tip="opt_reminder_tip" data-tip="這段期間沒改過密碼就不提醒。
-填 0 關掉。">?</span>
-            </label>
-          </div>
-        </details>
+          </details>
+        </div>
 
-        <details class="card" id="logDetails">
-          <summary><span data-i18n="opt_block_log">備份紀錄</span> <span id="logCount" class="muted"></span></summary>
-          <div class="help"><span data-i18n="opt_log_help">每次備份存到哪裡都記在這裡。</span><span class="tip" data-i18n-tip="opt_log_tip" data-tip="最多留 100 筆。
+        <details class="card section" id="logDetails">
+          <summary><span class="sec-title" data-i18n="opt_block_log">備份紀錄</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg></span><span class="sec-sub" data-i18n="opt_log_help">每次備份存到哪裡都記在這裡。</span><span id="logCount" class="sec-state"></span></summary>
+          <div class="sec-body">
+            <div class="toolbar">
+              <div id="logFilter" class="chip-group">
+                <button data-cat="all" data-i18n="opt_log_cat_all">全部</button>
+                <button data-cat="auto" data-i18n="opt_log_cat_auto">自動</button>
+                <button data-cat="manual" data-i18n="opt_log_cat_manual">手動</button>
+                <button data-cat="location" data-i18n="opt_log_cat_location">改位置</button>
+              </div>
+              <span class="tip" data-i18n-tip="opt_log_tip" data-tip="最多留 100 筆。
 「立即備份」算手動。
-換過位置的話，舊檔案還留在原來的地方，要自己刪。">?</span></div>
-          <div class="toolbar">
-            <div id="logFilter" class="seg">
-              <button data-cat="all" data-i18n="opt_log_cat_all">全部</button>
-              <button data-cat="auto" data-i18n="opt_log_cat_auto">自動</button>
-              <button data-cat="manual" data-i18n="opt_log_cat_manual">手動</button>
-              <button data-cat="location" data-i18n="opt_log_cat_location">改位置</button>
+換過位置的話，舊檔案還留在原來的地方，要自己刪。">?</span>
+              <button id="logDelete" class="small danger push" disabled data-i18n="opt_log_delete_selected">刪除勾選的紀錄</button>
             </div>
-            <button id="logDelete" class="small danger push" disabled data-i18n="opt_log_delete_selected">刪除勾選的紀錄</button>
-          </div>
-          <div class="table-frame">
-            <div id="logTableWrap" class="table-scroll">
-              <table id="logTable">
-                <thead><tr><th class="chk"><input type="checkbox" id="logCheckAll" title="全選目前列出的" data-i18n-title="opt_check_all_title"></th><th class="nowrap" data-i18n="opt_log_col_time">時間</th><th class="nowrap" data-i18n="opt_log_col_kind">方式</th><th data-i18n="opt_log_col_location">位置</th><th class="nowrap" data-i18n="opt_log_col_count">筆數</th><th></th></tr></thead>
-                <tbody id="logRows"></tbody>
-              </table>
+            <div class="table-frame">
+              <div id="logTableWrap" class="table-scroll">
+                <table id="logTable">
+                  <thead><tr><th class="chk"><input type="checkbox" id="logCheckAll" title="全選目前列出的" data-i18n-title="opt_check_all_title"></th><th class="nowrap" data-i18n="opt_log_col_time">時間</th><th class="nowrap" data-i18n="opt_log_col_kind">方式</th><th data-i18n="opt_log_col_location">位置</th><th class="nowrap" data-i18n="opt_log_col_count">筆數</th><th></th></tr></thead>
+                  <tbody id="logRows"></tbody>
+                </table>
+              </div>
             </div>
+            <div id="logEmpty" class="muted" data-i18n="opt_log_empty">還沒有備份紀錄。</div>
           </div>
-          <div id="logEmpty" class="muted" data-i18n="opt_log_empty">還沒有備份紀錄。</div>
         </details>
       </section>
 
-      <section id="tab-settings" class="tabpane" hidden>
-        <details class="card">
-          <summary><span data-i18n="opt_block_lock">工具鎖定</span> <span id="lockState" class="muted"></span></summary>
-          <div>
-            <div class="help"><span data-i18n="opt_lock_block_help">離開座位時不讓別人看密碼，也可以把硬碟上的密碼加密。</span><span class="tip" data-i18n-tip="opt_lock_block_tip" data-tip="鎖住時，小視窗、管理頁、網頁自動填入、快捷鍵、瀏覽器驗證視窗都要先解鎖。
-擴充功能的資料夾搬家後要重新設定。">?</span></div>
+      <section id="tab-settings" class="tabpane page" hidden>
+        <div class="page-head">
+          <div class="grow">
+            <h1 data-i18n="opt_tab_settings">設定</h1>
+            <div class="page-sub" data-i18n="opt_settings_page_sub">工具鎖定、自動填入、自動點選都在這裡。改了馬上生效。</div>
+          </div>
+        </div>
+        <nav class="jump" aria-label="跳到" data-i18n-aria-label="opt_jump_label">
+          <button data-jump="lockBlock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="opt_block_lock">工具鎖定</span></button>
+          <button data-jump="fillBlock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7M17 14l3 3-3 3"/></svg><span data-i18n="opt_block_fill">填入</span></button>
+          <button data-jump="clickBlock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v2M4 9h2M5.5 5.5L7 7M12 9l8 3-3.5 1.5L15 17z"/></svg><span data-i18n="opt_block_click">自動點選</span></button>
+          <button data-jump="dangerBlock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3zM12 10v4M12 17h.01"/></svg><span data-i18n="opt_block_danger">危險區</span></button>
+        </nav>
+
+        <details class="card section" id="lockBlock">
+          <summary><span class="sec-title" data-i18n="opt_block_lock">工具鎖定</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V7a4 4 0 0 1 8 0v4"/></svg></span><span class="sec-sub" data-i18n="opt_lock_block_help">離開座位時不讓別人看密碼，也可以把硬碟上的密碼加密。</span><span id="lockState" class="sec-state"></span></summary>
+          <div class="sec-body">
             <h3><span data-i18n="opt_lock_mode_title">保護方式</span><span class="tip" data-i18n-tip="opt_lock_mode_tip" data-tip="防資料被拷走：有人拷走瀏覽器的資料夾，也讀不到密碼。
 加密後，忘了自訂密碼或系統驗證不能用，只能用備份檔還原。
-兩種加密都要先設好自動備份密碼。">?</span></h3>
+兩種加密都要先設好自動備份密碼。">?</span><span class="tip" data-i18n-tip="opt_lock_block_tip" data-tip="鎖住時，小視窗、管理頁、網頁自動填入、快捷鍵、瀏覽器驗證視窗都要先解鎖。
+擴充功能的資料夾搬家後要重新設定。">?</span></h3>
             <div id="lockLegacy" class="lock-legacy" data-i18n="opt_lock_legacy_screen" hidden>目前是舊版的「只鎖畫面」，硬碟上的密碼沒有加密，請改選下面一種。</div>
             <div class="lock-modes" role="radiogroup">
               <label class="lock-card">
@@ -486,22 +801,37 @@
               </label>
             </div>
             <div id="lockStep" class="lock-step" role="status" hidden></div>
-            <div id="lockInfo" class="muted" style="margin-top:6px"></div>
-            <div class="row wrap" style="margin-top:6px"><button id="lockChangePw" class="small" hidden data-i18n="opt_lock_change_password">更改自訂密碼</button></div>
-            <h3 data-i18n="opt_lock_when_title">什麼時候自動鎖上</h3>
-            <div class="row wrap">
-              <label class="inline"><span data-i18n="opt_lock_idle_before">閒置</span> <input id="lockMinutes" class="num" type="number" min="1" max="720"> <span data-i18n="opt_lock_idle_after">分鐘沒碰電腦就鎖</span><span id="lockIdleTip" class="tip" hidden data-i18n-tip="opt_lock_idle_no_screen_tip" data-tip="這個瀏覽器不會通知鎖螢幕，鎖螢幕後要等閒置時間到才會鎖。">?</span></label>
-              <label class="inline"><input type="checkbox" id="lockOnStartup"> <span data-i18n="opt_lock_on_startup">瀏覽器重開就鎖</span></label>
-            </div>
-            <div class="help" data-i18n="opt_lock_manual_help">小視窗右上角的「鎖定」可以隨時手動鎖上。</div>
+            <div id="lockInfo" class="muted"></div>
+            <div class="row wrap"><button id="lockChangePw" class="small" hidden data-i18n="opt_lock_change_password">更改自訂密碼</button></div>
           </div>
+          <div class="form">
+            <div class="form-row">
+              <div class="form-label" data-i18n="opt_lock_when_title">什麼時候自動鎖上</div>
+              <div class="form-field">
+                <label class="inline"><span data-i18n="opt_lock_idle_before">閒置</span> <input id="lockMinutes" class="num" type="number" min="1" max="720"> <span data-i18n="opt_lock_idle_after">分鐘沒碰電腦就鎖</span><span id="lockIdleTip" class="tip" hidden data-i18n-tip="opt_lock_idle_no_screen_tip" data-tip="這個瀏覽器不會通知鎖螢幕，鎖螢幕後要等閒置時間到才會鎖。">?</span></label>
+              </div>
+            </div>
+            <label class="form-row switch-line">
+              <span class="form-label" data-i18n="opt_lock_on_startup">瀏覽器重開就鎖</span>
+              <span class="form-field"><input type="checkbox" id="lockOnStartup" class="switch" role="switch"></span>
+            </label>
+          </div>
+          <div class="sec-foot muted" data-i18n="opt_lock_manual_help">小視窗右上角的「鎖定」可以隨時手動鎖上。</div>
         </details>
 
-        <details class="card" open>
-          <summary data-i18n="opt_block_fill">填入</summary>
-          <div>
-            <label class="inline"><input type="checkbox" id="autoFill"> <span data-i18n="opt_autofill_master">打開登入頁時自動填入帳號密碼（總開關）</span></label>
-            <h3 data-i18n="opt_sites_title">各網站</h3>
+        <details class="card section" id="fillBlock" open>
+          <summary><span class="sec-title" data-i18n="opt_block_fill">填入</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h7M17 14l3 3-3 3"/></svg></span><span class="sec-sub" data-i18n="opt_fill_sub">打開登入頁時自動填好帳號密碼</span></summary>
+          <div class="form">
+            <label class="form-row switch-line">
+              <span class="form-label"><span class="strong" data-i18n="opt_autofill_master">打開登入頁時自動填入帳號密碼（總開關）</span><small data-i18n="opt_autofill_master_desc">關掉後所有網站都不自動填，點欄位選帳號、快捷鍵照常能用</small></span>
+              <span class="form-field"><input type="checkbox" id="autoFill" class="switch" role="switch"></span>
+            </label>
+          </div>
+          <div class="sec-body">
+            <div class="section-head">
+              <h3 data-i18n="opt_sites_title">各網站</h3>
+              <span class="muted" data-i18n="opt_sites_hint">也可以在「密碼」分頁的詳細資料裡切換</span>
+            </div>
             <div id="siteMasterOff" class="help" data-i18n="opt_site_master_off">總開關關著，所有網站都不會自動填。</div>
             <div id="siteTools" class="toolbar">
               <input id="siteSearch" type="search" placeholder="搜尋網站" data-i18n-placeholder="opt_site_search_placeholder">
@@ -538,158 +868,251 @@
               <button id="siteApply" class="primary" disabled data-i18n="opt_apply">套用</button>
             </div>
             <div id="siteEmpty" class="help" data-i18n="opt_site_empty">還沒有存任何帳號。</div>
-            <h3 data-i18n="opt_never_title">永遠不詢問的網站</h3>
-            <div id="never" class="never"></div>
-            <div id="neverEmpty" class="help" data-i18n="opt_never_empty">目前沒有。在儲存提示上按「這個網站永遠不問」就會出現在這裡。</div>
-            <h3 data-i18n="opt_clip_title">複製密碼</h3>
-            <label class="inline"><span data-i18n="opt_clip_label">複製密碼後自動清除剪貼簿</span>
-              <select id="clipClear">
-                <option value="0" data-i18n="opt_clip_never">不清除</option>
-                <option value="30" data-i18n="opt_clip_30">30 秒後</option>
-                <option value="60" data-i18n="opt_clip_60">1 分鐘後</option>
-                <option value="120" data-i18n="opt_clip_120">2 分鐘後</option>
-              </select><span class="tip" data-i18n-tip="opt_clip_tip" data-tip="只在剪貼簿裡還是那組密碼時才清，之後你自己複製的東西不會動。
+          </div>
+          <div class="form">
+            <div class="form-row">
+              <div class="form-label"><span data-i18n="opt_never_title">永遠不詢問的網站</span><small data-i18n="opt_never_desc">在儲存提示按過「這個網站永遠不問」的網站</small></div>
+              <div class="form-field">
+                <div id="never" class="never"></div>
+                <span id="neverEmpty" class="muted" data-i18n="opt_never_none">目前沒有</span>
+              </div>
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="clipClear"><span data-i18n="opt_clip_label">複製密碼後自動清除剪貼簿</span><span class="tip" data-i18n-tip="opt_clip_tip" data-tip="只在剪貼簿裡還是那組密碼時才清，之後你自己複製的東西不會動。
 第一次選的時候，瀏覽器會問要不要給剪貼簿的權限。
-Windows 剪貼簿歷程（Win+V）裡的紀錄清不掉。">?</span>
-            </label>
+Windows 剪貼簿歷程（Win+V）裡的紀錄清不掉。">?</span></label>
+              <div class="form-field">
+                <select id="clipClear">
+                  <option value="0" data-i18n="opt_clip_never">不清除</option>
+                  <option value="30" data-i18n="opt_clip_30">30 秒後</option>
+                  <option value="60" data-i18n="opt_clip_60">1 分鐘後</option>
+                  <option value="120" data-i18n="opt_clip_120">2 分鐘後</option>
+                </select>
+              </div>
+            </div>
           </div>
         </details>
 
-        <details class="card" open>
-          <summary data-i18n="opt_block_click">自動點選</summary>
-          <div>
-            <div class="help"><span data-i18n="opt_click_help">開到指定的網頁時，自動幫你點按鈕。</span><span class="tip" data-i18n-tip="opt_click_tip" data-tip="同一頁有好幾條時照順序點，前一條點完才輪下一條。
-每條最多等 15 秒。">?</span></div>
-            <h3 data-i18n="opt_click_timing_title">時間設定</h3>
-            <div class="form">
-              <div class="form-row">
-                <label class="form-label" for="clickInterval" data-i18n="opt_click_interval_label">間隔預設值</label>
-                <div class="form-field">
-                  <input id="clickInterval" class="num" type="number" min="1" max="86400" step="1">
-                  <span data-i18n="opt_seconds_unit">秒</span>
-                  <span class="muted"><span data-i18n="opt_click_interval_help">點過之後，隔多久才能再點。</span><span class="tip" data-i18n-tip="opt_click_interval_tip" data-tip="每條規則可以自己填間隔，沒填的用這個。
+        <details class="card section" id="clickBlock" open>
+          <summary><span class="sec-title" data-i18n="opt_block_click">自動點選</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v2M4 9h2M5.5 5.5L7 7M12 9l8 3-3.5 1.5L15 17z"/></svg></span><span class="sec-sub" data-i18n="opt_click_help">開到指定的網頁時，自動幫你點按鈕。</span><span class="sec-action"><button id="ruleAdd" class="primary small" data-i18n="opt_add_button">＋ 新增</button></span></summary>
+          <div class="form">
+            <div class="form-row">
+              <label class="form-label" for="clickInterval" data-i18n="opt_click_interval_label">間隔預設值</label>
+              <div class="form-field">
+                <input id="clickInterval" class="num" type="number" min="1" max="86400" step="1">
+                <span data-i18n="opt_seconds_unit">秒</span>
+                <span class="muted"><span data-i18n="opt_click_interval_help">點過之後，隔多久才能再點。</span><span class="tip" data-i18n-tip="opt_click_interval_tip" data-tip="每條規則可以自己填間隔，沒填的用這個。
 「自動填完按登入」也用這個。
 時間到不會自己再點，要重新開頁面或跳頁才會再點。">?</span></span>
-                </div>
-              </div>
-              <div class="form-row">
-                <label class="form-label" for="logoutPause" data-i18n="opt_logout_pause_label">登出後暫停</label>
-                <div class="form-field">
-                  <input id="logoutPause" class="num" type="number" min="0" max="86400" step="1">
-                  <span data-i18n="opt_seconds_unit">秒</span>
-                  <span class="muted"><span data-i18n="opt_logout_pause_help">按了登出，隔多久才恢復自動點。</span><span class="tip" data-i18n-tip="opt_logout_pause_tip" data-tip="只影響按登出的那個分頁裡的同一個網站。
-填 0 不暫停。">?</span></span>
-                </div>
               </div>
             </div>
+            <div class="form-row">
+              <label class="form-label" for="logoutPause" data-i18n="opt_logout_pause_label">登出後暫停</label>
+              <div class="form-field">
+                <input id="logoutPause" class="num" type="number" min="0" max="86400" step="1">
+                <span data-i18n="opt_seconds_unit">秒</span>
+                <span class="muted"><span data-i18n="opt_logout_pause_help">按了登出，隔多久才恢復自動點。</span><span class="tip" data-i18n-tip="opt_logout_pause_tip" data-tip="只影響按登出的那個分頁裡的同一個網站。
+填 0 不暫停。">?</span></span>
+              </div>
+            </div>
+          </div>
+          <div class="sec-body">
             <div class="section-head">
-              <h3 data-i18n="opt_rule_sites_title">各網站</h3>
-              <button id="ruleAdd" class="primary small" data-i18n="opt_add_button">＋ 新增</button>
+              <h3><span data-i18n="opt_rule_sites_title">各網站</span><span class="tip" data-i18n-tip="opt_click_tip" data-tip="同一頁有好幾條時照順序點，前一條點完才輪下一條。
+每條最多等 15 秒。">?</span></h3>
             </div>
             <div id="ruleSites"></div>
             <div id="ruleEmpty" class="help" data-i18n="opt_rule_empty">還沒有規則。到要自動點的網頁按小視窗的「選要自動點的按鈕」，或按「＋ 新增」自己填。</div>
           </div>
         </details>
 
-        <details class="card">
-          <summary data-i18n="opt_block_danger">危險區</summary>
-          <div>
-            <div class="row">
-              <button id="deleteAll" class="danger" data-i18n="opt_delete_all">刪除全部密碼</button>
-              <span class="help"><span data-i18n="opt_delete_all_help_before">全部會先進回收桶，</span><span id="deleteAllDays">30</span> <span data-i18n="opt_delete_all_help_after">天內可以復原。</span></span>
-            </div>
+        <details class="card section danger-zone" id="dangerBlock">
+          <summary><span class="sec-title" data-i18n="opt_block_danger">危險區</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l9 16H3zM12 10v4M12 17h.01"/></svg></span><span class="sec-sub" data-i18n="opt_danger_sub">按錯會很麻煩的動作放在這裡</span></summary>
+          <div class="sec-body row wrap">
+            <span class="help grow"><span data-i18n="opt_delete_all_help_before">全部會先進回收桶，</span><span id="deleteAllDays">30</span> <span data-i18n="opt_delete_all_help_after">天內可以復原。</span></span>
+            <button id="deleteAll" class="danger" data-i18n="opt_delete_all">刪除全部密碼</button>
           </div>
         </details>
       </section>
 
-      <section id="tab-trash" class="tabpane" hidden>
-        <div class="card">
-          <h2 data-i18n="opt_trash_title">回收桶</h2>
-          <div class="row wrap">
-            <label class="inline"><span data-i18n="opt_trash_days_before">刪掉的帳號放在這裡</span> <input id="trashDays" class="num" type="number" min="1" max="365"> <span data-i18n="opt_trash_days_after">天，之後自動清掉</span></label>
-            <button id="trashDaysApply" class="small" disabled data-i18n="opt_apply">套用</button>
+      <section id="tab-trash" class="tabpane page" hidden>
+        <div class="page-head">
+          <div class="grow">
+            <h1><span data-i18n="opt_trash_title">回收桶</span> <span id="trashTotal" class="head-count"></span></h1>
+            <div class="page-sub" data-i18n="opt_trash_page_sub">刪掉的帳號先放在這裡，時間到自動清掉。清掉之前都還救得回來。</div>
           </div>
-          <div id="trashTools" class="toolbar" style="margin-top:10px">
+          <span class="head-field">
+            <label class="inline"><span data-i18n="opt_trash_days_before">保留</span> <input id="trashDays" class="num" type="number" min="1" max="365"> <span data-i18n="opt_trash_days_after">天</span></label>
+            <button id="trashDaysApply" class="small" disabled data-i18n="opt_apply">套用</button>
+          </span>
+          <button id="purgeAll" class="danger" data-i18n="opt_trash_purge_all">清空回收桶</button>
+        </div>
+        <div id="trashCard" class="card list-card">
+          <div id="trashTools" class="select-bar">
             <label class="inline"><input type="checkbox" id="trashCheckAll"> <span data-i18n="opt_select_all">全選</span></label>
-            <button id="trashRestoreSel" class="small" disabled data-i18n="opt_trash_restore_selected">還原勾選的</button>
+            <span class="push"></span>
+            <button id="trashRestoreSel" class="primary small" disabled data-i18n="opt_trash_restore_selected">還原勾選的</button>
             <button id="trashPurgeSel" class="small danger" disabled data-i18n="opt_trash_purge_selected">永久刪除勾選的</button>
           </div>
-          <div id="trashList" class="list" style="margin-top:10px"></div>
-          <div id="trashEmpty" class="muted" data-i18n="opt_trash_empty">回收桶是空的。</div>
-          <div class="row end" style="margin-top:8px">
-            <button id="purgeAll" class="danger" data-i18n="opt_trash_purge_all">清空回收桶</button>
+          <div id="trashList" class="list"></div>
+        </div>
+        <div id="trashEmpty" class="empty-state">
+          <span class="empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></span>
+          <div>
+            <div class="strong" data-i18n="opt_trash_empty">回收桶是空的。</div>
+            <div id="trashEmptySub" class="muted"></div>
           </div>
         </div>
       </section>
 
-      <section id="tab-help" class="tabpane" hidden>
-        <div class="card help-card">
-          <h2 data-i18n="opt_help_title">怎麼用</h2>
-          <ol>
-            <li data-i18n="opt_help_1">到任何網站登入一次，畫面右上角會問「要儲存這組密碼嗎？」。</li>
-            <li data-i18n="opt_help_2">下次再開同一個網站，帳號密碼會自動填好。存了多組帳號時，點帳號欄位會跳清單讓你選，上下鍵選、Enter 填。</li>
-            <li data-i18n="opt_help_3">按 Ctrl+Shift+L（Mac 是 Command+Shift+L）直接把目前網站的帳密填進去。快捷鍵可以在擴充功能管理頁的「鍵盤快速鍵」改。</li>
-            <li data-i18n="opt_help_4">工具列的藍色鎖頭圖示可以看目前網站存的帳號、手動填入、複製密碼、產生強密碼。小視窗最上面的搜尋框可以搜所有網站的帳號，Enter 直接開那個網站。</li>
-            <li data-i18n="opt_help_5">註冊或改密碼時，點新密碼欄會多一個「產生強密碼」，按下去新密碼和確認欄一起填好。</li>
-            <li data-i18n="opt_help_6">要自動按按鈕時，按小視窗的「選要自動點的按鈕」，在網頁上選那顆按鈕，之後開到那一頁就會自動點。也可以在「設定」分頁的「自動點選」手動新增和調整。</li>
-            <li data-i18n="opt_help_7">改過密碼的帳號，表格的密碼欄會有「舊密碼」可以展開。刪掉的帳號先進回收桶，預設放 30 天，天數可以在回收桶分頁改。</li>
-            <li data-i18n="opt_help_8">「設定」分頁的「工具鎖定」開啟後，整個工具都要先用這台電腦的系統驗證（Windows Hello、Touch ID）才能用；閒置、瀏覽器重開、小視窗按「鎖定」都會鎖上。</li>
-            <li data-i18n="opt_help_9">記得定期備份，或打開自動備份。移除擴充功能、清除瀏覽資料、或把資料夾搬走，密碼就會不見。</li>
-          </ol>
-          <div id="browserHint" class="help" style="margin-top:10px"></div>
+      <section id="tab-help" class="tabpane page" hidden>
+        <div class="page-head">
+          <div class="grow">
+            <h1 data-i18n="opt_tab_help">說明</h1>
+            <div class="page-sub" data-i18n="opt_help_page_sub">第一次用，先看下面九張卡片。遇到怪事看最下面的常見問題。</div>
+          </div>
+        </div>
+        <details class="card section bare" open>
+          <summary><span class="sec-title" data-i18n="opt_help_title">快速上手</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span></summary>
+          <div id="helpCards" class="tile-grid"></div>
+        </details>
+        <details class="card section" id="faqBlock" open>
+          <summary><span class="sec-title" data-i18n="opt_faq_title">常見問題</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-18 0a9 9 0 1 1 18 0zM9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg></span></summary>
+          <div id="faqList"></div>
+        </details>
+        <div class="note-line">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-18 0a9 9 0 1 1 18 0zM12 11v6M12 7.5h.01"/></svg>
+          <span id="browserHint"></span>
         </div>
       </section>
 
-      <section id="tab-versions" class="tabpane" hidden>
-        <details class="card" open>
-          <summary><span data-i18n="opt_update_title">檢查新版</span> <span id="updateSummary" class="muted"></span></summary>
-          <div>
-            <div id="updateBox" class="update-box">
-              <div class="update-head">
-                <div class="grow">
-                  <div id="updateState"></div>
-                  <div id="updateCheckedAt" class="muted"></div>
-                </div>
-                <button id="updateCheckNow" data-i18n="opt_update_check_now">立即檢查</button>
+      <section id="tab-versions" class="tabpane page" hidden>
+        <div class="page-head">
+          <div class="grow">
+            <h1 data-i18n="opt_tab_versions">版本</h1>
+            <div class="page-sub" data-i18n="opt_versions_page_sub">檢查有沒有新版，看每一版改了什麼。</div>
+          </div>
+        </div>
+        <details class="card section" open>
+          <summary><span class="sec-title" data-i18n="opt_update_title">檢查新版</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4"/></svg></span><span id="updateSummary" class="sec-state"></span></summary>
+          <div id="updateBox" class="update-box">
+            <div class="update-head">
+              <div class="grow">
+                <div class="update-version"><span id="updateCurrent"></span><span id="updateChannel" class="tag plain"></span></div>
+                <div id="updateState"></div>
+                <div id="updateCheckedAt" class="muted"></div>
               </div>
-              <div id="updateGet" class="update-get" hidden>
-                <div class="update-step">
-                  <span class="no">1</span>
-                  <div class="body">
+              <button id="updateCheckNow" data-i18n="opt_update_check_now">立即檢查</button>
+            </div>
+            <div id="updateGet" class="update-get" hidden>
+              <div class="update-step">
+                <span class="no">1</span>
+                <div class="body">
+                  <div class="strong" data-i18n="opt_update_step_download">下載新版</div>
+                  <div class="row wrap">
                     <button id="updateDownload" class="primary" hidden data-i18n="opt_update_download">下載新版</button>
                     <button id="updatePage" class="link" hidden data-i18n="opt_update_release_page">看這一版的說明</button>
                   </div>
                 </div>
-                <div class="update-step">
-                  <span class="no">2</span>
-                  <div class="body stack">
-                    <span id="updateSteps" hidden><span data-i18n="opt_update_steps">解壓縮後，到擴充功能管理頁按「載入解壓縮」選那個資料夾。</span><span class="tip" data-i18n-tip="opt_update_steps_tip" data-tip="存的密碼和設定都會留著。
+              </div>
+              <div class="update-step">
+                <span class="no">2</span>
+                <div class="body">
+                  <div class="strong" data-i18n="opt_update_step_load">載入新版</div>
+                  <span id="updateSteps" class="muted" hidden><span data-i18n="opt_update_steps">解壓縮後，到擴充功能管理頁按「載入解壓縮」選那個資料夾。</span><span class="tip" data-i18n-tip="opt_update_steps_tip" data-tip="存的密碼和設定都會留著。
 也可以解壓縮蓋掉原本的資料夾，再按這個工具卡片上的「重新載入」。">?</span></span>
-                    <span id="updateStepsFirefox" hidden><span data-i18n="opt_update_steps_firefox">到 about:debugging#/runtime/this-firefox 按「載入暫時附加元件」，選下載的 zip。</span><span class="tip" data-i18n-tip="opt_update_steps_firefox_tip" data-tip="不用解壓縮。
+                  <span id="updateStepsFirefox" class="muted" hidden><span data-i18n="opt_update_steps_firefox">到 about:debugging#/runtime/this-firefox 按「載入暫時附加元件」，選下載的 zip。</span><span class="tip" data-i18n-tip="opt_update_steps_firefox_tip" data-tip="不用解壓縮。
 存的密碼和設定都會留著。">?</span></span>
-                    <button id="updateExtensions" hidden data-i18n="opt_update_open_extensions">打開擴充功能管理頁</button>
-                  </div>
+                  <button id="updateExtensions" hidden data-i18n="opt_update_open_extensions">打開擴充功能管理頁</button>
                 </div>
               </div>
             </div>
-            <label id="updateAutoWrap" class="inline update-auto"><input type="checkbox" id="updateAuto"> <span data-i18n="opt_update_auto">每天自動檢查一次</span><span class="tip" data-i18n-tip="opt_update_auto_tip" data-tip="只會連到 GitHub 問最新的版本號，不會送出任何密碼、帳號或設定。
-瀏覽器不讓自己載入的擴充功能自己換成新版，所以有新版時只會在這裡和小視窗提醒，下載和載入要自己按。">?</span></label>
-            <div id="updateDev" class="help update-note" hidden><span data-i18n="opt_update_dev">開發版要按「立即檢查」才會檢查。</span><span class="tip" data-i18n-tip="opt_update_dev_tip" data-tip="直接載入原始碼資料夾的就是開發版。
-開發版請用 git 更新，不要用下載的 zip 蓋掉原始碼資料夾。">?</span></div>
-            <div id="updateFirefox" class="help update-note" hidden><span data-i18n="opt_update_firefox">暫時載入的 Firefox 版要按「立即檢查」才會檢查。</span><span class="tip" data-i18n-tip="opt_update_firefox_tip" data-tip="關掉 Firefox 就會移除，下次要再載入一次。">?</span></div>
           </div>
+          <div class="form">
+            <label id="updateAutoWrap" class="form-row switch-line update-auto">
+              <span class="form-label"><span data-i18n="opt_update_auto">每天自動檢查一次</span><span class="tip" data-i18n-tip="opt_update_auto_tip" data-tip="只會連到 GitHub 問最新的版本號，不會送出任何密碼、帳號或設定。
+瀏覽器不讓自己載入的擴充功能自己換成新版，所以有新版時只會在這裡和小視窗提醒，下載和載入要自己按。">?</span></span>
+              <span class="form-field"><input type="checkbox" id="updateAuto" class="switch" role="switch"></span>
+            </label>
+          </div>
+          <div id="updateDev" class="sec-foot muted update-note" hidden><span data-i18n="opt_update_dev">開發版要按「立即檢查」才會檢查。</span><span class="tip" data-i18n-tip="opt_update_dev_tip" data-tip="直接載入原始碼資料夾的就是開發版。
+開發版請用 git 更新，不要用下載的 zip 蓋掉原始碼資料夾。">?</span></div>
+          <div id="updateFirefox" class="sec-foot muted update-note" hidden><span data-i18n="opt_update_firefox">暫時載入的 Firefox 版要按「立即檢查」才會檢查。</span><span class="tip" data-i18n-tip="opt_update_firefox_tip" data-tip="關掉 Firefox 就會移除，下次要再載入一次。">?</span></div>
         </details>
 
-        <details class="card" open>
-          <summary data-i18n="opt_versions_title">版本功能歷程</summary>
-          <div>
+        <details class="card section" open>
+          <summary><span class="sec-title" data-i18n="opt_versions_title">版本功能歷程</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2"/></svg></span></summary>
+          <div class="sec-body">
             <div id="versionNow" class="help"></div>
-            <div id="versionList"></div>
+            <div id="versionList" class="timeline"></div>
+            <button id="versionMore" class="link small" hidden></button>
           </div>
+        </details>
+      </section>
+
+      <section id="tab-about" class="tabpane page" hidden>
+        <div class="about-hero">
+          <span class="about-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+          <div class="grow">
+            <h1 data-i18n="ext_name">密碼小管家</h1>
+            <div class="about-desc" data-i18n="ext_description">記住登入帳號密碼並自動填入，補回被鎖住的瀏覽器密碼管理功能。資料只存在這台電腦。</div>
+            <div id="aboutBadges" class="about-badges"></div>
+          </div>
+          <div class="about-actions">
+            <a id="aboutSource" class="about-btn primary" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6l-6 6 6 6M16 6l6 6-6 6"/></svg><span data-i18n="opt_about_github">在 GitHub 看原始碼</span></a>
+            <a id="aboutIssues" class="about-btn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H8l-4 4zM8 9h8M8 12h5"/></svg><span data-i18n="opt_about_issue">回報問題、提建議</span></a>
+          </div>
+        </div>
+
+        <details class="card section bare" open>
+          <summary><span class="sec-title" data-i18n="opt_about_data_title">你的資料</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4.4 0 8 1.3 8 3s-3.6 3-8 3-8-1.3-8-3 3.6-3 8-3zM4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></span></summary>
+          <div id="aboutFacts" class="tile-grid"></div>
+        </details>
+
+        <details class="card section bare" open>
+          <summary><span class="sec-title" data-i18n="opt_about_links_title">連結</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></span></summary>
+          <div id="aboutLinks" class="link-grid"></div>
+        </details>
+
+        <details class="card section" id="permBlock">
+          <summary><span class="sec-title" data-i18n="opt_about_perm_title">擴充功能要的權限</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/></svg></span><span class="sec-sub" data-i18n="opt_about_perm_sub">每一項為什麼需要、現在有沒有給</span></summary>
+          <div id="aboutPerms" class="perm-list"></div>
+        </details>
+
+        <details class="card section" open>
+          <summary><span class="sec-title" data-i18n="opt_about_credits_title">授權與致謝</span><span class="sec-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span></summary>
+          <div id="aboutCredits" class="credit-list"></div>
         </details>
       </section>
     </div>
   </div>
+  </div>
+
+  <dialog id="browserMove" class="help-card wide">
+    <h2 data-i18n="opt_move_title">和瀏覽器互搬密碼</h2>
+    <div class="help" data-i18n="opt_move_help">用 CSV 檔和瀏覽器內建的密碼來回搬，不會自動同步。搬完記得刪掉 CSV 檔，也清掉資源回收筒。</div>
+    <h3 data-i18n="opt_move_in_title">把瀏覽器的密碼搬進來</h3>
+    <ol>
+      <li><span data-i18n="opt_move_in_1a">開瀏覽器的密碼頁：Chrome 在網址列打</span> <code>chrome://password-manager/settings</code><span data-i18n="opt_move_in_1b">，Edge 打</span> <code>edge://settings/passwords</code><span data-i18n="opt_move_in_1c">，Firefox 打</span> <code>about:logins</code><span data-i18n="opt_move_in_1d">。</span></li>
+      <li data-i18n="opt_move_in_2">找「匯出密碼」，存成 CSV 檔。瀏覽器可能會先要你驗證 Windows 密碼或 PIN。</li>
+      <li data-i18n="opt_move_in_3">回到這裡按上面 CSV 檔的「匯入」，選那個檔。Chrome、Edge、Firefox、Safari 匯出的檔案都看得懂。</li>
+    </ol>
+    <h3 data-i18n="opt_move_out_title">把這裡的密碼搬回瀏覽器</h3>
+    <ol>
+      <li data-i18n="opt_move_out_1">按上面 CSV 檔的「匯出」存檔。超過 3000 筆會分成幾個檔，因為 Chrome、Edge 一次最多收 3000 筆。</li>
+      <li data-i18n="opt_move_out_2">開瀏覽器的密碼頁（網址同上），找「匯入密碼」，選剛剛存的檔。</li>
+      <li data-i18n="opt_move_out_3">瀏覽器裡已經有同網站同帳號、密碼卻不一樣的，新版 Chrome 會列出來讓你選要不要換掉；沒問的話，瀏覽器會保留它原本的那組。</li>
+    </ol>
+    <h3 data-i18n="opt_move_what_title">來回搬時會怎樣</h3>
+    <ul>
+      <li data-i18n="opt_move_what_1">同網站同帳號會合併，不會多出一筆。密碼不一樣的換成檔案裡的，原本的留在「舊密碼」裡。</li>
+      <li data-i18n="opt_move_what_2">檔案裡的密碼如果是這裡已經換掉的舊密碼，會保留這裡的，不會蓋回去。</li>
+      <li data-i18n="opt_move_what_3">檔案裡沒有備註的，不會把這裡寫的備註清掉。</li>
+      <li><span data-i18n="opt_move_what_4a">手機 App 的密碼（</span><code>android://</code> <span data-i18n="opt_move_what_4b">開頭）和其他不是網站的項目不會匯入，會算在「略過」裡。</span></li>
+      <li data-i18n="opt_move_what_5">公司關掉瀏覽器的密碼管理時，瀏覽器那邊可能找不到匯出、匯入。</li>
+    </ul>
+    <div class="row end"><button id="moveClose" class="primary" data-i18n="opt_got_it">知道了</button></div>
+  </dialog>
 
   <dialog id="dialog">
     <h2 id="dialogTitle" data-i18n="opt_dialog_add_title">新增密碼</h2>
@@ -750,7 +1173,6 @@ Windows 剪貼簿歷程（Win+V）裡的紀錄清不掉。">?</span>
   </dialog>
 
   <div id="toast" class="toast"></div>
-  <script src="../shared/platform.js"></script>
   <script src="../shared/i18n.js"></script>
   <script src="../shared/domain.js"></script>
   <script src="../shared/page.js"></script>

@@ -3,179 +3,235 @@
 <head>
   <meta charset="utf-8">
   <title data-i18n="ext_name">密碼小管家</title>
+  <script src="../shared/platform.js"></script>
+  <script src="../shared/theme.js"></script>
   <link rel="stylesheet" href="../shared/ui.css">
   <style>
-    body { width: 360px; }
-    .body { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
-    .footer { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-top: 1px solid var(--border); background: #fff; }
-    #lockNow { display: inline-flex; align-items: center; gap: 4px; }
-    #addForm, #genPanel { display: none; }
-    #addForm.show, #genPanel.show { display: block; }
-    #main { display: flex; flex-direction: column; gap: 10px; }
-    .warn { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; border-radius: 8px; padding: 8px 10px; font-size: 12px; cursor: pointer; }
-    .warn:hover { background: #fde68a; }
-    .info { background: #dcfce7; border: 1px solid #86efac; color: #166534; border-radius: 8px; padding: 8px 10px; font-size: 12px; cursor: pointer; }
-    .info:hover { background: #bbf7d0; }
+    /* 瀏覽器的小視窗最高大約 600px：頁首和底部分頁固定，中間那塊自己捲 */
+    body { width: 360px; min-height: 460px; max-height: 600px; display: flex; flex-direction: column; }
+    .top { flex: none; display: flex; flex-direction: column; align-items: stretch; gap: 10px; padding: 12px 14px 10px; }
+    .top .row { gap: 8px; }
+    .top h1 { flex: 1; }
+    #lockNow { display: inline-flex; align-items: center; gap: 6px; height: 30px; }
+    .search { display: flex; align-items: center; gap: 8px; height: 36px; margin: 0; padding: 0 10px; border: 1px solid var(--chrome-field); border-radius: 9px; background: var(--chrome-field); color: var(--chrome-muted); cursor: text; }
+    .search:focus-within { border-color: var(--logo-bg); }
+    .search input[type="search"] { flex: 1; min-width: 0; padding: 0; border: 0; background: transparent; color: var(--chrome-text); font-size: 13px; }
+    .search input::placeholder { color: var(--chrome-muted); }
+    .body { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
+    .pad { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+    #main, .pane { display: flex; flex-direction: column; }
+    .bars { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px 0; }
+    .bars:not(:has(> :not([hidden]))) { display: none; }
+    .warn { background: var(--warn-bg); border: 1px solid var(--warn-border); color: var(--warn-text); border-radius: 8px; padding: 8px 10px; font-size: 12px; cursor: pointer; }
+    .warn:hover { background: var(--warn-hover); }
+    .info { background: var(--ok-bg); border: 1px solid var(--ok-border); color: var(--ok-text); border-radius: 8px; padding: 8px 10px; font-size: 12px; cursor: pointer; }
+    .info:hover { background: var(--ok-hover); }
+    /* 沒有錯誤時不佔位置，不然搜尋框和帳號之間會空一大塊 */
+    #status:empty { display: none; }
+    #status { padding: 0 14px; }
+    .site-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px 6px; }
+    .site-chip { display: inline-flex; align-items: center; gap: 6px; min-width: 0; height: 26px; padding: 0 10px; border-radius: 999px; background: var(--primary-soft); color: var(--primary-soft-text); font-size: 12px; font-weight: 600; }
+    .site-chip svg { flex: none; }
+    .site-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* 網站名稱很長時只截網站名稱，帳號數量不要被擠成兩行 */
+    .site-head #count { flex: none; white-space: nowrap; }
+    /* 帳號一列一列接在一起，不是一張張卡片 */
+    .rows { display: flex; flex-direction: column; background: var(--card); border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider); }
+    .rows:empty { display: none; }
+    .rows .entry { gap: 10px; padding: 8px 14px; border: 0; border-radius: 0; background: transparent; }
+    .rows .entry + .entry { border-top: 1px solid var(--divider); }
+    .rows .entry button { height: 30px; }
+    .rows .empty { padding: 14px; }
+    #searchList { padding: 12px 0; }
+    #searchList > .empty { background: transparent; }
+    .add-row { margin: 0; height: 40px; padding: 0 14px; border: 0; border-bottom: 1px solid var(--divider); border-radius: 0; background: var(--card); color: var(--link); font-weight: 600; text-align: left; }
+    .add-row:hover { background: var(--hover); }
+    #addForm { margin: 10px 14px 0; }
+    .section-title { padding: 14px 14px 6px; font-size: 12px; font-weight: 700; color: var(--muted); }
+    .site-opts { padding: 0 14px; background: var(--card); border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider); }
+    .site-opts .switch-row .muted { margin-left: 4px; }
+    .pick-label { display: flex; align-items: center; gap: 4px; min-width: 0; }
+    #genPanel { margin: 12px 14px; }
     .gen-mode { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-bottom: 8px; }
     .gen-mode input { margin: 0; }
     .gen-out { display: flex; gap: 6px; align-items: center; }
+    .gen-out input { font-family: Consolas, "Courier New", monospace; font-size: 13px; }
     /* 最近產生的：收起時只佔標題一行 */
-    .gen-history { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); }
+    .gen-history { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--divider); }
     .gen-history > summary { cursor: pointer; font-size: 12px; font-weight: 600; color: var(--muted); }
     .gen-history .list { margin-top: 6px; }
     .gen-history .entry { padding: 6px 8px; }
     .gen-history .gen-pw { flex: 1; min-width: 0; font-family: Consolas, "Courier New", monospace; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .gen-history .when { display: block; font-family: inherit; font-size: 11px; color: var(--muted); white-space: normal; }
-    .gen-out input { font-family: Consolas, "Courier New", monospace; font-size: 13px; }
     .opts { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 8px; }
-    .num { width: 58px; padding: 4px 6px; font: inherit; border: 1px solid var(--border); border-radius: 6px; }
+    .num { width: 58px; }
     /* 日文的「セキュリティキーまたはスマートフォン」比較長，要讓按鈕可以換行 */
     #helloBtn { width: 100%; padding: 9px; white-space: normal; }
-    /* 沒有錯誤時不佔位置，不然搜尋框和帳號之間會空一大塊 */
-    #status:empty { display: none; }
-    .site-opts { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; border-top: 1px solid var(--border); }
-    .site-opts .title { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .tabbar { flex: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); height: 58px; background: var(--card); border-top: 1px solid var(--border); }
+    .tabbar button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 0 4px; border: 0; border-radius: 0; background: transparent; color: var(--muted); font-size: 11px; white-space: normal; line-height: 1.2; text-align: center; }
+    .tabbar button:hover { background: var(--hover); color: var(--text); }
+    .tabbar button[aria-current="page"] { color: var(--link); font-weight: 700; }
   </style>
 </head>
 <body>
-  <div class="header">
-    <img src="../../icons/icon32.png" alt="">
-    <div class="grow">
+  <div class="header top">
+    <div class="row">
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
       <h1 data-i18n="ext_name">密碼小管家</h1>
-      <div id="site" class="site"></div>
+      <button id="lockNow" class="small" hidden title="馬上鎖定，要驗證才能再用" data-i18n-title="pop_lock_now_title">
+        <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3" y="7" width="10" height="7.5" rx="1.5" fill="currentColor"/><path d="M5.25 7V5a2.75 2.75 0 0 1 5.5 0v2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span data-i18n="pop_lock_now">鎖定</span>
+      </button>
     </div>
-    <button id="lockNow" class="small" hidden title="馬上鎖定，要驗證才能再用" data-i18n-title="pop_lock_now_title">
-      <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3" y="7" width="10" height="7.5" rx="1.5" fill="currentColor"/><path d="M5.25 7V5a2.75 2.75 0 0 1 5.5 0v2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span data-i18n="pop_lock_now">鎖定</span>
-    </button>
+    <label class="search">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="search" type="search" placeholder="搜尋所有網站的帳號，Enter 開啟網站" data-i18n-placeholder="pop_search_placeholder" aria-label="搜尋所有網站的帳號，Enter 開啟網站" data-i18n-aria-label="pop_search_placeholder" autocomplete="off">
+    </label>
   </div>
 
   <div class="body">
-    <input id="search" type="search" placeholder="搜尋所有網站的帳號，Enter 開啟網站" data-i18n-placeholder="pop_search_placeholder" autocomplete="off">
-    <div id="searchList" class="list" hidden></div>
+    <div id="searchList" class="rows" hidden></div>
 
-    <div id="privateScreen" class="card" hidden>
-      <span data-i18n="pop_private_blocked">私密視窗不能用密碼小管家。</span><span class="tip" data-i18n-tip="pop_private_blocked_tip" data-tip="Firefox 的附加元件規定不能儲存私密瀏覽的資料，所以私密視窗不會自動填入，也不會問要不要儲存。">?</span>
+    <div id="privateScreen" class="pad" hidden>
+      <div class="card"><span data-i18n="pop_private_blocked">私密視窗不能用密碼小管家。</span><span class="tip" data-i18n-tip="pop_private_blocked_tip" data-tip="Firefox 的附加元件規定不能儲存私密瀏覽的資料，所以私密視窗不會自動填入，也不會問要不要儲存。">?</span></div>
     </div>
 
-    <div id="lockScreen" class="card" hidden>
-      <h2 data-i18n="pop_locked_title">已鎖定</h2>
-      <div class="muted" data-i18n="pop_locked_hint">驗證過才能自動填入和看密碼。</div>
-      <div style="margin-top:10px"><button id="helloBtn" class="primary"></button></div>
+    <div id="lockScreen" class="pad" hidden>
+      <div class="card">
+        <h2 data-i18n="pop_locked_title">已鎖定</h2>
+        <div class="muted" data-i18n="pop_locked_hint">驗證過才能自動填入和看密碼。</div>
+        <div style="margin-top:10px"><button id="helloBtn" class="primary"></button></div>
+      </div>
     </div>
 
     <div id="main">
-      <div id="accessBar" class="warn" hidden></div>
-      <div id="updateBar" class="info" hidden></div>
-      <div id="backupBar" class="warn" hidden></div>
-      <div id="status" class="error"></div>
-      <div id="list" class="list"></div>
-
-      <div id="addForm" class="card">
-        <h2 data-i18n="pop_add_title">新增這個網站的帳號</h2>
-        <label for="addUser" data-i18n="pop_username">帳號</label>
-        <input id="addUser" type="text" autocomplete="off">
-        <label for="addPass" data-i18n="pop_password">密碼</label>
-        <div class="pw">
-          <input id="addPass" type="password" autocomplete="off">
-          <button type="button" id="addEye" data-i18n="pop_show">顯示</button>
+      <section id="paneSite" class="pane">
+        <div class="bars">
+          <div id="accessBar" class="warn" hidden></div>
+          <div id="updateBar" class="info" hidden></div>
+          <div id="backupBar" class="warn" hidden></div>
         </div>
-        <div id="addError" class="error"></div>
-        <div class="row end">
-          <button id="addCancel" data-i18n="pop_cancel">取消</button>
-          <button id="addSave" class="primary" data-i18n="pop_save">儲存</button>
+        <div class="site-head">
+          <span class="site-chip"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/></svg><span id="site"></span></span>
+          <span id="count" class="muted"></span>
         </div>
-      </div>
+        <div id="status" class="error"></div>
+        <div id="list" class="rows"></div>
+        <button id="addBtn" class="add-row" data-i18n="pop_add_account">＋ 新增帳號</button>
 
-      <div id="genPanel" class="card">
-        <h2 data-i18n="pop_generate">產生密碼</h2>
-        <div class="gen-mode">
-          <label class="inline"><input type="radio" name="genMode" id="genModeChars" value="chars"> <span data-i18n="pop_gen_mode_chars">隨機字元</span></label>
-          <label class="inline"><input type="radio" name="genMode" id="genModeWords" value="words"> <span data-i18n="pop_gen_mode_words">好記的密碼</span></label>
-          <span class="tip" data-i18n-tip="pop_gen_mode_tip" data-tip="好記的密碼是用幾個英文單字串起來的密碼，比亂碼好記、好打。
+        <div id="addForm" class="card" hidden>
+          <h2 data-i18n="pop_add_title">新增這個網站的帳號</h2>
+          <label for="addUser" data-i18n="pop_username">帳號</label>
+          <input id="addUser" type="text" autocomplete="off">
+          <label for="addPass" data-i18n="pop_password">密碼</label>
+          <div class="pw">
+            <input id="addPass" type="password" autocomplete="off">
+            <button type="button" id="addEye" data-i18n="pop_show">顯示</button>
+          </div>
+          <div id="addError" class="error"></div>
+          <div class="row end">
+            <button id="addCancel" data-i18n="pop_cancel">取消</button>
+            <button id="addSave" class="primary" data-i18n="pop_save">儲存</button>
+          </div>
+        </div>
+
+        <div class="section-title" data-i18n="pop_this_site">這個網站</div>
+        <div class="site-opts">
+          <label class="switch-row" id="autoFillWrap" hidden title="打開登入頁時自動把帳密填好" data-i18n-title="pop_autofill_title">
+            <span><span data-i18n="pop_autofill">自動填入</span><span id="autoFillOff" class="muted" hidden data-i18n="pop_autofill_master_off">（總開關關著）</span></span>
+            <input type="checkbox" id="autoFill" class="switch" role="switch">
+          </label>
+          <label class="switch-row" id="autoSubmitWrap" hidden>
+            <span><span data-i18n="pop_autosubmit">自動填完就按登入</span><span class="tip" data-tip="只在自動填入成功、而且頁面上只有一個登入表單時才會按" data-i18n-tip="pop_autosubmit_tip">?</span></span>
+            <input type="checkbox" id="autoSubmit" class="switch" role="switch">
+          </label>
+          <div class="switch-row">
+            <span class="pick-label"><span data-i18n="pop_pick">選要自動點的按鈕</span><button id="pickCount" class="link small" hidden title="到管理頁看自動點選" data-i18n-title="pop_pick_count_title"></button></span>
+            <button id="pickBtn" class="small" title="之後開到這一頁，就自動點你選的按鈕" data-i18n-title="pop_pick_title" data-i18n="pop_pick_start">開始選</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="paneGen" class="pane" hidden>
+        <div id="genPanel" class="card">
+          <h2 data-i18n="pop_generate">產生密碼</h2>
+          <div class="gen-mode">
+            <label class="inline"><input type="radio" name="genMode" id="genModeChars" value="chars"> <span data-i18n="pop_gen_mode_chars">隨機字元</span></label>
+            <label class="inline"><input type="radio" name="genMode" id="genModeWords" value="words"> <span data-i18n="pop_gen_mode_words">好記的密碼</span></label>
+            <span class="tip" data-i18n-tip="pop_gen_mode_tip" data-tip="好記的密碼是用幾個英文單字串起來的密碼，比亂碼好記、好打。
 有些網站限制密碼長度或字元，不被接受時切回隨機字元。">?</span>
-        </div>
-        <div class="gen-out">
-          <input id="genOut" type="text" readonly>
-          <button id="genAgain" class="small" title="重新產生一組" data-i18n-title="pop_regen_title" data-i18n="pop_regen">重產</button>
-        </div>
-        <div id="genChars">
-          <div class="opts">
-            <label class="inline"><span data-i18n="pop_gen_length">字數</span>
-              <input id="genMin" class="num" type="number" min="4" max="128"> <span data-i18n="pop_gen_to">到</span>
-              <input id="genMax" class="num" type="number" min="4" max="128">
-            </label>
           </div>
-          <div class="opts">
-            <label class="inline"><input type="checkbox" id="genUpper"> <span data-i18n="pop_gen_upper">大寫</span></label>
-            <label class="inline"><input type="checkbox" id="genLower"> <span data-i18n="pop_gen_lower">小寫</span></label>
-            <label class="inline"><input type="checkbox" id="genDigits"> <span data-i18n="pop_gen_digits">數字</span></label>
-            <label class="inline"><input type="checkbox" id="genSymbols"> <span data-i18n="pop_gen_symbols">特殊符號</span></label>
+          <div class="gen-out">
+            <input id="genOut" type="text" readonly aria-label="產生的密碼" data-i18n-aria-label="pop_gen_output">
+            <button id="genAgain" class="small" title="重新產生一組" data-i18n-title="pop_regen_title" data-i18n="pop_regen">重產</button>
           </div>
-          <label for="genSymbolSet" data-i18n="pop_gen_symbol_set">允許的特殊符號</label>
-          <input id="genSymbolSet" type="text" autocomplete="off" spellcheck="false">
-        </div>
-        <div id="genWords" hidden>
-          <div class="opts">
-            <label class="inline"><span data-i18n="pop_gen_word_count">單字數</span>
-              <input id="genWordCount" class="num" type="number" min="3" max="20">
-            </label>
-            <label class="inline"><span data-i18n="pop_gen_separator">分隔符號</span>
-              <select id="genSeparator">
-                <option value="-">-</option>
-                <option value=".">.</option>
-                <option value="_">_</option>
-                <option value=" " data-i18n="pop_gen_separator_space">空白</option>
-              </select>
-            </label>
+          <div id="genChars">
+            <div class="opts">
+              <label class="inline"><span data-i18n="pop_gen_length">字數</span>
+                <input id="genMin" class="num" type="number" min="4" max="128"> <span data-i18n="pop_gen_to">到</span>
+                <input id="genMax" class="num" type="number" min="4" max="128">
+              </label>
+            </div>
+            <div class="opts">
+              <label class="inline"><input type="checkbox" id="genUpper"> <span data-i18n="pop_gen_upper">大寫</span></label>
+              <label class="inline"><input type="checkbox" id="genLower"> <span data-i18n="pop_gen_lower">小寫</span></label>
+              <label class="inline"><input type="checkbox" id="genDigits"> <span data-i18n="pop_gen_digits">數字</span></label>
+              <label class="inline"><input type="checkbox" id="genSymbols"> <span data-i18n="pop_gen_symbols">特殊符號</span></label>
+            </div>
+            <label for="genSymbolSet" data-i18n="pop_gen_symbol_set">允許的特殊符號</label>
+            <input id="genSymbolSet" type="text" autocomplete="off" spellcheck="false">
           </div>
-          <div class="opts">
-            <label class="inline"><input type="checkbox" id="genCapitalize"> <span data-i18n="pop_gen_capitalize">字首大寫</span></label>
-            <label class="inline"><input type="checkbox" id="genAddNumber"> <span data-i18n="pop_gen_add_number">加一個數字</span></label>
+          <div id="genWords" hidden>
+            <div class="opts">
+              <label class="inline"><span data-i18n="pop_gen_word_count">單字數</span>
+                <input id="genWordCount" class="num" type="number" min="3" max="20">
+              </label>
+              <label class="inline"><span data-i18n="pop_gen_separator">分隔符號</span>
+                <select id="genSeparator">
+                  <option value="-">-</option>
+                  <option value=".">.</option>
+                  <option value="_">_</option>
+                  <option value=" " data-i18n="pop_gen_separator_space">空白</option>
+                </select>
+              </label>
+            </div>
+            <div class="opts">
+              <label class="inline"><input type="checkbox" id="genCapitalize"> <span data-i18n="pop_gen_capitalize">字首大寫</span></label>
+              <label class="inline"><input type="checkbox" id="genAddNumber"> <span data-i18n="pop_gen_add_number">加一個數字</span></label>
+            </div>
           </div>
-        </div>
-        <div id="genError" class="error"></div>
-        <div class="row end">
-          <button id="genClose" data-i18n="pop_gen_close">收起</button>
-          <button id="genCopy" data-i18n="pop_copy">複製</button>
-          <button id="genFill" class="primary" data-i18n="pop_gen_fill">填入頁面</button>
-        </div>
-        <details id="genHistory" class="gen-history" hidden>
-          <summary><span data-i18n="pop_gen_history">最近產生的</span> <span id="genHistoryCount" class="muted"></span><span class="tip" data-i18n-tip="pop_gen_history_tip" data-tip="網頁上的「產生強密碼」，和這裡按「複製」「填入頁面」的密碼會留在這裡，最多 20 組。
+          <div id="genError" class="error"></div>
+          <div class="row end">
+            <button id="genCopy" data-i18n="pop_copy">複製</button>
+            <button id="genFill" class="primary" data-i18n="pop_gen_fill">填入頁面</button>
+          </div>
+          <details id="genHistory" class="gen-history" hidden>
+            <summary><span data-i18n="pop_gen_history">最近產生的</span> <span id="genHistoryCount" class="muted"></span><span class="tip" data-i18n-tip="pop_gen_history_tip" data-tip="網頁上的「產生強密碼」，和這裡按「複製」「填入頁面」的密碼會留在這裡，最多 20 組。
 網站沒存成功時，可以從這裡拿回來。
 不會放進備份檔。">?</span></summary>
-          <div id="genHistoryList" class="list"></div>
-          <div class="row end"><button id="genHistoryClear" class="link small danger" data-i18n="pop_gen_history_clear">全部清除</button></div>
-        </details>
-      </div>
-
-      <div class="row">
-        <button id="addBtn" class="small" data-i18n="pop_add_account">＋ 新增帳號</button>
-        <button id="genBtn" class="small" data-i18n="pop_generate">產生密碼</button>
-      </div>
-      <div class="site-opts">
-        <div class="title" data-i18n="pop_this_site">這個網站</div>
-        <label class="inline" id="autoFillWrap" hidden title="打開登入頁時自動把帳密填好" data-i18n-title="pop_autofill_title">
-          <input type="checkbox" id="autoFill"> <span data-i18n="pop_autofill">自動填入</span>
-          <span id="autoFillOff" class="muted" hidden data-i18n="pop_autofill_master_off">（總開關關著）</span>
-        </label>
-        <label class="inline" id="autoSubmitWrap" hidden>
-          <input type="checkbox" id="autoSubmit"> <span data-i18n="pop_autosubmit">自動填完就按登入</span><span class="tip" data-tip="只在自動填入成功、而且頁面上只有一個登入表單時才會按" data-i18n-tip="pop_autosubmit_tip">?</span>
-        </label>
-        <div class="row">
-          <button id="pickBtn" class="small" title="之後開到這一頁，就自動點你選的按鈕" data-i18n-title="pop_pick_title" data-i18n="pop_pick">選要自動點的按鈕</button>
-          <button id="pickCount" class="link small" hidden title="到管理頁看自動點選" data-i18n-title="pop_pick_count_title"></button>
+            <div id="genHistoryList" class="list"></div>
+            <div class="row end"><button id="genHistoryClear" class="link small danger" data-i18n="pop_gen_history_clear">全部清除</button></div>
+          </details>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 
-  <div class="footer">
-    <button id="manage" class="link" data-i18n="pop_manage">管理所有密碼</button>
-    <span id="count" class="muted"></span>
-  </div>
+  <nav id="tabbar" class="tabbar" aria-label="小視窗分頁" data-i18n-aria-label="pop_tabs_label">
+    <button id="siteTab" aria-current="page">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg>
+      <span data-i18n="pop_this_site">這個網站</span>
+    </button>
+    <button id="genBtn">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2L20 3m-3 3l3 3m-6 0l2 2"/></svg>
+      <span data-i18n="pop_generate">產生密碼</span>
+    </button>
+    <button id="manage">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg>
+      <span data-i18n="pop_manage">管理所有密碼</span>
+    </button>
+  </nav>
 
   <div id="toast" class="toast"></div>
-  <script src="../shared/platform.js"></script>
   <script src="../shared/i18n.js"></script>
   <script src="../shared/page.js"></script>
   <script src="../shared/webauthn-client.js"></script>

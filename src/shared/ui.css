@@ -1,13 +1,160 @@
-/* popup.html 和 options.html 共用的樣式 */
-:root {
-  --bg: #f9fafb;
-  --card: #fff;
-  --border: #e5e7eb;
-  --text: #111827;
-  --muted: #6b7280;
-  --primary: #2563eb;
-  --danger: #dc2626;
+/* popup.html、options.html、unlock.html 共用的樣式 */
+
+/* 三套色系。theme.js 會把 <html data-theme> 設成 white、dark 或 teal，跟著系統時也是換成其中一套。
+   沒設（theme.js 還沒跑）時用青綠。顏色一律用這裡的變數，不要在別的地方寫死，換色系時才會跟著換。
+   test/unit/theme.test.js 會檢查三套的變數一樣多，文字和底色的對比夠不夠。 */
+:root,
+:root[data-theme="teal"] {
+  color-scheme: light;
+  --bg: #F7FAF9;
+  --card: #FFFFFF;
+  --card-alt: #F2F6F5;
+  --hover: #EAF3F1;
+  --border: #DDE7E5;
+  --border-strong: #B9C9C5;
+  --divider: #EEF3F2;
+  --text: #10201E;
+  --muted: #51625F;
+  --primary: #0B7A6E;
+  --primary-hover: #08685E;
+  --on-primary: #FFFFFF;
+  --primary-soft: #E3F3F0;
+  --primary-soft-text: #075A51;
+  --link: #075A51;
+  --selected: #E3F3F0;
+  --chrome-bg: #0F2A2E;
+  --chrome-text: #E9F3F1;
+  --chrome-muted: #A9C9C4;
+  --chrome-field: #183A3E;
+  --chrome-border: #2D4E52;
+  --chrome-hover: #173B3F;
+  --chrome-active: #1D4A4D;
+  --chrome-active-text: #FFFFFF;
+  --logo-bg: #19C2AD;
+  --logo-fg: #0F2A2E;
+  --warn-bg: #FFF1DC;
+  --warn-border: #F0D2A4;
+  --warn-hover: #FFE7C4;
+  --warn-text: #7A4500;
+  --ok-bg: #E3F5EA;
+  --ok-border: #9FD9B4;
+  --ok-hover: #CDEEDA;
+  --ok-text: #166534;
+  --danger: #A32A1E;
+  --danger-bg: #FDECEA;
+  --danger-border: #F1C9C4;
+  --switch-off: #7D9893;
+  --knob: #FFFFFF;
+  --knob-on: #FFFFFF;
+  --tip-bg: #10201E;
+  --tip-text: #FFFFFF;
+  --tip-border: #10201E;
+  --shadow: rgba(15, 42, 46, 0.18);
+  --backdrop: rgba(15, 42, 46, 0.35);
+  --scroll-thumb: #C2D0CD;
+  --scroll-thumb-hover: #9AAEAA;
 }
+:root[data-theme="white"] {
+  color-scheme: light;
+  --bg: #F5F7FA;
+  --card: #FFFFFF;
+  --card-alt: #F3F5F8;
+  --hover: #EEF2F7;
+  --border: #E4E8EE;
+  --border-strong: #C3CBD6;
+  --divider: #EEF1F5;
+  --text: #18202B;
+  --muted: #5B6675;
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  --on-primary: #FFFFFF;
+  --primary-soft: #E8F0FE;
+  --primary-soft-text: #1D4ED8;
+  --link: #1D4ED8;
+  --selected: #EAF1FE;
+  --chrome-bg: #FFFFFF;
+  --chrome-text: #18202B;
+  --chrome-muted: #5B6675;
+  --chrome-field: #F1F4F8;
+  --chrome-border: #E4E8EE;
+  --chrome-hover: #F1F4F8;
+  --chrome-active: #E8F0FE;
+  --chrome-active-text: #1D4ED8;
+  --logo-bg: #2563EB;
+  --logo-fg: #FFFFFF;
+  --warn-bg: #FFF4E0;
+  --warn-border: #F3D49A;
+  --warn-hover: #FFEAC2;
+  --warn-text: #7A4500;
+  --ok-bg: #E7F7EC;
+  --ok-border: #9AD9AE;
+  --ok-hover: #D2F0DC;
+  --ok-text: #166534;
+  --danger: #B42318;
+  --danger-bg: #FEF1F0;
+  --danger-border: #F3C7C2;
+  --switch-off: #8A94A3;
+  --knob: #FFFFFF;
+  --knob-on: #FFFFFF;
+  --tip-bg: #18202B;
+  --tip-text: #FFFFFF;
+  --tip-border: #18202B;
+  --shadow: rgba(24, 32, 43, 0.14);
+  --backdrop: rgba(24, 32, 43, 0.3);
+  --scroll-thumb: #C4CAD3;
+  --scroll-thumb-hover: #9CA5B1;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0E1116;
+  --card: #161B22;
+  --card-alt: #1C222B;
+  --hover: #222A34;
+  --border: #2A323D;
+  --border-strong: #3E4855;
+  --divider: #222A34;
+  --text: #E6EDF3;
+  --muted: #9AA7B4;
+  --primary: #A99BFF;
+  --primary-hover: #BBAFFF;
+  --on-primary: #15112E;
+  --primary-soft: #2A2550;
+  --primary-soft-text: #D9D2FF;
+  --link: #C9C0FF;
+  --selected: #241F44;
+  --chrome-bg: #0B0E13;
+  --chrome-text: #E6EDF3;
+  --chrome-muted: #9AA7B4;
+  --chrome-field: #1F2630;
+  --chrome-border: #2A323D;
+  --chrome-hover: #1A1F27;
+  --chrome-active: #2A2550;
+  --chrome-active-text: #E9E5FF;
+  --logo-bg: #A99BFF;
+  --logo-fg: #15112E;
+  --warn-bg: #3A2A12;
+  --warn-border: #6B4D1E;
+  --warn-hover: #4A3618;
+  --warn-text: #F5C77E;
+  --ok-bg: #12301F;
+  --ok-border: #2C6B45;
+  --ok-hover: #183D28;
+  --ok-text: #8EE0AE;
+  --danger: #FF9B8F;
+  --danger-bg: #3A1715;
+  --danger-border: #5A2A27;
+  --switch-off: #67727F;
+  --knob: #E6EDF3;
+  --knob-on: #15112E;
+  --tip-bg: #2A323D;
+  --tip-text: #E6EDF3;
+  --tip-border: #3E4855;
+  --shadow: rgba(0, 0, 0, 0.5);
+  --backdrop: rgba(0, 0, 0, 0.55);
+  --scroll-thumb: #3E4855;
+  --scroll-thumb-hover: #55606E;
+}
+
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -24,47 +171,85 @@ html:lang(ko) body { font-family: -apple-system, "Segoe UI", "Malgun Gothic", "A
 html:lang(th) body { font-family: -apple-system, "Segoe UI", "Leelawadee UI", Thonburi, "Noto Sans Thai", sans-serif; }
 h1 { font-size: 18px; margin: 0; }
 h2 { font-size: 15px; margin: 0 0 10px; }
-.header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #fff; border-bottom: 1px solid var(--border); }
-.header img { width: 24px; height: 24px; }
-.header .grow { flex: 1; }
+
+/* 小視窗、解鎖視窗的頁首。青綠是深色底，白色、深色跟著各自的底色 */
+.header { display: flex; align-items: center; gap: 8px; padding: 12px 14px; background: var(--chrome-bg); color: var(--chrome-text); border-bottom: 1px solid var(--chrome-border); }
+.header h1 { font-size: 14px; font-weight: 700; }
+.header .grow { flex: 1; min-width: 0; }
+.header .site, .header .muted { color: var(--chrome-muted); }
+.header button { border-color: var(--chrome-border); background: transparent; color: var(--chrome-text); }
+.header button:hover { background: var(--chrome-hover); }
+/* 方塊鎖頭：用圖形畫，顏色才能跟著色系換。工具列上的圖示是 png，不跟著換 */
+.logo { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; background: var(--logo-bg); color: var(--logo-fg); }
+.logo svg { width: 15px; height: 15px; }
+
 .muted { color: var(--muted); font-size: 12px; }
 .site { font-size: 12px; color: var(--muted); word-break: break-all; }
-button { font: inherit; border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 6px; padding: 6px 10px; cursor: pointer; white-space: nowrap; }
-button:hover { background: #f3f4f6; }
-button.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
-button.primary:hover { background: #1d4ed8; }
+button { font: inherit; border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: 8px; padding: 6px 12px; cursor: pointer; white-space: nowrap; }
+button:hover { background: var(--hover); }
+button.primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary); font-weight: 600; }
+button.primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
 button.danger { color: var(--danger); }
-button.small { padding: 3px 8px; font-size: 12px; }
-button.link { border: 0; background: transparent; color: var(--primary); padding: 4px 6px; }
-button.link:hover { background: #eff6ff; }
+button.danger:not(.link) { border-color: var(--danger-border); }
+button.danger:not(.link):hover { background: var(--danger-bg); }
+button.small { padding: 3px 9px; font-size: 12px; }
+button.link { border: 0; background: transparent; color: var(--link); padding: 4px 6px; }
+button.link:hover { background: var(--primary-soft); }
 button:disabled { opacity: 0.5; cursor: default; }
+button:disabled:hover { background: var(--card); }
+button.link:disabled:hover { background: transparent; }
+button:focus-visible, a:focus-visible, select:focus-visible, input[type="checkbox"]:focus-visible, input[type="radio"]:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 input[type="text"], input[type="password"], input[type="url"], input[type="search"], textarea {
-  font: inherit; width: 100%; padding: 7px 8px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text);
+  font: inherit; width: 100%; padding: 7px 9px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text);
 }
-input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+/* 數字、時間、下拉選單的寬度由各畫面自己定（例如 .num），這裡只管顏色和框線 */
+input[type="number"], input[type="time"], select { font: inherit; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); }
+select { cursor: pointer; }
+input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--primary); }
 label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 4px; }
 label.inline { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text); margin: 0; cursor: pointer; }
-.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+
+/* 開關：底下還是勾選框，HTML 要寫 role="switch"，讀螢幕軟體才會念「開關」 */
+input[type="checkbox"].switch { appearance: none; -webkit-appearance: none; position: relative; flex: none; width: 34px; height: 20px; margin: 0; border-radius: 999px; background: var(--switch-off); cursor: pointer; transition: background 0.15s; }
+input[type="checkbox"].switch::before { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: var(--knob); transition: left 0.15s; }
+input[type="checkbox"].switch:checked { background: var(--primary); }
+input[type="checkbox"].switch:checked::before { left: 17px; background: var(--knob-on); }
+input[type="checkbox"].switch:disabled { opacity: 0.5; cursor: default; }
+/* 一列一個設定：左邊名稱、右邊開關 */
+.switch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; margin: 0; font-size: 13px; color: var(--text); cursor: pointer; }
+.switch-row + .switch-row { border-top: 1px solid var(--divider); }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
 .row { display: flex; gap: 8px; align-items: center; }
 .row.end { justify-content: flex-end; }
 .row.wrap { flex-wrap: wrap; }
 .list { display: flex; flex-direction: column; gap: 6px; }
-.entry { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #fff; border: 1px solid var(--border); border-radius: 8px; }
+.entry { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
 .entry .u { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
 .entry .h { font-size: 11px; color: var(--muted); font-weight: 400; }
+/* 帳號前面的字首方塊 */
+.initial { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; background: var(--primary-soft); color: var(--primary-soft-text); font-size: 13px; font-weight: 700; text-transform: uppercase; }
 .empty { padding: 18px; text-align: center; color: var(--muted); }
 .pw { position: relative; }
 .pw input { padding-right: 56px; }
-.pw button { position: absolute; right: 4px; top: 4px; border: 0; background: transparent; color: var(--primary); padding: 3px 8px; }
+.pw button { position: absolute; right: 4px; top: 4px; border: 0; background: transparent; color: var(--link); padding: 3px 8px; }
 .error { color: var(--danger); font-size: 12px; margin-top: 6px; min-height: 16px; }
-.toast { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); background: #111827; color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 10; }
+/* 小標籤：重複、HTTP、建議這種 */
+.tag { display: inline-flex; align-items: center; flex: none; padding: 1px 7px; border-radius: 999px; background: var(--primary-soft); color: var(--primary-soft-text); font-size: 11px; font-weight: 600; white-space: nowrap; }
+.tag.warn { background: var(--warn-bg); color: var(--warn-text); }
+.toast { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); background: var(--tip-bg); color: var(--tip-text); border: 1px solid var(--tip-border); padding: 8px 14px; border-radius: 8px; font-size: 13px; opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 30; }
 .toast.show { opacity: 1; }
-a { color: var(--primary); }
-code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
-.tip { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 14px; height: 14px; margin-left: 4px; border: 1px solid #9ca3af; border-radius: 50%; color: var(--muted); font-size: 10px; font-weight: 600; line-height: 1; vertical-align: 1px; cursor: help; user-select: none; }
-.tip:hover, .tip:focus { border-color: var(--primary); color: var(--primary); outline: none; }
+a { color: var(--link); }
+code { background: var(--card-alt); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+.tip { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 14px; height: 14px; margin-left: 4px; border: 1px solid var(--border-strong); border-radius: 50%; color: var(--muted); font-size: 10px; font-weight: 600; line-height: 1; vertical-align: 1px; cursor: help; user-select: none; }
+.tip:hover, .tip:focus { border-color: var(--primary); color: var(--link); outline: none; }
 /* 說明可能蓋到別的欄位，pointer-events: none 讓滑鼠還是點得到下面的欄位 */
-.tip-box { position: fixed; z-index: 20; max-width: min(320px, calc(100vw - 12px)); padding: 6px 10px; border-radius: 6px; background: #111827; color: #fff; font-size: 12px; font-weight: 400; line-height: 1.5; text-align: left; white-space: pre-line; pointer-events: none; }
+/* 被截掉的網址、密碼常常很長又沒有空白，overflow-wrap 讓它在框裡折行 */
+.tip-box { position: fixed; z-index: 40; max-width: min(320px, calc(100vw - 12px)); padding: 6px 10px; border: 1px solid var(--tip-border); border-radius: 6px; background: var(--tip-bg); color: var(--tip-text); font-size: 12px; font-weight: 400; line-height: 1.5; text-align: left; white-space: pre-line; overflow-wrap: anywhere; pointer-events: none; }
+dialog { background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 18px 44px var(--shadow); }
+dialog::backdrop { background: var(--backdrop); }
 
 /* 有設 display 的元素（.list、.inline、.tabpane）加上 hidden 屬性時也要真的藏起來 */
 [hidden] { display: none !important; }

@@ -14,7 +14,7 @@
   PK.contentLoaded = true;
   const { browserLocale, chosenLocale, t, uiLocale, useLocale } = PK.i18n;
   const { baseDomain, rulePathMatches } = PK.domain;
-  const { el, hiddenFromUser, refreshShadowStyle, toast, ui } = PK.contentUi;
+  const { el, hiddenFromUser, logoMark, refreshShadowStyle, setTheme, toast, ui } = PK.contentUi;
   const { attrText, canFill, detectGroups, isTextInput, isUsable, isVisible, seenByUser, setValue, usableInputs } = PK.contentFields;
   const { CLICKABLE, clickableOf, elementText, findClickTarget, fireClick, selectorFor } = PK.clickTarget;
 
@@ -50,6 +50,7 @@
       bannerNo: t('cs_banner_no'),
       bannerUpdate: t('cs_banner_update'),
       bannerNeverDone: t('cs_banner_never_done', '$1'),
+      bannerEdit: t('cs_banner_edit'),
       saveFailed: t('cs_save_failed', '$1'),
       passwordUpdated: t('cs_password_updated'),
       passwordSaved: t('cs_password_saved'),
@@ -149,8 +150,31 @@
     loadChosenLanguage().catch((err) => console.warn(TAG, '讀不到指定的語言，先照瀏覽器的語言', err)); // i18n-ignore：給開發者看的
 
   followChosenLanguage();
+
+  // ---- 管理頁選的色系 ----
+
+  // 選「跟著系統」時，系統切換深淺色，網頁上的畫面也跟著換。先照系統畫，讀到使用者選的再換。
+  let themeChoice = 'system';
+  const applyTheme = () => setTheme(PK.theme.resolveTheme(themeChoice));
+  applyTheme();
+  PK.theme
+    .chosenTheme()
+    .then((choice) => {
+      themeChoice = choice;
+      applyTheme();
+    })
+    .catch((err) => console.warn(TAG, '讀不到色系，先照系統的深淺色', err)); // i18n-ignore：給開發者看的
+  PK.theme.onSystemChange(() => {
+    if (themeChoice === 'system') applyTheme();
+  });
+
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && changes.uiLanguage) followChosenLanguage();
+    if (area !== 'local') return;
+    if (changes.uiLanguage) followChosenLanguage();
+    if (changes.uiTheme) {
+      themeChoice = PK.theme.normalizeChoice(changes.uiTheme.newValue);
+      applyTheme();
+    }
   });
 
   // 外面每一層都跟自己同一個來源。來源不同時讀外層的 location 會丟例外。
@@ -248,24 +272,59 @@
     clearPickBox();
   }
 
+  // 畫面上方正中間的細長橫條。帳號、密碼欄位收在「修改內容」裡，大部分人直接按「儲存」。
   function showSaveBanner({ pending, mode, existingId, existingUsername }) {
     const root = ui();
     closeBanner();
-    const box = el('div', 'banner');
-    const h2 = el('h2');
-    h2.appendChild(el('span', 'logo'));
-    h2.appendChild(el('span', null, mode === 'update' ? TEXT.bannerUpdateTitle : TEXT.bannerSaveTitle));
-    box.appendChild(h2);
-    box.appendChild(el('div', 'site', pending.host));
+    const title = mode === 'update' ? TEXT.bannerUpdateTitle : TEXT.bannerSaveTitle;
+    const box = el('div', 'banner bar');
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-label', title);
 
-    box.appendChild(el('label', null, TEXT.bannerUsername));
+    const top = el('div', 'bar-top');
+    top.appendChild(logoMark('logo'));
+    const text = el('div', 'bar-text');
+    text.appendChild(el('div', 'bar-title', title));
+    const sub = el('div', 'bar-sub');
+    // 改密碼表單沒有帳號欄時，pending.username 是空的，就顯示背景程式對到的那個帳號
+    const shownUser = pending.username || existingUsername || '';
+    const who = el('span', 'who', shownUser ? pending.host + ' · ' + shownUser : pending.host);
+    // 被截成「…」時，滑鼠停在上面看得到全文。網頁上沒載入 tip.js，用瀏覽器內建的提示。
+    who.addEventListener('mouseenter', () => {
+      if (who.scrollWidth > who.clientWidth) who.title = who.textContent;
+      else who.removeAttribute('title');
+    });
+    sub.appendChild(who);
+    const edit = el('button', null, TEXT.bannerEdit);
+    edit.type = 'button';
+    edit.setAttribute('aria-expanded', 'false');
+    sub.appendChild(edit);
+    text.appendChild(sub);
+    top.appendChild(text);
+
+    const actions = el('div', 'bar-actions');
+    const never = el('button', 'link', TEXT.bannerNever);
+    const no = el('button', null, TEXT.bannerNo);
+    const yes = el('button', 'primary', mode === 'update' ? TEXT.bannerUpdate : TEXT.save);
+    actions.appendChild(never);
+    actions.appendChild(no);
+    actions.appendChild(yes);
+    top.appendChild(actions);
+    box.appendChild(top);
+
+    const form = el('div', 'bar-form');
+    form.hidden = true;
+    const userField = el('div');
+    const userLabel = el('label', null, TEXT.bannerUsername);
     const userInput = el('input');
     userInput.type = 'text';
-    // 改密碼表單沒有帳號欄時，pending.username 是空的，就顯示背景程式對到的那個帳號
-    userInput.value = pending.username || existingUsername || '';
-    box.appendChild(userInput);
+    userInput.value = shownUser;
+    userLabel.appendChild(userInput);
+    userField.appendChild(userLabel);
+    form.appendChild(userField);
 
-    box.appendChild(el('label', null, TEXT.bannerPassword));
+    const pwField = el('div');
+    const pwLabel = el('label', null, TEXT.bannerPassword);
     const wrap = el('div', 'pwwrap');
     const pwInput = el('input');
     pwInput.type = 'password';
@@ -279,18 +338,20 @@
     });
     wrap.appendChild(pwInput);
     wrap.appendChild(eye);
-    box.appendChild(wrap);
+    pwLabel.appendChild(wrap);
+    pwField.appendChild(pwLabel);
+    form.appendChild(pwField);
+    box.appendChild(form);
 
-    const row = el('div', 'row');
-    const never = el('button', 'link', TEXT.bannerNever);
-    const no = el('button', null, TEXT.bannerNo);
-    const yes = el('button', 'primary', mode === 'update' ? TEXT.bannerUpdate : TEXT.save);
-    row.appendChild(never);
-    row.appendChild(no);
-    row.appendChild(yes);
-    box.appendChild(row);
-
-    const shownAt = Date.now();
+    let shownAt = Date.now();
+    edit.addEventListener('click', (e) => {
+      if (!e.isTrusted) return;
+      form.hidden = !form.hidden;
+      edit.setAttribute('aria-expanded', String(!form.hidden));
+      // 橫條變高了，畫面跟剛出現時不一樣，重新等一下才收「儲存」，跟剛出現時一樣擋點擊劫持
+      shownAt = Date.now();
+      if (!form.hidden) userInput.focus();
+    });
     never.addEventListener('click', async (e) => {
       if (!userMeant(e, box, shownAt, closeBanner)) return;
       await send({ type: 'neverSave.add', host: pending.host });
@@ -305,7 +366,7 @@
     yes.addEventListener('click', async (e) => {
       if (!userMeant(e, box, shownAt, closeBanner)) return;
       const username = userInput.value.trim();
-      // 使用者在卡片上把帳號改掉了，那就是另一個帳號，要新增而不是蓋掉舊的
+      // 使用者在橫條上把帳號改掉了，那就是另一個帳號，要新增而不是蓋掉舊的
       const id = mode === 'update' && username === (existingUsername || '') ? existingId : undefined;
       yes.disabled = true;
       const res = await send({
@@ -326,7 +387,7 @@
 
     root.appendChild(box);
     bannerEl = box;
-    // 跟背景程式的 PENDING_TTL_MS 一樣長，卡片消失時暫存的帳密也剛好過期
+    // 跟背景程式的 PENDING_TTL_MS 一樣長，橫條消失時暫存的帳密也剛好過期
     bannerTimer = setTimeout(closeBanner, 2 * 60 * 1000);
   }
 
@@ -451,8 +512,17 @@
     const picks = [];
     for (const choice of choices) {
       const item = el('div', choice.className ? 'item ' + choice.className : 'item');
-      item.appendChild(el('div', 'u', choice.label));
-      if (choice.hint) item.appendChild(el('div', 'h', choice.hint));
+      if (choice.initial) {
+        const initial = el('span', 'initial', choice.initial);
+        initial.setAttribute('aria-hidden', 'true');
+        item.appendChild(initial);
+      }
+      const texts = el('div', 'texts');
+      texts.appendChild(el('div', 'u', choice.label));
+      if (choice.hint) texts.appendChild(el('div', 'h', choice.hint));
+      item.appendChild(texts);
+      // 按鍵名稱不翻譯，鍵盤上印的就是 Enter
+      item.appendChild(el('span', 'key', 'Enter'));
       // mousedown 先擋掉，欄位才不會失去焦點
       item.addEventListener('mousedown', (e) => e.preventDefault());
       item.addEventListener('mouseenter', () => setHighlight(items.indexOf(item)));
@@ -504,19 +574,65 @@
     showList(
       anchor,
       TEXT.dropdownChooseAccount,
-      entries.slice(0, 8).map((entry) => ({ label: entry.username || TEXT.dropdownNoUsername, onPick: () => pickEntry(anchor, group, entry) }))
+      entries.slice(0, 8).map((entry) => ({
+        label: entry.username || TEXT.dropdownNoUsername,
+        // 用 Array.from 拆字，emoji 這種兩個字元的字才不會被切一半
+        initial: Array.from(entry.username || entry.host || '?')[0],
+        onPick: () => pickEntry(anchor, group, entry),
+      }))
     );
   }
+
+  // ---- 帳號欄位右邊的小鎖頭：游標在欄位裡、這個網站有存帳號時出現 ----
+  // 只是提示，pointer-events: none 讓點擊直接落在欄位上，網頁上不會多一個能被騙點的按鈕。
+  // 密碼欄不放：很多網站在密碼欄右邊有自己的「顯示密碼」圖示，會疊在一起。
+
+  let fieldIcon = null;
+
+  function hideFieldIcon() {
+    if (fieldIcon) fieldIcon.el.remove();
+    fieldIcon = null;
+  }
+
+  function placeFieldIcon() {
+    if (!fieldIcon) return;
+    const r = fieldIcon.field.getBoundingClientRect();
+    if (!fieldIcon.field.isConnected || r.width < 80 || r.height < 20) {
+      hideFieldIcon();
+      return;
+    }
+    const size = Math.min(24, r.height - 8);
+    Object.assign(fieldIcon.el.style, {
+      width: size + 'px',
+      height: size + 'px',
+      left: r.right - size - 6 + 'px',
+      top: r.top + (r.height - size) / 2 + 'px',
+    });
+  }
+
+  function showFieldIcon(field) {
+    if (field.type === 'password') return;
+    hideFieldIcon();
+    const icon = logoMark('field-icon');
+    ui().appendChild(icon);
+    fieldIcon = { el: icon, field };
+    placeFieldIcon();
+  }
+
+  window.addEventListener('scroll', placeFieldIcon, { capture: true, passive: true });
+  window.addEventListener('resize', placeFieldIcon);
 
   async function onFieldFocus(field, group) {
     const newPassword = isNewPasswordGroup(group);
     const { entries, locked } = await getEntries();
     if (document.activeElement !== field) return;
     if (locked) {
+      showFieldIcon(field);
       showLockedHint(field);
       return;
     }
     if (!newPassword && !entries.length) return;
+    showFieldIcon(field);
     showDropdown(field, group, entries);
   }
 
@@ -680,6 +796,9 @@
     field.addEventListener('focus', () => onFieldFocus(field, group));
     field.addEventListener('click', () => {
       if (!dropdown) onFieldFocus(field, group);
+    });
+    field.addEventListener('blur', () => {
+      if (fieldIcon && fieldIcon.field === field) hideFieldIcon();
     });
     field.addEventListener('blur', () => setTimeout(() => {
       if (dropdown && dropdown.anchor === field && PK.contentUi.root() && !PK.contentUi.root().activeElement) closeDropdown();
@@ -1114,7 +1233,7 @@
 
     const box = el('div', 'banner');
     const h2 = el('h2');
-    h2.appendChild(el('span', 'logo'));
+    h2.appendChild(logoMark('logo'));
     h2.appendChild(el('span', null, TEXT.pickTitle));
     box.appendChild(h2);
     box.appendChild(el('div', 'site', HOST + path));

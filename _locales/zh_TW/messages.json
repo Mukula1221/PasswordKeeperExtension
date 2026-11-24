@@ -71,6 +71,9 @@
     "message": "產生密碼",
     "description": "Button that opens the password generator, and the title of that panel."
   },
+  "pop_gen_output": {
+    "message": "產生的密碼"
+  },
   "pop_gen_mode_chars": {
     "message": "隨機字元"
   },
@@ -144,10 +147,6 @@
     "message": "允許的特殊符號",
     "description": "Field listing which symbols the generator may use."
   },
-  "pop_gen_close": {
-    "message": "收起",
-    "description": "Collapses the password generator panel."
-  },
   "pop_copy": {
     "message": "複製",
     "description": "Copies the generated password."
@@ -192,9 +191,15 @@
   "pop_pick_count_title": {
     "message": "到管理頁看自動點選"
   },
+  "pop_pick_start": {
+    "message": "開始選"
+  },
   "pop_manage": {
     "message": "管理所有密碼",
     "description": "Popup footer link. Opens the manager page."
+  },
+  "pop_tabs_label": {
+    "message": "小視窗分頁"
   },
   "pop_no_response": {
     "message": "背景程式沒有回應"
@@ -396,16 +401,9 @@
     "message": "密碼小管家 – 管理密碼",
     "description": "Browser tab title of the manager page."
   },
-  "opt_header_note": {
-    "message": "密碼只存在這台電腦的瀏覽器裡，不會上傳到任何地方。"
-  },
   "opt_header_version_title": {
     "message": "看版本功能歷程",
     "description": "Tooltip of the version number in the page header."
-  },
-  "opt_header_update": {
-    "message": "有新版",
-    "description": "Small button next to the version number in the header."
   },
   "opt_header_update_title": {
     "message": "有新版 $1，點這裡看怎麼更新",
@@ -485,6 +483,12 @@
   },
   "opt_tab_versions": {
     "message": "版本"
+  },
+  "opt_tab_about": {
+    "message": "關於"
+  },
+  "opt_tabs_label": {
+    "message": "分頁"
   },
   "opt_add_button": {
     "message": "＋ 新增",
@@ -573,6 +577,42 @@
   "opt_search_placeholder": {
     "message": "搜尋網站、帳號或備註"
   },
+  "opt_entry_count_one": {
+    "message": "$1 個帳號"
+  },
+  "opt_entry_count_other": {
+    "message": "$1 個帳號"
+  },
+  "opt_select_mode": {
+    "message": "勾選"
+  },
+  "opt_open_site": {
+    "message": "開啟網站"
+  },
+  "opt_move_to_trash": {
+    "message": "移到回收桶"
+  },
+  "opt_detail_dates": {
+    "message": "最後使用 $1 · 建立於 $2"
+  },
+  "opt_detail_empty": {
+    "message": "選左邊的帳號看詳細資料"
+  },
+  "opt_note_empty": {
+    "message": "沒有備註"
+  },
+  "opt_note_write": {
+    "message": "寫備註"
+  },
+  "opt_note_saved": {
+    "message": "備註已儲存"
+  },
+  "opt_note_failed": {
+    "message": "備註沒有存成：$1"
+  },
+  "opt_back_to_list": {
+    "message": "← 回到清單"
+  },
   "opt_export_selected_title": {
     "message": "勾選左邊的方框，把那幾筆匯出成加密檔給同事"
   },
@@ -602,12 +642,8 @@
     "message": "密碼",
     "description": "Table column."
   },
-  "opt_col_last_used": {
-    "message": "最後使用",
-    "description": "Table column: when the password was last filled in."
-  },
   "opt_empty": {
-    "message": "還沒有任何密碼。到網站登入一次，畫面右上角會問你要不要儲存。"
+    "message": "還沒有任何密碼。到網站登入一次，畫面上方會問你要不要儲存。"
   },
   "opt_history_toggle": {
     "message": "舊密碼 ($1)",
@@ -632,13 +668,6 @@
   "opt_search_no_match": {
     "message": "找不到符合「$1」的資料",
     "description": "$1 = search text."
-  },
-  "opt_health_show": {
-    "message": "看詳細"
-  },
-  "opt_health_summary": {
-    "message": "健檢：$1。",
-    "description": "$1 = the problems found, joined with opt_health_part_sep."
   },
   "opt_health_part_sep": {
     "message": "、",
@@ -672,9 +701,6 @@
   "opt_breach_none_other": {
     "message": "檢查了 $1 筆，都沒有出現在外洩名單。",
     "description": "$1 = number of accounts checked."
-  },
-  "opt_health_hide": {
-    "message": "收起"
   },
   "opt_health_ok": {
     "message": "健檢：沒有發現要處理的密碼。"
@@ -727,6 +753,33 @@
     "message": "重複的項目 $1 組",
     "description": "$1 = number of duplicate groups. One part of the health check summary."
   },
+  "opt_health_filter_title": {
+    "message": "只列有這個問題的帳號，再按一次取消"
+  },
+  "opt_health_tag_breached": {
+    "message": "外洩"
+  },
+  "opt_health_tag_reused": {
+    "message": "重複使用"
+  },
+  "opt_health_tag_weak": {
+    "message": "太弱"
+  },
+  "opt_health_tag_old": {
+    "message": "太久沒改"
+  },
+  "opt_health_tag_http": {
+    "message": "HTTP"
+  },
+  "opt_health_tag_dup": {
+    "message": "重複項目"
+  },
+  "opt_health_reused_with": {
+    "message": "重複：這組密碼也用在 $1"
+  },
+  "opt_health_dup_with": {
+    "message": "重複的項目：跟 $1 的帳號和密碼都一樣"
+  },
   "opt_health_breached_one": {
     "message": "外洩：在外洩名單出現過 $1 次",
     "description": "$1 = how many times the password appears in breach lists."
@@ -752,14 +805,6 @@
   "opt_health_http_restore": {
     "message": "全部恢復"
   },
-  "opt_health_dup": {
-    "message": "重複的項目：第 $1 組，$2 筆帳號和密碼都一樣",
-    "description": "$1 = group number, $2 = number of accounts in the group."
-  },
-  "opt_health_reused": {
-    "message": "重複：第 $1 組密碼用在 $2 個地方",
-    "description": "$1 = group number, $2 = accounts using it (always 2 or more)."
-  },
   "opt_health_weak_short_one": {
     "message": "太弱：只有 $1 個字",
     "description": "$1 = password length."
@@ -779,11 +824,11 @@
     "message": "回收桶"
   },
   "opt_trash_days_before": {
-    "message": "刪掉的帳號放在這裡",
+    "message": "保留",
     "description": "Before the days input: 'Keep deleted accounts here for [30] days, then remove them automatically'."
   },
   "opt_trash_days_after": {
-    "message": "天，之後自動清掉",
+    "message": "天",
     "description": "After the days input. See opt_trash_days_before."
   },
   "opt_trash_restore_selected": {
@@ -811,20 +856,51 @@
   "opt_trash_empty": {
     "message": "回收桶是空的。"
   },
+  "opt_trash_page_sub": {
+    "message": "刪掉的帳號先放在這裡，時間到自動清掉。清掉之前都還救得回來。"
+  },
+  "opt_trash_count_one": {
+    "message": "$1 筆"
+  },
+  "opt_trash_count_other": {
+    "message": "$1 筆"
+  },
+  "opt_trash_deleted_ago_one": {
+    "message": "$1 天前刪除"
+  },
+  "opt_trash_deleted_ago_other": {
+    "message": "$1 天前刪除"
+  },
+  "opt_trash_deleted_today": {
+    "message": "今天刪除"
+  },
+  "opt_trash_left_one": {
+    "message": "還剩 $1 天"
+  },
+  "opt_trash_left_other": {
+    "message": "還剩 $1 天"
+  },
+  "opt_trash_left_tomorrow": {
+    "message": "明天清掉"
+  },
+  "opt_trash_left_today": {
+    "message": "今天清掉"
+  },
+  "opt_trash_empty_sub_one": {
+    "message": "刪掉的帳號會在這裡放 $1 天。"
+  },
+  "opt_trash_empty_sub_other": {
+    "message": "刪掉的帳號會在這裡放 $1 天。"
+  },
+  "opt_trash_row_info": {
+    "message": "$1 · $2"
+  },
   "opt_trash_purge_all": {
     "message": "清空回收桶"
   },
   "opt_trash_load_failed": {
     "message": "讀取回收桶失敗：$1",
     "description": "$1 = error message."
-  },
-  "opt_trash_item_info_one": {
-    "message": "刪除於 $2，$1 天後自動清掉",
-    "description": "$1 = days left, $2 = date and time it was deleted."
-  },
-  "opt_trash_item_info_other": {
-    "message": "刪除於 $2，$1 天後自動清掉",
-    "description": "$1 = days left, $2 = date and time it was deleted."
   },
   "opt_restore": {
     "message": "復原"
@@ -920,10 +996,6 @@
     "message": "已改成 $1 天，刪除 $2 筆",
     "description": "$1 = new number of days, $2 = accounts deleted because they were older."
   },
-  "opt_block_backup": {
-    "message": "備份",
-    "description": "Section title on the Backup tab."
-  },
   "opt_export_backup": {
     "message": "匯出加密備份"
   },
@@ -966,7 +1038,7 @@
     "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_backup_move_how": {
-    "message": "怎麼搬？"
+    "message": "怎麼和瀏覽器互搬？"
   },
   "opt_move_title": {
     "message": "和瀏覽器互搬密碼"
@@ -1044,17 +1116,17 @@
     "message": "立即備份"
   },
   "opt_ab_run_now_tip": {
-    "message": "馬上存一份到「3. 存到」的資料夾，沒打開自動備份也能用。\n沒改過密碼也會存。\n要先設定備份密碼。",
+    "message": "馬上存一份到自動備份的資料夾，沒打開自動備份也能用。\n沒改過密碼也會存。\n要先設定備份密碼。",
     "description": "'3. Save to' must match opt_ab_step_folder."
   },
   "opt_ab_help": {
-    "message": "定時把加密備份存到「下載」資料夾底下。照 1 到 4 設定。"
+    "message": "定時存一份加密備份，沒改過密碼就不存"
   },
   "opt_ab_help_tip": {
     "message": "每天或每週在指定時間存一份，沒改過密碼就不存。\n錯過時間會在下次開瀏覽器時補做。"
   },
   "opt_ab_step_password": {
-    "message": "1. 備份密碼"
+    "message": "備份密碼"
   },
   "opt_ab_password_tip": {
     "message": "自動備份都用這組密碼加密。\n擴充功能不會記住這組密碼，忘了就打不開備份檔。\n改密碼後，舊的備份檔還是要用舊密碼開。"
@@ -1074,7 +1146,7 @@
     "description": "Status of the auto backup password."
   },
   "opt_ab_step_when": {
-    "message": "2. 什麼時候"
+    "message": "多久一次"
   },
   "opt_ab_every_day": {
     "message": "每天"
@@ -1104,14 +1176,11 @@
     "message": "星期日"
   },
   "opt_ab_step_folder": {
-    "message": "3. 存到"
+    "message": "存到"
   },
   "opt_ab_folder_prefix": {
     "message": "下載 \\",
     "description": "Shown before the subfolder name input. Means the Downloads folder."
-  },
-  "opt_ab_step_switch": {
-    "message": "4. 開關"
   },
   "opt_ab_enable": {
     "message": "啟用自動備份"
@@ -1230,21 +1299,59 @@
   "opt_backup_status_never": {
     "message": "還沒備份過"
   },
-  "opt_backup_status_last_one": {
-    "message": "上次備份：$2（$1 天前）",
-    "description": "$1 = days since the last backup, $2 = date and time."
+  "opt_backup_page_sub": {
+    "message": "密碼只存在這台電腦。留一份在別的地方，電腦壞了才救得回來。"
   },
-  "opt_backup_status_last_other": {
-    "message": "上次備份：$2（$1 天前）",
-    "description": "$1 = days since the last backup, $2 = date and time."
+  "opt_backup_hero_empty": {
+    "message": "還沒有任何密碼"
   },
-  "opt_backup_status_due_one": {
-    "message": "上次備份：$2（$1 天前），之後改過密碼",
-    "description": "$1 = days since the last backup, $2 = date and time."
+  "opt_backup_hero_empty_sub": {
+    "message": "存了密碼之後再來備份。"
   },
-  "opt_backup_status_due_other": {
-    "message": "上次備份：$2（$1 天前），之後改過密碼",
-    "description": "$1 = days since the last backup, $2 = date and time."
+  "opt_backup_hero_never_sub": {
+    "message": "密碼只有瀏覽器裡這一份，移除擴充功能或清除瀏覽資料就沒了。"
+  },
+  "opt_backup_hero_days_one": {
+    "message": "上次備份是 $1 天前"
+  },
+  "opt_backup_hero_days_other": {
+    "message": "上次備份是 $1 天前"
+  },
+  "opt_backup_hero_today": {
+    "message": "上次備份是今天"
+  },
+  "opt_backup_hero_sub_due": {
+    "message": "上次是 $1，之後改過密碼，該再備份一次了。"
+  },
+  "opt_backup_hero_sub_auto": {
+    "message": "上次是 $1。自動備份開著，有改密碼就會再存。"
+  },
+  "opt_backup_hero_sub_manual": {
+    "message": "上次是 $1。自動備份沒打開，記得自己定期備份。"
+  },
+  "opt_backup_stat_accounts": {
+    "message": "個帳號"
+  },
+  "opt_backup_stat_next": {
+    "message": "下次自動備份"
+  },
+  "opt_backup_stat_off": {
+    "message": "沒打開"
+  },
+  "opt_block_transfer": {
+    "message": "匯出與匯入"
+  },
+  "opt_block_transfer_sub": {
+    "message": "換電腦、給同事、搬回瀏覽器都在這裡"
+  },
+  "opt_backup_share_title": {
+    "message": "給同事幾筆"
+  },
+  "opt_backup_share_desc": {
+    "message": "到「密碼」分頁按「勾選」，挑幾筆匯出成加密檔"
+  },
+  "opt_backup_share_go": {
+    "message": "去勾選"
   },
   "opt_import_done": {
     "message": "匯入完成：新增 $1、更新 $2、略過 $3"
@@ -1452,11 +1559,11 @@
     "message": "這一類沒有紀錄。"
   },
   "opt_log_count_one": {
-    "message": "（$1 筆）",
+    "message": "$1 筆",
     "description": "Shown next to the section title."
   },
   "opt_log_count_other": {
-    "message": "（$1 筆）",
+    "message": "$1 筆",
     "description": "Shown next to the section title."
   },
   "opt_kind_auto": {
@@ -1684,6 +1791,30 @@
   "opt_lock_manual_help": {
     "message": "小視窗右上角的「鎖定」可以隨時手動鎖上。"
   },
+  "opt_settings_page_sub": {
+    "message": "工具鎖定、自動填入、自動點選都在這裡。改了馬上生效。"
+  },
+  "opt_jump_label": {
+    "message": "跳到"
+  },
+  "opt_fill_sub": {
+    "message": "打開登入頁時自動填好帳號密碼"
+  },
+  "opt_autofill_master_desc": {
+    "message": "關掉後所有網站都不自動填，點欄位選帳號、快捷鍵照常能用"
+  },
+  "opt_sites_hint": {
+    "message": "也可以在「密碼」分頁的詳細資料裡切換"
+  },
+  "opt_never_desc": {
+    "message": "在儲存提示按過「這個網站永遠不問」的網站"
+  },
+  "opt_never_none": {
+    "message": "目前沒有"
+  },
+  "opt_danger_sub": {
+    "message": "按錯會很麻煩的動作放在這裡"
+  },
   "opt_block_fill": {
     "message": "填入",
     "description": "Section title on the Settings tab. Holds the autofill master switch, per-site autofill settings and never-ask sites."
@@ -1752,13 +1883,6 @@
   "opt_never_title": {
     "message": "永遠不詢問的網站"
   },
-  "opt_never_empty": {
-    "message": "目前沒有。在儲存提示上按「這個網站永遠不問」就會出現在這裡。",
-    "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
-  },
-  "opt_clip_title": {
-    "message": "複製密碼"
-  },
   "opt_clip_label": {
     "message": "複製密碼後自動清除剪貼簿"
   },
@@ -1798,9 +1922,6 @@
   },
   "opt_click_tip": {
     "message": "同一頁有好幾條時照順序點，前一條點完才輪下一條。\n每條最多等 15 秒。"
-  },
-  "opt_click_timing_title": {
-    "message": "時間設定"
   },
   "opt_click_interval_label": {
     "message": "間隔預設值"
@@ -2006,21 +2127,21 @@
     "message": "已全部移到回收桶"
   },
   "opt_help_title": {
-    "message": "怎麼用"
+    "message": "快速上手"
   },
   "opt_help_1": {
-    "message": "到任何網站登入一次，畫面右上角會問「要儲存這組密碼嗎？」。",
+    "message": "到任何網站登入一次，畫面上方會問「要儲存這組密碼嗎？」。",
     "description": "The quoted text is the save prompt shown on web pages (content.js). Keep it the same as that prompt."
   },
   "opt_help_2": {
     "message": "下次再開同一個網站，帳號密碼會自動填好。存了多組帳號時，點帳號欄位會跳清單讓你選，上下鍵選、Enter 填。"
   },
   "opt_help_3": {
-    "message": "按 Ctrl+Shift+L（Mac 是 Command+Shift+L）直接把目前網站的帳密填進去。快捷鍵可以在擴充功能管理頁的「鍵盤快速鍵」改。",
+    "message": "在登入頁按下面的快捷鍵，直接填入這個網站最近用過的那組帳密。",
     "description": "'Keyboard shortcuts' is the browser's own page name."
   },
   "opt_help_4": {
-    "message": "工具列的藍色鎖頭圖示可以看目前網站存的帳號、手動填入、複製密碼、產生強密碼。小視窗最上面的搜尋框可以搜所有網站的帳號，Enter 直接開那個網站。"
+    "message": "點工具列的鎖頭圖示打開小視窗：看這個網站存的帳號、手動填入、複製密碼、產生密碼。最上面的搜尋框可以搜所有網站，Enter 直接開那個網站。"
   },
   "opt_help_5": {
     "message": "註冊或改密碼時，點新密碼欄會多一個「產生強密碼」，按下去新密碼和確認欄一起填好。",
@@ -2030,7 +2151,7 @@
     "message": "要自動按按鈕時，按小視窗的「選要自動點的按鈕」，在網頁上選那顆按鈕，之後開到那一頁就會自動點。也可以在「設定」分頁的「自動點選」手動新增和調整。"
   },
   "opt_help_7": {
-    "message": "改過密碼的帳號，表格的密碼欄會有「舊密碼」可以展開。刪掉的帳號先進回收桶，預設放 30 天，天數可以在回收桶分頁改。"
+    "message": "改過密碼的帳號，在「密碼」分頁右邊的詳細資料可以展開「舊密碼」。刪掉的帳號先進回收桶，預設放 30 天。"
   },
   "opt_help_8": {
     "message": "「設定」分頁的「工具鎖定」開啟後，整個工具都要先用這台電腦的系統驗證（Windows Hello、Touch ID）才能用；閒置、瀏覽器重開、小視窗按「鎖定」都會鎖上。"
@@ -2038,12 +2159,315 @@
   "opt_help_9": {
     "message": "記得定期備份，或打開自動備份。移除擴充功能、清除瀏覽資料、或把資料夾搬走，密碼就會不見。"
   },
+  "opt_help_page_sub": {
+    "message": "第一次用，先看下面九張卡片。遇到怪事看最下面的常見問題。"
+  },
+  "opt_help_card_1": {
+    "message": "儲存密碼"
+  },
+  "opt_help_card_2": {
+    "message": "自動填入"
+  },
+  "opt_help_card_3": {
+    "message": "快捷鍵"
+  },
+  "opt_help_card_4": {
+    "message": "工具列小視窗"
+  },
+  "opt_help_card_5": {
+    "message": "產生強密碼"
+  },
+  "opt_help_card_6": {
+    "message": "自動點選"
+  },
+  "opt_help_card_7": {
+    "message": "舊密碼和回收桶"
+  },
+  "opt_help_card_8": {
+    "message": "工具鎖定"
+  },
+  "opt_help_card_9": {
+    "message": "記得備份"
+  },
+  "opt_help_link_shortcut": {
+    "message": "改快捷鍵"
+  },
+  "opt_help_link_rules": {
+    "message": "看自動點選的規則"
+  },
+  "opt_help_link_lock": {
+    "message": "設定工具鎖定"
+  },
+  "opt_help_link_backup": {
+    "message": "到備份"
+  },
+  "opt_help_no_shortcut": {
+    "message": "沒有設定快捷鍵"
+  },
+  "opt_faq_title": {
+    "message": "常見問題"
+  },
+  "opt_faq_q1": {
+    "message": "為什麼這個網站沒有自動填入？"
+  },
+  "opt_faq_a1_1": {
+    "message": "「設定」的自動填入總開關，或這個網站的自動填入被關掉了。"
+  },
+  "opt_faq_a1_2": {
+    "message": "網址是 http:// 開頭，帳號卻是在 https:// 網址存的。"
+  },
+  "opt_faq_a1_3": {
+    "message": "登入框在別的網站框進來的 iframe 裡，或是看不見的登入框。"
+  },
+  "opt_faq_a1_4": {
+    "message": "工具鎖住了，先從小視窗解鎖。"
+  },
+  "opt_faq_q2": {
+    "message": "登入之後為什麼沒問要不要儲存？"
+  },
+  "opt_faq_a2_1": {
+    "message": "送出後還停在同一頁、登入框也還在，會當成密碼打錯，先不問。"
+  },
+  "opt_faq_a2_2": {
+    "message": "這個網站在「永遠不詢問的網站」裡，可以到「設定」的「填入」移除。"
+  },
+  "opt_faq_a2_3": {
+    "message": "遇到不問的網站，用小視窗的「新增帳號」自己存。"
+  },
+  "opt_faq_q3": {
+    "message": "忘了自訂密碼怎麼辦？"
+  },
+  "opt_faq_a3_1": {
+    "message": "自訂密碼找不回來，開發者也拿不到。"
+  },
+  "opt_faq_a3_2": {
+    "message": "在解鎖畫面按「忘了自訂密碼或系統驗證不能用？」清掉資料。"
+  },
+  "opt_faq_a3_3": {
+    "message": "清掉後用備份檔匯入，所以自動備份一定要開著。"
+  },
+  "opt_faq_q4": {
+    "message": "複製的密碼會一直留在剪貼簿嗎？"
+  },
+  "opt_faq_a4_1": {
+    "message": "到「設定」的「填入」打開「複製密碼後自動清除剪貼簿」，時間到就清。"
+  },
+  "opt_faq_a4_2": {
+    "message": "只在剪貼簿裡還是那組密碼時才清，你後來複製的東西不會動。"
+  },
+  "opt_faq_a4_3": {
+    "message": "Windows 剪貼簿歷程（Win+V）裡的紀錄清不掉。"
+  },
+  "opt_faq_q5": {
+    "message": "換電腦時怎麼把密碼帶過去？"
+  },
+  "opt_faq_a5_1": {
+    "message": "在這台電腦的「備份」分頁匯出加密備份。"
+  },
+  "opt_faq_a5_2": {
+    "message": "在新電腦裝好密碼小管家，到「備份」分頁匯入那個檔，打備份密碼。"
+  },
+  "opt_faq_a5_3": {
+    "message": "工具鎖定和自動備份要在新電腦重新設定。"
+  },
   "opt_browser_hint": {
     "message": "你現在用的是 $1。擴充功能的管理頁在 $2，更新程式後要在那裡按「重新載入」。",
     "description": "$1 = 'Edge' or 'Chrome', $2 = edge://extensions or chrome://extensions. 'Reload' is the browser's own button name."
   },
+  "opt_about_github": {
+    "message": "在 GitHub 看原始碼"
+  },
+  "opt_about_issue": {
+    "message": "回報問題、提建議"
+  },
+  "opt_about_mit": {
+    "message": "MIT 授權"
+  },
+  "opt_about_data_title": {
+    "message": "你的資料"
+  },
+  "opt_about_where_label": {
+    "message": "存在哪裡"
+  },
+  "opt_about_where_value": {
+    "message": "只在這台電腦"
+  },
+  "opt_about_where_counts": {
+    "message": "帳號 $1 個 · 回收桶 $2 筆"
+  },
+  "opt_about_where_desc": {
+    "message": "都存在這個瀏覽器裡，不會上傳，開發者也拿不到。"
+  },
+  "opt_about_lock_hello": {
+    "message": "硬碟上的密碼是加密的，解鎖要用 $1。別人拷走瀏覽器資料夾也讀不到。"
+  },
+  "opt_about_lock_password": {
+    "message": "硬碟上的密碼是加密的，解鎖要打自訂密碼。別人拷走瀏覽器資料夾也讀不到。"
+  },
+  "opt_about_lock_screen": {
+    "message": "只鎖畫面，硬碟上的密碼沒有加密。到設定改選一種加密的方式。"
+  },
+  "opt_about_lock_off": {
+    "message": "沒有加密。能登入這台電腦、用你的帳號的人，看得到密碼。"
+  },
+  "opt_about_lock_action": {
+    "message": "改保護方式"
+  },
+  "opt_about_net_label": {
+    "message": "會連到外面的地方"
+  },
+  "opt_about_net_hibp_only": {
+    "message": "只有一個"
+  },
+  "opt_about_net_both": {
+    "message": "只有兩個"
+  },
+  "opt_about_net_github_auto": {
+    "message": "GitHub：每天問一次最新的版本號，可以在「版本」分頁關掉。"
+  },
+  "opt_about_net_github_manual": {
+    "message": "GitHub：按「立即檢查」才連。"
+  },
+  "opt_about_net_github_store": {
+    "message": "GitHub：商店版不會連。"
+  },
+  "opt_about_net_hibp": {
+    "message": "Have I Been Pwned：按「檢查有沒有外洩」才連，只送雜湊值的前 5 碼。"
+  },
+  "opt_about_privacy": {
+    "message": "看隱私權政策"
+  },
+  "opt_about_links_title": {
+    "message": "連結"
+  },
+  "opt_about_link_source": {
+    "message": "原始碼"
+  },
+  "opt_about_link_issues_desc": {
+    "message": "在 GitHub 開 issue"
+  },
+  "opt_about_link_releases": {
+    "message": "所有版本和下載"
+  },
+  "opt_about_link_releases_desc": {
+    "message": "GitHub Releases，每一版的 zip 和說明"
+  },
+  "opt_about_link_privacy": {
+    "message": "隱私權政策"
+  },
+  "opt_about_link_privacy_desc": {
+    "message": "存哪些資料、存在哪裡、會不會送出去"
+  },
+  "opt_about_link_security": {
+    "message": "回報資安問題"
+  },
+  "opt_about_link_security_desc": {
+    "message": "請私下回報，不要開公開的 issue"
+  },
+  "opt_about_link_readme": {
+    "message": "完整使用說明"
+  },
+  "opt_about_link_readme_desc": {
+    "message": "安裝、更新、每個功能的細節"
+  },
+  "opt_about_perm_title": {
+    "message": "擴充功能要的權限"
+  },
+  "opt_about_perm_sub": {
+    "message": "每一項為什麼需要、現在有沒有給"
+  },
+  "opt_perm_hosts": {
+    "message": "所有網站"
+  },
+  "opt_perm_hosts_why": {
+    "message": "登入表單可能在任何網站，要在網頁上找登入欄位、問要不要儲存、自動填入和自動點選"
+  },
+  "opt_perm_storage": {
+    "message": "儲存資料"
+  },
+  "opt_perm_storage_why": {
+    "message": "把帳號、密碼、設定和備份紀錄存在這台電腦的瀏覽器裡"
+  },
+  "opt_perm_active_tab": {
+    "message": "目前的分頁"
+  },
+  "opt_perm_active_tab_why": {
+    "message": "按工具列圖示或快捷鍵時，知道目前是哪個網站"
+  },
+  "opt_perm_downloads": {
+    "message": "下載"
+  },
+  "opt_perm_downloads_why": {
+    "message": "把匯出檔和自動備份存到電腦，刪備份紀錄時也能一起刪檔"
+  },
+  "opt_perm_alarms": {
+    "message": "定時"
+  },
+  "opt_perm_alarms_why": {
+    "message": "到時間做自動備份、檢查新版"
+  },
+  "opt_perm_idle": {
+    "message": "偵測閒置"
+  },
+  "opt_perm_idle_why": {
+    "message": "沒碰電腦一段時間或鎖螢幕時，把工具鎖上"
+  },
+  "opt_perm_web_request": {
+    "message": "回答瀏覽器的帳密視窗"
+  },
+  "opt_perm_web_request_why": {
+    "message": "網站跳出瀏覽器自己的帳密視窗時，用存的帳號回答，不看其他網路請求"
+  },
+  "opt_perm_clipboard": {
+    "message": "剪貼簿"
+  },
+  "opt_perm_clipboard_why": {
+    "message": "打開「複製密碼後自動清除剪貼簿」才會問，時間到清掉小管家複製的密碼"
+  },
+  "opt_perm_offscreen": {
+    "message": "背景文件"
+  },
+  "opt_perm_offscreen_why": {
+    "message": "清剪貼簿時要用，跟剪貼簿的權限一起問"
+  },
+  "opt_perm_always": {
+    "message": "一直有"
+  },
+  "opt_perm_granted": {
+    "message": "已允許"
+  },
+  "opt_perm_unused": {
+    "message": "沒用到"
+  },
+  "opt_about_credits_title": {
+    "message": "授權與致謝"
+  },
+  "opt_about_credit_eff": {
+    "message": "好記的密碼用的單字表，Electronic Frontier Foundation，CC BY 4.0"
+  },
+  "opt_about_credit_hibp": {
+    "message": "外洩檢查用的資料，來自 Have I Been Pwned"
+  },
   "opt_versions_title": {
     "message": "版本功能歷程"
+  },
+  "opt_versions_page_sub": {
+    "message": "檢查有沒有新版，看每一版改了什麼。"
+  },
+  "opt_versions_more_one": {
+    "message": "顯示更早的 $1 個版本"
+  },
+  "opt_versions_more_other": {
+    "message": "顯示更早的 $1 個版本"
+  },
+  "opt_versions_less": {
+    "message": "只看最近 3 版"
+  },
+  "opt_update_step_download": {
+    "message": "下載新版"
+  },
+  "opt_update_step_load": {
+    "message": "載入新版"
   },
   "opt_version_now": {
     "message": "目前版本 $1。更新程式後要到擴充功能管理頁按「重新載入」。",
@@ -2239,6 +2663,9 @@
   "cs_banner_never_done": {
     "message": "之後在 $1 不會再問了。管理頁可以改回來。",
     "description": "$1 is the site's host name, for example accounts.example.com."
+  },
+  "cs_banner_edit": {
+    "message": "修改內容"
   },
   "cs_save_failed": {
     "message": "儲存失敗：$1",
@@ -2663,8 +3090,35 @@
   "opt_lang_failed": {
     "message": "語言沒有換成：$1"
   },
+  "opt_lang_button": {
+    "message": "語言"
+  },
+  "opt_theme_label": {
+    "message": "色系"
+  },
+  "opt_theme_system": {
+    "message": "跟著系統"
+  },
+  "opt_theme_system_hint": {
+    "message": "淺色模式用青綠，深色模式用深色"
+  },
+  "opt_theme_white": {
+    "message": "白色"
+  },
+  "opt_theme_dark": {
+    "message": "深色"
+  },
+  "opt_theme_teal": {
+    "message": "青綠"
+  },
+  "opt_theme_failed": {
+    "message": "色系沒有換成：$1"
+  },
   "bg_language_invalid": {
     "message": "不支援這個語言"
+  },
+  "bg_theme_invalid": {
+    "message": "不支援這個色系"
   },
   "bg_update_offline": {
     "message": "連不到 GitHub，檢查網路之後再試。"

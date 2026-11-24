@@ -45,7 +45,7 @@
   }
 
   // 好記的密碼：從 EFF 單字表抽 words 個字，用分隔符號串起來。
-  // 每個字被抽到的機率一樣，7776 個字裡抽一個約 12.9 bit，預設 6 個字約 77 bit。
+  // 每個字被抽到的機率一樣，7772 個字裡抽一個約 12.9 bit，預設 6 個字約 77 bit。
   function generatePassphrase(o) {
     const list = PK.wordlist;
     const words = [];

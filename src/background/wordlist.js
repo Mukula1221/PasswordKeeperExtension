@@ -1,7 +1,9 @@
 'use strict';
-// 好記的密碼從這份單字表抽字：EFF Large Wordlist，7776 個英文單字。
+// 好記的密碼從這份單字表抽字：EFF Large Wordlist，7772 個英文單字。
 // 來源：https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt，作者 Electronic Frontier Foundation。
 // 授權：CC BY 4.0（https://www.eff.org/copyright）。改過的地方：拿掉每行前面的骰子號碼，只留單字。
+// 也拿掉了帶連字號的 drop-down、felt-tip、t-shirt、yo-yo，原本是 7776 個字。
+// 留著的話，用「-」分隔時一個字看起來像兩個字，例如 apple-drop-down-tiger 其實只有 3 個字。
 (() => {
   const PK = (globalThis.PK ??= {});
   PK.wordlist = [
@@ -172,7 +174,7 @@
     'dramatize', 'drank', 'drapery', 'drastic', 'draw', 'dreaded', 'dreadful', 'dreadlock', 'dreamboat', 'dreamily', 'dreamland', 'dreamless',
     'dreamlike', 'dreamt', 'dreamy', 'drearily', 'dreary', 'drench', 'dress', 'drew', 'dribble', 'dried', 'drier', 'drift',
     'driller', 'drilling', 'drinkable', 'drinking', 'dripping', 'drippy', 'drivable', 'driven', 'driver', 'driveway', 'driving', 'drizzle',
-    'drizzly', 'drone', 'drool', 'droop', 'drop-down', 'dropbox', 'dropkick', 'droplet', 'dropout', 'dropper', 'drove', 'drown',
+    'drizzly', 'drone', 'drool', 'droop', 'dropbox', 'dropkick', 'droplet', 'dropout', 'dropper', 'drove', 'drown',
     'drowsily', 'drudge', 'drum', 'dry', 'dubbed', 'dubiously', 'duchess', 'duckbill', 'ducking', 'duckling', 'ducktail', 'ducky',
     'duct', 'dude', 'duffel', 'dugout', 'duh', 'duke', 'duller', 'dullness', 'duly', 'dumping', 'dumpling', 'dumpster',
     'duo', 'dupe', 'duplex', 'duplicate', 'duplicity', 'durable', 'durably', 'duration', 'duress', 'during', 'dusk', 'dust',
@@ -215,7 +217,7 @@
     'faculty', 'fade', 'fading', 'failing', 'falcon', 'fall', 'false', 'falsify', 'fame', 'familiar', 'family', 'famine',
     'famished', 'fanatic', 'fancied', 'fanciness', 'fancy', 'fanfare', 'fang', 'fanning', 'fantasize', 'fantastic', 'fantasy', 'fascism',
     'fastball', 'faster', 'fasting', 'fastness', 'faucet', 'favorable', 'favorably', 'favored', 'favoring', 'favorite', 'fax', 'feast',
-    'federal', 'fedora', 'feeble', 'feed', 'feel', 'feisty', 'feline', 'felt-tip', 'feminine', 'feminism', 'feminist', 'feminize',
+    'federal', 'fedora', 'feeble', 'feed', 'feel', 'feisty', 'feline', 'feminine', 'feminism', 'feminist', 'feminize',
     'femur', 'fence', 'fencing', 'fender', 'ferment', 'fernlike', 'ferocious', 'ferocity', 'ferret', 'ferris', 'ferry', 'fervor',
     'fester', 'festival', 'festive', 'festivity', 'fetal', 'fetch', 'fever', 'fiber', 'fiction', 'fiddle', 'fiddling', 'fidelity',
     'fidgeting', 'fidgety', 'fifteen', 'fifth', 'fiftieth', 'fifty', 'figment', 'figure', 'figurine', 'filing', 'filled', 'filler',
@@ -558,7 +560,7 @@
     'sweep', 'swell', 'swept', 'swerve', 'swifter', 'swiftly', 'swiftness', 'swimmable', 'swimmer', 'swimming', 'swimsuit', 'swimwear',
     'swinger', 'swinging', 'swipe', 'swirl', 'switch', 'swivel', 'swizzle', 'swooned', 'swoop', 'swoosh', 'swore', 'sworn',
     'swung', 'sycamore', 'sympathy', 'symphonic', 'symphony', 'symptom', 'synapse', 'syndrome', 'synergy', 'synopses', 'synopsis', 'synthesis',
-    'synthetic', 'syrup', 'system', 't-shirt', 'tabasco', 'tabby', 'tableful', 'tables', 'tablet', 'tableware', 'tabloid', 'tackiness',
+    'synthetic', 'syrup', 'system', 'tabasco', 'tabby', 'tableful', 'tables', 'tablet', 'tableware', 'tabloid', 'tackiness',
     'tacking', 'tackle', 'tackling', 'tacky', 'taco', 'tactful', 'tactical', 'tactics', 'tactile', 'tactless', 'tadpole', 'taekwondo',
     'tag', 'tainted', 'take', 'taking', 'talcum', 'talisman', 'tall', 'talon', 'tamale', 'tameness', 'tamer', 'tamper',
     'tank', 'tanned', 'tannery', 'tanning', 'tantrum', 'tapeless', 'tapered', 'tapering', 'tapestry', 'tapioca', 'tapping', 'taps',
@@ -650,7 +652,7 @@
     'wow', 'wrangle', 'wrath', 'wreath', 'wreckage', 'wrecker', 'wrecking', 'wrench', 'wriggle', 'wriggly', 'wrinkle', 'wrinkly',
     'wrist', 'writing', 'written', 'wrongdoer', 'wronged', 'wrongful', 'wrongly', 'wrongness', 'wrought', 'xbox', 'xerox', 'yahoo',
     'yam', 'yanking', 'yapping', 'yard', 'yarn', 'yeah', 'yearbook', 'yearling', 'yearly', 'yearning', 'yeast', 'yelling',
-    'yelp', 'yen', 'yesterday', 'yiddish', 'yield', 'yin', 'yippee', 'yo-yo', 'yodel', 'yoga', 'yogurt', 'yonder',
+    'yelp', 'yen', 'yesterday', 'yiddish', 'yield', 'yin', 'yippee', 'yodel', 'yoga', 'yogurt', 'yonder',
     'yoyo', 'yummy', 'zap', 'zealous', 'zebra', 'zen', 'zeppelin', 'zero', 'zestfully', 'zesty', 'zigzagged', 'zipfile',
     'zipping', 'zippy', 'zips', 'zit', 'zodiac', 'zombie', 'zone', 'zoning', 'zookeeper', 'zoologist', 'zoology', 'zoom',
   ];
