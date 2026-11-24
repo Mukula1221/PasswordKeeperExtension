@@ -27,6 +27,23 @@
     return !el.disabled && !el.readOnly && isVisible(el);
   }
 
+  // 自動填入前多看一層：欄位和外面每一層都不能是透明的，也不能被移到頁面外面。
+  // 廣告和追蹤程式會在頁面上插看不見的登入表單，等密碼管理工具自動填進去再讀走。
+  function seenByUser(el) {
+    if (!isVisible(el)) return false;
+    let opacity = 1;
+    for (let node = el; node; node = node.parentElement) {
+      opacity *= parseFloat(getComputedStyle(node).opacity);
+      if (opacity < 0.1) return false;
+    }
+    const r = el.getBoundingClientRect();
+    const doc = document.documentElement;
+    const left = r.left + window.scrollX;
+    const top = r.top + window.scrollY;
+    if (left + r.width <= 0 || top + r.height <= 0) return false;
+    return left < Math.max(doc.scrollWidth, doc.clientWidth) && top < Math.max(doc.scrollHeight, doc.clientHeight);
+  }
+
   function isTextInput(el) {
     return el instanceof HTMLInputElement && TEXT_TYPES.has(el.type);
   }
@@ -121,5 +138,5 @@
     return force || !el.value || filledValue.get(el) === el.value;
   }
 
-  PK.contentFields = { attrText, canFill, detectGroups, isTextInput, isUsable, isVisible, setValue, usableInputs };
+  PK.contentFields = { attrText, canFill, detectGroups, isTextInput, isUsable, isVisible, seenByUser, setValue, usableInputs };
 })();

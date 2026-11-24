@@ -45,6 +45,8 @@
   async function setLocked(locked) {
     await chrome.storage.session.set({ locked: !!locked });
     PK.badge.refreshActiveBadges();
+    // 離開座位時剪貼簿裡不要留著小管家複製的密碼
+    if (locked) PK.clipboard.clearClipboardIfOurs().catch((err) => console.warn('[密碼小管家] 鎖定時清除剪貼簿失敗', err)); // i18n-ignore：給開發者看的
     // 管理頁開著的時候鎖定一觸發要立刻回到驗證畫面，所以也通知擴充功能自己的頁面
     chrome.runtime.sendMessage({ type: 'lockChanged', locked: !!locked }).catch(() => {
       // 沒有頁面開著就會失敗，不用理

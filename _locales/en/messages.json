@@ -193,6 +193,12 @@
     "message": "Fill",
     "description": "Fills this account into the sign-in form on the page."
   },
+  "pop_fill_insecure": {
+    "message": "This page isn't encrypted. Click again to fill in."
+  },
+  "pop_fill_anyway": {
+    "message": "Fill anyway"
+  },
   "pop_copy_password": {
     "message": "Copy password"
   },
@@ -1606,6 +1612,31 @@
     "message": "None yet. Sites show up here when you click \"Never for this site\" on the save prompt.",
     "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
   },
+  "opt_clip_title": {
+    "message": "Copying passwords"
+  },
+  "opt_clip_label": {
+    "message": "Clear the clipboard after copying a password"
+  },
+  "opt_clip_never": {
+    "message": "Never"
+  },
+  "opt_clip_30": {
+    "message": "After 30 seconds"
+  },
+  "opt_clip_60": {
+    "message": "After 1 minute"
+  },
+  "opt_clip_120": {
+    "message": "After 2 minutes"
+  },
+  "opt_clip_tip": {
+    "message": "Only clears the clipboard if it still holds that password. Anything you copy afterwards is left alone.\nThe first time you choose this, the browser asks for clipboard permission.\nEntries in Windows clipboard history (Win+V) can't be cleared.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_clip_denied": {
+    "message": "No clipboard permission, so the clipboard won't be cleared."
+  },
   "opt_remove": {
     "message": "Remove",
     "description": "Tooltip of the x that removes a site from the never-ask list."
@@ -2109,6 +2140,25 @@
   "cs_dropdown_no_username": {
     "message": "(No username, password only)",
     "description": "Shown in the account list for a saved login without a username."
+  },
+  "cs_ui_blocked": {
+    "message": "The page is covering this panel. Use the toolbar button instead."
+  },
+  "cs_confirm_insecure": {
+    "message": "This page isn't encrypted. Fill in anyway?"
+  },
+  "cs_confirm_frame": {
+    "message": "This sign-in box is embedded by $1. Fill in anyway?",
+    "description": "$1 = address of the site that embeds the sign-in box."
+  },
+  "cs_confirm_frame_unknown": {
+    "message": "This sign-in box is embedded by another site. Fill in anyway?"
+  },
+  "cs_confirm_fill": {
+    "message": "Fill in"
+  },
+  "cs_fill_insecure": {
+    "message": "This page isn't encrypted. Click the username field and pick an account from the list."
   },
   "cs_click_cooldown": {
     "message": "Auto-clicked just now. Skipping this time."

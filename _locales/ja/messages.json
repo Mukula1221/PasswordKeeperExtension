@@ -193,6 +193,12 @@
     "message": "入力",
     "description": "Fills this account into the sign-in form on the page."
   },
+  "pop_fill_insecure": {
+    "message": "このページは暗号化されていません。もう一度押すと入力します。"
+  },
+  "pop_fill_anyway": {
+    "message": "それでも入力"
+  },
   "pop_copy_password": {
     "message": "パスワードをコピー"
   },
@@ -1606,6 +1612,31 @@
     "message": "まだありません。保存の確認で「このサイトでは確認しない」を押すと、ここに表示されます。",
     "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
   },
+  "opt_clip_title": {
+    "message": "パスワードのコピー"
+  },
+  "opt_clip_label": {
+    "message": "パスワードをコピーしたらクリップボードを消去"
+  },
+  "opt_clip_never": {
+    "message": "消去しない"
+  },
+  "opt_clip_30": {
+    "message": "30 秒後"
+  },
+  "opt_clip_60": {
+    "message": "1 分後"
+  },
+  "opt_clip_120": {
+    "message": "2 分後"
+  },
+  "opt_clip_tip": {
+    "message": "クリップボードにまだそのパスワードが入っているときだけ消去します。あとから自分でコピーしたものは消しません。\n初めて選ぶと、ブラウザーがクリップボードの権限を求めます。\nWindows のクリップボード履歴（Win+V）に残った記録は消せません。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_clip_denied": {
+    "message": "クリップボードの権限がないため、消去しない設定のままにします。"
+  },
   "opt_remove": {
     "message": "削除",
     "description": "Tooltip of the x that removes a site from the never-ask list."
@@ -2109,6 +2140,25 @@
   "cs_dropdown_no_username": {
     "message": "（ユーザー名なし、パスワードのみ）",
     "description": "Shown in the account list for a saved login without a username."
+  },
+  "cs_ui_blocked": {
+    "message": "ページがこの画面を隠しています。ツールバーから操作してください。"
+  },
+  "cs_confirm_insecure": {
+    "message": "このページは暗号化されていません。入力しますか？"
+  },
+  "cs_confirm_frame": {
+    "message": "このログイン欄は $1 に埋め込まれています。入力しますか？",
+    "description": "$1 = address of the site that embeds the sign-in box."
+  },
+  "cs_confirm_frame_unknown": {
+    "message": "このログイン欄は別のサイトに埋め込まれています。入力しますか？"
+  },
+  "cs_confirm_fill": {
+    "message": "入力する"
+  },
+  "cs_fill_insecure": {
+    "message": "このページは暗号化されていません。ユーザー名の欄をクリックし、一覧からアカウントを選んでください。"
   },
   "cs_click_cooldown": {
     "message": "直前に自動クリックしたため、今回はクリックしません。"

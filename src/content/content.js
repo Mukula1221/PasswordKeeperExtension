@@ -14,8 +14,8 @@
   PK.contentLoaded = true;
   const { browserLocale, chosenLocale, t, uiLocale, useLocale } = PK.i18n;
   const { baseDomain, rulePathMatches } = PK.domain;
-  const { el, refreshShadowStyle, toast, ui } = PK.contentUi;
-  const { attrText, canFill, detectGroups, isTextInput, isUsable, isVisible, setValue, usableInputs } = PK.contentFields;
+  const { el, hiddenFromUser, refreshShadowStyle, toast, ui } = PK.contentUi;
+  const { attrText, canFill, detectGroups, isTextInput, isUsable, isVisible, seenByUser, setValue, usableInputs } = PK.contentFields;
   const { CLICKABLE, clickableOf, elementText, findClickTarget, fireClick, selectorFor } = PK.clickTarget;
 
   const HOST = location.hostname.toLowerCase();
@@ -23,6 +23,8 @@
   if (!HOST || !/^https?:$/.test(location.protocol)) return;
   // 不能在私密視窗用的瀏覽器，私密分頁裡什麼都不做：不填入、不問要不要儲存。見 platform.js 的 privateWindows
   if (PK.platform.privateBlocked(PK.platform.inPrivateContext())) return;
+  // sandbox 頁面（網站放使用者上傳內容的地方常這樣設）的來源是 null，跟網站本身不算同一個來源，什麼都不做
+  if (self.origin === 'null') return;
 
   const TAG = '[密碼小管家]'; // i18n-ignore：console 訊息的前綴，給開發者看的
   const IS_TOP = window.top === window;
@@ -62,6 +64,12 @@
       dropdownGenerate: t('cs_dropdown_generate'),
       dropdownGenerateHint: t('cs_dropdown_generate_hint'),
       dropdownNoUsername: t('cs_dropdown_no_username'),
+      uiBlocked: t('cs_ui_blocked'),
+      confirmInsecure: t('cs_confirm_insecure'),
+      confirmFrame: t('cs_confirm_frame', '$1'),
+      confirmFrameUnknown: t('cs_confirm_frame_unknown'),
+      confirmFill: t('cs_confirm_fill'),
+      fillInsecure: t('cs_fill_insecure'),
 
       clickCooldown: t('cs_click_cooldown'),
       clickAfterLogout: t('cs_click_after_logout'),
@@ -145,12 +153,26 @@
     if (area === 'local' && changes.uiLanguage) followChosenLanguage();
   });
 
+  // 外面每一層都跟自己同一個來源。來源不同時讀外層的 location 會丟例外。
+  function sameOriginParents() {
+    try {
+      for (let w = window.parent; ; w = w.parent) {
+        if (w.location.origin !== location.origin) return false;
+        if (w === window.top) return true;
+      }
+    } catch {
+      return false;
+    }
+  }
+
   // 內嵌在別人網站裡的 iframe 不自動填，避免惡意網頁偷偷把登入頁框進來騙密碼。
   // 同一個網站自己的 iframe 可以填。
   function frameIsTrusted() {
     if (IS_TOP) return true;
     const ancestors = location.ancestorOrigins;
-    if (!ancestors || ancestors.length === 0) return false;
+    // Firefox 沒有 ancestorOrigins。外層跟自己同一個來源時讀得到外層的網址，讀不到就當成別的網站
+    if (!ancestors) return sameOriginParents();
+    if (ancestors.length === 0) return false;
     const mine = baseDomain(HOST);
     for (let i = 0; i < ancestors.length; i++) {
       let h;
@@ -194,6 +216,24 @@
     // res.data：entries、autoFillEntry、autoFill、autoSubmit、locked
     cache = { at: Date.now(), ...res.data };
     return cache;
+  }
+
+  // ---- 擋點擊劫持（clickjacking）----
+
+  // 清單、卡片剛出現的這段時間不收點擊。網頁可能趁使用者正要點別的東西時，把清單叫到滑鼠底下。
+  const ARM_MS = 500;
+
+  // 使用者在小管家的畫面上按了東西：真人按的、畫面出現夠久、而且當下看得見，才照做。
+  // 看不見時收掉畫面、跳提示。box 是那塊畫面，onHidden 收掉它。
+  function userMeant(e, box, shownAt, onHidden) {
+    if (!e.isTrusted) return false;
+    if (Date.now() - shownAt < ARM_MS) return false;
+    // 鍵盤按 Enter、空白鍵觸發的 click，detail 是 0，沒有滑鼠位置
+    const point = e.type === 'click' && e.detail > 0 ? { x: e.clientX, y: e.clientY } : null;
+    if (!hiddenFromUser(box, point)) return true;
+    onHidden();
+    toast(TEXT.uiBlocked);
+    return false;
   }
 
   // ---- 「要儲存嗎？」卡片 ----
@@ -250,7 +290,9 @@
     row.appendChild(yes);
     box.appendChild(row);
 
-    never.addEventListener('click', async () => {
+    const shownAt = Date.now();
+    never.addEventListener('click', async (e) => {
+      if (!userMeant(e, box, shownAt, closeBanner)) return;
       await send({ type: 'neverSave.add', host: pending.host });
       await send({ type: 'pending.clear' });
       closeBanner();
@@ -260,7 +302,8 @@
       await send({ type: 'pending.clear' });
       closeBanner();
     });
-    yes.addEventListener('click', async () => {
+    yes.addEventListener('click', async (e) => {
+      if (!userMeant(e, box, shownAt, closeBanner)) return;
       const username = userInput.value.trim();
       // 使用者在卡片上把帳號改掉了，那就是另一個帳號，要新增而不是蓋掉舊的
       const id = mode === 'update' && username === (existingUsername || '') ? existingId : undefined;
@@ -301,12 +344,25 @@
   // ---- 帳號清單（點欄位時跳出）----
 
   let dropdown = null;
+  let dropdownWatch = null;
 
   function closeDropdown() {
+    if (dropdownWatch) dropdownWatch.disconnect();
+    dropdownWatch = null;
     if (dropdown) {
       dropdown.el.remove();
       dropdown = null;
     }
+  }
+
+  // 清單開著時盯著 html、body 和小管家的外框，樣式一被改就重新檢查清單還看不看得見，看不見就收掉。
+  // 只改樣式表（例如加一個 <style>）不會觸發這裡，靠點下去時 userMeant() 的檢查擋。
+  function watchDropdown() {
+    dropdownWatch = new MutationObserver(() => {
+      if (dropdown && hiddenFromUser(dropdown.el, null)) closeDropdown();
+    });
+    const options = { attributes: true, attributeFilter: ['style', 'class', 'hidden'] };
+    for (const node of [document.documentElement, document.body, PK.contentUi.host()]) if (node) dropdownWatch.observe(node, options);
   }
 
   // 有兩個以上密碼欄、或網站標了 autocomplete="new-password" 的，就是在設新密碼，清單裡要給「產生強密碼」
@@ -342,6 +398,8 @@
     } catch {
       copied = false;
     }
+    // 設了自動清除剪貼簿的話，背景程式到時間會清掉
+    if (copied) send({ type: 'clipboard.copied', text: res.data.password });
     toast(copied ? TEXT.generateFilledCopied : TEXT.generateFilled);
   }
 
@@ -352,9 +410,13 @@
     dropdown.items.forEach((it, i) => it.classList.toggle('active', i === dropdown.index));
   }
 
-  function activateHighlighted() {
+  // 用鍵盤選的：按 Enter 跟滑鼠點一樣，要先確認清單看得見
+  function activateHighlighted(e) {
     if (!dropdown || dropdown.index < 0) return false;
-    dropdown.items[dropdown.index].click();
+    if (!userMeant(e, dropdown.el, dropdown.shownAt, closeDropdown)) return true;
+    const pick = dropdown.picks[dropdown.index];
+    closeDropdown();
+    pick();
     return true;
   }
 
@@ -376,41 +438,74 @@
     dd.appendChild(el('div', 'head', TEXT.extName));
     dd.appendChild(el('div', 'item locked', TEXT.dropdownLocked));
     placeDropdown(dd, anchor);
-    dropdown = { el: dd, anchor, items: [], index: -1 };
+    dropdown = { el: dd, anchor, items: [], picks: [], index: -1, shownAt: Date.now() };
   }
 
-  function showDropdown(anchor, group, entries) {
+  // 畫一個清單。head 是最上面那行字，warn 時是要使用者確認的黃底問句。
+  // choices 每一項是 { className, label, hint, onPick }。
+  function showList(anchor, head, choices, { warn = false } = {}) {
     closeDropdown();
-    const newPassword = isNewPasswordGroup(group);
     const dd = el('div', 'dropdown');
-    dd.appendChild(el('div', 'head', newPassword ? TEXT.extName : TEXT.dropdownChooseAccount));
+    dd.appendChild(el('div', warn ? 'head warn' : 'head', head));
     const items = [];
-    const addItem = (item, onPick) => {
+    const picks = [];
+    for (const choice of choices) {
+      const item = el('div', choice.className ? 'item ' + choice.className : 'item');
+      item.appendChild(el('div', 'u', choice.label));
+      if (choice.hint) item.appendChild(el('div', 'h', choice.hint));
       // mousedown 先擋掉，欄位才不會失去焦點
       item.addEventListener('mousedown', (e) => e.preventDefault());
       item.addEventListener('mouseenter', () => setHighlight(items.indexOf(item)));
-      item.addEventListener('click', () => {
+      item.addEventListener('click', (e) => {
+        if (!dropdown || dropdown.el !== dd || !userMeant(e, dd, dropdown.shownAt, closeDropdown)) return;
         closeDropdown();
-        onPick();
+        choice.onPick();
       });
       items.push(item);
+      picks.push(choice.onPick);
       dd.appendChild(item);
-    };
-    if (newPassword) {
-      const gen = el('div', 'item gen');
-      gen.appendChild(el('div', 'u', TEXT.dropdownGenerate));
-      gen.appendChild(el('div', 'h', TEXT.dropdownGenerateHint));
-      addItem(gen, () => generateInto(group));
-    } else {
-      for (const entry of entries.slice(0, 8)) {
-        const item = el('div', 'item');
-        item.appendChild(el('div', 'u', entry.username || TEXT.dropdownNoUsername));
-        addItem(item, () => fillGroup(group, entry, true));
-      }
     }
-    if (!items.length) return;
     placeDropdown(dd, anchor);
-    dropdown = { el: dd, anchor, items, index: -1 };
+    dropdown = { el: dd, anchor, items, picks, index: -1, shownAt: Date.now() };
+    watchDropdown();
+  }
+
+  // 填之前要先問的情況：網頁沒加密、帳號卻是在 https 存的；或登入框在別的網站框進來的 iframe 裡。不用問就回空字串。
+  function fillQuestion(entry) {
+    if (entry.insecure) return TEXT.confirmInsecure;
+    if (TRUSTED) return '';
+    const outer = location.ancestorOrigins && location.ancestorOrigins.length ? location.ancestorOrigins[0] : '';
+    return outer ? formatText(TEXT.confirmFrame, outer) : TEXT.confirmFrameUnknown;
+  }
+
+  function pickEntry(anchor, group, entry) {
+    const question = fillQuestion(entry);
+    if (!question) {
+      fillGroup(group, entry, true);
+      return;
+    }
+    showList(
+      anchor,
+      question,
+      [
+        { label: TEXT.confirmFill, onPick: () => fillGroup(group, entry, true) },
+        { label: TEXT.cancel, onPick: () => {} },
+      ],
+      { warn: true }
+    );
+  }
+
+  function showDropdown(anchor, group, entries) {
+    if (isNewPasswordGroup(group)) {
+      showList(anchor, TEXT.extName, [{ className: 'gen', label: TEXT.dropdownGenerate, hint: TEXT.dropdownGenerateHint, onPick: () => generateInto(group) }]);
+      return;
+    }
+    if (!entries.length) return;
+    showList(
+      anchor,
+      TEXT.dropdownChooseAccount,
+      entries.slice(0, 8).map((entry) => ({ label: entry.username || TEXT.dropdownNoUsername, onPick: () => pickEntry(anchor, group, entry) }))
+    );
   }
 
   async function onFieldFocus(field, group) {
@@ -528,10 +623,12 @@
 
   // 清單打開時：上下鍵選、Enter 填、Esc 關。沒打開時在欄位按下鍵會打開。
   // 用 capture 搶在網頁前面處理，不然 Enter 會先把表單送出去。
+  // 清單只聽真人按的鍵，網頁自己送的按鍵不理，不然網頁可以替使用者從清單選帳號。
   document.addEventListener(
     'keydown',
     (e) => {
       if (dropdown) {
+        if (!e.isTrusted) return;
         if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
           setHighlight(dropdown.index + (e.key === 'ArrowDown' ? 1 : -1));
           e.preventDefault();
@@ -539,7 +636,7 @@
           return;
         }
         if (e.key === 'Enter' && dropdown.index >= 0) {
-          activateHighlighted();
+          activateHighlighted(e);
           e.preventDefault();
           e.stopPropagation();
           return;
@@ -551,7 +648,7 @@
           return;
         }
         if (e.key === 'Tab') closeDropdown();
-      } else if (e.key === 'ArrowDown') {
+      } else if (e.key === 'ArrowDown' && e.isTrusted) {
         const g = groupForField(e.target);
         if (g) {
           onFieldFocus(e.target, g);
@@ -612,6 +709,18 @@
 
   let autoSubmitted = false;
 
+  // 看不見的登入框先不自動填，隔一秒再看一次，最多看三次。有些登入框有淡入動畫，剛出現時是透明的。
+  const HIDDEN_RETRY_MS = 1000;
+  const HIDDEN_RETRIES = 3;
+  const hiddenRetries = new WeakMap();
+
+  function retryWhenSeen(g, field) {
+    const n = hiddenRetries.get(field) || 0;
+    if (n >= HIDDEN_RETRIES) return;
+    hiddenRetries.set(field, n + 1);
+    setTimeout(() => autofill([g]).catch((err) => console.warn(TAG, err)), HIDDEN_RETRY_MS);
+  }
+
   async function autofill(targets) {
     const { autoFillEntry, autoFill, autoSubmit, locked } = await getEntries();
     if (locked || !autoFillEntry || !autoFill || !TRUSTED) return;
@@ -620,10 +729,16 @@
       if (g.kind === 'signup') continue;
       // 只有帳號欄的頁面，要網站明確標了 autocomplete="username" 才自動填，不然電子報的 email 欄也會被填
       if (g.kind === 'useronly' && !g.strong) continue;
-      fillGroup(g, autoFillEntry, false);
       const keyField = g.pass || g.user;
+      if (!keyField) continue;
+      if (!seenByUser(keyField)) {
+        retryWhenSeen(g, keyField);
+        continue;
+      }
+      // 密碼欄看得見、帳號欄看不見時，只填密碼欄
+      fillGroup(g.pass && g.user && !seenByUser(g.user) ? { ...g, user: null } : g, autoFillEntry, false);
       const wanted = g.pass ? autoFillEntry.password : autoFillEntry.username;
-      if (!keyField || keyField.value !== wanted) continue;
+      if (keyField.value !== wanted) continue;
       // 使用者選過這一頁要點哪顆按鈕，就點那顆，不用猜。「頁面一打開就點」的規則自己會點，這裡也不能再按一次。
       if (pageRules.length) {
         for (const rule of pageRules) if (rule.when === 'afterFill') armClick(rule, g.kind, g);
@@ -1041,7 +1156,9 @@
     row.appendChild(save);
     box.appendChild(row);
     cancel.addEventListener('click', closeBanner);
-    save.addEventListener('click', async () => {
+    const shownAt = Date.now();
+    save.addEventListener('click', async (e) => {
+      if (!userMeant(e, box, shownAt, closeBanner)) return;
       save.disabled = true;
       const res = await send({ type: 'clickRules.save', rule: { host: HOST, path, selector, text, when } });
       if (!res.ok) {
@@ -1100,9 +1217,17 @@
       sendResponse({ ok: true });
       return false;
     }
+    // 快捷鍵遇到沒加密的網頁不填，改請使用者從清單選。每個 frame 都會收到，只在最上層提示一次
+    if (msg && msg.type === 'fillBlocked') {
+      if (IS_TOP) toast(TEXT.fillInsecure);
+      sendResponse({ ok: true });
+      return false;
+    }
     if (!msg || msg.type !== 'fill') return false;
     const targets = detectGroups();
-    if (!targets.length) {
+    // 小視窗、快捷鍵送來的是最上層網站的帳號。別的網站框進來的 iframe 不收，不然別人的網頁可以把登入框框進來騙帳密。
+    // 跟沒有欄位一樣晚一點才回，讓最上層有欄位的 frame 先回。
+    if (!targets.length || (msg.entry && !TRUSTED)) {
       // 其他 frame 可能有登入欄位，晚一點再回，讓有欄位的那個 frame 先回
       setTimeout(() => sendResponse({ ok: false, error: TEXT.fillNoFields }), 300);
       return true;

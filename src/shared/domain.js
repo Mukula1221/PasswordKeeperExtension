@@ -37,6 +37,12 @@
     }
   }
 
+  // 網頁是 http、帳號卻是在 https 網址存的：網頁沒加密，同一個網路上的人可以竄改網頁把密碼騙走，所以不自動填。
+  // 帳號本來就存在 http 網址的不算，公司內部很多設備只有 http。
+  function insecureFill(pageUrl, savedOrigin) {
+    return /^http:/i.test(pageUrl || '') && /^https:/i.test(savedOrigin || '');
+  }
+
   // 規則的網址比對，* 代表任意字元。沒寫 ? 或 # 就只比路徑，因為查詢字串常常每次都不一樣（像 ?returnUrl=...）。
   // content.js 有一份一樣的，content script 不能 import。
   function rulePathMatches(pattern, url) {
@@ -56,5 +62,5 @@
     return new RegExp('^' + body + '$', 'i').test(target);
   }
 
-  PK.domain = { baseDomain, hostFromUrl, originFromUrl, rulePathMatches };
+  PK.domain = { baseDomain, hostFromUrl, insecureFill, originFromUrl, rulePathMatches };
 })();

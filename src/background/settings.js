@@ -43,6 +43,8 @@
     backupLog: [],
     // 回收桶放幾天就永久刪除
     trashDays: 30,
+    // 複製密碼後幾秒清除剪貼簿：0 不清除，可以選 30、60、120。見 clipboard.js
+    clipboardClearSeconds: 0,
     // 這些網站自動填完帳密就幫忙按登入
     autoSubmitHosts: [],
     // 這些網站不自動填入。autoFill 是總開關，總開關打開時才看這個清單。點欄位跳清單、快捷鍵照樣能用。

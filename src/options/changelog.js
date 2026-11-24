@@ -9,6 +9,53 @@
   const PK = (globalThis.PK ??= {});
   PK.changelog = [
     {
+      version: '1.20.0',
+      date: '2026-11-24',
+      items: {
+        zh_TW: [
+          '加強安全：網頁把帳號清單設成透明、或蓋了東西在上面騙你點時，點了不會填，會提示改從工具列操作。清單剛出現的半秒內點到的也不算。',
+          '加強安全：帳號清單只聽真人按的上下鍵和 Enter，網頁自己送的按鍵選不到帳號。',
+          '加強安全：看不見的登入框不自動填，例如透明的、或被移到頁面外面的。淡入的登入框淡入後照常填。',
+          '加強安全：網址是 http 開頭、帳號卻是在 https 網址存的，不自動填，快捷鍵和瀏覽器的帳密視窗也不填。從清單選帳號會先問一次，小視窗的「填入」要按兩次。',
+          '加強安全：sandbox 頁面不填。別的網站框進來的登入框，從清單選帳號會先問一次，小視窗的「填入」和快捷鍵不會填進去。',
+          '管理頁「設定」分頁的「填入」區塊可以選複製密碼後 30 秒、1 分鐘或 2 分鐘清掉剪貼簿，工具鎖上時也會清。只在剪貼簿裡還是那組密碼時才清。',
+        ],
+        en: [
+          'Security: if a page makes the account list transparent or covers it to trick you into clicking, nothing is filled in, and you\'re asked to use the toolbar button instead. Clicks in the first half second after the list appears don\'t count either.',
+          'Security: the account list only responds to arrow keys and Enter pressed by you. Keys sent by the page can\'t pick an account.',
+          'Security: hidden sign-in forms, such as transparent ones or ones moved off the page, aren\'t filled in automatically. Forms that fade in are filled in once they\'re visible.',
+          'Security: if the address starts with http but the account was saved on an https address, it isn\'t filled in automatically, and the shortcut and the browser\'s sign-in prompt don\'t fill it either. Choosing the account from the list asks once first, and the popup\'s "Fill" button needs two clicks.',
+          'Security: sandboxed pages are never filled in. For sign-in boxes embedded by another site, choosing an account from the list asks once first, and the popup\'s "Fill" button and the shortcut don\'t fill them.',
+          'In the "Autofill" section of the Settings tab on the manager page, you can have the clipboard cleared 30 seconds, 1 minute, or 2 minutes after you copy a password. It\'s also cleared when the extension locks. It\'s cleared only if the clipboard still holds that password.',
+        ],
+        ja: [
+          'セキュリティ強化：ページがアカウント一覧を透明にしたり上に何かを重ねたりしてクリックさせようとしても、入力せず、ツールバーから操作するよう表示します。一覧が表示されてから 0.5 秒以内のクリックも数えません。',
+          'セキュリティ強化：アカウント一覧は人が押した矢印キーと Enter だけに反応します。ページが送ったキー操作ではアカウントを選べません。',
+          'セキュリティ強化：透明なログイン欄やページの外に移されたログイン欄など、見えないログイン欄には自動入力しません。フェードインするログイン欄は表示されてから入力します。',
+          'セキュリティ強化：アドレスが http で始まり、アカウントは https のアドレスで保存したものの場合、自動入力しません。ショートカットとブラウザーの認証ダイアログでも入力しません。一覧から選ぶと一度確認し、ポップアップの「入力」は 2 回押す必要があります。',
+          'セキュリティ強化：サンドボックスのページには入力しません。別のサイトに埋め込まれたログイン欄では、一覧からアカウントを選ぶと一度確認し、ポップアップの「入力」とショートカットでは入力しません。',
+          '管理ページの「設定」タブの「自動入力」で、パスワードをコピーしてから 30 秒、1 分、2 分後にクリップボードを消去するよう選べます。ロックしたときにも消去します。クリップボードにまだそのパスワードが入っているときだけ消去します。',
+        ],
+      },
+      notes: {
+        zh_TW: [
+          '剪貼簿自動清除預設關閉。第一次打開時瀏覽器會問要不要給剪貼簿的權限，沒打開的人不會被問。',
+          'Windows 剪貼簿歷程（Win+V）裡的紀錄清不掉。',
+          '公司內部只有 http 的網站，帳號是在 http 網址存的，照常自動填。',
+        ],
+        en: [
+          'Clipboard clearing is off by default. The first time you turn it on, the browser asks for clipboard permission. You won\'t be asked unless you turn it on.',
+          'Entries in Windows clipboard history (Win+V) can\'t be cleared.',
+          'Internal sites that only use http are filled in as usual if their accounts were saved on an http address.',
+        ],
+        ja: [
+          'クリップボードの消去は最初はオフです。初めてオンにするとブラウザーがクリップボードの権限を求めます。オンにしない限り求めません。',
+          'Windows のクリップボード履歴（Win+V）の記録は消せません。',
+          'http だけの社内サイトは、アカウントを http のアドレスで保存していれば通常どおり自動入力します。',
+        ],
+      },
+    },
+    {
       version: '1.19.2',
       date: '2026-11-24',
       items: {

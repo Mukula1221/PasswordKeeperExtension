@@ -3289,6 +3289,319 @@ test('既有功能：自動填入照常，存的帳號會填到欄位', async ()
   await closePage(page);
 });
 
+// ---- 網頁上的帳號清單和自動填入：擋點擊劫持、隱形表單、沒加密的網頁、sandbox ----
+
+const fieldValues = (page) => page.eval(`({ u: document.getElementById('u').value, p: document.getElementById('p').value })`);
+
+// 自動填入關掉，欄位才是空的，看得出是不是從清單填進去的
+const noAutoFill = () => w.eval(`setSettings({ autoFill: false }).then(() => true)`);
+
+const listShown = async (page, text = 'test-user@example.test') => until(async () => (await page.shadowTexts()).includes(text), 4000);
+
+// 真人點帳號欄打開清單，再等過清單剛出現時不收點擊的那段時間
+async function openAccountList(page) {
+  await page.click('#u');
+  check(await listShown(page), '帳號清單應該出現');
+  await sleep(700);
+}
+
+// 清單被網頁收掉也算擋下來，找不到清單就不點
+async function clickAccountIfShown(page) {
+  try {
+    await page.clickShadow('test-user@example.test', 'DIV');
+  } catch {
+    // 清單已經被收掉
+  }
+  await sleep(300);
+}
+
+test('帳號清單：真人點帳號照常填入，真人按下鍵和 Enter 也照常填入', async () => {
+  await seedEntry('right');
+  await noAutoFill();
+  let page = await open(T + 'harness.html', 1000);
+  await openAccountList(page);
+  await page.clickShadow('test-user@example.test', 'DIV');
+  await sleep(300);
+  let v = await fieldValues(page);
+  check(v.u === 'test-user@example.test' && v.p === 'right', '點清單應該填入：' + JSON.stringify(v));
+  await closePage(page);
+
+  page = await open(T + 'harness.html', 1000);
+  await openAccountList(page);
+  await page.press('ArrowDown', 'ArrowDown', 40);
+  await page.press('Enter', 'Enter', 13);
+  await sleep(300);
+  v = await fieldValues(page);
+  check(v.p === 'right', '真人按下鍵和 Enter 應該填入：' + JSON.stringify(v));
+  await closePage(page);
+});
+
+test('安全：網頁用樣式表把整頁設成透明，點帳號清單不會填', async () => {
+  await seedEntry('right');
+  await noAutoFill();
+  const page = await open(T + 'harness.html', 1000);
+  await openAccountList(page);
+  // 加樣式表不會改到 html 的屬性，要靠點下去那一刻的檢查擋
+  await page.eval(`(() => { const s = document.createElement('style'); s.textContent = 'html { opacity: 0 !important; }'; document.head.appendChild(s); return true; })()`);
+  await sleep(200);
+  await clickAccountIfShown(page);
+  const v = await fieldValues(page);
+  check(!v.u && !v.p, '不應該填：' + JSON.stringify(v));
+  check(/擋住/.test(await page.toastText()), '應該提示被擋住，實際 ' + (await page.toastText()));
+  await closePage(page);
+});
+
+test('安全：網頁改 html 的 style 變透明，清單收掉，點了不會填', async () => {
+  await seedEntry('right');
+  await noAutoFill();
+  const page = await open(T + 'harness.html', 1000);
+  await openAccountList(page);
+  await page.eval(`document.documentElement.style.opacity = '0.01'`);
+  await sleep(300);
+  await clickAccountIfShown(page);
+  const v = await fieldValues(page);
+  check(!v.u && !v.p, '不應該填：' + JSON.stringify(v));
+  await closePage(page);
+});
+
+test('安全：網頁開點擊穿透的 popover 蓋住清單，點了不會填', async () => {
+  await seedEntry('right');
+  await noAutoFill();
+  const page = await open(T + 'harness.html', 1000);
+  await openAccountList(page);
+  await page.eval(`(() => {
+    const d = document.createElement('div');
+    d.setAttribute('popover', 'manual');
+    d.style.cssText = 'pointer-events: none; position: fixed; inset: 0; width: 100vw; height: 100vh; margin: 0; border: 0; background: #fff;';
+    d.textContent = '接受 cookie';
+    document.body.appendChild(d);
+    d.showPopover();
+    return true;
+  })()`);
+  await sleep(200);
+  await clickAccountIfShown(page);
+  const v = await fieldValues(page);
+  check(!v.u && !v.p, '不應該填：' + JSON.stringify(v));
+  await closePage(page);
+});
+
+test('安全：網頁在清單後面加一層蓋上去，清單會移回最上層', async () => {
+  await seedEntry('right');
+  await noAutoFill();
+  const page = await open(T + 'harness.html', 1000);
+  await openAccountList(page);
+  const moved = await page.eval(`(async () => {
+    const d = document.createElement('div');
+    d.id = 'cover';
+    d.style.cssText = 'pointer-events: none; position: fixed; inset: 0; z-index: 2147483647; background: #fff;';
+    document.documentElement.appendChild(d);
+    await new Promise((r) => setTimeout(r, 200));
+    return document.documentElement.lastElementChild.id !== 'cover';
+  })()`);
+  check(moved, '小管家的畫面應該移回 html 的最後面');
+  await closePage(page);
+});
+
+test('安全：清單剛出現就被點，不會填', async () => {
+  await seedEntry('right');
+  await noAutoFill();
+  const page = await open(T + 'harness.html', 1000);
+  // 清單畫在帳號欄正下方，第一個帳號在標題那一行下面。先算好位置，focus 之後馬上點
+  const r = await page.eval(`(() => { const r = document.getElementById('u').getBoundingClientRect(); return { x: r.left + 30, y: r.bottom + 2 + 24 + 16 }; })()`);
+  const started = Date.now();
+  await page.eval(`document.getElementById('u').focus()`);
+  await sleep(120);
+  await page.clickAt(r.x, r.y);
+  const elapsed = Date.now() - started;
+  await sleep(300);
+  const v = await fieldValues(page);
+  // 測試機太慢、點下去時已經過了 0.5 秒，這一次就看不出來，不算失敗
+  if (elapsed < 450) check(!v.p, '清單剛出現就被點不應該填：' + JSON.stringify(v) + '，經過 ' + elapsed + 'ms');
+  else console.log('  （點下去時已經過了 ' + elapsed + 'ms，這一次看不出來）');
+  // 同一個位置等一下再點會填，證明上面點的位置是對的
+  await page.click('#u');
+  await sleep(700);
+  await page.clickAt(r.x, r.y);
+  await sleep(300);
+  check((await fieldValues(page)).p === 'right', '等清單出現一陣子再點同一個位置應該填入');
+  await closePage(page);
+});
+
+test('安全：網頁自己送的下鍵和 Enter 不會從清單填入', async () => {
+  await seedEntry('right');
+  await noAutoFill();
+  const page = await open(T + 'harness.html', 1000);
+  await page.eval(`document.getElementById('u').focus()`);
+  check(await listShown(page), '帳號清單應該出現');
+  await sleep(700);
+  await page.eval(`(() => {
+    const u = document.getElementById('u');
+    for (const key of ['ArrowDown', 'Enter']) u.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+    return true;
+  })()`);
+  await sleep(300);
+  const v = await fieldValues(page);
+  check(!v.p, '網頁送的假按鍵不應該填：' + JSON.stringify(v));
+  await closePage(page);
+});
+
+test('安全：看不見的表單不自動填，淡入的登入框淡入後照常填', async () => {
+  await seedEntry('right');
+  const result = {};
+  for (const mode of ['normal', 'opacity', 'faint', 'offscreen', 'fade']) {
+    const page = await open(ORIGIN + '/hidden-login?mode=' + mode, 2800);
+    result[mode] = (await fieldValues(page)).p;
+    await closePage(page);
+  }
+  check(result.normal === 'right', '看得見的表單應該填：' + JSON.stringify(result));
+  check(result.fade === 'right', '淡入的表單淡入後應該填：' + JSON.stringify(result));
+  for (const mode of ['opacity', 'faint', 'offscreen']) check(result[mode] === '', mode + ' 的表單不應該填：' + JSON.stringify(result));
+});
+
+test('安全：HTTP 網頁不自動填 HTTPS 存的帳號，從清單選要先確認', async () => {
+  await w.eval(`handlers['entries.save']({ entry: { host: '127.0.0.1', origin: 'https://127.0.0.1', username: 'test-user@example.test', password: 'right' } }, ${fromOptions}).then(() => true)`);
+  const page = await open(T + 'harness.html', 1500);
+  let v = await fieldValues(page);
+  check(!v.p, 'HTTP 網頁不應該自動填 HTTPS 的帳號：' + JSON.stringify(v));
+  await openAccountList(page);
+  await page.clickShadow('test-user@example.test', 'DIV');
+  await sleep(300);
+  v = await fieldValues(page);
+  check(!v.p, '選了帳號還沒確認，不應該填：' + JSON.stringify(v));
+  const texts = await page.shadowTexts();
+  check(texts.some((x) => /沒有加密/.test(x)), '應該問網頁沒有加密要不要填，實際 ' + JSON.stringify(texts));
+  await sleep(600);
+  await page.clickShadow('填入', 'DIV');
+  await sleep(300);
+  v = await fieldValues(page);
+  check(v.p === 'right', '確認後應該填入：' + JSON.stringify(v));
+  await closePage(page);
+});
+
+test('安全：HTTP 存的帳號在 HTTP 網頁照常自動填', async () => {
+  await seedEntry('right');
+  const page = await open(T + 'harness.html', 1500);
+  check((await fieldValues(page)).p === 'right', '應該照常自動填');
+  await closePage(page);
+});
+
+test('安全：sandbox iframe 裡不自動填，一般的同網站 iframe 照常填', async () => {
+  await seedEntry('right');
+  const got = {};
+  for (const mode of ['plain', 'sandbox']) {
+    const page = await open(ORIGIN + '/sandbox-wrap?' + mode, 3000);
+    got[mode] = await page.eval(`window.__got && window.__got.p`);
+    await closePage(page);
+  }
+  check(got.plain === 'right', '一般的同網站 iframe 應該照常填：' + JSON.stringify(got));
+  check(got.sandbox === '', 'sandbox iframe 不應該填：' + JSON.stringify(got));
+});
+
+test('安全：跨網站 iframe 裡從清單選帳號要先確認，小視窗的填入不會填進去', async () => {
+  await w.eval(`handlers['entries.save']({ entry: { host: 'localhost', origin: 'http://localhost:${PORT}', username: 'test-user@example.test', password: 'right' } }, ${fromOptions}).then(() => true)`);
+  const page = await open(ORIGIN + '/wrap?src=' + encodeURIComponent('http://localhost:' + PORT + '/test/harness.html'), 1500);
+  const frame = await attachFrame(b.cdp, 'localhost');
+  const off = await page.eval(`(() => { const e = document.getElementById('f'); const r = e.getBoundingClientRect(); return { x: r.left + e.clientLeft, y: r.top + e.clientTop }; })()`);
+  const clickInFrame = async (text) => {
+    const hit = (await frame.shadowNodes()).find((n) => n.name === 'DIV' && n.text.trim() === text);
+    check(hit, 'iframe 裡找不到 ' + text);
+    const { model } = await frame.send('DOM.getBoxModel', { nodeId: hit.nodeId });
+    const q = model.content;
+    await page.clickAt(off.x + (q[0] + q[2]) / 2, off.y + (q[1] + q[5]) / 2);
+    await sleep(300);
+  };
+  const frameValues = () => frame.eval(`({ u: document.getElementById('u').value, p: document.getElementById('p').value })`);
+
+  // 小視窗、快捷鍵送的填入，跨網站 iframe 不收
+  await w.eval(`(async () => {
+    const [tab] = await chrome.tabs.query({ url: ${JSON.stringify(ORIGIN + '/wrap*')} });
+    await chrome.tabs.sendMessage(tab.id, { type: 'fill', entry: { username: 'popup-user', password: 'popup-pass' } }).catch(() => null);
+    return true;
+  })()`);
+  await sleep(600);
+  check((await frameValues()).p === '', '跨網站 iframe 不應該收小視窗的填入：' + JSON.stringify(await frameValues()));
+
+  const u = await frame.centerOf('#u');
+  await page.clickAt(off.x + u.x, off.y + u.y);
+  check(await until(async () => (await frame.shadowTexts()).includes('test-user@example.test'), 4000), 'iframe 裡應該跳帳號清單');
+  await sleep(700);
+  await clickInFrame('test-user@example.test');
+  check(!(await frameValues()).p, '還沒確認不應該填');
+  const texts = await frame.shadowTexts();
+  check(texts.some((x) => /框進來/.test(x)), '應該問是別的網站框進來的，實際 ' + JSON.stringify(texts));
+  await sleep(600);
+  await clickInFrame('填入');
+  check((await frameValues()).p === 'right', '確認後應該填入：' + JSON.stringify(await frameValues()));
+  await closePage(page);
+});
+
+test('剪貼簿：時間到清掉小管家複製的密碼，使用者後來複製的不動', async () => {
+  await w.eval(`setSettings({ clipboardClearSeconds: 30 }).then(() => true)`);
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#settings', 1200);
+  await page.send('Emulation.setFocusEmulationEnabled', { enabled: true });
+  const write = (text) => page.eval(`navigator.clipboard.writeText(${JSON.stringify(text)}).then(() => true)`);
+  const read = () => page.eval(`navigator.clipboard.readText()`);
+
+  await write('copied-secret-1');
+  await w.eval(`handlers['clipboard.copied']({ text: 'copied-secret-1' }, ${fromOptions}).then(() => true)`);
+  check((await w.eval(`chrome.alarms.get('clipboardClear').then((a) => !!a)`)) === true, '應該排好清除的時間');
+  await w.eval(`clearClipboardIfOurs().then(() => true)`);
+  check((await read()) === '', '時間到應該清掉，實際 ' + JSON.stringify(await read()));
+
+  await write('copied-secret-2');
+  await w.eval(`handlers['clipboard.copied']({ text: 'copied-secret-2' }, ${fromOptions}).then(() => true)`);
+  await write('something the user copied later');
+  await w.eval(`clearClipboardIfOurs().then(() => true)`);
+  check((await read()) === 'something the user copied later', '使用者後來複製的不應該清，實際 ' + JSON.stringify(await read()));
+
+  // 選「不清除」時不排時間
+  await w.eval(`setSettings({ clipboardClearSeconds: 0 }).then(() => chrome.alarms.clear('clipboardClear'))`);
+  await w.eval(`handlers['clipboard.copied']({ text: 'copied-secret-3' }, ${fromOptions}).then(() => true)`);
+  check((await w.eval(`chrome.alarms.get('clipboardClear').then((a) => !!a)`)) === false, '不清除時不應該排時間');
+  await closePage(page);
+});
+
+test('剪貼簿：管理頁選了秒數才要權限，不給就退回不清除', async () => {
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#settings', 1200);
+  // e2e 按不到瀏覽器的權限對話框，換成假的，記下要了哪些權限
+  await page.eval(`(() => {
+    window.__asked = [];
+    chrome.permissions.request = async (p) => { window.__asked.push(p.permissions.join(',')); return window.__grant; };
+    return true;
+  })()`);
+  const choose = async (value, grant) => {
+    await page.eval(`(() => { window.__grant = ${grant}; const s = document.getElementById('clipClear'); s.value = ${JSON.stringify(value)}; s.dispatchEvent(new Event('change')); return true; })()`);
+    await sleep(500);
+    return {
+      shown: await page.eval(`document.getElementById('clipClear').value`),
+      saved: await w.eval(`getSettings().then((s) => s.clipboardClearSeconds)`),
+      asked: await page.eval(`window.__asked.slice()`),
+    };
+  };
+  let r = await choose('30', false);
+  check(r.shown === '0' && r.saved === 0, '不給權限要退回不清除：' + JSON.stringify(r));
+  check(r.asked.length === 1 && r.asked[0] === 'clipboardRead,clipboardWrite,offscreen', '要剪貼簿和 offscreen 的權限：' + JSON.stringify(r));
+  r = await choose('60', true);
+  check(r.shown === '60' && r.saved === 60, '給了權限要存 60 秒：' + JSON.stringify(r));
+  r = await choose('0', true);
+  check(r.saved === 0 && r.asked.length === 2, '選不清除不用再要權限：' + JSON.stringify(r));
+  await closePage(page);
+});
+
+test('剪貼簿：鎖定時清掉小管家複製的密碼', async () => {
+  await w.eval(`setSettings({ clipboardClearSeconds: 120 }).then(() => true)`);
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#settings', 1200);
+  await page.send('Emulation.setFocusEmulationEnabled', { enabled: true });
+  await page.eval(`navigator.clipboard.writeText('copied-secret-lock').then(() => true)`);
+  await w.eval(`handlers['clipboard.copied']({ text: 'copied-secret-lock' }, ${fromOptions}).then(() => true)`);
+  // 閒置、Windows 鎖定、按小視窗的鎖定，最後都是叫 setLocked(true)
+  await w.eval(`setLocked(true).then(() => true)`);
+  await sleep(500);
+  check((await page.eval(`navigator.clipboard.readText()`)) === '', '鎖定時應該清掉');
+  await w.eval(`setLocked(false).then(() => true)`);
+  await closePage(page);
+});
+
 // ---- 多國語系：另外開繁中以外介面的瀏覽器 ----
 
 // 同一個擴充功能、同一個測試伺服器，只換瀏覽器的介面語言。用完就關。
@@ -3705,6 +4018,24 @@ test('網站存取權：被收回時小視窗提示，按了只要這個網站�
 
 // 只有這份腳本用得到的頁面
 const ROUTES = {
+  // 登入表單包在看不見的外框裡。mode：normal 看得見、opacity 全透明、faint 幾乎透明、offscreen 移到畫面外、fade 0.6 秒後淡入
+  '/hidden-login': (url) => {
+    const mode = url.searchParams.get('mode');
+    const style = { normal: '', opacity: 'opacity: 0', faint: 'opacity: 0.05', offscreen: 'position: absolute; left: -9999px; top: 0', fade: 'opacity: 0; transition: opacity 0.3s' }[mode];
+    return `<!doctype html><meta charset="utf-8"><title>hidden</title>
+<div id="w" style="${style}">
+  <form><input id="u" name="username" autocomplete="username"><input id="p" name="password" type="password" autocomplete="current-password"><button>登入</button></form>
+</div>
+${mode === 'fade' ? `<script>setTimeout(() => { document.getElementById('w').style.opacity = '1'; }, 600);</script>` : ''}`;
+  },
+  // ?sandbox 的 iframe 有 sandbox 屬性，來源變成 null；?plain 是一般的同網站 iframe。iframe 裡的欄位值用 postMessage 傳出來
+  '/sandbox-wrap': (url) =>
+    `<!doctype html><meta charset="utf-8"><title>sandbox</title>
+<script>window.__got = null; addEventListener('message', (e) => { window.__got = e.data; });</script>
+<iframe id="f" width="600" height="300" ${url.searchParams.has('sandbox') ? 'sandbox="allow-scripts allow-forms"' : ''} src="/sandbox-login"></iframe>`,
+  '/sandbox-login': () => `<!doctype html><meta charset="utf-8"><title>sandbox login</title>
+<form><input id="u" name="username" autocomplete="username"><input id="p" name="password" type="password" autocomplete="current-password"><button>登入</button></form>
+<script>setInterval(() => parent.postMessage({ u: document.getElementById('u').value, p: document.getElementById('p').value }, '*'), 300);</script>`,
   // 假的 GitHub /releases/latest。?v= 是版本號，?evil=1 的網址指到別的網站
   '/fake-gh/latest': (url) => {
     const v = url.searchParams.get('v');
@@ -3785,6 +4116,11 @@ ${url.searchParams.has('shift') ? '<div class="item" onclick="hit(this)">A0</div
   browserPath = findBrowser(process.argv[2] || 'edge');
   const only = process.argv[3] || '';
   extDir = copyExtension();
+  // 剪貼簿的權限是選用的，要使用者在瀏覽器的對話框按允許，e2e 按不到，所以測試用的複本直接給
+  const manifestFile = path.join(extDir, 'manifest.json');
+  const testManifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
+  testManifest.permissions = [...testManifest.permissions, ...(testManifest.optional_permissions || [])];
+  fs.writeFileSync(manifestFile, JSON.stringify(testManifest, null, 2));
   const srv = await startServer(PORT, ROUTES);
   hits = srv.hits;
   b = await launch(browserPath, extDir);

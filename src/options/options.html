@@ -537,6 +537,17 @@
             <h3 data-i18n="opt_never_title">永遠不詢問的網站</h3>
             <div id="never" class="never"></div>
             <div id="neverEmpty" class="help" data-i18n="opt_never_empty">目前沒有。在儲存提示上按「這個網站永遠不問」就會出現在這裡。</div>
+            <h3 data-i18n="opt_clip_title">複製密碼</h3>
+            <label class="inline"><span data-i18n="opt_clip_label">複製密碼後自動清除剪貼簿</span>
+              <select id="clipClear">
+                <option value="0" data-i18n="opt_clip_never">不清除</option>
+                <option value="30" data-i18n="opt_clip_30">30 秒後</option>
+                <option value="60" data-i18n="opt_clip_60">1 分鐘後</option>
+                <option value="120" data-i18n="opt_clip_120">2 分鐘後</option>
+              </select><span class="tip" data-i18n-tip="opt_clip_tip" data-tip="只在剪貼簿裡還是那組密碼時才清，之後你自己複製的東西不會動。
+第一次選的時候，瀏覽器會問要不要給剪貼簿的權限。
+Windows 剪貼簿歷程（Win+V）裡的紀錄清不掉。">?</span>
+            </label>
           </div>
         </details>
 

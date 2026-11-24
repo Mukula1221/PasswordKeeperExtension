@@ -34,9 +34,10 @@
   //     所以 Firefox 版在私密視窗整個停用，見 privateBlocked()。
   //   openExtensionsPage：擴充功能能用 tabs.create 開瀏覽器的擴充功能管理頁。
   //     Firefox 的 about:debugging、about:addons 都會被拒絕（Illegal URL），只能請使用者自己打網址。
+  //   offscreenClipboard：背景程式不能碰剪貼簿，要開 offscreen document 代做。Firefox 的背景程式是一般頁面，自己就能讀寫。
   const CAPABILITIES = {
-    chromium: { extensionWebAuthn: true, screenLockEvents: true, privateWindows: true, openExtensionsPage: true },
-    firefox: { extensionWebAuthn: false, screenLockEvents: false, privateWindows: false, openExtensionsPage: false },
+    chromium: { extensionWebAuthn: true, screenLockEvents: true, privateWindows: true, openExtensionsPage: true, offscreenClipboard: true },
+    firefox: { extensionWebAuthn: false, screenLockEvents: false, privateWindows: false, openExtensionsPage: false, offscreenClipboard: false },
   };
 
   function can(capability) {

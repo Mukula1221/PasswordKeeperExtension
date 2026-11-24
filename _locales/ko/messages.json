@@ -193,6 +193,12 @@
     "message": "입력",
     "description": "Fills this account into the sign-in form on the page."
   },
+  "pop_fill_insecure": {
+    "message": "이 페이지는 암호화되어 있지 않습니다. 한 번 더 누르면 입력합니다."
+  },
+  "pop_fill_anyway": {
+    "message": "그래도 입력"
+  },
   "pop_copy_password": {
     "message": "비밀번호 복사"
   },
@@ -1606,6 +1612,31 @@
     "message": "아직 없습니다. 저장 안내 창에서 '이 사이트에서는 묻지 않기'를 누르면 여기에 표시됩니다.",
     "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
   },
+  "opt_clip_title": {
+    "message": "비밀번호 복사"
+  },
+  "opt_clip_label": {
+    "message": "비밀번호를 복사한 뒤 클립보드 지우기"
+  },
+  "opt_clip_never": {
+    "message": "지우지 않음"
+  },
+  "opt_clip_30": {
+    "message": "30초 후"
+  },
+  "opt_clip_60": {
+    "message": "1분 후"
+  },
+  "opt_clip_120": {
+    "message": "2분 후"
+  },
+  "opt_clip_tip": {
+    "message": "클립보드에 아직 그 비밀번호가 있을 때만 지웁니다. 나중에 직접 복사한 내용은 지우지 않습니다.\n처음 선택하면 브라우저가 클립보드 권한을 요청합니다.\nWindows 클립보드 기록(Win+V)에 남은 항목은 지울 수 없습니다.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_clip_denied": {
+    "message": "클립보드 권한이 없어 지우지 않음으로 유지합니다."
+  },
   "opt_remove": {
     "message": "제거",
     "description": "Tooltip of the x that removes a site from the never-ask list."
@@ -2109,6 +2140,25 @@
   "cs_dropdown_no_username": {
     "message": "(사용자 이름 없이 비밀번호만 있음)",
     "description": "Shown in the account list for a saved login without a username."
+  },
+  "cs_ui_blocked": {
+    "message": "웹페이지가 이 창을 가리고 있습니다. 도구 모음에서 사용하세요."
+  },
+  "cs_confirm_insecure": {
+    "message": "이 페이지는 암호화되어 있지 않습니다. 그래도 입력할까요?"
+  },
+  "cs_confirm_frame": {
+    "message": "이 로그인 창은 $1에 삽입되어 있습니다. 그래도 입력할까요?",
+    "description": "$1 = address of the site that embeds the sign-in box."
+  },
+  "cs_confirm_frame_unknown": {
+    "message": "이 로그인 창은 다른 사이트에 삽입되어 있습니다. 그래도 입력할까요?"
+  },
+  "cs_confirm_fill": {
+    "message": "입력"
+  },
+  "cs_fill_insecure": {
+    "message": "이 페이지는 암호화되어 있지 않습니다. 아이디 칸을 클릭해 목록에서 계정을 선택하세요."
   },
   "cs_click_cooldown": {
     "message": "방금 자동 클릭해서 이번에는 클릭하지 않습니다"
