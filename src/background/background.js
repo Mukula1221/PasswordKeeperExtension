@@ -11,6 +11,7 @@ importScripts('locale.js');
 importScripts('settings.js');
 importScripts('vault.js');
 importScripts('entries.js');
+importScripts('clipboard.js');
 importScripts('lock.js');
 importScripts('callers.js');
 importScripts('webauthn.js');

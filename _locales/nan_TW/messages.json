@@ -193,6 +193,12 @@
     "message": "填入",
     "description": "Fills this account into the sign-in form on the page."
   },
+  "pop_fill_insecure": {
+    "message": "這个網頁無加密，閣揤一擺才會填入。"
+  },
+  "pop_fill_anyway": {
+    "message": "猶是欲填"
+  },
   "pop_copy_password": {
     "message": "複製密碼"
   },
@@ -1606,6 +1612,31 @@
     "message": "這馬無。佇儲存提示頂揤「這个網站永遠莫問」，就會出現佇遮。",
     "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
   },
+  "opt_clip_title": {
+    "message": "複製密碼"
+  },
+  "opt_clip_label": {
+    "message": "複製密碼了後自動清掉剪貼簿"
+  },
+  "opt_clip_never": {
+    "message": "毋清"
+  },
+  "opt_clip_30": {
+    "message": "30 秒後"
+  },
+  "opt_clip_60": {
+    "message": "1 分鐘後"
+  },
+  "opt_clip_120": {
+    "message": "2 分鐘後"
+  },
+  "opt_clip_tip": {
+    "message": "干焦佇剪貼簿內底猶是彼組密碼的時才清，了後你家己複製的物件袂振動。\n頭擺揀的時，瀏覽器會問欲予剪貼簿的權限無。\nWindows 剪貼簿歷程（Win+V）內底的紀錄清袂掉。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_clip_denied": {
+    "message": "無提著剪貼簿的權限，維持毋清。"
+  },
   "opt_remove": {
     "message": "移除",
     "description": "Tooltip of the x that removes a site from the never-ask list."
@@ -2109,6 +2140,25 @@
   "cs_dropdown_no_username": {
     "message": "（無帳號，干焦密碼）",
     "description": "Shown in the account list for a saved login without a username."
+  },
+  "cs_ui_blocked": {
+    "message": "網頁共這个畫面閘咧，請改對工具列操作。"
+  },
+  "cs_confirm_insecure": {
+    "message": "這个網頁無加密，確定欲填無？"
+  },
+  "cs_confirm_frame": {
+    "message": "這个登入框是 $1 框入來的，確定欲填無？",
+    "description": "$1 = address of the site that embeds the sign-in box."
+  },
+  "cs_confirm_frame_unknown": {
+    "message": "這个登入框是別的網站框入來的，確定欲填無？"
+  },
+  "cs_confirm_fill": {
+    "message": "填入"
+  },
+  "cs_fill_insecure": {
+    "message": "這个網頁無加密，請揤帳號欄，對清單揀帳號。"
   },
   "cs_click_cooldown": {
     "message": "拄才自動揤過，這擺無揤"

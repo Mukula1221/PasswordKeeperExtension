@@ -17,6 +17,12 @@
 - 瀏覽器跳出「需要驗證」的帳密視窗時，那個網站有存帳號的話，直接交給瀏覽器回答。
 - Firefox 的私密視窗裡什麼都不做：不填入、不問要不要儲存，私密瀏覽的資料一律不存。
 
+## 剪貼簿
+
+- 管理頁打開「複製密碼後自動清除剪貼簿」時，瀏覽器會問要不要給剪貼簿的權限。沒打開就不會要這個權限。
+- 給了權限之後，擴充功能只在時間到、或工具鎖上時讀一次剪貼簿，比對是不是擴充功能自己複製的那組密碼，是的話才清掉。
+- 讀到的內容不會存下來，也不會送到任何地方。擴充功能只在記憶體裡記著複製的那組密碼的雜湊值，用來比對。
+
 ## 會不會連到外面
 
 - 從瀏覽器商店安裝的版本，完全不連到外面。
@@ -50,6 +56,12 @@ Password Keeper is a browser extension that saves and fills in your usernames an
 - When the browser shows its own sign-in prompt (HTTP authentication) for a site with a saved account, the extension answers it for you.
 - In Firefox private windows it does nothing: no autofill and no offer to save. Nothing from private browsing is ever stored.
 
+## Clipboard
+
+- When you turn on "Clear the clipboard after copying a password" on the manager page, the browser asks for clipboard permission. The extension doesn't ask for it unless you turn this on.
+- With the permission, the extension reads the clipboard only when the time is up or the extension locks, to check whether it still holds the password the extension copied. If it does, the extension clears it.
+- What it reads is never stored or sent anywhere. The extension keeps only a hash of the copied password in memory for the comparison.
+
 ## Network connections
 
 - Versions installed from a browser store never connect to anything outside the browser.
@@ -82,6 +94,12 @@ Open an issue on the [GitHub project](https://github.com/Mukula1221/PasswordKeep
 - 入力するのは、開いているサイトに保存されたアカウントだけです。ページの内容はどこにも送信しません。
 - サイトに保存済みのアカウントがある場合、ブラウザーが表示する認証ダイアログ（HTTP 認証）に代わりに応答します。
 - Firefox のプライベートウィンドウでは何もしません。自動入力も保存の確認も行わず、プライベートブラウジングのデータは一切保存しません。
+
+## クリップボード
+
+- 管理ページで「パスワードをコピーしたらクリップボードを消去」をオンにすると、ブラウザーがクリップボードの権限を求めます。オンにしない限り、この権限は求めません。
+- 権限を与えると、拡張機能は時間になったときかロックしたときにだけクリップボードを一度読み、拡張機能がコピーしたパスワードのままかどうかを確かめます。そのままなら消去します。
+- 読み取った内容は保存も送信もしません。比較のため、コピーしたパスワードのハッシュ値だけをメモリーに保持します。
 
 ## 外部への接続
 

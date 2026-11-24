@@ -127,6 +127,7 @@
       copy.addEventListener('click', async () => {
         try {
           await navigator.clipboard.writeText(e.password);
+          send({ type: 'clipboard.copied', text: e.password });
           toast(t('opt_password_copied'));
         } catch (err) {
           toast(t('opt_copy_failed', err.message));
@@ -486,6 +487,7 @@
 
   function renderSettings() {
     $('autoFill').checked = !!settings.autoFill;
+    $('clipClear').value = String(settings.clipboardClearSeconds || 0);
     $('reminderDays').value = settings.backupReminderDays == null ? 30 : settings.backupReminderDays;
     const box = $('never');
     box.textContent = '';
@@ -2085,6 +2087,38 @@
     settings = res.data;
     renderSites();
     renderClickRules();
+  });
+
+  // 複製密碼後自動清除剪貼簿。剪貼簿的權限是選用的，選了秒數才跟瀏覽器要。
+  // 要權限必須在使用者操作的當下叫，Firefox 中間先 await 別的東西就會被拒絕，所以 permissions.request 擺第一個。
+  $('clipClear').addEventListener('change', (e) => {
+    const seconds = Number(e.target.value);
+    const save = async (value) => {
+      const res = await send({ type: 'settings.set', patch: { clipboardClearSeconds: value } });
+      if (!res.ok) {
+        toast(t('opt_setting_failed', res.error));
+        return;
+      }
+      settings = res.data;
+      $('clipClear').value = String(settings.clipboardClearSeconds || 0);
+    };
+    if (!seconds) {
+      save(0);
+      return;
+    }
+    // 跟 background/clipboard.js 的 clipboardPermissions() 一樣
+    const permissions = PK.platform.can('offscreenClipboard') ? ['clipboardRead', 'clipboardWrite', 'offscreen'] : ['clipboardRead', 'clipboardWrite'];
+    chrome.permissions.request({ permissions }).then(
+      (granted) => {
+        if (granted) return save(seconds);
+        toast(t('opt_clip_denied'));
+        return save(0);
+      },
+      (err) => {
+        $('clipClear').value = String(settings.clipboardClearSeconds || 0);
+        toast(t('opt_setting_failed', err.message));
+      }
+    );
   });
 
   $('deleteAll').addEventListener('click', async () => {

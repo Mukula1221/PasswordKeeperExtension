@@ -43,6 +43,7 @@
   async function copyPassword(entry) {
     try {
       await navigator.clipboard.writeText(entry.password);
+      send({ type: 'clipboard.copied', text: entry.password });
       toast(t('pop_password_copied'));
     } catch (err) {
       toast(t('pop_copy_failed', err.message));
@@ -50,7 +51,7 @@
   }
 
   async function render() {
-    const res = await send({ type: 'entries.forHost', host });
+    const res = await send({ type: 'entries.forHost', host, url: tab ? tab.url : '' });
     if (!res.ok) {
       $('status').textContent = t('pop_load_failed', res.error);
       return;
@@ -77,6 +78,13 @@
       if (entry.host !== host) u.appendChild(el('div', 'h', entry.host));
       const fill = el('button', 'primary small', t('pop_fill'));
       fill.addEventListener('click', async () => {
+        // 網頁沒加密、帳號卻是在 https 存的：第一下只提醒，再按一次才填
+        if (entry.insecure && !fill.dataset.confirmed) {
+          fill.dataset.confirmed = '1';
+          fill.textContent = t('pop_fill_anyway');
+          toast(t('pop_fill_insecure'));
+          return;
+        }
         const r = await fillInPage(entry);
         if (!r.ok) {
           toast(r.error);
@@ -344,6 +352,7 @@
     if (!value) return;
     try {
       await navigator.clipboard.writeText(value);
+      send({ type: 'clipboard.copied', text: value });
       toast(t('pop_copied'));
     } catch (err) {
       toast(t('pop_copy_failed', err.message));

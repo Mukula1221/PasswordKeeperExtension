@@ -193,6 +193,12 @@
     "message": "Ausfüllen",
     "description": "Fills this account into the sign-in form on the page."
   },
+  "pop_fill_insecure": {
+    "message": "Diese Seite ist nicht verschlüsselt. Klicken Sie erneut, um auszufüllen."
+  },
+  "pop_fill_anyway": {
+    "message": "Trotzdem"
+  },
   "pop_copy_password": {
     "message": "Passwort kopieren"
   },
@@ -1606,6 +1612,31 @@
     "message": "Noch keine. Websites erscheinen hier, wenn Sie in der Speicheranfrage auf „Nie für diese Website“ klicken.",
     "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
   },
+  "opt_clip_title": {
+    "message": "Passwörter kopieren"
+  },
+  "opt_clip_label": {
+    "message": "Zwischenablage nach dem Kopieren eines Passworts leeren"
+  },
+  "opt_clip_never": {
+    "message": "Nie"
+  },
+  "opt_clip_30": {
+    "message": "Nach 30 Sekunden"
+  },
+  "opt_clip_60": {
+    "message": "Nach 1 Minute"
+  },
+  "opt_clip_120": {
+    "message": "Nach 2 Minuten"
+  },
+  "opt_clip_tip": {
+    "message": "Die Zwischenablage wird nur geleert, wenn sie noch dieses Passwort enthält. Was Sie danach selbst kopieren, bleibt erhalten.\nBeim ersten Mal fragt der Browser nach der Berechtigung für die Zwischenablage.\nEinträge im Windows-Zwischenablageverlauf (Win+V) lassen sich nicht löschen.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_clip_denied": {
+    "message": "Keine Berechtigung für die Zwischenablage, daher wird sie nicht geleert."
+  },
   "opt_remove": {
     "message": "Entfernen",
     "description": "Tooltip of the x that removes a site from the never-ask list."
@@ -2109,6 +2140,25 @@
   "cs_dropdown_no_username": {
     "message": "(Kein Benutzername, nur Passwort)",
     "description": "Shown in the account list for a saved login without a username."
+  },
+  "cs_ui_blocked": {
+    "message": "Die Seite verdeckt dieses Fenster. Verwenden Sie stattdessen die Symbolleiste."
+  },
+  "cs_confirm_insecure": {
+    "message": "Diese Seite ist nicht verschlüsselt. Trotzdem ausfüllen?"
+  },
+  "cs_confirm_frame": {
+    "message": "Dieses Anmeldefeld ist in $1 eingebettet. Trotzdem ausfüllen?",
+    "description": "$1 = address of the site that embeds the sign-in box."
+  },
+  "cs_confirm_frame_unknown": {
+    "message": "Dieses Anmeldefeld ist in eine andere Website eingebettet. Trotzdem ausfüllen?"
+  },
+  "cs_confirm_fill": {
+    "message": "Ausfüllen"
+  },
+  "cs_fill_insecure": {
+    "message": "Diese Seite ist nicht verschlüsselt. Klicken Sie in das Benutzernamenfeld und wählen Sie ein Konto aus der Liste."
   },
   "cs_click_cooldown": {
     "message": "Gerade erst automatisch geklickt. Diesmal übersprungen."

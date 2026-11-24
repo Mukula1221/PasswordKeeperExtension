@@ -345,6 +345,31 @@ privateTest('瀏覽器的帳密視窗不回答', async () => {
   }
 });
 
+// 剪貼簿的權限是選用的，要使用者在 Firefox 的對話框按允許。這組先在設定檔記好已經允許，跟使用者按過允許一樣。
+// Firefox 的背景程式自己讀寫剪貼簿，跟 Edge、Chrome 用 offscreen document 的做法不一樣，所以這裡另外測。
+const clipboardCases = [];
+const clipboardTest = (name, fn) => clipboardCases.push({ name: '剪貼簿：' + name, fn });
+
+clipboardTest('時間到清掉小管家複製的密碼，使用者後來複製的不動', async () => {
+  check((await options.eval(`chrome.permissions.contains({ permissions: ['clipboardRead', 'clipboardWrite'] })`)) === true, '要先有剪貼簿權限');
+  const set = await send({ type: 'settings.set', patch: { clipboardClearSeconds: 30 } });
+  check(set.ok, '設定 30 秒：' + JSON.stringify(set));
+  const write = (text) => options.eval(`navigator.clipboard.writeText(${JSON.stringify(text)}).then(() => true)`);
+  const read = () => options.eval(`navigator.clipboard.readText()`);
+
+  await write('ff-copied-secret-1');
+  const noted = await send({ type: 'clipboard.copied', text: 'ff-copied-secret-1' });
+  check(noted.ok && noted.data === true, '應該排好清除的時間：' + JSON.stringify(noted));
+  await sleep(32000);
+  check((await read()) === '', '30 秒後應該清掉，實際 ' + JSON.stringify(await read()));
+
+  await write('ff-copied-secret-2');
+  await send({ type: 'clipboard.copied', text: 'ff-copied-secret-2' });
+  await write('something the user copied later');
+  await sleep(32000);
+  check((await read()) === 'something the user copied later', '使用者後來複製的不應該清，實際 ' + JSON.stringify(await read()));
+});
+
 // 開一個 Firefox 裝好擴充功能，跑完一組案例就關掉。回傳沒過的數量。
 async function runSuite(firefoxPath, extDir, { prefs: extraPrefs = {}, files = {} }, list) {
   const geckoId = targetManifest('firefox').browser_specific_settings.gecko.id;
@@ -397,7 +422,7 @@ async function runSuite(firefoxPath, extDir, { prefs: extraPrefs = {}, files = {
   fs.rmSync(DOWNLOADS, { recursive: true, force: true });
   fs.mkdirSync(DOWNLOADS, { recursive: true });
   const extDir = copyFirefoxExtension();
-  const total = cases.length + privateCases.length;
+  const total = cases.length + privateCases.length + clipboardCases.length;
   let failed = 0;
   try {
     failed += await runSuite(firefoxPath, extDir, {}, cases);
@@ -412,6 +437,12 @@ async function runSuite(firefoxPath, extDir, { prefs: extraPrefs = {}, files = {
         files: { 'extension-preferences.json': JSON.stringify({ [geckoId]: { permissions: ['internal:privateBrowsingAllowed'], origins: [] } }) },
       },
       privateCases
+    );
+    failed += await runSuite(
+      firefoxPath,
+      extDir,
+      { files: { 'extension-preferences.json': JSON.stringify({ [geckoId]: { permissions: ['clipboardRead', 'clipboardWrite'], origins: [] } }) } },
+      clipboardCases
     );
   } catch (err) {
     console.error('跑不起來：' + err.message);

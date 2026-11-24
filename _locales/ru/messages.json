@@ -193,6 +193,12 @@
     "message": "Заполнить",
     "description": "Fills this account into the sign-in form on the page."
   },
+  "pop_fill_insecure": {
+    "message": "Эта страница не зашифрована. Нажмите ещё раз, чтобы заполнить."
+  },
+  "pop_fill_anyway": {
+    "message": "Всё равно"
+  },
   "pop_copy_password": {
     "message": "Копировать пароль"
   },
@@ -1866,6 +1872,31 @@
     "message": "Пока пусто. Сайт появится здесь, если в предложении сохранить пароль нажать «Никогда».",
     "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
   },
+  "opt_clip_title": {
+    "message": "Копирование паролей"
+  },
+  "opt_clip_label": {
+    "message": "Очищать буфер обмена после копирования пароля"
+  },
+  "opt_clip_never": {
+    "message": "Не очищать"
+  },
+  "opt_clip_30": {
+    "message": "Через 30 секунд"
+  },
+  "opt_clip_60": {
+    "message": "Через 1 минуту"
+  },
+  "opt_clip_120": {
+    "message": "Через 2 минуты"
+  },
+  "opt_clip_tip": {
+    "message": "Буфер обмена очищается, только если в нём всё ещё этот пароль. То, что вы скопируете потом, не трогается.\nПри первом выборе браузер запросит доступ к буферу обмена.\nЗаписи в журнале буфера обмена Windows (Win+V) удалить нельзя.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_clip_denied": {
+    "message": "Нет доступа к буферу обмена, поэтому он не будет очищаться."
+  },
   "opt_remove": {
     "message": "Убрать",
     "description": "Tooltip of the x that removes a site from the never-ask list."
@@ -2393,6 +2424,25 @@
   "cs_dropdown_no_username": {
     "message": "(Без имени пользователя, только пароль)",
     "description": "Shown in the account list for a saved login without a username."
+  },
+  "cs_ui_blocked": {
+    "message": "Страница перекрывает это окно. Воспользуйтесь кнопкой на панели инструментов."
+  },
+  "cs_confirm_insecure": {
+    "message": "Эта страница не зашифрована. Всё равно заполнить?"
+  },
+  "cs_confirm_frame": {
+    "message": "Это поле входа встроено в $1. Всё равно заполнить?",
+    "description": "$1 = address of the site that embeds the sign-in box."
+  },
+  "cs_confirm_frame_unknown": {
+    "message": "Это поле входа встроено в другой сайт. Всё равно заполнить?"
+  },
+  "cs_confirm_fill": {
+    "message": "Заполнить"
+  },
+  "cs_fill_insecure": {
+    "message": "Эта страница не зашифрована. Нажмите на поле имени пользователя и выберите учётную запись из списка."
   },
   "cs_click_cooldown": {
     "message": "Автонажатие только что было. В этот раз пропускаем."

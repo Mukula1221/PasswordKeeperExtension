@@ -22,6 +22,8 @@
     if (await PK.lock.isLocked()) return {};
     const entries = PK.entries.rankEntries(await PK.vault.loadEntries(), host);
     if (!entries.length) return {};
+    // http 的驗證視窗會把帳密用明文送出去。帳號是在 https 存的就不回答，讓瀏覽器的視窗照常跳出來
+    if (PK.domain.insecureFill(details.url, entries[0].origin)) return {};
     PK.vault.touchEntry(entries[0].id);
     return { authCredentials: { username: entries[0].username, password: entries[0].password } };
   }

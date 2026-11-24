@@ -37,6 +37,7 @@
     button.link { background: transparent; color: #6b7280; margin-right: auto; padding-left: 0; font-size: 12px; }
     .dropdown { position: fixed; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.15); min-width: 220px; max-width: 360px; overflow: hidden; }
     .dropdown .head { padding: 5px 12px; font-size: 11px; color: #6b7280; background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
+    .dropdown .head.warn { padding: 8px 12px; font-size: 12px; color: #92400e; background: #fef3c7; }
     .dropdown .item { padding: 8px 12px; cursor: pointer; }
     .dropdown .item:hover, .dropdown .item.active { background: #eff6ff; }
     .dropdown .item.gen { color: #2563eb; border-bottom: 1px solid #e5e7eb; }
@@ -58,12 +59,15 @@
   let shadow = null;
   // CSSStyleSheet 或 <style>，換語言時用 refreshShadowStyle() 換字型
   let shadowStyle = null;
+  // 外框的 style 屬性。瀏覽器會把寫進去的字串整理過，所以存整理後的樣子，之後才比得出網頁有沒有改過
+  let hostStyle = '';
 
   function ui() {
     if (shadow && shadowHost.isConnected) return shadow;
     if (!shadow) {
       shadowHost = document.createElement('div');
       shadowHost.style.cssText = 'all:initial; position:fixed; top:0; left:0; width:0; height:0; z-index:2147483647;';
+      hostStyle = shadowHost.getAttribute('style');
       shadow = shadowHost.attachShadow({ mode: 'closed' });
       // 有些網站的 CSP 會擋掉 <style>，adoptedStyleSheets 不受 CSP 管，優先用它。
       try {
@@ -78,7 +82,79 @@
     }
     // 掛在 <html> 底下而不是 <body>，網頁整個換掉 body 時才不會跟著消失
     document.documentElement.appendChild(shadowHost);
+    keepOnTop();
     return shadow;
+  }
+
+  // 網頁在 <html> 最後面再加一層、z-index 跟小管家一樣大時，那層會蓋在小管家的畫面上面。
+  // 帳號清單或儲存提示開著時，有東西加到後面就把畫面移回最後面。
+  // 跟網頁或別的擴充功能一直互搶時，一秒最多移 10 次。點下去那一刻 hiddenFromUser() 還會再檢查一次。
+  let topObserver = null;
+  let moves = { at: 0, count: 0 };
+  function keepOnTop() {
+    if (topObserver) return;
+    topObserver = new MutationObserver(() => {
+      if (!shadowHost.isConnected || document.documentElement.lastElementChild === shadowHost) return;
+      if (!shadow.querySelector('.dropdown, .banner')) return;
+      const now = Date.now();
+      if (now - moves.at > 1000) moves = { at: now, count: 0 };
+      if (++moves.count > 10) return;
+      document.documentElement.appendChild(shadowHost);
+    });
+    topObserver.observe(document.documentElement, { childList: true });
+  }
+
+  // popover、modal dialog、全螢幕的元素在瀏覽器的最上層（top layer），z-index 再大都蓋不過。
+  // whole 是會把整頁蓋住的：modal dialog 有整頁的背景遮罩，全螢幕就是整個畫面。
+  function topLayerElements() {
+    const found = [];
+    for (const [selector, whole] of [
+      [':popover-open', false],
+      [':modal', true],
+      [':fullscreen', true],
+    ]) {
+      try {
+        for (const node of document.querySelectorAll(selector)) found.push({ node, whole });
+      } catch {
+        // 舊版瀏覽器不認得這個選擇器，也就不會有這種元素
+      }
+    }
+    return found;
+  }
+
+  // 點擊劫持（clickjacking）的防線。網頁可能把小管家的畫面設成透明，或蓋一層假按鈕上去，騙使用者點下去。
+  // 使用者點小管家的帳號清單、儲存提示時，先確認那塊畫面真的看得見，看不見就回 true，不能照點的做。
+  // box 是被點的那塊畫面，point 是滑鼠點的位置。鍵盤操作沒有位置，改看那塊畫面的中間。
+  function hiddenFromUser(box, point) {
+    if (!shadowHost || !shadowHost.isConnected || !box.isConnected) return true;
+    // 網頁改了外框的樣式就改回來，這一下不算
+    if (shadowHost.getAttribute('style') !== hostStyle) {
+      shadowHost.setAttribute('style', hostStyle);
+      return true;
+    }
+    if (document.documentElement.lastElementChild !== shadowHost) {
+      document.documentElement.appendChild(shadowHost);
+      return true;
+    }
+    // 畫面掛在 html 底下，往上只有外框和 html 兩層。這兩層有讓畫面變淡、變糊、被裁掉的樣式都不算看得見。
+    for (const node of [shadowHost, document.documentElement]) {
+      const cs = getComputedStyle(node);
+      if (cs.opacity !== '1' || cs.visibility !== 'visible' || cs.display === 'none') return true;
+      if (/opacity|blur|brightness\(0|contrast\(0/.test(cs.filter) || cs.clipPath !== 'none' || (cs.maskImage && cs.maskImage !== 'none')) return true;
+    }
+    const r = box.getBoundingClientRect();
+    if (r.width < 40 || r.height < 16) return true;
+    const x = point ? point.x : r.left + r.width / 2;
+    const y = point ? point.y : r.top + r.height / 2;
+    if (document.elementFromPoint(x, y) !== shadowHost) return true;
+    // 最上層的元素設成讓點擊穿過去時，elementFromPoint 查不到，所以另外找。popover 只看有沒有疊到這塊畫面。
+    for (const { node, whole } of topLayerElements()) {
+      if (node === shadowHost) continue;
+      if (whole) return true;
+      const lr = node.getBoundingClientRect();
+      if (lr.right > r.left && lr.left < r.right && lr.bottom > r.top && lr.top < r.bottom) return true;
+    }
+    return false;
   }
 
   function el(tag, className, text) {
@@ -114,5 +190,5 @@
     return shadow;
   }
 
-  PK.contentUi = { el, host, refreshShadowStyle, root, toast, ui };
+  PK.contentUi = { el, hiddenFromUser, host, refreshShadowStyle, root, toast, ui };
 })();

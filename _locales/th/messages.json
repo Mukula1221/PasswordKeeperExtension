@@ -193,6 +193,12 @@
     "message": "กรอก",
     "description": "Fills this account into the sign-in form on the page."
   },
+  "pop_fill_insecure": {
+    "message": "หน้านี้ไม่ได้เข้ารหัส คลิกอีกครั้งเพื่อกรอก"
+  },
+  "pop_fill_anyway": {
+    "message": "กรอกต่อ"
+  },
   "pop_copy_password": {
     "message": "คัดลอกรหัสผ่าน"
   },
@@ -1606,6 +1612,31 @@
     "message": "ยังไม่มี เว็บไซต์จะแสดงที่นี่เมื่อคุณคลิก \"ไม่ต้องถามในเว็บไซต์นี้\" บนข้อความถามให้บันทึก",
     "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
   },
+  "opt_clip_title": {
+    "message": "การคัดลอกรหัสผ่าน"
+  },
+  "opt_clip_label": {
+    "message": "ล้างคลิปบอร์ดหลังคัดลอกรหัสผ่าน"
+  },
+  "opt_clip_never": {
+    "message": "ไม่ล้าง"
+  },
+  "opt_clip_30": {
+    "message": "หลัง 30 วินาที"
+  },
+  "opt_clip_60": {
+    "message": "หลัง 1 นาที"
+  },
+  "opt_clip_120": {
+    "message": "หลัง 2 นาที"
+  },
+  "opt_clip_tip": {
+    "message": "ล้างเฉพาะเมื่อคลิปบอร์ดยังเป็นรหัสผ่านนั้นอยู่ สิ่งที่คุณคัดลอกเองภายหลังจะไม่ถูกลบ\nครั้งแรกที่เลือก เบราว์เซอร์จะขอสิทธิ์เข้าถึงคลิปบอร์ด\nรายการในประวัติคลิปบอร์ดของ Windows (Win+V) ล้างไม่ได้",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_clip_denied": {
+    "message": "ไม่ได้รับสิทธิ์คลิปบอร์ด จึงยังไม่ล้าง"
+  },
   "opt_remove": {
     "message": "นำออก",
     "description": "Tooltip of the x that removes a site from the never-ask list."
@@ -2109,6 +2140,25 @@
   "cs_dropdown_no_username": {
     "message": "(ไม่มีชื่อผู้ใช้ มีแต่รหัสผ่าน)",
     "description": "Shown in the account list for a saved login without a username."
+  },
+  "cs_ui_blocked": {
+    "message": "หน้าเว็บบังหน้าต่างนี้อยู่ ใช้ปุ่มบนแถบเครื่องมือแทน"
+  },
+  "cs_confirm_insecure": {
+    "message": "หน้านี้ไม่ได้เข้ารหัส จะกรอกต่อไหม"
+  },
+  "cs_confirm_frame": {
+    "message": "ช่องเข้าสู่ระบบนี้ฝังอยู่ใน $1 จะกรอกต่อไหม",
+    "description": "$1 = address of the site that embeds the sign-in box."
+  },
+  "cs_confirm_frame_unknown": {
+    "message": "ช่องเข้าสู่ระบบนี้ฝังอยู่ในเว็บไซต์อื่น จะกรอกต่อไหม"
+  },
+  "cs_confirm_fill": {
+    "message": "กรอก"
+  },
+  "cs_fill_insecure": {
+    "message": "หน้านี้ไม่ได้เข้ารหัส คลิกช่องชื่อผู้ใช้แล้วเลือกบัญชีจากรายการ"
   },
   "cs_click_cooldown": {
     "message": "เพิ่งคลิกอัตโนมัติไป ครั้งนี้จึงข้าม"

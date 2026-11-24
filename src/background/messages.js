@@ -3,7 +3,7 @@
 (() => {
   const PK = (globalThis.PK ??= {});
   const { browserLocale, chosenLocale, i18nLocales, t } = PK.i18n;
-  const { baseDomain, originFromUrl, rulePathMatches } = PK.domain;
+  const { baseDomain, insecureFill, originFromUrl, rulePathMatches } = PK.domain;
 
   // 每種訊息誰可以叫、鎖住時能不能叫。沒列在這裡的訊息一律拒絕，新增訊息時要加一行，test/unit 會檢查。
   // from：'any' 是網頁裡的 content.js 也能叫，'extension' 只收小視窗、管理頁、解鎖視窗。
@@ -18,6 +18,8 @@
     'clickRules.pause': { from: 'any', whenLocked: true },
     'clickRules.pickDone': { from: 'any', whenLocked: true },
     'password.generate': { from: 'any', whenLocked: true },
+    // 只記雜湊值、排清除的時間，拿不到任何資料。網頁上的「產生強密碼」複製後也要叫
+    'clipboard.copied': { from: 'any', whenLocked: true },
     // 鎖住時 pending.get 不回暫存的帳密，解鎖後下一頁再問
     'pending.set': { from: 'any', whenLocked: true },
     'pending.get': { from: 'any', whenLocked: true },
@@ -84,9 +86,11 @@
       return 'pong';
     },
 
-    async 'entries.forHost'({ host }, sender) {
+    async 'entries.forHost'({ host, url }, sender) {
       const settings = await PK.settings.getSettings();
       host = PK.callers.callerHost(host, sender);
+      // 網頁的網址：content.js 用瀏覽器填的 sender.url，網頁改不了。小視窗用它帶來的分頁網址。
+      const pageUrl = PK.callers.fromExtensionPage(sender) ? String(url || '') : String((sender && sender.url) || '');
       // autoFill 是這個網站實際要不要自動填，content.js 看這個。小視窗另外要知道總開關和這個網站自己的開關。
       const siteAutoFill = !settings.noAutoFillHosts.includes(host);
       const flags = {
@@ -97,12 +101,14 @@
       };
       if (await PK.lock.isLocked()) return { entries: [], autoFillEntry: null, ...flags, locked: true };
       const pending = sender.tab ? await PK.pending.getPending(sender.tab.id) : null;
-      const entries = PK.entries.rankEntries(await PK.vault.loadEntries(), host);
+      // insecure：網頁沒加密、帳號卻是在 https 存的。這種帳號不自動填，從清單或小視窗填要先問。
+      const entries = PK.entries.rankEntries(await PK.vault.loadEntries(), host).map((e) => (insecureFill(pageUrl, e.origin) ? { ...e, insecure: true } : e));
       // 兩段式登入的第二頁只有密碼欄。第一頁打的帳號有存過就填那一組，沒存過就不能拿別組帳號的密碼來填。
       let autoFillEntry = entries[0] || null;
       if (pending && pending.username && !pending.password) {
         autoFillEntry = entries.find((e) => e.username === pending.username) || null;
       }
+      if (autoFillEntry && autoFillEntry.insecure) autoFillEntry = null;
       return { entries, autoFillEntry, ...flags, locked: false };
     },
 
@@ -536,6 +542,10 @@
     async 'i18n.current'() {
       const locale = await chosenLocale();
       return { locale, messages: locale && locale !== browserLocale() ? await PK.locale.localeMessages(locale) : null };
+    },
+
+    async 'clipboard.copied'({ text }) {
+      return PK.clipboard.noteCopied(text);
     },
 
     async 'settings.set'({ patch }) {
