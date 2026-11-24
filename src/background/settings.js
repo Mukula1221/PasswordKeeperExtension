@@ -12,8 +12,9 @@
     // 備份提醒：超過這麼多天沒備份、而且期間有改過密碼，就提醒。0 代表不提醒。
     backupReminderDays: 30,
     lastBackupAt: 0,
-    // 產生密碼的選項，popup 改過會存回來
+    // 產生密碼的選項，popup 改過會存回來。mode：chars 隨機字元，words 好記的密碼（見 generator.js）
     generator: {
+      mode: 'chars',
       minLength: 16,
       maxLength: 20,
       upper: true,
@@ -21,6 +22,10 @@
       digits: true,
       symbols: true,
       symbolSet: '!@#$%^&*()-_=+[]{};:,.?',
+      words: 6,
+      separator: '-',
+      capitalize: true,
+      addNumber: true,
     },
     // 自動備份：每天或每週的指定時間（weekday 0 是星期日）把加密備份存到「下載」底下的子資料夾。
     // 備份密碼不存。加密用的公鑰在 storage.local 的 autoBackupKey，見 getAutoBackupKey。
@@ -45,6 +50,8 @@
     trashDays: 30,
     // 複製密碼後幾秒清除剪貼簿：0 不清除，可以選 30、60、120。見 clipboard.js
     clipboardClearSeconds: 0,
+    // 健檢裡「還在用 HTTP」按過忽略的帳號 id。公司內部設備很多只有 http
+    healthIgnoreHttp: [],
     // 這些網站自動填完帳密就幫忙按登入
     autoSubmitHosts: [],
     // 這些網站不自動填入。autoFill 是總開關，總開關打開時才看這個清單。點欄位跳清單、快捷鍵照樣能用。

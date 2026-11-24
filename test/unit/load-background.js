@@ -104,6 +104,7 @@ function loadBackground({ origin = EXT_ORIGIN } = {}) {
     setInterval,
     clearInterval,
     queueMicrotask,
+    AbortController,
     location: { href: origin + '/src/background/background.js' },
     // 測試不該連網，有人叫到就讓它失敗
     fetch: async (url) => {

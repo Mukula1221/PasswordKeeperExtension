@@ -144,6 +144,13 @@ test('工具鎖定：不顯示系統驗證加密，閒置時間旁邊有說明',
   check(!res.ok && res.error === (await t('wa_unsupported')), '背景程式也要擋系統驗證加密：' + JSON.stringify(res));
 });
 
+test('外洩檢查：沒在 Firefox 的同意視窗按允許，背景程式不連', async () => {
+  const res = await send({ type: 'breach.check' });
+  check(!res.ok && res.error === (await t('bg_breach_no_consent')), '沒同意不能檢查：' + JSON.stringify(res));
+  const declared = targetManifest('firefox').browser_specific_settings.gecko.data_collection_permissions;
+  check(JSON.stringify(declared) === JSON.stringify({ required: ['none'], optional: ['authenticationInfo'] }), 'Firefox 版要宣告選用的 authenticationInfo：' + JSON.stringify(declared));
+});
+
 test('網頁：存的帳號會自動填入', async () => {
   const saved = await send({ type: 'entries.save', entry: { host: '127.0.0.1', origin: ORIGIN, username: 'test-user@example.test', password: 'right' } });
   check(saved.ok, '存帳號：' + JSON.stringify(saved));

@@ -19,3 +19,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+src/background/wordlist.js contains the EFF Large Wordlist
+(https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt)
+by the Electronic Frontier Foundation, licensed under CC BY 4.0
+(https://creativecommons.org/licenses/by/4.0/, see https://www.eff.org/copyright).
+Change: the dice numbers at the start of each line were removed.

@@ -71,6 +71,44 @@
     "message": "パスワードを生成",
     "description": "Button that opens the password generator, and the title of that panel."
   },
+  "pop_gen_mode_chars": {
+    "message": "ランダムな文字"
+  },
+  "pop_gen_mode_words": {
+    "message": "覚えやすい"
+  },
+  "pop_gen_mode_tip": {
+    "message": "覚えやすいパスワードは、英単語をいくつかつないだパスワードです。ランダムな文字より覚えやすく、入力しやすくなります。\nパスワードの長さや文字を制限しているサイトもあります。受け付けられないときはランダムな文字に戻してください。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_word_count": {
+    "message": "単語の数"
+  },
+  "pop_gen_separator": {
+    "message": "区切り"
+  },
+  "pop_gen_separator_space": {
+    "message": "空白"
+  },
+  "pop_gen_capitalize": {
+    "message": "先頭を大文字"
+  },
+  "pop_gen_add_number": {
+    "message": "数字を 1 つ追加"
+  },
+  "pop_gen_history": {
+    "message": "最近生成したもの"
+  },
+  "pop_gen_history_tip": {
+    "message": "Web ページの「強力なパスワードを生成」と、ここで「コピー」「ページに入力」したパスワードが残ります。最大 20 件です。\nサイトに保存されなかったときは、ここから取り出せます。\nバックアップには含まれません。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_history_clear": {
+    "message": "すべて削除"
+  },
+  "pop_gen_history_delete": {
+    "message": "これを削除"
+  },
   "pop_regen_title": {
     "message": "別のパスワードを生成"
   },
@@ -598,19 +636,125 @@
   "opt_health_show": {
     "message": "詳細を見る"
   },
+  "opt_health_summary": {
+    "message": "パスワード診断：$1。",
+    "description": "$1 = the problems found, joined with opt_health_part_sep."
+  },
+  "opt_health_part_sep": {
+    "message": "、",
+    "description": "Joins the parts of the health check summary."
+  },
+  "opt_breach_check": {
+    "message": "漏えいを確認"
+  },
+  "opt_breach_checking": {
+    "message": "確認中…"
+  },
+  "opt_breach_tip": {
+    "message": "Have I Been Pwned（api.pwnedpasswords.com）に接続します。送るのは各パスワードのハッシュ値の先頭 5 文字だけなので、どのパスワードかは分かりません。\n押したときだけ接続し、普段は接続しません。\n結果は保存しません。管理ページを開き直したら、もう一度確認してください。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_breach_need_consent": {
+    "message": "Firefox の確認画面で許可しなかったため、確認しませんでした。"
+  },
+  "opt_breach_found_one": {
+    "message": "$1 件のパスワードが漏えいリストに載っています。早めに変更してください。",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_found_other": {
+    "message": "$1 件のパスワードが漏えいリストに載っています。早めに変更してください。",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_none_one": {
+    "message": "$1 件を確認しました。漏えいリストに載っているものはありません。",
+    "description": "$1 = number of accounts checked."
+  },
+  "opt_breach_none_other": {
+    "message": "$1 件を確認しました。漏えいリストに載っているものはありません。",
+    "description": "$1 = number of accounts checked."
+  },
   "opt_health_hide": {
     "message": "閉じる"
   },
   "opt_health_ok": {
-    "message": "パスワード診断：使い回しや弱いパスワードはなく、すべて 1 年以内に変更されています。"
+    "message": "パスワード診断：対応が必要なパスワードはありません。"
   },
-  "opt_health_summary_one": {
-    "message": "パスワード診断：使い回し $1 組、弱い $2 件、1 年以上未変更 $3 件。",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_one": {
+    "message": "漏えい $1 件",
+    "description": "$1 = number of accounts. One part of the health check summary."
   },
-  "opt_health_summary_other": {
-    "message": "パスワード診断：使い回し $1 組、弱い $2 件、1 年以上未変更 $3 件。",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_other": {
+    "message": "漏えい $1 件",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_reused_one": {
+    "message": "使い回し $1 組",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_reused_other": {
+    "message": "使い回し $1 組",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_weak_one": {
+    "message": "弱い $1 件",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_weak_other": {
+    "message": "弱い $1 件",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_one": {
+    "message": "1 年以上未変更 $1 件",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_other": {
+    "message": "1 年以上未変更 $1 件",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_one": {
+    "message": "HTTP のまま $1 件",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_other": {
+    "message": "HTTP のまま $1 件",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_dup_one": {
+    "message": "重複した項目 $1 組",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_part_dup_other": {
+    "message": "重複した項目 $1 組",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_breached_one": {
+    "message": "漏えい：漏えいリストに $1 回載っています",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_breached_other": {
+    "message": "漏えい：漏えいリストに $1 回載っています",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_http_ignored_one": {
+    "message": "HTTP のアドレス $1 件を無視しています",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http_ignored_other": {
+    "message": "HTTP のアドレス $1 件を無視しています",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http": {
+    "message": "HTTP のまま：サイトが https に対応していれば、https のアドレスに変更してください"
+  },
+  "opt_health_http_ignore": {
+    "message": "無視"
+  },
+  "opt_health_http_restore": {
+    "message": "すべて表示に戻す"
+  },
+  "opt_health_dup": {
+    "message": "重複した項目：第 $1 組、$2 件のユーザー名とパスワードが同じです",
+    "description": "$1 = group number, $2 = number of accounts in the group."
   },
   "opt_health_reused": {
     "message": "使い回し：$1 組目のパスワードが $2 か所で使われています",
@@ -2288,6 +2432,16 @@
   },
   "bg_none_selected": {
     "message": "アカウントが選択されていません"
+  },
+  "bg_breach_no_consent": {
+    "message": "漏えいを確認するには、先に Firefox の確認画面で許可してください。"
+  },
+  "bg_breach_failed": {
+    "message": "漏えいの確認に失敗しました：$1",
+    "description": "$1 = error message."
+  },
+  "bg_breach_timeout": {
+    "message": "接続がタイムアウトしました"
   },
   "bg_not_backup_file": {
     "message": "パスワードキーパーのバックアップ ファイルではありません"

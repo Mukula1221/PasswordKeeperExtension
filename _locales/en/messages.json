@@ -71,6 +71,44 @@
     "message": "Generate password",
     "description": "Button that opens the password generator, and the title of that panel."
   },
+  "pop_gen_mode_chars": {
+    "message": "Random characters"
+  },
+  "pop_gen_mode_words": {
+    "message": "Easy to remember"
+  },
+  "pop_gen_mode_tip": {
+    "message": "An easy-to-remember password is a few English words joined together. It's easier to remember and type than random characters.\nSome sites limit password length or characters. If one isn't accepted, switch back to random characters.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_word_count": {
+    "message": "Words"
+  },
+  "pop_gen_separator": {
+    "message": "Separator"
+  },
+  "pop_gen_separator_space": {
+    "message": "Space"
+  },
+  "pop_gen_capitalize": {
+    "message": "Capitalize"
+  },
+  "pop_gen_add_number": {
+    "message": "Add a number"
+  },
+  "pop_gen_history": {
+    "message": "Recently generated"
+  },
+  "pop_gen_history_tip": {
+    "message": "Passwords from \"Generate a strong password\" on web pages, and ones you copy or fill on the page from here, are kept here. Up to 20.\nIf a site didn't save your new password, you can get it back here.\nThey aren't included in backup files.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_history_clear": {
+    "message": "Clear all"
+  },
+  "pop_gen_history_delete": {
+    "message": "Delete this one"
+  },
   "pop_regen_title": {
     "message": "Generate another one"
   },
@@ -598,19 +636,125 @@
   "opt_health_show": {
     "message": "Show details"
   },
+  "opt_health_summary": {
+    "message": "Health check: $1.",
+    "description": "$1 = the problems found, joined with opt_health_part_sep."
+  },
+  "opt_health_part_sep": {
+    "message": ", ",
+    "description": "Joins the parts of the health check summary."
+  },
+  "opt_breach_check": {
+    "message": "Check for breaches"
+  },
+  "opt_breach_checking": {
+    "message": "Checking…"
+  },
+  "opt_breach_tip": {
+    "message": "Connects to Have I Been Pwned (api.pwnedpasswords.com). Only the first 5 characters of each password's hash are sent, so the service can't tell which password it is.\nIt only connects when you click this.\nResults aren't saved. Check again after reopening the manager page.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_breach_need_consent": {
+    "message": "You didn't allow the Firefox prompt, so nothing was checked."
+  },
+  "opt_breach_found_one": {
+    "message": "$1 password appears in breach lists. Change it soon.",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_found_other": {
+    "message": "$1 passwords appear in breach lists. Change them soon.",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_none_one": {
+    "message": "Checked $1 account. It doesn't appear in breach lists.",
+    "description": "$1 = number of accounts checked."
+  },
+  "opt_breach_none_other": {
+    "message": "Checked $1 accounts. None appear in breach lists.",
+    "description": "$1 = number of accounts checked."
+  },
   "opt_health_hide": {
     "message": "Hide details"
   },
   "opt_health_ok": {
-    "message": "Health check: no reused or weak passwords, and all were changed within the past year."
+    "message": "Health check: no passwords need attention."
   },
-  "opt_health_summary_one": {
-    "message": "Health check: $1 reused password group, $2 weak, $3 not changed in over a year.",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_one": {
+    "message": "$1 breached",
+    "description": "$1 = number of accounts. One part of the health check summary."
   },
-  "opt_health_summary_other": {
-    "message": "Health check: $1 reused password groups, $2 weak, $3 not changed in over a year.",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_other": {
+    "message": "$1 breached",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_reused_one": {
+    "message": "$1 reused group",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_reused_other": {
+    "message": "$1 reused groups",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_weak_one": {
+    "message": "$1 weak",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_weak_other": {
+    "message": "$1 weak",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_one": {
+    "message": "$1 not changed in over a year",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_other": {
+    "message": "$1 not changed in over a year",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_one": {
+    "message": "$1 still on HTTP",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_other": {
+    "message": "$1 still on HTTP",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_dup_one": {
+    "message": "$1 duplicate group",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_part_dup_other": {
+    "message": "$1 duplicate groups",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_breached_one": {
+    "message": "Breached: found $1 time in breach lists",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_breached_other": {
+    "message": "Breached: found $1 times in breach lists",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_http_ignored_one": {
+    "message": "$1 HTTP address ignored",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http_ignored_other": {
+    "message": "$1 HTTP addresses ignored",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http": {
+    "message": "Still on HTTP: if the site supports https, change it to an https address"
+  },
+  "opt_health_http_ignore": {
+    "message": "Ignore"
+  },
+  "opt_health_http_restore": {
+    "message": "Show all again"
+  },
+  "opt_health_dup": {
+    "message": "Duplicate: group $1, $2 accounts with the same username and password",
+    "description": "$1 = group number, $2 = number of accounts in the group."
   },
   "opt_health_reused": {
     "message": "Reused: password group $1 is used in $2 places",
@@ -2288,6 +2432,16 @@
   },
   "bg_none_selected": {
     "message": "No accounts selected"
+  },
+  "bg_breach_no_consent": {
+    "message": "Allow the Firefox prompt first to check for breaches."
+  },
+  "bg_breach_failed": {
+    "message": "Breach check failed: $1",
+    "description": "$1 = error message."
+  },
+  "bg_breach_timeout": {
+    "message": "the connection timed out"
   },
   "bg_not_backup_file": {
     "message": "This isn't a Password Keeper backup file"

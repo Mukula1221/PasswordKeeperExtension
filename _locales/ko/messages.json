@@ -71,6 +71,44 @@
     "message": "비밀번호 생성",
     "description": "Button that opens the password generator, and the title of that panel."
   },
+  "pop_gen_mode_chars": {
+    "message": "무작위 문자"
+  },
+  "pop_gen_mode_words": {
+    "message": "기억하기 쉬운"
+  },
+  "pop_gen_mode_tip": {
+    "message": "기억하기 쉬운 비밀번호는 영어 단어 몇 개를 이어 붙인 비밀번호입니다. 무작위 문자보다 기억하고 입력하기 쉽습니다.\n비밀번호 길이나 문자를 제한하는 사이트도 있습니다. 받아들여지지 않으면 무작위 문자로 바꾸세요.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_word_count": {
+    "message": "단어 수"
+  },
+  "pop_gen_separator": {
+    "message": "구분 기호"
+  },
+  "pop_gen_separator_space": {
+    "message": "공백"
+  },
+  "pop_gen_capitalize": {
+    "message": "첫 글자 대문자"
+  },
+  "pop_gen_add_number": {
+    "message": "숫자 하나 추가"
+  },
+  "pop_gen_history": {
+    "message": "최근 생성한 비밀번호"
+  },
+  "pop_gen_history_tip": {
+    "message": "웹 페이지의 '강력한 비밀번호 생성'과 여기서 '복사'하거나 '페이지에 입력'한 비밀번호가 최대 20개까지 남습니다.\n사이트에 저장되지 않았을 때 여기서 다시 가져올 수 있습니다.\n백업 파일에는 들어가지 않습니다.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_history_clear": {
+    "message": "모두 지우기"
+  },
+  "pop_gen_history_delete": {
+    "message": "이 항목 삭제"
+  },
   "pop_regen_title": {
     "message": "새로 하나 생성"
   },
@@ -598,19 +636,125 @@
   "opt_health_show": {
     "message": "자세히 보기"
   },
+  "opt_health_summary": {
+    "message": "비밀번호 점검: $1.",
+    "description": "$1 = the problems found, joined with opt_health_part_sep."
+  },
+  "opt_health_part_sep": {
+    "message": ", ",
+    "description": "Joins the parts of the health check summary."
+  },
+  "opt_breach_check": {
+    "message": "유출 여부 확인"
+  },
+  "opt_breach_checking": {
+    "message": "확인 중…"
+  },
+  "opt_breach_tip": {
+    "message": "Have I Been Pwned(api.pwnedpasswords.com)에 연결합니다. 비밀번호마다 해시 값의 앞 5자리만 보내므로 어떤 비밀번호인지 알 수 없습니다.\n누를 때만 연결하고 평소에는 연결하지 않습니다.\n결과는 저장하지 않습니다. 관리 페이지를 다시 열면 다시 확인하세요.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_breach_need_consent": {
+    "message": "Firefox 안내 창에서 허용하지 않아 확인하지 않았습니다."
+  },
+  "opt_breach_found_one": {
+    "message": "비밀번호 $1개가 유출 목록에 있습니다. 빨리 바꾸세요.",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_found_other": {
+    "message": "비밀번호 $1개가 유출 목록에 있습니다. 빨리 바꾸세요.",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_none_one": {
+    "message": "$1개를 확인했습니다. 유출 목록에 있는 비밀번호는 없습니다.",
+    "description": "$1 = number of accounts checked."
+  },
+  "opt_breach_none_other": {
+    "message": "$1개를 확인했습니다. 유출 목록에 있는 비밀번호는 없습니다.",
+    "description": "$1 = number of accounts checked."
+  },
   "opt_health_hide": {
     "message": "접기"
   },
   "opt_health_ok": {
-    "message": "비밀번호 점검: 재사용하거나 약한 비밀번호가 없고, 모두 1년 이내에 변경했습니다."
+    "message": "비밀번호 점검: 처리할 비밀번호가 없습니다."
   },
-  "opt_health_summary_one": {
-    "message": "비밀번호 점검: 재사용 $1그룹, 약함 $2개, 1년 넘게 변경 안 함 $3개.",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_one": {
+    "message": "유출 $1개",
+    "description": "$1 = number of accounts. One part of the health check summary."
   },
-  "opt_health_summary_other": {
-    "message": "비밀번호 점검: 재사용 $1그룹, 약함 $2개, 1년 넘게 변경 안 함 $3개.",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_other": {
+    "message": "유출 $1개",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_reused_one": {
+    "message": "재사용 $1그룹",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_reused_other": {
+    "message": "재사용 $1그룹",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_weak_one": {
+    "message": "약함 $1개",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_weak_other": {
+    "message": "약함 $1개",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_one": {
+    "message": "1년 넘게 변경 안 함 $1개",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_other": {
+    "message": "1년 넘게 변경 안 함 $1개",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_one": {
+    "message": "HTTP 사용 $1개",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_other": {
+    "message": "HTTP 사용 $1개",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_dup_one": {
+    "message": "중복 항목 $1그룹",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_part_dup_other": {
+    "message": "중복 항목 $1그룹",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_breached_one": {
+    "message": "유출: 유출 목록에 $1번 나왔습니다",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_breached_other": {
+    "message": "유출: 유출 목록에 $1번 나왔습니다",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_http_ignored_one": {
+    "message": "HTTP 주소 $1개를 무시하고 있습니다",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http_ignored_other": {
+    "message": "HTTP 주소 $1개를 무시하고 있습니다",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http": {
+    "message": "HTTP 사용 중: 사이트가 https를 지원하면 https 주소로 바꾸세요"
+  },
+  "opt_health_http_ignore": {
+    "message": "무시"
+  },
+  "opt_health_http_restore": {
+    "message": "모두 다시 보기"
+  },
+  "opt_health_dup": {
+    "message": "중복 항목: $1번째 묶음, 아이디와 비밀번호가 같은 계정 $2개",
+    "description": "$1 = group number, $2 = number of accounts in the group."
   },
   "opt_health_reused": {
     "message": "재사용: $1번 그룹의 비밀번호를 $2곳에서 사용 중",
@@ -2288,6 +2432,16 @@
   },
   "bg_none_selected": {
     "message": "선택한 계정이 없습니다"
+  },
+  "bg_breach_no_consent": {
+    "message": "유출 여부를 확인하려면 먼저 Firefox 안내 창에서 허용하세요."
+  },
+  "bg_breach_failed": {
+    "message": "유출 확인에 실패했습니다: $1",
+    "description": "$1 = error message."
+  },
+  "bg_breach_timeout": {
+    "message": "연결 시간이 초과되었습니다"
   },
   "bg_not_backup_file": {
     "message": "비밀번호 지킴이 백업 파일이 아닙니다"

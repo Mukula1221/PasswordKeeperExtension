@@ -31,7 +31,8 @@ test('Firefox 版：背景程式改列 scripts，加 AMO 規定的欄位', () =>
   assert.deepEqual(m.background.scripts.slice(0, 2), ['src/shared/platform.js', 'src/shared/i18n.js']);
   const gecko = m.browser_specific_settings.gecko;
   assert.match(gecko.id, /^\{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\}$/);
-  assert.deepEqual(gecko.data_collection_permissions, { required: ['none'] });
+  // 外洩密碼檢查送出雜湊值的前 5 碼，使用者按檢查時才請 Firefox 跳同意視窗，所以是選用的
+  assert.deepEqual(gecko.data_collection_permissions, { required: ['none'], optional: ['authenticationInfo'] });
   assert.equal(gecko.strict_min_version, '140.0');
   assert.deepEqual(m.permissions, source.permissions);
   assert.deepEqual(m.host_permissions, source.host_permissions);

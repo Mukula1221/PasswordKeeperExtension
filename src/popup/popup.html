@@ -16,7 +16,16 @@
     .warn:hover { background: #fde68a; }
     .info { background: #dcfce7; border: 1px solid #86efac; color: #166534; border-radius: 8px; padding: 8px 10px; font-size: 12px; cursor: pointer; }
     .info:hover { background: #bbf7d0; }
+    .gen-mode { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-bottom: 8px; }
+    .gen-mode input { margin: 0; }
     .gen-out { display: flex; gap: 6px; align-items: center; }
+    /* 最近產生的：收起時只佔標題一行 */
+    .gen-history { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); }
+    .gen-history > summary { cursor: pointer; font-size: 12px; font-weight: 600; color: var(--muted); }
+    .gen-history .list { margin-top: 6px; }
+    .gen-history .entry { padding: 6px 8px; }
+    .gen-history .gen-pw { flex: 1; min-width: 0; font-family: Consolas, "Courier New", monospace; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .gen-history .when { display: block; font-family: inherit; font-size: 11px; color: var(--muted); white-space: normal; }
     .gen-out input { font-family: Consolas, "Courier New", monospace; font-size: 13px; }
     .opts { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 8px; }
     .num { width: 58px; padding: 4px 6px; font: inherit; border: 1px solid var(--border); border-radius: 6px; }
@@ -79,30 +88,64 @@
 
       <div id="genPanel" class="card">
         <h2 data-i18n="pop_generate">產生密碼</h2>
+        <div class="gen-mode">
+          <label class="inline"><input type="radio" name="genMode" id="genModeChars" value="chars"> <span data-i18n="pop_gen_mode_chars">隨機字元</span></label>
+          <label class="inline"><input type="radio" name="genMode" id="genModeWords" value="words"> <span data-i18n="pop_gen_mode_words">好記的密碼</span></label>
+          <span class="tip" data-i18n-tip="pop_gen_mode_tip" data-tip="好記的密碼是用幾個英文單字串起來的密碼，比亂碼好記、好打。
+有些網站限制密碼長度或字元，不被接受時切回隨機字元。">?</span>
+        </div>
         <div class="gen-out">
           <input id="genOut" type="text" readonly>
           <button id="genAgain" class="small" title="重新產生一組" data-i18n-title="pop_regen_title" data-i18n="pop_regen">重產</button>
         </div>
-        <div class="opts">
-          <label class="inline"><span data-i18n="pop_gen_length">字數</span>
-            <input id="genMin" class="num" type="number" min="4" max="128"> <span data-i18n="pop_gen_to">到</span>
-            <input id="genMax" class="num" type="number" min="4" max="128">
-          </label>
+        <div id="genChars">
+          <div class="opts">
+            <label class="inline"><span data-i18n="pop_gen_length">字數</span>
+              <input id="genMin" class="num" type="number" min="4" max="128"> <span data-i18n="pop_gen_to">到</span>
+              <input id="genMax" class="num" type="number" min="4" max="128">
+            </label>
+          </div>
+          <div class="opts">
+            <label class="inline"><input type="checkbox" id="genUpper"> <span data-i18n="pop_gen_upper">大寫</span></label>
+            <label class="inline"><input type="checkbox" id="genLower"> <span data-i18n="pop_gen_lower">小寫</span></label>
+            <label class="inline"><input type="checkbox" id="genDigits"> <span data-i18n="pop_gen_digits">數字</span></label>
+            <label class="inline"><input type="checkbox" id="genSymbols"> <span data-i18n="pop_gen_symbols">特殊符號</span></label>
+          </div>
+          <label for="genSymbolSet" data-i18n="pop_gen_symbol_set">允許的特殊符號</label>
+          <input id="genSymbolSet" type="text" autocomplete="off" spellcheck="false">
         </div>
-        <div class="opts">
-          <label class="inline"><input type="checkbox" id="genUpper"> <span data-i18n="pop_gen_upper">大寫</span></label>
-          <label class="inline"><input type="checkbox" id="genLower"> <span data-i18n="pop_gen_lower">小寫</span></label>
-          <label class="inline"><input type="checkbox" id="genDigits"> <span data-i18n="pop_gen_digits">數字</span></label>
-          <label class="inline"><input type="checkbox" id="genSymbols"> <span data-i18n="pop_gen_symbols">特殊符號</span></label>
+        <div id="genWords" hidden>
+          <div class="opts">
+            <label class="inline"><span data-i18n="pop_gen_word_count">單字數</span>
+              <input id="genWordCount" class="num" type="number" min="3" max="20">
+            </label>
+            <label class="inline"><span data-i18n="pop_gen_separator">分隔符號</span>
+              <select id="genSeparator">
+                <option value="-">-</option>
+                <option value=".">.</option>
+                <option value="_">_</option>
+                <option value=" " data-i18n="pop_gen_separator_space">空白</option>
+              </select>
+            </label>
+          </div>
+          <div class="opts">
+            <label class="inline"><input type="checkbox" id="genCapitalize"> <span data-i18n="pop_gen_capitalize">字首大寫</span></label>
+            <label class="inline"><input type="checkbox" id="genAddNumber"> <span data-i18n="pop_gen_add_number">加一個數字</span></label>
+          </div>
         </div>
-        <label for="genSymbolSet" data-i18n="pop_gen_symbol_set">允許的特殊符號</label>
-        <input id="genSymbolSet" type="text" autocomplete="off" spellcheck="false">
         <div id="genError" class="error"></div>
         <div class="row end">
           <button id="genClose" data-i18n="pop_gen_close">收起</button>
           <button id="genCopy" data-i18n="pop_copy">複製</button>
           <button id="genFill" class="primary" data-i18n="pop_gen_fill">填入頁面</button>
         </div>
+        <details id="genHistory" class="gen-history" hidden>
+          <summary><span data-i18n="pop_gen_history">最近產生的</span> <span id="genHistoryCount" class="muted"></span><span class="tip" data-i18n-tip="pop_gen_history_tip" data-tip="網頁上的「產生強密碼」，和這裡按「複製」「填入頁面」的密碼會留在這裡，最多 20 組。
+網站沒存成功時，可以從這裡拿回來。
+不會放進備份檔。">?</span></summary>
+          <div id="genHistoryList" class="list"></div>
+          <div class="row end"><button id="genHistoryClear" class="link small danger" data-i18n="pop_gen_history_clear">全部清除</button></div>
+        </details>
       </div>
 
       <div class="row">
