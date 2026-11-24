@@ -15,10 +15,17 @@ async function ok(bg, msg, sender) {
 
 const WORDS = { mode: 'words', words: 6, separator: '-', capitalize: true, addNumber: true };
 
+// 單字裡有分隔符號或數字的話，產生出來的密碼看起來會多一個字，也分不出哪個數字是另外加的
+test('單字表：每個字都只有小寫英文字母', () => {
+  const bg = loadBackground();
+  const odd = Array.from(bg.run('PK.wordlist')).filter((w) => !/^[a-z]+$/.test(w));
+  assert.deepEqual(odd, []);
+});
+
 test('好記的密碼：照單字數、分隔符號產生，每個字都在單字表裡，只加一個數字', async () => {
   const bg = loadBackground();
   const list = new Set(bg.run('PK.wordlist'));
-  assert.equal(list.size, 7776);
+  assert.equal(list.size, 7772);
   for (let i = 0; i < 50; i++) {
     const { password } = await ok(bg, { type: 'password.generate', options: WORDS }, POPUP);
     const parts = password.split('-');

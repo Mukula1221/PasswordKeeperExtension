@@ -62,7 +62,7 @@ async function safeEval(page, expr) {
 
 const reset = () =>
   w.eval(`(async () => {
-    await chrome.storage.local.remove(['vault', 'settings', 'webauthn', 'uiLanguage', 'updateInfo', 'autoBackupKey', 'vaultKeyLock', 'autoBackupReady']);
+    await chrome.storage.local.remove(['vault', 'settings', 'webauthn', 'uiLanguage', 'uiTheme', 'updateInfo', 'autoBackupKey', 'vaultKeyLock', 'autoBackupReady']);
     await chrome.storage.session.clear();
     // 加密的案例會刪掉 keyB64，背景程式記著的舊金鑰也要丟掉
     forgetCachedKey();
@@ -1221,6 +1221,36 @@ async function checkScrollbarBelowHead(page, id) {
   await page.eval(`document.getElementById(${JSON.stringify(id)}).scrollTop = 200`);
 }
 
+// 密碼分頁左邊的帳號清單：只有帳號那幾列會捲，標題、搜尋框固定在上面，捲軸也只在帳號列旁邊，整個清單放得進視窗
+async function checkEntryListScrolls(page) {
+  const r = await page.eval(`(() => {
+    const box = document.getElementById('passwordTableWrap');
+    const head = document.querySelector('.list-head').getBoundingClientRect();
+    const before = head.top;
+    box.scrollTop = 200;
+    const after = document.querySelector('.list-head').getBoundingClientRect().top;
+    box.scrollTop = box.scrollHeight;
+    const last = box.querySelector('.entry-row:last-child').getBoundingClientRect();
+    const rect = box.getBoundingClientRect();
+    const result = {
+      scrollable: box.scrollHeight > box.clientHeight,
+      headStays: Math.abs(after - before) < 1,
+      barBelowHead: rect.top >= head.bottom - 1,
+      fits: rect.bottom <= innerHeight + 1,
+      lastVisible: last.bottom <= rect.bottom + 1,
+      rowHeight: box.querySelector('.entry-row').getBoundingClientRect().height,
+    };
+    box.scrollTop = 200;
+    return result;
+  })()`);
+  check(r.scrollable, '帳號清單應該可以捲：' + JSON.stringify(r));
+  check(r.headStays, '標題和搜尋框應該留在上面：' + JSON.stringify(r));
+  check(r.barBelowHead, '捲軸應該從標題下面才開始：' + JSON.stringify(r));
+  check(r.fits, '帳號清單應該放得進視窗：' + JSON.stringify(r));
+  check(r.lastVisible, '捲到底要看得到最後一筆：' + JSON.stringify(r));
+  check(r.rowHeight >= 40, '帳號的列不應該被壓扁：' + JSON.stringify(r));
+}
+
 // 先捲到一半再按固定在外面的那顆按鈕。按了會整張重畫，捲動位置要留著，不然畫面會跳回頂端。
 async function checkClickKeepsScroll(page, boxId, buttonSelector) {
   await page.eval(`(() => {
@@ -1251,11 +1281,15 @@ test('管理頁：密碼表、備份紀錄、回收桶列太多時也會自己�
   const page = await open('chrome-extension://' + extId + '/src/options/options.html#passwords', 1500);
   const viewport = await page.eval('innerHeight');
 
-  await checkTableScrolls(page, 'passwordTableWrap', Math.ceil(viewport * 0.7));
+  check(viewport > 0, '要量得到視窗高度');
+  await checkEntryListScrolls(page);
   await sleep(100);
   await page.screenshot(path.join(SHOTS, 'options-passwords-scroll.png'));
+  // 「全選」在「勾選」之後才出現
+  await page.click('#selectMode');
+  await sleep(200);
   await checkClickKeepsScroll(page, 'passwordTableWrap', '#checkAll');
-  check(/40 筆/.test(await page.eval(`document.getElementById('exportSelected').textContent`)), '全選要算整張表');
+  check(/40 筆/.test(await page.eval(`document.getElementById('exportSelected').textContent`)), '全選要算整個清單');
 
   await page.eval(`location.hash = '#backup'; document.getElementById('logDetails').open = true;`);
   await sleep(300);
@@ -1323,16 +1357,13 @@ test('管理頁：列太多時表格自己捲，標題留在上面，勾選後�
   check(ruleScroll.height <= Math.ceil(800 * 0.7), 'ruleSites 高度應該有上限：' + JSON.stringify(ruleScroll));
   check(ruleScroll.lastVisible, 'ruleSites 捲到底要看得到最後一個網站：' + JSON.stringify(ruleScroll));
 
-  // 視窗變窄時標題的字會折行，捲軸的起點要跟著往下
+  // 視窗變窄時密碼分頁只剩清單，左側欄換到最上面，清單還是自己捲
   await page.eval(`showTab('passwords')`);
-  const headHeight = () => page.eval(`document.querySelector('#passwordTableWrap th').getBoundingClientRect().height`);
-  const wideHead = await headHeight();
   await page.send('Emulation.setDeviceMetricsOverride', { width: 500, height: 800, deviceScaleFactor: 1, mobile: false });
   await sleep(300);
-  const narrowHead = await headHeight();
-  check(narrowHead > wideHead, '視窗變窄時標題應該變高，不然測不到：' + wideHead + ' → ' + narrowHead);
-  await page.eval(`document.getElementById('passwordTableWrap').scrollIntoView()`);
-  await checkScrollbarBelowHead(page, 'passwordTableWrap');
+  check(!(await page.eval(`document.getElementById('detailPane').checkVisibility()`)), '窄的視窗先只顯示清單');
+  await page.eval(`window.scrollTo(0, 0)`);
+  await checkEntryListScrolls(page);
   await page.send('Emulation.setDeviceMetricsOverride', { width: 1100, height: 800, deviceScaleFactor: 1, mobile: false });
   await page.eval(`showTab('settings')`);
   await sleep(300);
@@ -1404,9 +1435,14 @@ test('管理頁：列不多時不會出現捲軸', async () => {
   check(ruleSites.ch > 0, 'ruleSites 要看得到才算數：' + JSON.stringify(ruleSites));
   check(ruleSites.sh <= ruleSites.ch, 'ruleSites 不應該有直向捲軸：' + JSON.stringify(ruleSites));
   check(ruleSites.sw <= ruleSites.cw, 'ruleSites 不應該有橫向捲軸：' + JSON.stringify(ruleSites));
+  const list = await page.eval(`(() => {
+    showTab('passwords');
+    const b = document.getElementById('passwordTableWrap');
+    return { sh: b.scrollHeight, ch: b.clientHeight, sw: b.scrollWidth, cw: b.clientWidth };
+  })()`);
+  check(list.ch > 0 && list.sh <= list.ch && list.sw <= list.cw, '帳號清單不應該有捲軸：' + JSON.stringify(list));
   for (const [tab, id] of [
     ['settings', 'siteTableWrap'],
-    ['passwords', 'passwordTableWrap'],
     ['backup', 'logTableWrap'],
   ]) {
     const r = await page.eval(`(() => {
@@ -2388,16 +2424,18 @@ test('說明：小視窗的「?」看得到，點了不會勾到旁邊的方框'
   await closePage(target);
 });
 
-test('說明：畫面上不再有明文、鑰匙這類詞，互搬說明預設收合', async () => {
+test('說明：畫面上不再有明文、鑰匙這類詞，互搬說明是對話框，按了才打開', async () => {
   const page = await open('chrome-extension://' + extId + '/src/options/options.html#backup', 1200);
-  check(!(await page.eval(`document.getElementById('browserMove').open`)), '互搬說明要預設收合');
-  check(!(await page.eval(`document.querySelector('#browserMove ol').checkVisibility()`)), '收合時步驟不該顯示');
-  await page.eval(`document.querySelector('#browserMove summary').scrollIntoView({ block: 'center' })`);
-  await page.click('#browserMove summary');
+  check(!(await page.eval(`document.getElementById('browserMove').open`)), '互搬說明要預設關著');
+  await page.eval(`document.getElementById('moveHow').scrollIntoView({ block: 'center' })`);
+  await page.click('#moveHow');
   await sleep(200);
-  check(await page.eval(`document.querySelector('#browserMove ol').checkVisibility()`), '點標題要展開');
+  check(await page.eval(`document.getElementById('browserMove').open && document.querySelector('#browserMove ol').checkVisibility()`), '按「怎麼和瀏覽器互搬？」要打開說明');
   await page.screenshot(path.join(SHOTS, 'backup-move-open.png'));
-  const texts = await page.eval(`['tab-passwords', 'tab-backup', 'tab-settings', 'tab-trash', 'tab-help', 'lockScreen']
+  await page.click('#moveClose');
+  await sleep(200);
+  check(!(await page.eval(`document.getElementById('browserMove').open`)), '按「知道了」要關掉');
+  const texts = await page.eval(`['tab-passwords', 'tab-backup', 'tab-settings', 'tab-trash', 'tab-help', 'tab-about', 'browserMove', 'lockScreen']
     .map((id) => {
       const root = document.getElementById(id);
       return root.textContent + Array.from(root.querySelectorAll('.tip')).map((t) => t.dataset.tip).join('');
@@ -2498,7 +2536,7 @@ const POPUP_STUB = `{
   window.close = () => { window.__closed = true; };
 }`;
 
-test('小視窗：搜尋框下面沒有空白，這個網站的設定放在一起，鎖定在右上角', async () => {
+test('小視窗：搜尋框在頁首，網站名稱下面緊接著帳號，這個網站的設定放在一起，鎖定在右上角，底部三個分頁', async () => {
   await seedEntry('right');
   await seedRules([{ path: '/test/harness.html', selector: '#nope', text: '找不到的按鈕', when: 'onLoad' }]);
   await enableLock(false);
@@ -2509,16 +2547,20 @@ test('小視窗：搜尋框下面沒有空白，這個網站的設定放在一�
   await b.cdp.send('Target.activateTarget', { targetId: popup.targetId });
   await popup.send('Page.bringToFront');
   await sleep(300);
-  const gap = await popup.eval(`document.getElementById('list').getBoundingClientRect().top - document.getElementById('search').getBoundingClientRect().bottom`);
-  check(gap <= 12, '搜尋框和帳號之間不該空一大塊：' + gap + 'px');
+  check(await popup.eval(`!!document.getElementById('search').closest('.header')`), '搜尋框要在頁首');
+  const gap = await popup.eval(`document.getElementById('list').getBoundingClientRect().top - document.querySelector('.site-head').getBoundingClientRect().bottom`);
+  check(gap <= 4, '網站名稱和帳號之間不該空一大塊：' + gap + 'px');
   const outside = await popup.eval(`['autoFillWrap', 'autoSubmitWrap', 'pickBtn', 'pickCount'].filter((id) => !document.getElementById(id).closest('.site-opts'))`);
   check(outside.length === 0, '要放在「這個網站」底下：' + JSON.stringify(outside));
   check(await popup.eval(`document.getElementById('autoFillWrap').checkVisibility() && document.getElementById('pickCount').checkVisibility()`), '有帳號、有規則時要看得到');
   const labels = await popup.eval(`document.getElementById('autoFillWrap').textContent + document.getElementById('autoSubmitWrap').textContent`);
   check(!labels.includes('這個網站'), '勾選框不用再寫「這個網站」：' + labels);
   check(await popup.eval(`!!document.getElementById('lockNow').closest('.header') && document.getElementById('lockNow').checkVisibility()`), '鎖定要在右上角');
-  const footer = await popup.eval(`Array.from(document.querySelectorAll('.footer button')).map((x) => x.id)`);
-  check(sameList(footer, ['manage']), '下面只留管理所有密碼：' + JSON.stringify(footer));
+  const tabs = await popup.eval(`Array.from(document.querySelectorAll('#tabbar button')).map((x) => x.id)`);
+  check(sameList(tabs, ['siteTab', 'genBtn', 'manage']), '底部要有三個分頁：' + JSON.stringify(tabs));
+  check(await popup.eval(`document.getElementById('siteTab').getAttribute('aria-current') === 'page' && !document.getElementById('paneSite').hidden`), '打開時在「這個網站」');
+  const tabBottom = await popup.eval(`document.getElementById('tabbar').getBoundingClientRect().bottom - document.body.getBoundingClientRect().bottom`);
+  check(Math.abs(tabBottom) <= 1, '分頁要在最下面：' + tabBottom);
   await popup.screenshot(path.join(SHOTS, 'popup-layout.png'));
   await popup.click('#lockNow');
   check(await until(() => popup.eval(`!document.getElementById('lockScreen').hidden`), 3000), '按鎖定要換成鎖住的畫面');
@@ -3082,32 +3124,31 @@ test('忘了自訂密碼：清掉後回到不加密，自動備份的金鑰還�
 // ---- 大區塊收合和立即備份 ----
 
 const blocksOf = (page, tab) =>
-  page.eval(`Array.from(document.querySelectorAll('#tab-${tab} > details.card')).map((d) => [d.querySelector('summary').firstChild.textContent.trim(), d.open])`);
+  page.eval(`Array.from(document.querySelectorAll('#tab-${tab} details.card')).map((d) => [d.querySelector('summary').firstChild.textContent.trim(), d.open])`);
 
 test('區塊：有好幾個區塊的分頁可以點標題收合，預設狀態照設計', async () => {
   const page = await open('chrome-extension://' + extId + '/src/options/options.html#settings', 1200);
   const expected = {
-    backup: [['備份', true], ['和瀏覽器互搬密碼', false], ['自動備份', true], ['備份紀錄', false]],
+    backup: [['匯出與匯入', true], ['自動備份', true], ['備份紀錄', false]],
     settings: [['工具鎖定', false], ['填入', true], ['自動點選', true], ['危險區', false]],
+    help: [['快速上手', true], ['常見問題', true]],
     versions: [['檢查新版', true], ['版本功能歷程', true]],
+    about: [['你的資料', true], ['連結', true], ['擴充功能要的權限', false], ['授權與致謝', true]],
   };
   for (const [tab, want] of Object.entries(expected)) {
     const got = await blocksOf(page, tab);
     check(sameList(got, want), tab + ' 預設狀態：' + JSON.stringify(got));
-    const plain = await page.eval(`Array.from(document.querySelectorAll('#tab-${tab} > .card:not(details)')).map((c) => c.outerHTML.slice(0, 60))`);
+    const plain = await page.eval(`Array.from(document.querySelectorAll('#tab-${tab} .card:not(details)')).map((c) => c.outerHTML.slice(0, 60))`);
     check(plain.length === 0, tab + ' 還有不能收合的區塊：' + JSON.stringify(plain));
   }
   await page.screenshot(path.join(SHOTS, 'blocks-settings.png'));
 
   // 分頁只有一個區塊就不用收合
-  for (const [tab, title] of [['trash', '回收桶'], ['help', '怎麼用']]) {
-    const got = await page.eval(`(() => {
-      const root = document.getElementById('tab-${tab}');
-      const heading = root.querySelector(':scope > .card > h2');
-      return { details: root.querySelectorAll('details').length, blocks: root.querySelectorAll(':scope > .card').length, title: heading && heading.textContent };
-    })()`);
-    check(got.details === 0 && got.blocks === 1 && got.title === title, tab + ' 只有一個區塊，不該有收合：' + JSON.stringify(got));
-  }
+  const trashTab = await page.eval(`(() => {
+    const root = document.getElementById('tab-trash');
+    return { details: root.querySelectorAll('details').length, blocks: root.querySelectorAll('.card').length, title: root.querySelector('h1').firstChild.textContent };
+  })()`);
+  check(trashTab.details === 0 && trashTab.blocks === 1 && trashTab.title === '回收桶', '回收桶只有一個區塊，不該有收合：' + JSON.stringify(trashTab));
 
   check((await page.eval(`document.getElementById('lockState').textContent`)) === '未啟用', '工具鎖定收著，標題旁邊要看得出沒開');
   check(!(await page.eval(`document.getElementById('deleteAll').checkVisibility()`)), '危險區收著時看不到刪除按鈕');
@@ -3158,27 +3199,28 @@ test('區塊：工具鎖定標題旁邊看得出有沒有開，網站區塊的�
   await closePage(page);
 });
 
-test('立即備份：在自動備份標題旁邊，沒設密碼不能按，按了不會把區塊收起來', async () => {
+test('立即備份：在備份分頁的標題旁邊，沒設密碼不能按；自動備份的開關在區塊標題上，切了不會收起區塊', async () => {
   await seedEntry('right');
   const page = await open('chrome-extension://' + extId + '/src/options/options.html#backup', 1200);
   const info = await page.eval(`(() => {
     const btn = document.getElementById('abRunNow');
     return {
       text: btn.textContent,
-      block: btn.closest('summary').firstChild.textContent.trim(),
-      inForm: !!btn.closest('.form'),
+      inHead: !!btn.closest('.page-head'),
       primary: btn.classList.contains('primary'),
       disabled: btn.disabled,
+      switchInTitle: !!document.getElementById('abEnabled').closest('summary'),
     };
   })()`);
   check(info.text === '立即備份', '按鈕文字：' + info.text);
-  check(info.block === '自動備份' && !info.inForm, '要在自動備份的標題旁邊：' + JSON.stringify(info));
+  check(info.inHead, '要在備份分頁的標題旁邊：' + JSON.stringify(info));
   check(info.primary, '要夠顯眼');
   check(info.disabled, '沒設密碼不能按');
-  const block =`document.getElementById('abRunNow').closest('details')`;
-  await page.click('#abRunNow');
-  await sleep(100);
-  check(await page.eval(block + '.open'), '點灰掉的按鈕不能把區塊收起來');
+  check(info.switchInTitle, '自動備份的開關要在區塊標題上');
+  const block = `document.getElementById('abEnabled').closest('details')`;
+  await page.click('#abEnabled');
+  await sleep(200);
+  check(await page.eval(block + '.open'), '點灰掉的開關不能把區塊收起來');
 
   await w.eval(`handlers['autoBackup.set']({ password: 'not-a-real-one' })`);
   await page.eval('renderBackup()');
@@ -3198,12 +3240,8 @@ test('立即備份：在自動備份標題旁邊，沒設密碼不能按，按�
   await sleep(300);
   const calls = await w.eval('self.__runNowCalls');
   const toastText = await page.eval(`document.getElementById('toast').textContent`);
-  const stillOpen = await page.eval(block + '.open');
-
-  // 點旁邊的「?」也不能收起來
   await page.click(`#abRunNow ~ .tip`);
   await sleep(100);
-  const openAfterTip = await page.eval(block + '.open');
   const tip = await tipBox(page);
 
   // 鍵盤按也一樣。按鈕要收到字元才會動，所以 Enter 和空白鍵都帶 text。
@@ -3215,38 +3253,29 @@ test('立即備份：在自動備份標題旁邊，沒設密碼不能按，按�
   await page.eval(`document.getElementById('abRunNow').focus()`);
   await typeKey('Enter', 'Enter', 13, '\r');
   const callsByKey = await w.eval('self.__runNowCalls');
-  const openAfterKey = await page.eval(block + '.open');
   await typeKey(' ', 'Space', 32, ' ');
   const callsBySpace = await w.eval('self.__runNowCalls');
-  const openAfterSpace = await page.eval(block + '.open');
-  await page.eval(`document.querySelector('#abRunNow ~ .tip').focus()`);
-  await typeKey('Enter', 'Enter', 13, '\r');
-  const openAfterTipKey = await page.eval(block + '.open');
-  await typeKey(' ', 'Space', 32, ' ');
-  const openAfterTipSpace = await page.eval(block + '.open');
-
-  // 區塊收起來也按得到
-  await page.eval(`document.activeElement.blur(); ${block}.open = false`);
-  await sleep(100);
-  const visibleWhenClosed = await page.eval(`document.getElementById('abRunNow').checkVisibility()`);
-  await page.screenshot(path.join(SHOTS, 'run-now-closed.png'));
-  await page.click('#abRunNow');
-  await sleep(300);
-  const callsClosed = await w.eval('self.__runNowCalls');
-  const closedAfterClick = !(await page.eval(block + '.open'));
   await w.eval(`handlers['autoBackup.runNow'] = self.__realRunNow`);
+
+  // 開關在區塊標題上：點了、按空白鍵都只切開關，區塊不收起來
+  await page.click('#abEnabled');
+  await sleep(400);
+  const onByClick = await w.eval('getSettings().then((s) => s.autoBackup.enabled)');
+  const openAfterClick = await page.eval(block + '.open');
+  await page.eval(`document.getElementById('abEnabled').focus()`);
+  await typeKey(' ', 'Space', 32, ' ');
+  await sleep(200);
+  const onAfterSpace = await w.eval('getSettings().then((s) => s.autoBackup.enabled)');
+  const openAfterSpace = await page.eval(block + '.open');
+  await page.screenshot(path.join(SHOTS, 'backup-head.png'));
 
   check(calls === 1, '按了要備份，實際 ' + calls + ' 次');
   check(toastText.includes('已備份到'), '要告訴使用者存到哪：' + toastText);
-  check(stillOpen, '按了不能把區塊收起來');
-  check(openAfterTip, '點「?」不能把區塊收起來');
   check(tip && tip.text.includes('沒改過密碼也會存'), '點「?」要顯示說明：' + JSON.stringify(tip));
-  check(callsByKey === 2 && openAfterKey, '按 Enter 要備份、不能收起來：' + callsByKey + ' ' + openAfterKey);
-  check(callsBySpace === 3 && openAfterSpace, '按空白鍵要備份、不能收起來：' + callsBySpace + ' ' + openAfterSpace);
-  check(openAfterTipKey, '在「?」上按 Enter 不能把區塊收起來');
-  check(openAfterTipSpace, '在「?」上按空白鍵不能把區塊收起來');
-  check(visibleWhenClosed, '區塊收起來也要看得到按鈕');
-  check(callsClosed === 4 && closedAfterClick, '區塊收起來也按得到，而且不會自己打開：' + callsClosed + ' ' + closedAfterClick);
+  check(callsByKey === 2, '按 Enter 要備份：' + callsByKey);
+  check(callsBySpace === 3, '按空白鍵要備份：' + callsBySpace);
+  check(onByClick === true && openAfterClick, '點開關要打開自動備份，區塊不能收起來：' + onByClick + ' ' + openAfterClick);
+  check(onAfterSpace === false && openAfterSpace, '在開關上按空白鍵要關掉自動備份，區塊不能收起來：' + onAfterSpace + ' ' + openAfterSpace);
   await closePage(page);
 });
 
@@ -3661,7 +3690,13 @@ test('產生密碼：小視窗切到好記的密碼，網頁上的「產生強�
   await closePage(target);
 });
 
-test('健檢：列出還在用 HTTP 的網址和只差 www 的重複項目，HTTP 可以忽略、再恢復', async () => {
+// 健檢的標籤在帳號清單上方，點了清單只列有那個問題的帳號；問題寫在右邊詳細資料的最上面
+const healthChips = (page) => page.eval(`Array.from(document.querySelectorAll('#healthChips .chip-btn')).map((x) => x.textContent)`);
+const listedHosts = (page) => page.eval(`Array.from(document.querySelectorAll('#rows .entry-row .host')).map((x) => x.textContent)`);
+const detailIssues = (page) => page.eval(`Array.from(document.querySelectorAll('#detailPane .issue')).map((x) => x.innerText.replace(/\\s+/g, ' '))`);
+const clickChip = (page, text) => page.eval(`Array.from(document.querySelectorAll('#healthChips .chip-btn')).find((x) => x.textContent.includes(${JSON.stringify(text)})).click()`);
+
+test('健檢：列出還在用 HTTP 的網址和只差 www 的重複項目，點標籤只列那些帳號，HTTP 可以忽略、再恢復', async () => {
   await w.eval(`(async () => {
     const save = (entry) => handlers['entries.save']({ entry }, ${fromOptions});
     await save({ url: 'https://www.dup.example', username: 'u', password: 'Same-pass-123' });
@@ -3670,26 +3705,35 @@ test('健檢：列出還在用 HTTP 的網址和只差 www 的重複項目，HTT
     return true;
   })()`);
   const page = await open('chrome-extension://' + extId + '/src/options/options.html#passwords', 1500);
-  const summary = () => page.eval(`document.getElementById('healthSummary').textContent`);
-  let s = await summary();
-  check(s.includes('還在用 HTTP 1 筆') && s.includes('重複的項目 1 組') && s.includes('重複使用 1 組'), '摘要要列出三種問題：' + s);
-  await page.click('#healthToggle');
+  let chips = await healthChips(page);
+  check(chips.includes('還在用 HTTP 1 筆') && chips.includes('重複的項目 1 組') && chips.includes('重複使用 1 組'), '標籤要列出三種問題：' + JSON.stringify(chips));
+
+  await clickChip(page, '還在用 HTTP');
   await sleep(200);
-  const items = () => page.eval(`Array.from(document.querySelectorAll('#healthList .health-item')).map((x) => x.innerText.replace(/\\s+/g, ' '))`);
-  let list = await items();
-  check(list.some((x) => x.includes('還在用 HTTP') && x.includes('intranet.example')), 'HTTP 那筆要列出來：' + JSON.stringify(list));
-  check(list.filter((x) => x.includes('重複的項目')).length === 2, '重複的兩筆都要列：' + JSON.stringify(list));
+  check(sameList(await listedHosts(page), ['intranet.example']), '點 HTTP 標籤，清單只列那一筆：' + JSON.stringify(await listedHosts(page)));
+  let issues = await detailIssues(page);
+  check(issues.some((x) => x.includes('還在用 HTTP')), '右邊要寫出問題：' + JSON.stringify(issues));
+  check(await page.eval(`document.querySelector('#healthChips [aria-pressed="true"]').textContent.includes('HTTP')`), '選到的標籤要標出來');
+
+  await clickChip(page, '重複的項目');
+  await sleep(200);
+  const dupHosts = await listedHosts(page);
+  check(dupHosts.length === 2 && dupHosts.includes('dup.example') && dupHosts.includes('www.dup.example'), '重複的兩筆都要列：' + JSON.stringify(dupHosts));
+  issues = await detailIssues(page);
+  check(issues.some((x) => x.includes('重複的項目') && x.includes('dup.example')), '右邊要寫跟哪一筆重複：' + JSON.stringify(issues));
   await page.screenshot(path.join(SHOTS, 'options-health.png'));
-  await page.eval(`Array.from(document.querySelectorAll('#healthList button')).find((x) => x.textContent === '忽略').click()`);
+
+  await clickChip(page, '還在用 HTTP');
+  await sleep(200);
+  await page.eval(`Array.from(document.querySelectorAll('#detailPane .issue button')).find((x) => x.textContent === '忽略').click()`);
   await sleep(500);
-  s = await summary();
-  list = await items();
-  check(!s.includes('HTTP'), '忽略後摘要不再列 HTTP：' + s);
-  check(list.some((x) => x.includes('已忽略 1 筆')), '要寫忽略了幾筆：' + JSON.stringify(list));
-  check(!(await page.eval(`document.getElementById('healthList').hidden`)), '忽略之後清單維持打開');
-  await page.eval(`Array.from(document.querySelectorAll('#healthList button')).find((x) => x.textContent === '全部恢復').click()`);
+  chips = await healthChips(page);
+  check(!chips.some((x) => x.includes('HTTP')), '忽略後不再列 HTTP：' + JSON.stringify(chips));
+  check((await page.eval(`document.getElementById('healthChips').textContent`)).includes('已忽略 1 筆'), '要寫忽略了幾筆');
+  check((await listedHosts(page)).length === 3, '篩選的問題沒了，清單要回到全部');
+  await page.eval(`Array.from(document.querySelectorAll('#healthChips button')).find((x) => x.textContent === '全部恢復').click()`);
   await sleep(500);
-  check((await summary()).includes('還在用 HTTP 1 筆'), '恢復後要再列出來');
+  check((await healthChips(page)).includes('還在用 HTTP 1 筆'), '恢復後要再列出來');
   await closePage(page);
 });
 
@@ -3701,17 +3745,504 @@ test('外洩檢查：打開管理頁不連，按了才連，只送雜湊值前 5
     const page = await open('chrome-extension://' + extId + '/src/options/options.html#passwords', 1500);
     check(hitCount('/fake-hibp') === 0, '打開管理頁不能連');
     await page.click('#breachCheck');
-    const done = await until(() => page.eval(`document.getElementById('healthSummary').textContent.includes('外洩 1 筆')`), 6000);
-    check(done, '摘要要寫外洩 1 筆：' + (await page.eval(`document.getElementById('healthSummary').textContent`)));
+    const done = await until(async () => (await healthChips(page)).includes('外洩 1 筆'), 6000);
+    check(done, '標籤要寫外洩 1 筆：' + JSON.stringify(await healthChips(page)));
     const asked = hits.filter((h) => h.startsWith('/fake-hibp'));
     check(asked.length === 1 && asked[0] === '/fake-hibp?p=' + RIGHT_SHA1.slice(0, 5), '只送前 5 碼：' + JSON.stringify(asked));
-    const list = await page.eval(`Array.from(document.querySelectorAll('#healthList .health-item')).map((x) => x.innerText.replace(/\\s+/g, ' '))`);
-    check(list.some((x) => x.includes('在外洩名單出現過 42 次')), '要列出外洩次數：' + JSON.stringify(list));
+    check(sameList(await listedHosts(page), ['127.0.0.1']), '有外洩時清單只列外洩的帳號');
+    const issues = await detailIssues(page);
+    check(issues.some((x) => x.includes('在外洩名單出現過 42 次')), '要列出外洩次數：' + JSON.stringify(issues));
     await page.screenshot(path.join(SHOTS, 'options-breach.png'));
     await closePage(page);
   } finally {
     await w.eval(`useBreachApi('')`);
   }
+});
+
+// ---- 1.22.0：色系、管理頁兩欄、儲存橫條、帳號欄位的小鎖頭 ----
+
+const classOf = (node) => {
+  const i = node.attrs.indexOf('class');
+  return i >= 0 ? node.attrs[i + 1].split(' ') : [];
+};
+
+// 小管家畫在網頁上的某一塊，實際的底色。closed shadow DOM 網頁的程式讀不到，用 CDP 讀
+async function shadowBackground(page, className) {
+  const hit = (await page.shadowNodes()).find((n) => classOf(n).includes(className));
+  if (!hit) return '';
+  await page.send('CSS.enable').catch(() => {
+    // 已經開過就會丟錯，不用理
+  });
+  const { computedStyle } = await page.send('CSS.getComputedStyleForNode', { nodeId: hit.nodeId });
+  return (computedStyle.find((p) => p.name === 'background-color') || {}).value || '';
+}
+
+const themeOf = (page) => page.eval(`document.documentElement.dataset.theme`);
+
+async function pickTheme(page, choice) {
+  await page.click('#themeButton');
+  await sleep(250);
+  await page.click(`#themeMenu [data-theme-choice="${choice}"]`);
+  await sleep(500);
+}
+
+test('色系：管理頁選深色，各畫面和網頁上的清單一起換，選回跟著系統就照系統的深淺色', async () => {
+  await seedEntry('right');
+  const target = await open(T + 'harness.html', 800);
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html', 1200);
+  try {
+    await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: 'light' }] });
+    await sleep(200);
+    check((await themeOf(page)) === 'teal', '預設跟著系統，淺色模式用青綠：' + (await themeOf(page)));
+    await page.click('#themeButton');
+    await sleep(250);
+    check(await page.eval(`!document.getElementById('themeMenu').hidden`), '按「色系」要打開選單');
+    check((await page.eval(`document.querySelector('#themeMenu [aria-checked="true"]').dataset.themeChoice`)) === 'system', '預設勾跟著系統');
+    await page.screenshot(path.join(SHOTS, 'theme-menu.png'));
+    await page.press('Escape', 'Escape', 27);
+    await sleep(200);
+    check(await page.eval(`document.getElementById('themeMenu').hidden && document.activeElement.id === 'themeButton'`), 'Esc 要關掉選單、回到按鈕');
+
+    await pickTheme(page, 'dark');
+    check((await themeOf(page)) === 'dark', '選深色，管理頁馬上換');
+    check((await w.eval(`chrome.storage.local.get('uiTheme').then((r) => r.uiTheme)`)) === 'dark', '要存起來');
+    check((await page.eval(`localStorage.getItem('pk.uiTheme')`)) === 'dark', '下次打開畫面要先用的那份也要存');
+    await page.screenshot(path.join(SHOTS, 'theme-dark-options.png'));
+
+    const popup = await openPopup();
+    check((await themeOf(popup)) === 'dark', '小視窗打開就是深色');
+    await popup.screenshot(path.join(SHOTS, 'theme-dark-popup.png'));
+    await closePage(popup);
+    const unlock = await open('chrome-extension://' + extId + '/src/unlock/unlock.html', 800);
+    check((await themeOf(unlock)) === 'dark', '解鎖視窗打開就是深色');
+    await closePage(unlock);
+
+    await b.cdp.send('Target.activateTarget', { targetId: target.targetId });
+    await target.send('Page.bringToFront');
+    await target.click('#u');
+    check(await listShown(target), '帳號清單應該出現');
+    const dark = await shadowBackground(target, 'dropdown');
+    check(dark === 'rgb(22, 27, 34)', '開著的網頁不用重新整理，清單就是深色：' + dark);
+    await target.screenshot(path.join(SHOTS, 'theme-dark-inpage.png'));
+    await target.press('Escape', 'Escape', 27);
+
+    // 背景分頁不更新畫面，系統深淺色的變更要等分頁回到前面才收得到
+    await b.cdp.send('Target.activateTarget', { targetId: page.targetId });
+    await page.send('Page.bringToFront');
+    await pickTheme(page, 'white');
+    check((await themeOf(page)) === 'white', '選白色');
+    await pickTheme(page, 'system');
+    check((await themeOf(page)) === 'teal', '選回跟著系統，淺色模式用青綠');
+    check((await w.eval(`chrome.storage.local.get('uiTheme').then((r) => r.uiTheme)`)) === undefined, '跟著系統時不存');
+    await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: 'dark' }] });
+    await sleep(300);
+    check((await themeOf(page)) === 'dark', '系統換成深色模式，畫面跟著換成深色');
+    await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: 'light' }] });
+    await sleep(300);
+    check((await themeOf(page)) === 'teal', '系統換回淺色模式，畫面跟著換成青綠');
+  } finally {
+    await w.eval(`chrome.storage.local.remove('uiTheme').then(() => true)`);
+    await safeEval(page, `(localStorage.removeItem('pk.uiTheme'), true)`);
+    await closePage(page);
+    await closePage(target);
+  }
+});
+
+test('管理頁：密碼分頁左邊清單、右邊詳細資料，開關跟各網站的設定一樣，窄的視窗一次只顯示一邊', async () => {
+  await w.eval(`(async () => {
+    const save = (entry) => handlers['entries.save']({ entry }, ${fromOptions});
+    await save({ url: 'https://a.example', username: 'alpha', password: 'Alpha-pass-123' });
+    await save({ url: 'https://b.example', username: 'beta', password: 'Beta-pass-456', note: '測試用的備註' });
+    return true;
+  })()`);
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#passwords', 1500);
+  const view = () =>
+    page.eval(`({
+      title: (document.querySelector('#detailPane h2') || {}).textContent,
+      current: (document.querySelector('.entry-row.current .host') || {}).textContent,
+      list: document.querySelector('.list-pane').checkVisibility(),
+      detail: document.getElementById('detailPane').checkVisibility(),
+      back: !!document.querySelector('#detailPane .back') && document.querySelector('#detailPane .back').checkVisibility(),
+    })`);
+  let v = await view();
+  check(v.list && v.detail && !v.back && v.title === 'a.example' && v.current === 'a.example', '寬的視窗兩邊都顯示，右邊先顯示第一筆：' + JSON.stringify(v));
+
+  await page.eval(`document.querySelectorAll('.entry-open')[1].click()`);
+  await sleep(200);
+  v = await view();
+  check(v.title === 'b.example' && v.current === 'b.example', '點清單的帳號，右邊換成那一筆：' + JSON.stringify(v));
+  check((await page.eval(`document.querySelector('#detailPane .value.note').textContent`)) === '測試用的備註', '備註要顯示');
+  const masked = () => page.eval(`document.querySelector('#detailPane .value.mono').textContent`);
+  check((await masked()) === '••••••••', '密碼先遮起來');
+  await page.eval(`Array.from(document.querySelectorAll('#detailPane .field button')).find((x) => x.textContent === '顯示').click()`);
+  check((await masked()) === 'Beta-pass-456', '按顯示才看得到');
+
+  await page.eval(`document.querySelector('#detailPane input.switch').click()`);
+  const off = await until(() => w.eval(`getSettings().then((s) => s.noAutoFillHosts.includes('b.example'))`), 3000);
+  check(off, '關掉右邊的「自動填入」，這個網站就不自動填');
+  await page.eval(`showTab('settings')`);
+  const row = await page.eval(`Array.from(document.querySelectorAll('#siteRows tr')).find((tr) => tr.cells[0].textContent === 'b.example').cells[2].querySelector('input').checked`);
+  check(row === false, '設定分頁各網站的表也要跟著關掉');
+  await page.eval(`showTab('passwords')`);
+
+  await page.send('Emulation.setDeviceMetricsOverride', { width: 700, height: 800, deviceScaleFactor: 1, mobile: false });
+  await sleep(300);
+  v = await view();
+  check(!v.list && v.detail && v.back, '窄的視窗正在看詳細資料時，只顯示詳細資料：' + JSON.stringify(v));
+  await page.screenshot(path.join(SHOTS, 'options-narrow-detail.png'));
+  await page.click('#detailPane .back');
+  await sleep(200);
+  v = await view();
+  check(v.list && !v.detail, '按「回到清單」換回清單：' + JSON.stringify(v));
+  check((await page.eval(`document.activeElement.closest('.entry-row.current') !== null`)), '回到清單時焦點在剛剛看的那一筆');
+  await closePage(page);
+});
+
+test('儲存橫條：在畫面上方，按「修改內容」可以改帳號再存，展開後馬上按儲存不算', async () => {
+  const page = await open(T + 'harness.html', 800);
+  await page.click('#u');
+  await page.eval(`(() => {
+    const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+    for (const [id, v] of [['u', 'typed-user'], ['p', 'typed-pass']]) {
+      const el = document.getElementById(id);
+      set.call(el, v);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  })()`);
+  await page.click('button[type=submit]');
+  check(await until(async () => (await page.shadowTexts()).some((t) => /要儲存這組密碼嗎/.test(t)), 5000), '應該跳儲存提示');
+  const bar = (await page.shadowNodes()).find((n) => classOf(n).includes('bar'));
+  check(bar, '儲存提示要是橫條');
+  const { model } = await page.send('DOM.getBoxModel', { nodeId: bar.nodeId });
+  const width = await page.eval('innerWidth');
+  const center = (model.border[0] + model.border[2]) / 2;
+  check(Math.abs(center - width / 2) < 2 && model.border[1] < 40, '橫條要在畫面上方正中間：' + JSON.stringify(model.border));
+  const form = (await page.shadowNodes()).find((n) => classOf(n).includes('bar-form'));
+  check(form && form.attrs.includes('hidden'), '帳號密碼欄位先收起來');
+  await sleep(700);
+  await page.clickShadow('修改內容');
+  await sleep(100);
+  await page.clickShadow('儲存');
+  await sleep(400);
+  check((await w.eval(`loadEntries().then((e) => e.length)`)) === 0, '展開後馬上按儲存不算');
+  // 橫條在 closed shadow DOM 裡，網頁的程式碰不到，用 CDP 直接改帳號欄位的值
+  const userBox = (await page.shadowNodes()).find((n) => n.name === 'INPUT' && n.attrs[n.attrs.indexOf('type') + 1] === 'text');
+  check(userBox, '展開後要有帳號欄位');
+  const { object } = await page.send('DOM.resolveNode', { nodeId: userBox.nodeId });
+  await page.send('Runtime.callFunctionOn', { objectId: object.objectId, functionDeclaration: 'function () { this.value = "edited-user"; }' });
+  await page.screenshot(path.join(SHOTS, 'save-bar-edit.png'));
+  await sleep(600);
+  await page.clickShadow('儲存');
+  const saved = await until(() => w.eval(`loadEntries().then((e) => e.map((x) => x.username).join())`), 4000);
+  check(saved === 'edited-user', '存的要是改過的帳號：' + saved);
+  await closePage(page);
+});
+
+test('帳號欄位的小鎖頭：游標在帳號欄位時出現，點下去落在欄位上，換到密碼欄就收掉', async () => {
+  await seedEntry('right');
+  const page = await open(T + 'harness.html', 800);
+  await page.click('#u');
+  check(await listShown(page), '帳號清單應該出現');
+  const icon = (await page.shadowNodes()).find((n) => classOf(n).includes('field-icon'));
+  check(icon, '帳號欄位要有小鎖頭');
+  const { model } = await page.send('DOM.getBoxModel', { nodeId: icon.nodeId });
+  const x = (model.border[0] + model.border[2]) / 2;
+  const y = (model.border[1] + model.border[5]) / 2;
+  const field = await page.eval(`(() => { const r = document.getElementById('u').getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom }; })()`);
+  check(x > field.left && x < field.right && y > field.top && y < field.bottom, '小鎖頭要在欄位裡面：' + JSON.stringify({ x, y, field }));
+  check((await page.eval(`document.elementFromPoint(${x}, ${y}).id`)) === 'u', '點小鎖頭的位置要點到欄位本身');
+  await page.click('#p');
+  await sleep(300);
+  check(!(await page.shadowNodes()).some((n) => classOf(n).includes('field-icon')), '換到密碼欄，小鎖頭要收掉');
+  await closePage(page);
+});
+
+// ---- 1.22.0 第二輪：其他分頁、關於、備註 ----
+
+test('備份：最上面的狀態卡片照實際狀態換顏色和文字', async () => {
+  await seedEntry('right');
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#backup', 1200);
+  const hero = () =>
+    page.eval(`({
+      cls: document.getElementById('backupHero').className,
+      title: document.getElementById('backupHeroTitle').textContent,
+      count: document.getElementById('backupStatCount').textContent,
+      next: document.getElementById('backupStatNext').textContent,
+    })`);
+  let h = await hero();
+  check(h.cls.includes('warn') && h.title === '還沒備份過' && h.count === '1' && h.next === '沒打開', '沒備份過要是黃色：' + JSON.stringify(h));
+  await w.eval('setSettings({ lastBackupAt: Date.now() })');
+  await page.eval('renderBackup()');
+  await sleep(300);
+  h = await hero();
+  check(h.cls.includes('ok') && h.title === '上次備份是今天', '剛備份過要是綠色：' + JSON.stringify(h));
+  await closePage(page);
+});
+
+test('回收桶：剩 3 天以內用黃色標籤，空的時候寫會放幾天', async () => {
+  await seedEntry('right');
+  await w.eval(`(async () => {
+    const [e] = await loadEntries();
+    await handlers['entries.delete']({ id: e.id });
+    await modifyVault((v) => {
+      v.trash[0].deletedAt = Date.now() - 29 * DAY_MS;
+    });
+    return true;
+  })()`);
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#trash', 1200);
+  const tag = await page.eval(`(() => { const t = document.querySelector('#trashList .tag'); return { text: t.textContent, warn: t.classList.contains('warn') }; })()`);
+  check(tag.text === '明天清掉' && tag.warn, '剩 1 天要寫明天清掉、用黃色：' + JSON.stringify(tag));
+  check((await page.eval(`document.getElementById('trashTotal').textContent`)) === '1 筆', '標題旁邊要寫幾筆');
+  await page.screenshot(path.join(SHOTS, 'trash-rows.png'));
+  await w.eval(`handlers['trash.purgeAll']()`);
+  // 網址一樣時 goto 不會重新整理，要明講重新載入
+  await page.send('Page.reload');
+  await sleep(1200);
+  const empty = await page.eval(`({ shown: document.getElementById('trashEmpty').checkVisibility(), card: document.getElementById('trashCard').checkVisibility(), sub: document.getElementById('trashEmptySub').textContent })`);
+  check(empty.shown && !empty.card && empty.sub.includes('30 天'), '空的時候要顯示空的樣子：' + JSON.stringify(empty));
+  await closePage(page);
+});
+
+test('說明：九張卡片，快捷鍵照瀏覽器實際的設定，常見問題點了展開', async () => {
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#help', 1500);
+  const view = await page.eval(`(async () => {
+    const cmd = (await chrome.commands.getAll()).find((c) => c.name === 'fill-login');
+    return {
+      tiles: document.querySelectorAll('#helpCards .tile').length,
+      keys: document.querySelector('#helpCards .keys').textContent,
+      shortcut: cmd.shortcut,
+      faq: document.querySelectorAll('#faqList details').length,
+      open: document.querySelectorAll('#faqList details[open]').length,
+    };
+  })()`);
+  check(view.tiles === 9, '要有九張卡片：' + view.tiles);
+  check(view.shortcut ? view.keys === view.shortcut.replace(/\+/g, '') : view.keys === '沒有設定快捷鍵', '快捷鍵要照實際的設定：' + JSON.stringify(view));
+  check(view.faq === 5 && view.open === 0, '常見問題五題，預設收著：' + JSON.stringify(view));
+  await page.eval(`document.querySelector('#faqList summary').scrollIntoView({ block: 'center' })`);
+  await page.click('#faqList summary');
+  await sleep(200);
+  check(await page.eval(`document.querySelector('#faqList details').open`), '點題目要展開');
+  await closePage(page);
+});
+
+test('版本：歷程預設只列最近 3 版，按了才展開全部', async () => {
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#versions', 1200);
+  const count = () => page.eval(`document.querySelectorAll('#versionList .ver').length`);
+  check((await count()) === 3, '預設只列 3 版：' + (await count()));
+  check(await page.eval(`document.querySelector('#versionList .ver').classList.contains('current')`), '目前版本要標出來');
+  const total = await page.eval('PK.changelog.length');
+  await page.eval(`document.getElementById('versionMore').scrollIntoView({ block: 'center' })`);
+  await page.click('#versionMore');
+  await sleep(200);
+  check((await count()) === total, '按了要列全部 ' + total + ' 版：' + (await count()));
+  await closePage(page);
+});
+
+test('關於：版本、資料在哪、連結都對得上，權限照實際的狀態列', async () => {
+  await seedEntry('right');
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#about', 1500);
+  const view = await page.eval(`(() => ({
+    badges: Array.from(document.querySelectorAll('#aboutBadges span')).map((x) => x.textContent),
+    facts: Array.from(document.querySelectorAll('#aboutFacts .tile')).map((x) => x.innerText.replace(/\\s+/g, ' ')),
+    links: Array.from(document.querySelectorAll('#aboutSource, #aboutIssues, #aboutLinks a')).map((a) => [a.href, a.target, a.rel]),
+    perms: Array.from(document.querySelectorAll('#aboutPerms .perm-row')).map((r) => [r.querySelector('code').textContent, r.lastElementChild.textContent]),
+  }))()`);
+  const version = await w.eval('chrome.runtime.getManifest().version');
+  check(view.badges.includes('v' + version), '要寫目前版本：' + JSON.stringify(view.badges));
+  check(view.facts.length === 3 && view.facts[0].includes('帳號 1 個'), '存在哪裡要寫帳號數：' + JSON.stringify(view.facts));
+  check(view.facts[1].includes('關閉'), '保護方式要寫目前的方式：' + view.facts[1]);
+  const repo = 'https://github.com/Mukula1221/PasswordKeeperExtension';
+  check(view.links.length === 8 && view.links.every(([href, target, rel]) => href.startsWith(repo) && target === '_blank' && rel === 'noopener'), '連結都要指向 GitHub 的專案、開新分頁：' + JSON.stringify(view.links));
+  const storage = view.perms.find(([code]) => code === 'storage');
+  check(storage && storage[1] === '一直有', '必要的權限要寫一直有：' + JSON.stringify(view.perms));
+  check(view.perms.every(([, state]) => ['一直有', '已允許', '沒用到'].includes(state)), '每個權限都要有狀態：' + JSON.stringify(view.perms));
+  await page.screenshot(path.join(SHOTS, 'about.png'));
+  await page.eval(`Array.from(document.querySelectorAll('#aboutFacts button')).find((b) => b.textContent.startsWith('改保護方式')).click()`);
+  await sleep(500);
+  check(await page.eval(`location.hash === '#settings' && document.getElementById('lockBlock').open`), '改保護方式要到設定分頁、打開工具鎖定');
+  await closePage(page);
+});
+
+test('密碼分頁的備註：沒寫時也看得到，原地寫完存起來，舊密碼不會多一筆，Esc 放棄', async () => {
+  await seedEntry('right');
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#passwords', 1500);
+  const note = () =>
+    page.eval(`(() => {
+      const row = Array.from(document.querySelectorAll('#detailPane .field')).find((f) => f.querySelector('.label').textContent === '備註');
+      if (!row) return null;
+      const value = row.querySelector('.value');
+      const button = row.querySelector('button');
+      return { text: value ? value.textContent : '', button: button ? button.textContent : '' };
+    })()`);
+  let n = await note();
+  check(n && n.text === '沒有備註' && n.button === '寫備註', '沒寫備註也要看得到那一列：' + JSON.stringify(n));
+  const clickNoteButton = (text) => page.eval(`Array.from(document.querySelectorAll('#detailPane .field button')).find((x) => x.textContent === ${JSON.stringify(text)}).click()`);
+  await clickNoteButton('寫備註');
+  await sleep(200);
+  await page.eval(`document.querySelector('#detailPane textarea').value = '公司 VPN 用的帳號'`);
+  await page.eval(`Array.from(document.querySelectorAll('#detailPane .note-edit button')).find((x) => x.textContent === '儲存').click()`);
+  const saved = await until(() => w.eval(`loadEntries().then(([e]) => e.note === '公司 VPN 用的帳號' && e.history.length === 0)`), 4000);
+  check(saved, '備註要存起來，舊密碼不能多一筆');
+  await sleep(500);
+  n = await note();
+  check(n && n.text === '公司 VPN 用的帳號' && n.button === '修改', '存完要顯示備註：' + JSON.stringify(n));
+  await clickNoteButton('修改');
+  await sleep(200);
+  await page.eval(`document.querySelector('#detailPane textarea').value = '不要存這段'`);
+  await page.press('Escape', 'Escape', 27);
+  await sleep(300);
+  n = await note();
+  check(n && n.text === '公司 VPN 用的帳號', '按 Esc 要放棄：' + JSON.stringify(n));
+  await closePage(page);
+});
+
+// ---- 被截成「…」的字：滑鼠移上去看得到全文 ----
+
+// 小視窗用分頁開，「目前的分頁」換成指定網址的假分頁
+async function popupOn(url) {
+  const popup = await openPage(b.cdp, 'about:blank', `{
+    const q = chrome.tabs.query.bind(chrome.tabs);
+    chrome.tabs.query = async (info) => (info && info.active && info.currentWindow ? [{ id: -1, url: ${JSON.stringify(url)}, incognito: false }] : q(info));
+    window.close = () => {};
+  }`);
+  await popup.send('Emulation.setDeviceMetricsOverride', { width: 360, height: 620, deviceScaleFactor: 1, mobile: false });
+  await popup.goto('chrome-extension://' + extId + '/src/popup/popup.html', 1200);
+  return popup;
+}
+
+// 滑鼠移到文字開頭是 startsWith 的那個元素正中間，回傳說明框
+async function hoverText(page, selector, startsWith = '') {
+  const c = await page.eval(`(() => {
+    const e = Array.from(document.querySelectorAll(${JSON.stringify(selector)})).find((n) => n.textContent.startsWith(${JSON.stringify(startsWith)}));
+    if (!e) return null;
+    e.scrollIntoView({ block: 'center' });
+    const r = e.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+    const hit = document.elementFromPoint(x, y);
+    return { x, y, cut: e.scrollWidth > e.clientWidth, hit: hit ? hit.tagName + '.' + hit.className : null, inside: e.contains(hit) };
+  })()`);
+  if (!c) throw new Error('找不到 ' + selector + ' ' + startsWith);
+  // 沒跳說明框時，失敗訊息附上滑鼠底下是什麼、字有沒有被截掉
+  hoverText.last = c;
+  // 先移到角落再移過去，跟真人一樣從外面移進來。畫面變動時，滑鼠可能早就停在那個元素上，只在裡面移動不會再有 mouseover。
+  await page.moveTo(1, 1);
+  await page.moveTo(c.x, c.y);
+  await sleep(50);
+  return tipBox(page);
+}
+
+const saveEntry = (host, username) =>
+  w.eval(`handlers['entries.save']({ entry: { host: ${JSON.stringify(host)}, origin: ${JSON.stringify('http://' + host + ':' + PORT)}, username: ${JSON.stringify(username)}, password: 'right' } }, ${fromOptions}).then(() => true)`);
+
+const LONG_HOST = 'sign-in.accounts.a-very-long-subdomain-for-testing.example.com';
+const LONG_USER = 'a-very-long-username-for-checking-truncation@an-example-company-with-a-long-domain.test';
+
+test('小視窗的網站標籤：不能用的頁面整句說明都看得到；網站名稱太長只截網站名稱，滑鼠移上去看得到全文', async () => {
+  const chip = (popup) =>
+    popup.eval(`(() => {
+      const text = document.getElementById('site');
+      const count = document.getElementById('count');
+      const chipBox = text.parentElement.getBoundingClientRect();
+      const countBox = count.getBoundingClientRect();
+      return {
+        text: text.textContent,
+        cut: text.scrollWidth > text.clientWidth,
+        count: count.textContent,
+        countOneLine: countBox.height < parseFloat(getComputedStyle(count).fontSize) * 2,
+        apart: chipBox.right <= countBox.left,
+      };
+    })()`);
+
+  let popup = await popupOn('edge://extensions/');
+  let c = await chip(popup);
+  const msg = '這個頁面不能用，只支援 http 和 https 的網頁';
+  check(c.text === msg && !c.cut, '不能用的頁面要整句顯示，不能截成「…」：' + JSON.stringify(c));
+  const shown = await hoverText(popup, '#site');
+  check(!shown, '整句看得到，滑鼠移上去不用再跳說明：' + JSON.stringify(shown));
+  await popup.screenshot(path.join(SHOTS, 'popup-unsupported.png'));
+  await closePage(popup);
+
+  await seedEntry('right', LONG_HOST);
+  popup = await popupOn('http://' + LONG_HOST + ':' + PORT + '/login');
+  c = await chip(popup);
+  check(c.text === LONG_HOST && c.cut && c.count === '1 組帳號' && c.countOneLine && c.apart, '網站名稱太長時只截網站名稱，帳號數維持一行：' + JSON.stringify(c));
+  const box = await hoverText(popup, '#site');
+  check(box && box.text === LONG_HOST, '滑鼠移上去要馬上顯示完整網站名稱：' + JSON.stringify(box));
+  await popup.screenshot(path.join(SHOTS, 'popup-long-host.png'));
+  await closePage(popup);
+});
+
+test('小視窗：帳號名稱、按了顯示的最近產生密碼被截成「…」時，滑鼠移上去看得到全文，移開就清掉', async () => {
+  await saveEntry('127.0.0.1', LONG_USER);
+  await saveEntry('127.0.0.1', 'bob');
+  const longPw = 'Correct-Horse-Battery-Staple-Orbit-Lantern-Velvet-Meadow-Quartz-Ripple-Saddle7';
+  await w.eval(`handlers['generated.note']({ password: ${JSON.stringify(longPw)}, host: 'shop.example.com' }, { url: extensionOrigin() + '/src/popup/popup.html' }).then(() => true)`);
+  const popup = await popupOn('http://127.0.0.1:' + PORT + '/test/harness.html');
+  let box = await hoverText(popup, '.entry .u', LONG_USER);
+  check(box && box.text === LONG_USER, '帳號名稱被截掉，滑鼠移上去要顯示全文：' + JSON.stringify(box));
+  await popup.screenshot(path.join(SHOTS, 'popup-clipped-user.png'));
+  box = await hoverText(popup, '.entry .u', 'bob');
+  check(!box, '沒被截掉的不跳說明：' + JSON.stringify(box));
+
+  await popup.click('#genBtn');
+  await sleep(400);
+  await popup.eval(`document.getElementById('genHistory').open = true`);
+  await popup.eval(`Array.from(document.querySelectorAll('#genHistoryList button')).find((x) => x.textContent === '顯示').click()`);
+  await sleep(100);
+  box = await hoverText(popup, '.gen-pw');
+  check(box && box.text.startsWith(longPw), '按了顯示的密碼被截掉，滑鼠移上去要顯示全文：' + JSON.stringify(box) + ' ' + JSON.stringify(hoverText.last));
+  await popup.moveTo(5, 5);
+  await sleep(100);
+  const left = await popup.eval(`(() => { const b = document.querySelector('.tip-box'); return { hidden: b.hidden, text: b.textContent }; })()`);
+  check(left.hidden && left.text === '', '滑鼠移開，說明框要收起來，密碼不能留在框裡：' + JSON.stringify(left));
+  await closePage(popup);
+});
+
+test('管理頁：清單的網站和帳號、關於分頁的連結說明被截成「…」時，滑鼠移上去看得到全文', async () => {
+  await saveEntry(LONG_HOST, LONG_USER);
+  await seedEntry('right');
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#passwords', 1500);
+  let box = await hoverText(page, '.entry-open .host', LONG_HOST);
+  check(box && box.text === LONG_HOST, '清單裡的網站被截掉，要顯示全文：' + JSON.stringify(box));
+  box = await hoverText(page, '.entry-open .user', LONG_USER);
+  check(box && box.text === LONG_USER, '清單裡的帳號被截掉，要顯示全文：' + JSON.stringify(box));
+  await page.screenshot(path.join(SHOTS, 'options-clipped-user.png'));
+  box = await hoverText(page, '.entry-open .host', '127.0.0.1');
+  check(!box, '沒被截掉的不跳說明：' + JSON.stringify(box));
+
+  await page.eval(`location.hash = '#about'`);
+  await sleep(600);
+  // 繁中的說明放得下，換成一段長的，當作其他語言比較長的說明
+  const longDesc = 'A much longer description, like one in another language, that cannot fit on a single line of this card';
+  await page.eval(`document.querySelector('.link-card .desc').textContent = ${JSON.stringify(longDesc)}`);
+  box = await hoverText(page, '.link-card .desc', longDesc);
+  check(box && box.text === longDesc, '連結卡片的說明被截掉，要顯示全文：' + JSON.stringify(box));
+  await closePage(page);
+});
+
+test('儲存橫條：網站和帳號太長被截成「…」時，滑鼠停在上面有完整文字', async () => {
+  const page = await open(T + 'harness.html', 800);
+  await page.click('#u');
+  await page.eval(`(() => {
+    const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+    for (const [id, v] of [['u', ${JSON.stringify(LONG_USER)}], ['p', 'typed-pass']]) {
+      const el = document.getElementById(id);
+      set.call(el, v);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  })()`);
+  await page.click('button[type=submit]');
+  check(await until(async () => (await page.shadowTexts()).some((t) => /要儲存這組密碼嗎/.test(t)), 5000), '應該跳儲存提示');
+  const whoNode = async () => (await page.shadowNodes()).find((n) => classOf(n).includes('who'));
+  const { model } = await page.send('DOM.getBoxModel', { nodeId: (await whoNode()).nodeId });
+  const q = model.content;
+  await page.moveTo((q[0] + q[2]) / 2, (q[1] + q[5]) / 2);
+  await sleep(100);
+  const who = await whoNode();
+  const i = who.attrs.indexOf('title');
+  check(i >= 0 && who.attrs[i + 1] === who.text && who.text.endsWith(LONG_USER), '被截掉時要有完整文字：' + JSON.stringify(who.attrs));
+  await closePage(page);
 });
 
 // ---- 多國語系：另外開繁中以外介面的瀏覽器 ----
@@ -3754,7 +4285,7 @@ const scanPage = (page, bad) =>
   page.eval(`(() => {
     const body = document.body.cloneNode(true);
     // 語言選單的選項一律寫各語言自己的名稱（繁體中文、日本語），英文介面出現這兩個詞是對的
-    body.querySelectorAll('script, style, #langSelect').forEach((x) => x.remove());
+    body.querySelectorAll('script, style, #langMenu').forEach((x) => x.remove());
     const attrs = Array.from(document.querySelectorAll('[placeholder], [title], [aria-label], [data-tip]'))
       .flatMap((e) => ['placeholder', 'title', 'aria-label', 'data-tip'].map((a) => e.getAttribute(a)).filter(Boolean));
     const bad = ${bad.toString()};
@@ -3871,18 +4402,16 @@ for (const { locale: lang, browser, pick, tag, bad } of I18N_CASES) {
 async function switchLanguage(page, language) {
   await page.eval(`(() => {
     window.__beforeSwitch = true;
-    const select = document.getElementById('langSelect');
-    select.value = ${JSON.stringify(language)};
-    select.dispatchEvent(new Event('change'));
+    document.querySelector('#langMenu [data-lang=' + JSON.stringify(${JSON.stringify(language)}) + ']').click();
     return true;
   })()`);
-  const done = await until(() => safeEval(page, `!window.__beforeSwitch && document.readyState === 'complete' && !!document.getElementById('langSelect')`), 8000);
+  const done = await until(() => safeEval(page, `!window.__beforeSwitch && document.readyState === 'complete' && !!document.querySelector('#langMenu [aria-checked="true"]')`), 8000);
   check(done, '換成 ' + language + ' 之後，管理頁要重新整理');
   await sleep(300);
 }
 
 const headerOf = (page) =>
-  page.eval(`({ lang: document.documentElement.lang, title: document.querySelector('h1').textContent, picked: document.getElementById('langSelect').value })`);
+  page.eval(`({ lang: document.documentElement.lang, title: document.title, picked: (document.querySelector('#langMenu [aria-checked="true"]') || {}).dataset?.lang })`);
 
 test('語言：管理頁選日文，各畫面和背景程式都換成日文，選回跟著瀏覽器就恢復', async () => {
   await seedEntry('right');
@@ -3890,14 +4419,15 @@ test('語言：管理頁選日文，各畫面和背景程式都換成日文，�
   const target = await open(ORDER, 800);
   const page = await open('chrome-extension://' + extId + '/src/options/options.html', 1200);
   try {
-    check((await page.eval(`document.getElementById('langSelect').value`)) === 'auto', '預設要跟著瀏覽器');
+    await until(() => page.eval(`!!document.querySelector('#langMenu [aria-checked="true"]')`), 3000);
+    check((await page.eval(`document.querySelector('#langMenu [aria-checked="true"]').dataset.lang`)) === 'auto', '預設要跟著瀏覽器');
     const autoText = await page.eval(`document.getElementById('langAuto').textContent`);
     check(autoText === '跟著瀏覽器（繁體中文）', '跟著瀏覽器要寫出目前是哪一種：' + autoText);
     await page.screenshot(path.join(SHOTS, 'lang-picker.png'));
 
     await switchLanguage(page, 'ja');
     const ja = await headerOf(page);
-    check(ja.lang === 'ja' && ja.title === 'パスワードキーパー' && ja.picked === 'ja', '管理頁要換成日文：' + JSON.stringify(ja));
+    check(ja.lang === 'ja' && ja.title.startsWith('パスワードキーパー') && ja.picked === 'ja', '管理頁要換成日文：' + JSON.stringify(ja));
     await page.screenshot(path.join(SHOTS, 'lang-options-ja.png'));
 
     const err = await w.eval(`handlers['clickRules.add']({ rule: { host: '', path: '/x', selector: '#a', when: 'onLoad' } }).then(() => 'ok', (e) => e.message)`);
@@ -3924,7 +4454,7 @@ test('語言：管理頁選日文，各畫面和背景程式都換成日文，�
 
     await switchLanguage(page, 'auto');
     const back = await headerOf(page);
-    check(back.lang === 'zh-Hant-TW' && back.title === '密碼小管家' && back.picked === 'auto', '選回跟著瀏覽器要恢復繁中：' + JSON.stringify(back));
+    check(back.lang === 'zh-Hant-TW' && back.title.startsWith('密碼小管家') && back.picked === 'auto', '選回跟著瀏覽器要恢復繁中：' + JSON.stringify(back));
     check((await w.eval('uiLocale()')) === 'zh_TW', '背景程式要回到繁中');
     check((await page.eval(`localStorage.getItem('pk.uiLanguage')`)) === null, '頁面先用的那份語言要清掉');
   } finally {
@@ -3946,7 +4476,7 @@ test('語言：英文的瀏覽器也能選繁體中文', async () => {
     await page.screenshot(path.join(SHOTS, 'lang-picker-en.png'));
     await switchLanguage(page, 'zh_TW');
     const zh = await headerOf(page);
-    check(zh.lang === 'zh-Hant-TW' && zh.title === '密碼小管家' && zh.picked === 'zh_TW', '英文瀏覽器選繁中要換成繁中：' + JSON.stringify(zh));
+    check(zh.lang === 'zh-Hant-TW' && zh.title.startsWith('密碼小管家') && zh.picked === 'zh_TW', '英文瀏覽器選繁中要換成繁中：' + JSON.stringify(zh));
     check((await lw.eval('uiLocale()')) === 'zh_TW', '背景程式要換成繁中');
   });
 });
@@ -3992,7 +4522,7 @@ test('檢查新版：開發版不自動問，按立即檢查才問；有新版�
     })()`);
     check(view.state.includes('99.0.0'), '要寫出新版的版本號：' + view.state);
     check(view.download && view.extensions && view.page && view.steps, '有新版時要有下載、管理頁、說明和步驟：' + JSON.stringify(view));
-    check(view.header, '頁首要有「有新版」');
+    check(view.header, '左側欄「版本」要有綠點');
     check(view.dev && view.autoDisabled && !view.autoShown, '開發版要說明不會自動檢查，不顯示自動檢查的勾選框：' + JSON.stringify(view));
     check(view.summary.includes('99.0.0'), '標題旁邊要寫有新版：' + view.summary);
     await options.screenshot(path.join(SHOTS, 'update-available.png'));

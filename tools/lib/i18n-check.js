@@ -181,8 +181,9 @@ function checkLocaleLists(i18nJs, optionsHtml) {
   const fromJs = m ? JSON.parse(m[1].replace(/'/g, '"')) : null;
   if (!fromJs) problems.push('src/shared/i18n.js 找不到 i18nLocales() 的清單');
   else if (!same(fromJs)) problems.push('src/shared/i18n.js 的 i18nLocales()（' + fromJs.join(', ') + '）跟 tools/lib/i18n-check.js 的 LOCALES（' + LOCALES.join(', ') + '）不一樣');
-  const select = optionsHtml.match(/<select id="langSelect"[\s\S]*?<\/select>/);
-  const fromHtml = select ? [...select[0].matchAll(/<option value="([^"]+)"/g)].map((x) => x[1]).filter((v) => v !== 'auto') : [];
+  // 語言選單在管理頁左側欄最下面，一個語言一個 data-lang 的選項
+  const menu = optionsHtml.match(/<div id="langMenu"[\s\S]*?\n\s*<\/div>/);
+  const fromHtml = menu ? [...menu[0].matchAll(/data-lang="([^"]+)"/g)].map((x) => x[1]).filter((v) => v !== 'auto') : [];
   if (!same(fromHtml)) problems.push('管理頁語言選單的選項（' + fromHtml.join(', ') + '）跟 LOCALES（' + LOCALES.join(', ') + '）不一樣');
   return problems;
 }

@@ -16,44 +16,113 @@
   };
   const fontStack = () => '-apple-system, "Segoe UI", ' + (FONTS[uiLocale()] || '"Microsoft JhengHei", "PingFang TC", "Noto Sans TC"') + ', sans-serif';
 
-  // 每次重新產生：管理頁換了語言，字型要跟著換
-  const CSS = () => `
+  // 三套色系，跟 src/shared/ui.css 的顏色對應。網頁上的畫面在 closed shadow DOM 裡，不用 CSS 變數：
+  // 變數會從外框繼承，網頁的樣式表可以改外框的變數，把小管家的畫面改成透明或換顏色。顏色直接寫進樣式，網頁就碰不到。
+  // test/unit/theme.test.js 會檢查三套的顏色一樣多、文字對比夠不夠。
+  const PALETTES = {
+    teal: {
+      card: '#FFFFFF', text: '#10201E', muted: '#51625F', border: '#DDE7E5', divider: '#EEF3F2', field: '#FFFFFF', fieldBorder: '#B9C9C5',
+      primary: '#0B7A6E', onPrimary: '#FFFFFF', soft: '#E3F3F0', softText: '#075A51', selected: '#E3F3F0', link: '#075A51',
+      button: '#EEF3F2', buttonText: '#10201E', buttonHover: '#E3ECEA', warnBg: '#FFF1DC', warnText: '#7A4500',
+      barBg: '#0F2A2E', barText: '#E9F3F1', barMuted: '#A9C9C4', barBorder: '#0F2A2E', barButtonBorder: '#2D4E52', barHover: '#173B3F',
+      barField: '#183A3E', barLink: '#7FE3D5', barPrimary: '#19C2AD', barOnPrimary: '#0F2A2E',
+      logoBg: '#19C2AD', logoFg: '#0F2A2E', toastBg: '#10201E', toastText: '#FFFFFF', shadow: 'rgba(15,42,46,.25)',
+    },
+    white: {
+      card: '#FFFFFF', text: '#18202B', muted: '#5B6675', border: '#E4E8EE', divider: '#EEF1F5', field: '#FFFFFF', fieldBorder: '#C3CBD6',
+      primary: '#2563EB', onPrimary: '#FFFFFF', soft: '#E8F0FE', softText: '#1D4ED8', selected: '#EAF1FE', link: '#1D4ED8',
+      button: '#EEF1F5', buttonText: '#18202B', buttonHover: '#E4E8EE', warnBg: '#FFF4E0', warnText: '#7A4500',
+      barBg: '#FFFFFF', barText: '#18202B', barMuted: '#5B6675', barBorder: '#E4E8EE', barButtonBorder: '#D5DBE3', barHover: '#F1F4F8',
+      barField: '#F5F7FA', barLink: '#1D4ED8', barPrimary: '#2563EB', barOnPrimary: '#FFFFFF',
+      logoBg: '#2563EB', logoFg: '#FFFFFF', toastBg: '#18202B', toastText: '#FFFFFF', shadow: 'rgba(24,32,43,.18)',
+    },
+    dark: {
+      card: '#161B22', text: '#E6EDF3', muted: '#9AA7B4', border: '#2A323D', divider: '#222A34', field: '#0E1116', fieldBorder: '#3E4855',
+      primary: '#A99BFF', onPrimary: '#15112E', soft: '#2A2550', softText: '#D9D2FF', selected: '#2A2550', link: '#C9C0FF',
+      button: '#1F2630', buttonText: '#E6EDF3', buttonHover: '#2A323D', warnBg: '#3A2A12', warnText: '#F5C77E',
+      barBg: '#161B22', barText: '#E6EDF3', barMuted: '#9AA7B4', barBorder: '#2A323D', barButtonBorder: '#3E4855', barHover: '#1F2630',
+      barField: '#0E1116', barLink: '#C9C0FF', barPrimary: '#A99BFF', barOnPrimary: '#15112E',
+      logoBg: '#A99BFF', logoFg: '#15112E', toastBg: '#2A323D', toastText: '#E6EDF3', shadow: 'rgba(0,0,0,.5)',
+    },
+  };
+
+  // 目前用哪一套。content.js 讀到使用者選的色系後用 setTheme() 換
+  let theme = 'teal';
+
+  // 每次重新產生：管理頁換了語言，字型要跟著換；換了色系，顏色要跟著換
+  const CSS = () => {
+    const c = PALETTES[theme];
+    return `
     :host { all: initial; }
-    * { box-sizing: border-box; font-family: ${fontStack()}; font-size: 14px; line-height: 1.4; color: #1f2937; }
-    .banner { position: fixed; top: 12px; right: 12px; width: 340px; max-width: calc(100vw - 24px); background: #fff; border: 1px solid #d1d5db; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.18); padding: 14px; }
-    .banner h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-    .banner h2 .logo { width: 18px; height: 18px; border-radius: 5px; background: #2563eb; display: inline-block; }
-    .site { color: #6b7280; font-size: 12px; margin-bottom: 6px; word-break: break-all; }
-    label { display: block; font-size: 12px; color: #6b7280; margin-top: 8px; }
-    input { width: 100%; padding: 7px 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #fff; color: #111; outline: none; }
-    input:focus { border-color: #2563eb; }
+    * { box-sizing: border-box; font-family: ${fontStack()}; font-size: 14px; line-height: 1.4; color: ${c.text}; }
+    [hidden] { display: none !important; }
+    svg { display: block; width: 100%; height: 100%; }
+    .logo { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 6px; border-radius: 8px; background: ${c.logoBg}; color: ${c.logoFg}; }
+    .logo * { color: inherit; }
+    .banner { position: fixed; top: 12px; right: 12px; width: 340px; max-width: calc(100vw - 24px); background: ${c.card}; border: 1px solid ${c.border}; border-radius: 12px; box-shadow: 0 12px 30px ${c.shadow}; padding: 14px; }
+    .banner h2 { margin: 0 0 4px; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .banner h2 .logo { width: 22px; height: 22px; padding: 4px; border-radius: 6px; }
+    .site { color: ${c.muted}; font-size: 12px; margin-bottom: 6px; word-break: break-all; }
+    label { display: block; font-size: 12px; color: ${c.muted}; margin-top: 8px; }
+    input { width: 100%; padding: 7px 9px; border: 1px solid ${c.fieldBorder}; border-radius: 8px; font-size: 14px; background: ${c.field}; color: ${c.text}; outline: none; }
+    input:focus { border-color: ${c.primary}; }
     .pwwrap { position: relative; }
     .pwwrap input { padding-right: 64px; }
-    .pwwrap button { position: absolute; right: 4px; top: 4px; padding: 3px 8px; background: transparent; color: #2563eb; }
+    .pwwrap button { position: absolute; right: 4px; top: 4px; padding: 3px 8px; background: transparent; color: ${c.link}; }
     .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; justify-content: flex-end; align-items: center; }
-    button { border: 0; border-radius: 6px; padding: 7px 12px; cursor: pointer; font-size: 13px; background: #e5e7eb; color: #111; white-space: nowrap; }
-    button:hover { filter: brightness(.95); }
-    button.primary { background: #2563eb; color: #fff; }
-    button.link { background: transparent; color: #6b7280; margin-right: auto; padding-left: 0; font-size: 12px; }
-    .dropdown { position: fixed; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.15); min-width: 220px; max-width: 360px; overflow: hidden; }
-    .dropdown .head { padding: 5px 12px; font-size: 11px; color: #6b7280; background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
-    .dropdown .head.warn { padding: 8px 12px; font-size: 12px; color: #92400e; background: #fef3c7; }
-    .dropdown .item { padding: 8px 12px; cursor: pointer; }
-    .dropdown .item:hover, .dropdown .item.active { background: #eff6ff; }
-    .dropdown .item.gen { color: #2563eb; border-bottom: 1px solid #e5e7eb; }
-    .dropdown .item.locked { color: #92400e; background: #fef3c7; cursor: default; font-size: 13px; }
-    .dropdown .item.gen .u { color: #2563eb; }
+    button { border: 0; border-radius: 8px; padding: 7px 12px; cursor: pointer; font-size: 13px; background: ${c.button}; color: ${c.buttonText}; white-space: nowrap; }
+    button:hover { background: ${c.buttonHover}; }
+    button.primary { background: ${c.primary}; color: ${c.onPrimary}; font-weight: 600; }
+    button.primary:hover { filter: brightness(1.08); }
+    button.link { background: transparent; color: ${c.muted}; margin-right: auto; padding-left: 0; font-size: 12px; }
+    button:focus-visible { outline: 2px solid ${c.primary}; outline-offset: 2px; }
+    .bar { left: 50%; right: auto; transform: translateX(-50%); width: min(640px, calc(100vw - 24px)); max-width: none; padding: 10px 12px 10px 14px; background: ${c.barBg}; border-color: ${c.barBorder}; }
+    .bar * { color: ${c.barText}; }
+    .bar .logo, .bar .logo * { color: ${c.logoFg}; }
+    .bar-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+    .bar-text { flex: 1 1 220px; min-width: 0; }
+    .bar-title { font-size: 14px; font-weight: 700; }
+    .bar-sub { display: flex; align-items: baseline; gap: 6px; font-size: 12px; }
+    .bar-sub .who { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: ${c.barMuted}; font-size: 12px; }
+    .bar-sub button { flex: none; margin: 0; padding: 0; background: transparent; color: ${c.barLink}; font-size: 12px; text-decoration: underline; }
+    .bar-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .bar-actions button { height: 34px; padding: 0 14px; border: 1px solid ${c.barButtonBorder}; background: transparent; color: ${c.barText}; }
+    .bar-actions button:hover { background: ${c.barHover}; }
+    .bar-actions button.link { margin: 0; padding: 0 6px; border: 0; color: ${c.barMuted}; font-size: 13px; }
+    .bar-actions button.primary { border: 0; background: ${c.barPrimary}; color: ${c.barOnPrimary}; }
+    .bar-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px; margin-top: 8px; padding-top: 4px; border-top: 1px solid ${c.barButtonBorder}; }
+    .bar-form label { color: ${c.barMuted}; }
+    .bar-form input { background: ${c.barField}; border-color: ${c.barButtonBorder}; color: ${c.barText}; }
+    .bar-form input:focus { border-color: ${c.barPrimary}; }
+    .bar-form .pwwrap button { background: transparent; color: ${c.barLink}; border: 0; }
+    @media (max-width: 520px) { .bar-form { grid-template-columns: minmax(0, 1fr); } }
+    .dropdown { position: fixed; background: ${c.card}; border: 1px solid ${c.border}; border-radius: 10px; box-shadow: 0 10px 26px ${c.shadow}; min-width: 220px; max-width: 360px; overflow: hidden; }
+    .dropdown .head { padding: 6px 12px; font-size: 11px; color: ${c.muted}; border-bottom: 1px solid ${c.divider}; }
+    .dropdown .head.warn { padding: 8px 12px; font-size: 12px; color: ${c.warnText}; background: ${c.warnBg}; }
+    .dropdown .item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; cursor: pointer; }
+    .dropdown .item:hover, .dropdown .item.active { background: ${c.selected}; }
+    .dropdown .item .initial { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 7px; background: ${c.soft}; color: ${c.softText}; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    .dropdown .item.active .initial { background: ${c.primary}; color: ${c.onPrimary}; }
+    .dropdown .item .texts { flex: 1; min-width: 0; }
+    .dropdown .item .key { flex: none; font-size: 11px; color: ${c.muted}; visibility: hidden; }
+    .dropdown .item.active .key { visibility: visible; }
+    .dropdown .item.gen { border-bottom: 1px solid ${c.divider}; }
+    .dropdown .item.gen .u { color: ${c.link}; }
+    .dropdown .item.locked { color: ${c.warnText}; background: ${c.warnBg}; cursor: default; font-size: 13px; }
     .dropdown .item .u { font-weight: 600; word-break: break-all; }
-    .dropdown .item .h { font-size: 11px; color: #6b7280; }
-    .toast { position: fixed; top: 12px; right: 12px; background: #111827; color: #fff; padding: 10px 14px; border-radius: 8px; font-size: 13px; box-shadow: 0 6px 18px rgba(0,0,0,.2); }
+    .dropdown .item .h { font-size: 11px; color: ${c.muted}; }
+    .field-icon { position: fixed; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 6px; background: ${c.soft}; color: ${c.softText}; pointer-events: none; }
+    .field-icon * { color: inherit; }
+    .toast { position: fixed; top: 12px; right: 12px; background: ${c.toastBg}; color: ${c.toastText}; padding: 10px 14px; border-radius: 8px; font-size: 13px; box-shadow: 0 6px 18px ${c.shadow}; }
     .pick-box { position: fixed; border: 3px solid #f97316; background: rgba(249,115,22,.25); box-shadow: 0 0 0 1px #fff; border-radius: 4px; pointer-events: none; }
-    .pick-hint { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; box-shadow: 0 6px 18px rgba(0,0,0,.2); pointer-events: none; }
+    .pick-hint { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); background: ${c.toastBg}; color: ${c.toastText}; padding: 8px 14px; border-radius: 8px; font-size: 13px; box-shadow: 0 6px 18px ${c.shadow}; pointer-events: none; }
     .picked { font-weight: 600; word-break: break-all; }
-    label.radio { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #1f2937; margin-top: 6px; cursor: pointer; }
-    label.radio input { width: auto; margin: 0; padding: 0; }
-    .note { font-size: 12px; color: #92400e; margin-top: 6px; }
+    label.radio { display: flex; align-items: center; gap: 6px; font-size: 13px; color: ${c.text}; margin-top: 6px; cursor: pointer; }
+    label.radio input { width: auto; margin: 0; padding: 0; accent-color: ${c.primary}; }
+    .note { font-size: 12px; color: ${c.warnText}; margin-top: 6px; }
     .note:empty { display: none; }
   `;
+  };
 
   let shadowHost = null;
   let shadow = null;
@@ -190,5 +259,28 @@
     return shadow;
   }
 
-  PK.contentUi = { el, hiddenFromUser, host, refreshShadowStyle, root, toast, ui };
+  // 換成 PALETTES 的其中一套，畫面已經建好的話馬上換顏色
+  function setTheme(name) {
+    theme = Object.hasOwn(PALETTES, name) ? name : 'teal';
+    refreshShadowStyle();
+  }
+
+  // 方塊鎖頭：儲存提示的圖示、帳號欄位右邊的小鎖頭
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  function logoMark(className) {
+    const box = el('span', className);
+    box.setAttribute('aria-hidden', 'true');
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    for (const [k, v] of [['viewBox', '0 0 24 24'], ['fill', 'none'], ['stroke', 'currentColor'], ['stroke-width', '2.4'], ['stroke-linecap', 'round'], ['stroke-linejoin', 'round']]) svg.setAttribute(k, v);
+    const rect = document.createElementNS(SVG_NS, 'rect');
+    for (const [k, v] of [['x', '5'], ['y', '11'], ['width', '14'], ['height', '9'], ['rx', '2']]) rect.setAttribute(k, v);
+    const lock = document.createElementNS(SVG_NS, 'path');
+    lock.setAttribute('d', 'M8 11V8a4 4 0 0 1 8 0v3');
+    svg.appendChild(rect);
+    svg.appendChild(lock);
+    box.appendChild(svg);
+    return box;
+  }
+
+  PK.contentUi = { PALETTES, el, hiddenFromUser, host, logoMark, refreshShadowStyle, root, setTheme, toast, ui };
 })();

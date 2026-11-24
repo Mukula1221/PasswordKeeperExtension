@@ -71,6 +71,9 @@
     "message": "パスワードを生成",
     "description": "Button that opens the password generator, and the title of that panel."
   },
+  "pop_gen_output": {
+    "message": "生成したパスワード"
+  },
   "pop_gen_mode_chars": {
     "message": "ランダムな文字"
   },
@@ -144,10 +147,6 @@
     "message": "使用できる記号",
     "description": "Field listing which symbols the generator may use."
   },
-  "pop_gen_close": {
-    "message": "閉じる",
-    "description": "Collapses the password generator panel."
-  },
   "pop_copy": {
     "message": "コピー",
     "description": "Copies the generated password."
@@ -192,9 +191,15 @@
   "pop_pick_count_title": {
     "message": "管理ページで自動クリックを確認"
   },
+  "pop_pick_start": {
+    "message": "選ぶ"
+  },
   "pop_manage": {
     "message": "すべてのパスワードを管理",
     "description": "Popup footer link. Opens the manager page."
+  },
+  "pop_tabs_label": {
+    "message": "ポップアップのタブ"
   },
   "pop_no_response": {
     "message": "拡張機能から応答がありません"
@@ -396,16 +401,9 @@
     "message": "パスワードキーパー – パスワードの管理",
     "description": "Browser tab title of the manager page."
   },
-  "opt_header_note": {
-    "message": "パスワードはこのパソコンのブラウザーにだけ保存され、どこにもアップロードされません。"
-  },
   "opt_header_version_title": {
     "message": "バージョン履歴を見る",
     "description": "Tooltip of the version number in the page header."
-  },
-  "opt_header_update": {
-    "message": "新バージョンあり",
-    "description": "Small button next to the version number in the header."
   },
   "opt_header_update_title": {
     "message": "新しいバージョン $1 があります。クリックして更新方法を確認",
@@ -485,6 +483,12 @@
   },
   "opt_tab_versions": {
     "message": "バージョン"
+  },
+  "opt_tab_about": {
+    "message": "情報"
+  },
+  "opt_tabs_label": {
+    "message": "タブ"
   },
   "opt_add_button": {
     "message": "＋ 追加",
@@ -573,6 +577,42 @@
   "opt_search_placeholder": {
     "message": "サイト、ユーザー名、メモを検索"
   },
+  "opt_entry_count_one": {
+    "message": "$1 件"
+  },
+  "opt_entry_count_other": {
+    "message": "$1 件"
+  },
+  "opt_select_mode": {
+    "message": "選択"
+  },
+  "opt_open_site": {
+    "message": "サイトを開く"
+  },
+  "opt_move_to_trash": {
+    "message": "ごみ箱に移動"
+  },
+  "opt_detail_dates": {
+    "message": "最終使用 $1 · 作成 $2"
+  },
+  "opt_detail_empty": {
+    "message": "左のアカウントを選ぶと詳細が表示されます"
+  },
+  "opt_note_empty": {
+    "message": "メモなし"
+  },
+  "opt_note_write": {
+    "message": "メモを書く"
+  },
+  "opt_note_saved": {
+    "message": "メモを保存しました"
+  },
+  "opt_note_failed": {
+    "message": "メモを保存できませんでした：$1"
+  },
+  "opt_back_to_list": {
+    "message": "← 一覧に戻る"
+  },
   "opt_export_selected_title": {
     "message": "左のチェックボックスで選んだ項目を、同僚に渡す暗号化ファイルとしてエクスポートします"
   },
@@ -602,12 +642,8 @@
     "message": "パスワード",
     "description": "Table column."
   },
-  "opt_col_last_used": {
-    "message": "最終使用",
-    "description": "Table column: when the password was last filled in."
-  },
   "opt_empty": {
-    "message": "まだパスワードがありません。サイトに一度ログインすると、画面の右上で保存するかどうか確認されます。"
+    "message": "まだパスワードがありません。サイトに一度ログインすると、画面の上部で保存するかどうか確認されます。"
   },
   "opt_history_toggle": {
     "message": "以前のパスワード ($1)",
@@ -632,13 +668,6 @@
   "opt_search_no_match": {
     "message": "「$1」に一致する項目はありません",
     "description": "$1 = search text."
-  },
-  "opt_health_show": {
-    "message": "詳細を見る"
-  },
-  "opt_health_summary": {
-    "message": "パスワード診断：$1。",
-    "description": "$1 = the problems found, joined with opt_health_part_sep."
   },
   "opt_health_part_sep": {
     "message": "、",
@@ -672,9 +701,6 @@
   "opt_breach_none_other": {
     "message": "$1 件を確認しました。漏えいリストに載っているものはありません。",
     "description": "$1 = number of accounts checked."
-  },
-  "opt_health_hide": {
-    "message": "閉じる"
   },
   "opt_health_ok": {
     "message": "パスワード診断：対応が必要なパスワードはありません。"
@@ -727,6 +753,33 @@
     "message": "重複した項目 $1 組",
     "description": "$1 = number of duplicate groups. One part of the health check summary."
   },
+  "opt_health_filter_title": {
+    "message": "この問題があるアカウントだけを表示します。もう一度押すと元に戻ります。"
+  },
+  "opt_health_tag_breached": {
+    "message": "漏えい"
+  },
+  "opt_health_tag_reused": {
+    "message": "使い回し"
+  },
+  "opt_health_tag_weak": {
+    "message": "弱い"
+  },
+  "opt_health_tag_old": {
+    "message": "古い"
+  },
+  "opt_health_tag_http": {
+    "message": "HTTP"
+  },
+  "opt_health_tag_dup": {
+    "message": "重複"
+  },
+  "opt_health_reused_with": {
+    "message": "使い回し：このパスワードは $1 でも使われています"
+  },
+  "opt_health_dup_with": {
+    "message": "重複：$1 とユーザー名もパスワードも同じです"
+  },
   "opt_health_breached_one": {
     "message": "漏えい：漏えいリストに $1 回載っています",
     "description": "$1 = how many times the password appears in breach lists."
@@ -752,14 +805,6 @@
   "opt_health_http_restore": {
     "message": "すべて表示に戻す"
   },
-  "opt_health_dup": {
-    "message": "重複した項目：第 $1 組、$2 件のユーザー名とパスワードが同じです",
-    "description": "$1 = group number, $2 = number of accounts in the group."
-  },
-  "opt_health_reused": {
-    "message": "使い回し：$1 組目のパスワードが $2 か所で使われています",
-    "description": "$1 = group number, $2 = accounts using it (always 2 or more)."
-  },
   "opt_health_weak_short_one": {
     "message": "弱い：$1 文字しかありません",
     "description": "$1 = password length."
@@ -779,11 +824,11 @@
     "message": "ごみ箱"
   },
   "opt_trash_days_before": {
-    "message": "削除したアカウントをここに",
+    "message": "保管期間",
     "description": "Before the days input: 'Keep deleted accounts here for [30] days, then remove them automatically'."
   },
   "opt_trash_days_after": {
-    "message": "日間保管し、その後自動で消去",
+    "message": "日",
     "description": "After the days input. See opt_trash_days_before."
   },
   "opt_trash_restore_selected": {
@@ -811,20 +856,51 @@
   "opt_trash_empty": {
     "message": "ごみ箱は空です。"
   },
+  "opt_trash_page_sub": {
+    "message": "削除したアカウントはここに保管され、期限が来ると自動で消去されます。それまではいつでも復元できます。"
+  },
+  "opt_trash_count_one": {
+    "message": "$1 件"
+  },
+  "opt_trash_count_other": {
+    "message": "$1 件"
+  },
+  "opt_trash_deleted_ago_one": {
+    "message": "$1 日前に削除"
+  },
+  "opt_trash_deleted_ago_other": {
+    "message": "$1 日前に削除"
+  },
+  "opt_trash_deleted_today": {
+    "message": "今日削除"
+  },
+  "opt_trash_left_one": {
+    "message": "残り $1 日"
+  },
+  "opt_trash_left_other": {
+    "message": "残り $1 日"
+  },
+  "opt_trash_left_tomorrow": {
+    "message": "明日消去"
+  },
+  "opt_trash_left_today": {
+    "message": "今日消去"
+  },
+  "opt_trash_empty_sub_one": {
+    "message": "削除したアカウントはここに $1 日間保管されます。"
+  },
+  "opt_trash_empty_sub_other": {
+    "message": "削除したアカウントはここに $1 日間保管されます。"
+  },
+  "opt_trash_row_info": {
+    "message": "$1・$2"
+  },
   "opt_trash_purge_all": {
     "message": "ごみ箱を空にする"
   },
   "opt_trash_load_failed": {
     "message": "ごみ箱を読み込めませんでした：$1",
     "description": "$1 = error message."
-  },
-  "opt_trash_item_info_one": {
-    "message": "$2 に削除、$1 日後に自動で消去",
-    "description": "$1 = days left, $2 = date and time it was deleted."
-  },
-  "opt_trash_item_info_other": {
-    "message": "$2 に削除、$1 日後に自動で消去",
-    "description": "$1 = days left, $2 = date and time it was deleted."
   },
   "opt_restore": {
     "message": "復元"
@@ -920,10 +996,6 @@
     "message": "$1 日に変更し、$2 件を削除しました",
     "description": "$1 = new number of days, $2 = accounts deleted because they were older."
   },
-  "opt_block_backup": {
-    "message": "バックアップ",
-    "description": "Section title on the Backup tab."
-  },
   "opt_export_backup": {
     "message": "暗号化バックアップをエクスポート"
   },
@@ -966,7 +1038,7 @@
     "description": "Help text of a '?'. Each line is shown on its own line."
   },
   "opt_backup_move_how": {
-    "message": "移行方法"
+    "message": "ブラウザーとの間で移すには"
   },
   "opt_move_title": {
     "message": "ブラウザーとのパスワードの移行"
@@ -1044,17 +1116,17 @@
     "message": "今すぐバックアップ"
   },
   "opt_ab_run_now_tip": {
-    "message": "「3. 保存先」のフォルダーにすぐ 1 つ保存します。自動バックアップがオフでも使えます。\nパスワードに変更がなくても保存します。\n先にバックアップ用パスワードを設定する必要があります。",
+    "message": "自動バックアップの保存先フォルダーにすぐ 1 つ保存します。自動バックアップがオフでも使えます。\nパスワードに変更がなくても保存します。\n先にバックアップ用パスワードを設定する必要があります。",
     "description": "'3. Save to' must match opt_ab_step_folder."
   },
   "opt_ab_help": {
-    "message": "暗号化バックアップを定期的に「ダウンロード」フォルダーの中に保存します。1～4 の順に設定してください。"
+    "message": "暗号化バックアップを定期的に保存します。変更がなければ保存しません"
   },
   "opt_ab_help_tip": {
     "message": "毎日または毎週、指定した時刻に 1 つ保存します。パスワードに変更がなければ保存しません。\n時刻を過ぎていた場合は、次にブラウザーを開いたときに実行します。"
   },
   "opt_ab_step_password": {
-    "message": "1. バックアップ用パスワード"
+    "message": "バックアップ用パスワード"
   },
   "opt_ab_password_tip": {
     "message": "自動バックアップはすべてこのパスワードで暗号化されます。\n拡張機能はこのパスワードを保存しません。忘れるとバックアップファイルを開けません。\n変更しても、以前のバックアップファイルは古いパスワードで開きます。"
@@ -1074,7 +1146,7 @@
     "description": "Status of the auto backup password."
   },
   "opt_ab_step_when": {
-    "message": "2. タイミング"
+    "message": "頻度"
   },
   "opt_ab_every_day": {
     "message": "毎日"
@@ -1104,14 +1176,11 @@
     "message": "日曜日"
   },
   "opt_ab_step_folder": {
-    "message": "3. 保存先"
+    "message": "保存先"
   },
   "opt_ab_folder_prefix": {
     "message": "ダウンロード \\",
     "description": "Shown before the subfolder name input. Means the Downloads folder."
-  },
-  "opt_ab_step_switch": {
-    "message": "4. オン/オフ"
   },
   "opt_ab_enable": {
     "message": "自動バックアップを有効にする"
@@ -1230,21 +1299,59 @@
   "opt_backup_status_never": {
     "message": "まだバックアップしていません"
   },
-  "opt_backup_status_last_one": {
-    "message": "前回のバックアップ：$2（$1 日前）",
-    "description": "$1 = days since the last backup, $2 = date and time."
+  "opt_backup_page_sub": {
+    "message": "パスワードはこのパソコンにしか保存されていません。別の場所にもコピーを残しておけば、パソコンが壊れても取り戻せます。"
   },
-  "opt_backup_status_last_other": {
-    "message": "前回のバックアップ：$2（$1 日前）",
-    "description": "$1 = days since the last backup, $2 = date and time."
+  "opt_backup_hero_empty": {
+    "message": "まだパスワードがありません"
   },
-  "opt_backup_status_due_one": {
-    "message": "前回のバックアップ：$2（$1 日前）、その後パスワードを変更",
-    "description": "$1 = days since the last backup, $2 = date and time."
+  "opt_backup_hero_empty_sub": {
+    "message": "パスワードを保存したらバックアップしましょう。"
   },
-  "opt_backup_status_due_other": {
-    "message": "前回のバックアップ：$2（$1 日前）、その後パスワードを変更",
-    "description": "$1 = days since the last backup, $2 = date and time."
+  "opt_backup_hero_never_sub": {
+    "message": "パスワードはブラウザーの中にしかありません。拡張機能を削除したり閲覧データを消去したりすると失われます。"
+  },
+  "opt_backup_hero_days_one": {
+    "message": "最後のバックアップは $1 日前"
+  },
+  "opt_backup_hero_days_other": {
+    "message": "最後のバックアップは $1 日前"
+  },
+  "opt_backup_hero_today": {
+    "message": "最後のバックアップは今日"
+  },
+  "opt_backup_hero_sub_due": {
+    "message": "前回は $1 です。その後パスワードを変更したので、もう一度バックアップしましょう。"
+  },
+  "opt_backup_hero_sub_auto": {
+    "message": "前回は $1 です。自動バックアップがオンなので、パスワードを変更するとまた保存されます。"
+  },
+  "opt_backup_hero_sub_manual": {
+    "message": "前回は $1 です。自動バックアップがオフなので、定期的にバックアップしてください。"
+  },
+  "opt_backup_stat_accounts": {
+    "message": "アカウント数"
+  },
+  "opt_backup_stat_next": {
+    "message": "次の自動バックアップ"
+  },
+  "opt_backup_stat_off": {
+    "message": "オフ"
+  },
+  "opt_block_transfer": {
+    "message": "エクスポートとインポート"
+  },
+  "opt_block_transfer_sub": {
+    "message": "新しいパソコン、同僚、ブラウザーへの移行はここから"
+  },
+  "opt_backup_share_title": {
+    "message": "同僚に一部を渡す"
+  },
+  "opt_backup_share_desc": {
+    "message": "「パスワード」タブで「選択」を押し、いくつか選んで暗号化ファイルにエクスポートします"
+  },
+  "opt_backup_share_go": {
+    "message": "選択する"
   },
   "opt_import_done": {
     "message": "インポート完了：追加 $1、更新 $2、スキップ $3"
@@ -1452,11 +1559,11 @@
     "message": "この種類の履歴はありません。"
   },
   "opt_log_count_one": {
-    "message": "（$1 件）",
+    "message": "$1 件",
     "description": "Shown next to the section title."
   },
   "opt_log_count_other": {
-    "message": "（$1 件）",
+    "message": "$1 件",
     "description": "Shown next to the section title."
   },
   "opt_kind_auto": {
@@ -1684,6 +1791,30 @@
   "opt_lock_manual_help": {
     "message": "ポップアップ右上の「ロック」でいつでも手動でロックできます。"
   },
+  "opt_settings_page_sub": {
+    "message": "アプリロック、自動入力、自動クリックの設定です。変更はすぐに反映されます。"
+  },
+  "opt_jump_label": {
+    "message": "移動先"
+  },
+  "opt_fill_sub": {
+    "message": "ログインページを開くとユーザー名とパスワードを自動入力します"
+  },
+  "opt_autofill_master_desc": {
+    "message": "オフにするとどのサイトでも自動入力しません。欄からのアカウント選択とショートカットは使えます。"
+  },
+  "opt_sites_hint": {
+    "message": "「パスワード」タブの詳細でも切り替えられます"
+  },
+  "opt_never_desc": {
+    "message": "保存の確認で「このサイトでは確認しない」を選んだサイト"
+  },
+  "opt_never_none": {
+    "message": "なし"
+  },
+  "opt_danger_sub": {
+    "message": "取り消しにくい操作"
+  },
   "opt_block_fill": {
     "message": "自動入力",
     "description": "Section title on the Settings tab. Holds the autofill master switch, per-site autofill settings and never-ask sites."
@@ -1752,13 +1883,6 @@
   "opt_never_title": {
     "message": "保存を確認しないサイト"
   },
-  "opt_never_empty": {
-    "message": "まだありません。保存の確認で「このサイトでは確認しない」を押すと、ここに表示されます。",
-    "description": "The quoted text is a button on the save prompt shown on web pages (content.js). Keep it the same as that button."
-  },
-  "opt_clip_title": {
-    "message": "パスワードのコピー"
-  },
   "opt_clip_label": {
     "message": "パスワードをコピーしたらクリップボードを消去"
   },
@@ -1798,9 +1922,6 @@
   },
   "opt_click_tip": {
     "message": "同じページに複数のルールがある場合は順番にクリックし、前のルールが終わってから次に進みます。\n各ルールは最大 15 秒待ちます。"
-  },
-  "opt_click_timing_title": {
-    "message": "時間の設定"
   },
   "opt_click_interval_label": {
     "message": "既定の間隔"
@@ -2006,21 +2127,21 @@
     "message": "すべてごみ箱に移動しました"
   },
   "opt_help_title": {
-    "message": "使い方"
+    "message": "はじめに"
   },
   "opt_help_1": {
-    "message": "どこかのサイトに一度ログインすると、画面の右上に「このパスワードを保存しますか？」と表示されます。",
+    "message": "どこかのサイトに一度ログインすると、画面の上部に「このパスワードを保存しますか？」と表示されます。",
     "description": "The quoted text is the save prompt shown on web pages (content.js). Keep it the same as that prompt."
   },
   "opt_help_2": {
     "message": "次に同じサイトを開くと、ユーザー名とパスワードが自動で入力されます。複数のアカウントを保存している場合は、ユーザー名の欄をクリックすると一覧が表示されます。上下キーで選び、Enter で入力します。"
   },
   "opt_help_3": {
-    "message": "Ctrl+Shift+L（Mac は Command+Shift+L）を押すと、今のサイトのユーザー名とパスワードをすぐに入力します。ショートカットは拡張機能ページの「キーボード ショートカット」で変更できます。",
+    "message": "ログインページで下のショートカットを押すと、そのサイトで最近使ったアカウントをすぐに入力します。",
     "description": "'Keyboard shortcuts' is the browser's own page name."
   },
   "opt_help_4": {
-    "message": "ツールバーの青い鍵のアイコンから、今のサイトに保存したアカウントの確認、手動での入力、パスワードのコピー、強力なパスワードの生成ができます。ポップアップ上部の検索ボックスではすべてのサイトのアカウントを検索でき、Enter でそのサイトを開きます。"
+    "message": "ツールバーの鍵のアイコンをクリックするとポップアップが開き、このサイトに保存したアカウントの確認、入力、パスワードのコピー、パスワードの生成ができます。上部の検索ボックスではすべてのサイトを検索でき、Enter でそのサイトを開きます。"
   },
   "opt_help_5": {
     "message": "登録やパスワードの変更のときに新しいパスワードの欄をクリックすると、「強力なパスワードを生成」が表示されます。押すと、新しいパスワードと確認用の欄の両方に入力されます。",
@@ -2030,7 +2151,7 @@
     "message": "ボタンを自動でクリックしたいときは、ポップアップの「自動クリックするボタンを選ぶ」を押して、ページ上でそのボタンを選びます。以後そのページを開くと自動でクリックされます。「設定」タブの「自動クリック」で手動の追加や調整もできます。"
   },
   "opt_help_7": {
-    "message": "パスワードを変更したアカウントは、表のパスワード欄にある「以前のパスワード」を展開できます。削除したアカウントはまずごみ箱に移り、既定では 30 日間保管されます。日数は「ごみ箱」タブで変更できます。"
+    "message": "パスワードを変更したアカウントは、「パスワード」タブ右側の詳細で「以前のパスワード」を展開できます。削除したアカウントはまずごみ箱に移り、既定では 30 日間保管されます。"
   },
   "opt_help_8": {
     "message": "「設定」タブの「アプリロック」を有効にすると、このパソコンのシステム認証（Windows Hello、Touch ID）を通さないと拡張機能全体が使えなくなります。操作しない状態が続いたとき、ブラウザーを再起動したとき、ポップアップで「ロック」を押したときにロックされます。"
@@ -2038,12 +2159,315 @@
   "opt_help_9": {
     "message": "定期的にバックアップするか、自動バックアップを有効にしてください。拡張機能の削除、閲覧データの消去、フォルダーの移動をすると、パスワードは失われます。"
   },
+  "opt_help_page_sub": {
+    "message": "初めての方は下の 9 枚のカードからどうぞ。困ったときは一番下のよくある質問を見てください。"
+  },
+  "opt_help_card_1": {
+    "message": "パスワードを保存"
+  },
+  "opt_help_card_2": {
+    "message": "自動入力"
+  },
+  "opt_help_card_3": {
+    "message": "ショートカット"
+  },
+  "opt_help_card_4": {
+    "message": "ツールバーのポップアップ"
+  },
+  "opt_help_card_5": {
+    "message": "強力なパスワードを生成"
+  },
+  "opt_help_card_6": {
+    "message": "自動クリック"
+  },
+  "opt_help_card_7": {
+    "message": "以前のパスワードとごみ箱"
+  },
+  "opt_help_card_8": {
+    "message": "アプリロック"
+  },
+  "opt_help_card_9": {
+    "message": "バックアップを忘れずに"
+  },
+  "opt_help_link_shortcut": {
+    "message": "ショートカットを変更"
+  },
+  "opt_help_link_rules": {
+    "message": "自動クリックのルールを見る"
+  },
+  "opt_help_link_lock": {
+    "message": "アプリロックを設定"
+  },
+  "opt_help_link_backup": {
+    "message": "バックアップへ"
+  },
+  "opt_help_no_shortcut": {
+    "message": "ショートカットが設定されていません"
+  },
+  "opt_faq_title": {
+    "message": "よくある質問"
+  },
+  "opt_faq_q1": {
+    "message": "このサイトで自動入力されないのはなぜですか？"
+  },
+  "opt_faq_a1_1": {
+    "message": "「設定」の自動入力全体のスイッチ、またはこのサイトの自動入力がオフになっています。"
+  },
+  "opt_faq_a1_2": {
+    "message": "アドレスが http:// で始まっているのに、アカウントは https:// のアドレスで保存されています。"
+  },
+  "opt_faq_a1_3": {
+    "message": "ログインフォームがほかのサイトから埋め込まれた iframe の中にあるか、見えないフォームです。"
+  },
+  "opt_faq_a1_4": {
+    "message": "拡張機能がロックされています。先にポップアップから解除してください。"
+  },
+  "opt_faq_q2": {
+    "message": "ログインしたのに保存の確認が出ないのはなぜですか？"
+  },
+  "opt_faq_a2_1": {
+    "message": "送信後も同じページのままログインフォームが残っていると、パスワードの入力ミスとみなして確認しません。"
+  },
+  "opt_faq_a2_2": {
+    "message": "このサイトが「保存を確認しないサイト」に入っています。「設定」の「自動入力」で外せます。"
+  },
+  "opt_faq_a2_3": {
+    "message": "確認が出ないサイトでは、ポップアップの「アカウントを追加」で自分で保存してください。"
+  },
+  "opt_faq_q3": {
+    "message": "カスタムパスワードを忘れたらどうすればいいですか？"
+  },
+  "opt_faq_a3_1": {
+    "message": "カスタムパスワードは取り戻せません。開発者にもわかりません。"
+  },
+  "opt_faq_a3_2": {
+    "message": "ロック解除画面で「カスタムパスワードを忘れた、またはシステム認証が使えない場合」を押してデータを消去します。"
+  },
+  "opt_faq_a3_3": {
+    "message": "消去したあとはバックアップファイルからインポートします。だから自動バックアップは必ずオンにしておきましょう。"
+  },
+  "opt_faq_q4": {
+    "message": "コピーしたパスワードはクリップボードに残り続けますか？"
+  },
+  "opt_faq_a4_1": {
+    "message": "「設定」の「自動入力」で「パスワードをコピーしたらクリップボードを消去」をオンにすると、時間が来たら消去されます。"
+  },
+  "opt_faq_a4_2": {
+    "message": "クリップボードの中身がまだそのパスワードのときだけ消去します。あとでコピーしたものはそのままです。"
+  },
+  "opt_faq_a4_3": {
+    "message": "Windows のクリップボードの履歴（Win+V）に残った記録は消せません。"
+  },
+  "opt_faq_q5": {
+    "message": "新しいパソコンにパスワードを移すには？"
+  },
+  "opt_faq_a5_1": {
+    "message": "このパソコンの「バックアップ」タブで暗号化バックアップをエクスポートします。"
+  },
+  "opt_faq_a5_2": {
+    "message": "新しいパソコンに拡張機能をインストールし、「バックアップ」タブでそのファイルをインポートしてバックアップ用パスワードを入力します。"
+  },
+  "opt_faq_a5_3": {
+    "message": "アプリロックと自動バックアップは新しいパソコンで設定し直してください。"
+  },
   "opt_browser_hint": {
     "message": "今使っているのは $1 です。拡張機能ページは $2 です。プログラムを更新したら、そこで「再読み込み」を押してください。",
     "description": "$1 = 'Edge' or 'Chrome', $2 = edge://extensions or chrome://extensions. 'Reload' is the browser's own button name."
   },
+  "opt_about_github": {
+    "message": "GitHub でソースを見る"
+  },
+  "opt_about_issue": {
+    "message": "問題の報告・提案"
+  },
+  "opt_about_mit": {
+    "message": "MIT ライセンス"
+  },
+  "opt_about_data_title": {
+    "message": "あなたのデータ"
+  },
+  "opt_about_where_label": {
+    "message": "保存場所"
+  },
+  "opt_about_where_value": {
+    "message": "このパソコンだけ"
+  },
+  "opt_about_where_counts": {
+    "message": "アカウント $1 件・ごみ箱 $2 件"
+  },
+  "opt_about_where_desc": {
+    "message": "すべてこのブラウザーの中にあり、アップロードされません。開発者も見られません。"
+  },
+  "opt_about_lock_hello": {
+    "message": "ディスク上のパスワードは暗号化され、$1 で解除します。ブラウザーのフォルダーをコピーされても読めません。"
+  },
+  "opt_about_lock_password": {
+    "message": "ディスク上のパスワードは暗号化され、カスタムパスワードで解除します。ブラウザーのフォルダーをコピーされても読めません。"
+  },
+  "opt_about_lock_screen": {
+    "message": "画面をロックするだけで、ディスク上のパスワードは暗号化されていません。設定で暗号化する方法を選んでください。"
+  },
+  "opt_about_lock_off": {
+    "message": "暗号化されていません。このパソコンにあなたのアカウントでサインインできる人は、パスワードを見られます。"
+  },
+  "opt_about_lock_action": {
+    "message": "保護方法を変更"
+  },
+  "opt_about_net_label": {
+    "message": "外部への接続"
+  },
+  "opt_about_net_hibp_only": {
+    "message": "1 か所だけ"
+  },
+  "opt_about_net_both": {
+    "message": "2 か所だけ"
+  },
+  "opt_about_net_github_auto": {
+    "message": "GitHub：1 日 1 回、最新のバージョン番号を確認します。「バージョン」タブでオフにできます。"
+  },
+  "opt_about_net_github_manual": {
+    "message": "GitHub：「今すぐ確認」を押したときだけ接続します。"
+  },
+  "opt_about_net_github_store": {
+    "message": "GitHub：ストア版は接続しません。"
+  },
+  "opt_about_net_hibp": {
+    "message": "Have I Been Pwned：「漏えいを確認」を押したときだけ接続し、ハッシュ値の先頭 5 文字だけを送ります。"
+  },
+  "opt_about_privacy": {
+    "message": "プライバシーポリシーを読む"
+  },
+  "opt_about_links_title": {
+    "message": "リンク"
+  },
+  "opt_about_link_source": {
+    "message": "ソースコード"
+  },
+  "opt_about_link_issues_desc": {
+    "message": "GitHub で Issue を作成"
+  },
+  "opt_about_link_releases": {
+    "message": "すべてのバージョンとダウンロード"
+  },
+  "opt_about_link_releases_desc": {
+    "message": "GitHub Releases：各バージョンの zip と説明"
+  },
+  "opt_about_link_privacy": {
+    "message": "プライバシーポリシー"
+  },
+  "opt_about_link_privacy_desc": {
+    "message": "保存するデータ、保存場所、送信の有無"
+  },
+  "opt_about_link_security": {
+    "message": "セキュリティの問題を報告"
+  },
+  "opt_about_link_security_desc": {
+    "message": "公開の Issue ではなく非公開で報告してください"
+  },
+  "opt_about_link_readme": {
+    "message": "詳しい使い方"
+  },
+  "opt_about_link_readme_desc": {
+    "message": "インストール、更新、各機能の詳細"
+  },
+  "opt_about_perm_title": {
+    "message": "拡張機能が使う権限"
+  },
+  "opt_about_perm_sub": {
+    "message": "それぞれが必要な理由と、今許可されているか"
+  },
+  "opt_perm_hosts": {
+    "message": "すべてのサイト"
+  },
+  "opt_perm_hosts_why": {
+    "message": "ログインフォームはどのサイトにもあり得るため：ログイン欄の検出、保存の確認、自動入力、自動クリック"
+  },
+  "opt_perm_storage": {
+    "message": "データの保存"
+  },
+  "opt_perm_storage_why": {
+    "message": "アカウント、パスワード、設定、バックアップ記録をこのブラウザーに保存"
+  },
+  "opt_perm_active_tab": {
+    "message": "現在のタブ"
+  },
+  "opt_perm_active_tab_why": {
+    "message": "ツールバーのアイコンやショートカットを使ったとき、今どのサイトかを知るため"
+  },
+  "opt_perm_downloads": {
+    "message": "ダウンロード"
+  },
+  "opt_perm_downloads_why": {
+    "message": "エクスポートと自動バックアップを保存し、記録を削除するときにファイルも削除するため"
+  },
+  "opt_perm_alarms": {
+    "message": "アラーム"
+  },
+  "opt_perm_alarms_why": {
+    "message": "時間になったら自動バックアップや更新の確認をするため"
+  },
+  "opt_perm_idle": {
+    "message": "アイドル状態の検出"
+  },
+  "opt_perm_idle_why": {
+    "message": "しばらく操作がないときや画面ロックのときに拡張機能をロックするため"
+  },
+  "opt_perm_web_request": {
+    "message": "ブラウザーのログイン画面に応答"
+  },
+  "opt_perm_web_request_why": {
+    "message": "サイトがブラウザー独自のログイン画面を出したとき、保存したアカウントで応答するため。ほかの通信は見ません"
+  },
+  "opt_perm_clipboard": {
+    "message": "クリップボード"
+  },
+  "opt_perm_clipboard_why": {
+    "message": "「パスワードをコピーしたらクリップボードを消去」をオンにしたときだけ確認し、拡張機能がコピーしたパスワードを消去するため"
+  },
+  "opt_perm_offscreen": {
+    "message": "オフスクリーン文書"
+  },
+  "opt_perm_offscreen_why": {
+    "message": "クリップボードの消去に必要で、クリップボードの権限と一緒に確認します"
+  },
+  "opt_perm_always": {
+    "message": "常に許可"
+  },
+  "opt_perm_granted": {
+    "message": "許可済み"
+  },
+  "opt_perm_unused": {
+    "message": "未使用"
+  },
+  "opt_about_credits_title": {
+    "message": "ライセンスと謝辞"
+  },
+  "opt_about_credit_eff": {
+    "message": "覚えやすいパスワードの単語リスト。Electronic Frontier Foundation、CC BY 4.0"
+  },
+  "opt_about_credit_hibp": {
+    "message": "漏えい確認のデータ。Have I Been Pwned 提供"
+  },
   "opt_versions_title": {
     "message": "バージョン履歴"
+  },
+  "opt_versions_page_sub": {
+    "message": "新しいバージョンの確認と、各バージョンの変更内容です。"
+  },
+  "opt_versions_more_one": {
+    "message": "以前のバージョンを表示（$1 件）"
+  },
+  "opt_versions_more_other": {
+    "message": "以前のバージョンを表示（$1 件）"
+  },
+  "opt_versions_less": {
+    "message": "最新の 3 件だけ表示"
+  },
+  "opt_update_step_download": {
+    "message": "新しいバージョンをダウンロード"
+  },
+  "opt_update_step_load": {
+    "message": "新しいバージョンを読み込む"
   },
   "opt_version_now": {
     "message": "現在のバージョンは $1 です。プログラムを更新したら、拡張機能ページで「再読み込み」を押してください。",
@@ -2239,6 +2663,9 @@
   "cs_banner_never_done": {
     "message": "$1 では今後確認しません。管理ページで元に戻せます。",
     "description": "$1 is the site's host name, for example accounts.example.com."
+  },
+  "cs_banner_edit": {
+    "message": "内容を編集"
   },
   "cs_save_failed": {
     "message": "保存できませんでした：$1",
@@ -2663,8 +3090,35 @@
   "opt_lang_failed": {
     "message": "言語を変更できませんでした：$1"
   },
+  "opt_lang_button": {
+    "message": "言語"
+  },
+  "opt_theme_label": {
+    "message": "配色"
+  },
+  "opt_theme_system": {
+    "message": "システムに合わせる"
+  },
+  "opt_theme_system_hint": {
+    "message": "ライトモードでは青緑、ダークモードではダーク"
+  },
+  "opt_theme_white": {
+    "message": "ホワイト"
+  },
+  "opt_theme_dark": {
+    "message": "ダーク"
+  },
+  "opt_theme_teal": {
+    "message": "青緑"
+  },
+  "opt_theme_failed": {
+    "message": "配色を変更できませんでした：$1"
+  },
   "bg_language_invalid": {
     "message": "この言語には対応していません"
+  },
+  "bg_theme_invalid": {
+    "message": "この配色には対応していません"
   },
   "bg_update_offline": {
     "message": "GitHub に接続できません。ネットワークを確認してから、もう一度お試しください。"

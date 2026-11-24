@@ -9,6 +9,59 @@
   const PK = (globalThis.PK ??= {});
   PK.changelog = [
     {
+      version: '1.22.0',
+      date: '2026-11-24',
+      items: {
+        zh_TW: [
+          '介面改版：小視窗底部有「這個網站」「產生密碼」「管理所有密碼」三個分頁。管理頁的分頁改到左側欄，「密碼」分頁左邊是帳號清單、右邊是點到的那個帳號的詳細資料。',
+          '可以換色系：管理頁左側欄最下面的「色系」可以選跟著系統、白色、深色、青綠。預設跟著系統，淺色模式用青綠、深色模式用深色。小視窗、管理頁、解鎖視窗、網頁上的提示一起換。',
+          '網頁上的「要儲存這組密碼嗎？」改成畫面上方的細長橫條，要先改帳號密碼按「修改內容」。帳號欄位右邊多了小鎖頭，表示這個網站有存帳號。',
+          '密碼健檢改成清單上方的標籤，點一個標籤，清單只列有那個問題的帳號。每個帳號的問題寫在右邊詳細資料的最上面。',
+          '詳細資料一直有備註欄位，沒寫過的也能直接在那裡寫，不用打開「修改」。',
+          '備份、設定、回收桶、說明、版本重新設計：每頁開頭先講現在的狀態，例如上次備份多久前、回收桶裡哪幾筆快清掉了。說明改成九張卡片和常見問題，版本歷程改成時間軸。',
+          '管理頁多了「關於」分頁：版本、資料存在哪、會連到哪裡、GitHub 的連結，和擴充功能要的每一項權限。',
+          '管理頁的語言選單搬到左側欄最下面。要匯出其中幾筆給同事，先按清單上方的「勾選」。',
+          '網址、帳號這類太長被截成「…」的文字，滑鼠移上去會顯示全文。',
+        ],
+        en: [
+          'New look: the popup has three tabs at the bottom, "This site", "Generate password", and "Manage all passwords". The manager page\'s tabs moved to a sidebar, and the "Passwords" tab shows the account list on the left and the selected account\'s details on the right.',
+          'Choose a theme: "Theme" at the bottom of the manager page\'s sidebar offers Match system, White, Dark, and Teal. The default matches your system, using Teal in light mode and Dark in dark mode. The popup, manager page, unlock window, and prompts on web pages switch together.',
+          '"Save this password?" on web pages is now a slim bar at the top of the page. To change the username or password first, click "Edit". A small lock at the right of the username field shows that this site has saved accounts.',
+          'The password health check now shows tags above the list. Click a tag to list only the accounts with that issue. Each account\'s issues are shown at the top of its details on the right.',
+          'The details always have a note field, so you can add a note right there without opening "Edit".',
+          'Backup, Settings, Trash, Help, and Versions are redesigned: each page starts with where things stand, such as how long ago you last backed up or which items in the Trash are about to be removed. Help is now nine cards plus FAQs, and the version history is a timeline.',
+          'The manager page has a new "About" tab: version, where your data is stored, where the extension connects, GitHub links, and every permission it uses.',
+          'The manager page\'s language menu moved to the bottom of the sidebar. To export a few accounts for a colleague, click "Select" above the list first.',
+          'Long text cut off with "…", such as addresses and usernames, is shown in full when you hover over it.',
+        ],
+        ja: [
+          '画面を一新しました。ポップアップの下に「このサイト」「パスワードを生成」「すべてのパスワードを管理」の 3 つのタブがあります。管理ページのタブはサイドバーに移り、「パスワード」タブは左にアカウント一覧、右に選んだアカウントの詳細を表示します。',
+          '配色を選べるようになりました。管理ページのサイドバーの下にある「配色」で、システムに合わせる、ホワイト、ダーク、青緑から選べます。既定ではシステムに合わせ、ライトモードでは青緑、ダークモードではダークになります。ポップアップ、管理ページ、ロック解除ウィンドウ、Web ページ上の表示がまとめて切り替わります。',
+          'Web ページの「このパスワードを保存しますか？」は、画面上部の細いバーになりました。先にユーザー名やパスワードを直すときは「内容を編集」をクリックします。ユーザー名の欄の右にある小さな鍵は、このサイトにアカウントが保存されていることを示します。',
+          'パスワード診断は一覧の上のタグで表示するようになりました。タグをクリックすると、その問題があるアカウントだけが一覧に表示されます。各アカウントの問題は右側の詳細の一番上に表示されます。',
+          '詳細には常にメモ欄があり、まだ書いていないアカウントでも「編集」を開かずにその場で書けます。',
+          'バックアップ、設定、ごみ箱、ヘルプ、バージョンを作り直しました。各ページの先頭で、前回のバックアップがいつか、ごみ箱のどれがもうすぐ消えるかなど、今の状態がわかります。ヘルプは 9 枚のカードとよくある質問に、バージョン履歴はタイムラインになりました。',
+          '管理ページに「情報」タブを追加しました。バージョン、データの保存場所、接続先、GitHub のリンク、拡張機能が使うすべての権限を確認できます。',
+          '管理ページの言語メニューはサイドバーの下に移りました。同僚に一部のアカウントだけをエクスポートするときは、一覧の上の「選択」を先にクリックします。',
+          'アドレスやユーザー名など、長くて「…」で省略された文字は、マウスを重ねると全文が表示されます。',
+        ],
+      },
+      notes: {
+        zh_TW: [
+          '舊密碼按「複製」時，也會照「複製密碼後自動清除剪貼簿」的設定清掉。',
+          '好記的密碼不再用帶連字號的 4 個英文單字（例如 t-shirt），用「-」分隔時，一個字不會看起來像兩個字。',
+        ],
+        en: [
+          'Copying a previous password now also follows the "clear the clipboard after copying" setting.',
+          'Easy-to-remember passwords no longer use the four words that contain a hyphen, such as t-shirt, so no word looks like two when "-" is the separator.',
+        ],
+        ja: [
+          '以前のパスワードをコピーしたときも、「コピー後にクリップボードを消去」の設定どおりに消去されます。',
+          '覚えやすいパスワードに、ハイフンを含む 4 つの英単語（t-shirt など）を使わないようにしました。区切りが「-」のとき、1 つの単語が 2 つに見えることがなくなります。',
+        ],
+      },
+    },
+    {
       version: '1.21.0',
       date: '2026-11-24',
       items: {

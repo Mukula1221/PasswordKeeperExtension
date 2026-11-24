@@ -44,6 +44,7 @@
     'settings.get': { from: 'extension', whenLocked: true },
     'language.get': { from: 'extension', whenLocked: true },
     'language.set': { from: 'extension', whenLocked: true },
+    'theme.set': { from: 'extension', whenLocked: true },
     'update.status': { from: 'extension', whenLocked: true },
     'update.check': { from: 'extension', whenLocked: true },
     'update.download': { from: 'extension', whenLocked: true },
@@ -563,6 +564,15 @@
       // storage 的變更通知會晚一點才到，這裡先換好，管理頁重新整理後的第一個訊息就會是新語言
       await PK.locale.reloadLocale();
       return { language };
+    },
+
+    // 管理頁左側欄的色系選單。system 是跟著系統，存的時候拿掉 uiTheme。
+    // 鎖住時也能換，理由跟語言一樣。值要跟 theme.js 的 THEMES 一樣。
+    async 'theme.set'({ theme }) {
+      if (theme === 'system') await chrome.storage.local.remove('uiTheme');
+      else if (['white', 'dark', 'teal'].includes(theme)) await chrome.storage.local.set({ uiTheme: theme });
+      else throw new Error(t('bg_theme_invalid'));
+      return { theme };
     },
 
     // 網頁裡的 content.js 拿指定語言的翻譯。沒指定時 messages 是 null，照瀏覽器的語言。

@@ -50,6 +50,13 @@
     }
   }
 
+  // 帳號前面的字首方塊。用 Array.from 拆字，emoji 這種兩個字元的字才不會被切一半
+  function initialOf(name) {
+    const box = el('span', 'initial', Array.from(String(name || '?').trim() || '?')[0]);
+    box.setAttribute('aria-hidden', 'true');
+    return box;
+  }
+
   async function render() {
     const res = await send({ type: 'entries.forHost', host, url: tab ? tab.url : '' });
     if (!res.ok) {
@@ -74,6 +81,7 @@
     }
     for (const entry of entries) {
       const row = el('div', 'entry');
+      row.appendChild(initialOf(entry.username || entry.host));
       const u = el('div', 'u', entry.username || t('pop_no_username'));
       if (entry.host !== host) u.appendChild(el('div', 'h', entry.host));
       const fill = el('button', 'primary small', t('pop_fill'));
@@ -108,8 +116,8 @@
   }
 
   function showAddForm(show) {
-    $('addForm').classList.toggle('show', show);
-    $('addBtn').style.display = show ? 'none' : '';
+    $('addForm').hidden = !show;
+    $('addBtn').hidden = show;
     $('addError').textContent = '';
     if (show) {
       $('addUser').value = '';
@@ -185,6 +193,29 @@
     window.close();
   });
 
+  // ---- 底部分頁：這個網站、產生密碼。「管理所有密碼」直接開管理頁 ----
+
+  function showPane(name) {
+    // 搜尋中按分頁，先清掉搜尋，不然搜尋結果會蓋住分頁的內容
+    if ($('search').value) {
+      $('search').value = '';
+      renderSearch();
+    }
+    $('paneSite').hidden = name !== 'site';
+    $('paneGen').hidden = name !== 'gen';
+    for (const [id, pane] of [['siteTab', 'site'], ['genBtn', 'gen']]) {
+      if (pane === name) $(id).setAttribute('aria-current', 'page');
+      else $(id).removeAttribute('aria-current');
+    }
+    if (name === 'gen') {
+      regenerate();
+      renderGenHistory();
+    }
+  }
+
+  $('siteTab').addEventListener('click', () => showPane('site'));
+  $('genBtn').addEventListener('click', () => showPane('gen'));
+
   // ---- 搜尋所有網站的帳號（登入捷徑）----
 
   let allEntries = null;
@@ -231,6 +262,7 @@
     }
     for (const entry of searchResults) {
       const row = el('div', 'entry');
+      row.appendChild(initialOf(entry.host));
       const u = el('div', 'u', entry.username || t('pop_search_no_username'));
       u.appendChild(el('div', 'h', entry.host));
       const open = el('button', 'primary small', t('pop_open'));
@@ -258,7 +290,8 @@
   // ---- 私密視窗：不能在私密視窗用的瀏覽器只顯示提示，見 platform.js 的 privateWindows ----
 
   function showPrivateBlocked() {
-    for (const id of ['search', 'searchList', 'main', 'lockScreen', 'lockNow']) $(id).hidden = true;
+    for (const id of ['search', 'searchList', 'main', 'lockScreen', 'lockNow', 'tabbar']) $(id).hidden = true;
+    $('search').closest('label').hidden = true;
     $('privateScreen').hidden = false;
   }
 
@@ -267,7 +300,8 @@
   function showLocked(locked) {
     $('lockScreen').hidden = !locked;
     $('main').hidden = locked;
-    $('search').hidden = locked;
+    $('search').closest('label').hidden = locked;
+    $('tabbar').hidden = locked;
     $('searchList').hidden = true;
   }
 
@@ -352,14 +386,6 @@
     writeGenOptions(res.data.options);
   }
 
-  function showGenPanel(show) {
-    $('genPanel').classList.toggle('show', show);
-    $('genBtn').style.display = show ? 'none' : '';
-    if (show) {
-      regenerate();
-      renderGenHistory();
-    }
-  }
 
   // 按了「複製」或「填入頁面」才算用到，記進最近產生的
   async function noteGenerated(value) {
@@ -420,8 +446,6 @@
     }
   }
 
-  $('genBtn').addEventListener('click', () => showGenPanel(true));
-  $('genClose').addEventListener('click', () => showGenPanel(false));
   $('genAgain').addEventListener('click', regenerate);
   for (const id of GEN_FIELD_IDS) $(id).addEventListener('change', regenerate);
   $('genCopy').addEventListener('click', async () => {

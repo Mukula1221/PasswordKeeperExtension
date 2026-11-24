@@ -210,6 +210,27 @@ function checkPlatformCode() {
   }
 }
 
+// 擴充功能自己的畫面要在 <head> 先載入 platform.js 和 theme.js，畫面還沒畫就把色系設好，不然打開時會先閃一下別的顏色
+const THEMED_PAGES = ['src/popup/popup.html', 'src/options/options.html', 'src/unlock/unlock.html'];
+
+function checkThemeScripts() {
+  for (const file of THEMED_PAGES) {
+    const head = (readText(file).match(/<head>([\s\S]*?)<\/head>/) || [])[1] || '';
+    const scripts = [...head.matchAll(/<script src="([^"]+)"/g)].map((m) => m[1]);
+    if (scripts.join() !== '../shared/platform.js,../shared/theme.js') problems.push(file + ' 的 <head> 要依序載入 ../shared/platform.js、../shared/theme.js，見 src/shared/theme.js');
+    const sheet = head.indexOf('ui.css');
+    if (sheet >= 0 && sheet < head.indexOf('theme.js')) problems.push(file + ' 的 theme.js 要放在 ui.css 前面');
+  }
+}
+
+// 管理頁「關於」的 GitHub 連結，要跟檢查新版問的是同一個專案
+function checkRepoUrl() {
+  const repo = (readText('src/background/update.js').match(/const UPDATE_REPO = '([^']+)'/) || [])[1];
+  const url = (readText('src/options/options.js').match(/const REPO_URL = '([^']+)'/) || [])[1];
+  if (!repo || !url) problems.push('找不到 update.js 的 UPDATE_REPO 或 options.js 的 REPO_URL');
+  else if (url !== 'https://github.com/' + repo) problems.push('options.js 的 REPO_URL（' + url + '）要是 https://github.com/' + repo);
+}
+
 function checkSyntax() {
   const files = [...packageFiles().filter((f) => f.endsWith('.js')), ...jsFilesUnder('tools'), ...jsFilesUnder('test')];
   for (const file of files) {
@@ -230,6 +251,8 @@ checkI18n(manifest);
 checkUnsafeCode();
 checkScopes();
 checkPlatformCode();
+checkThemeScripts();
+checkRepoUrl();
 const checked = checkSyntax();
 if (problems.length) {
   console.error('檢查沒過：');

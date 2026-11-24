@@ -192,7 +192,7 @@ Firefox 可以逐站收回擴充功能的網站權限，Chrome 也能改成「�
 
 台語（`nan_TW`）比較特別：瀏覽器沒有台語介面，Chrome 也不認得 `nan_TW` 這個資料夾，只會略過，不會自己挑它。所以台語只能從管理頁的語言選單選，選了之後由 `i18n.js` 自己讀 `_locales/nan_TW/messages.json`。瀏覽器也沒有台語的日期格式，日期用台灣華語的寫法（`i18n.js` 的 `formatLang()`）。
 
-管理頁右上角可以指定語言，存在 `chrome.storage.local` 的 `uiLanguage`：
+管理頁左側欄最下面可以指定語言，存在 `chrome.storage.local` 的 `uiLanguage`：
 
 - 瀏覽器內建的 `chrome.i18n` 只會照瀏覽器的語言，指定了別的語言時，`i18n.js` 改成自己讀那一份 `messages.json` 查表。
 - 小視窗、管理頁、解鎖視窗打開時要馬上知道用哪種語言，所以管理頁換語言時另外在 `localStorage` 存一份 `pk.uiLanguage`。兩份對不上時以 `uiLanguage` 為準，頁面會更新那一份再重新整理。
@@ -212,7 +212,7 @@ Firefox 可以逐站收回擴充功能的網站權限，Chrome 也能改成「�
 1. 複製 `_locales/en` 成新的語言代碼資料夾（例如法文 `fr`），把裡面的文字翻掉，`locale_code` 和 `lang_tag` 改成新的語言代碼。
 2. 語言代碼加進 `tools/lib/i18n-check.js` 的 `LOCALES` 和 `src/shared/i18n.js` 的 `i18nLocales()`。`tools/check.js` 會比對這兩份清單和語言選單。
 3. 版本紀錄（`src/options/changelog.js`）和 GitHub Release 說明只寫繁中、英文、日文三種，新語言的介面會顯示英文的版本紀錄，不用加。
-4. 管理頁頁首的語言選單（`src/options/options.html` 的 `langSelect`）加一個選項，`src/options/options.js` 的 `renderLanguagePicker` 加上那個語言的名稱。每一份翻譯檔都加 `lang_name_<語言代碼>`，內容一律寫那個語言自己的寫法，例如 `Français`。
+4. 管理頁左側欄的語言選單（`src/options/options.html` 的 `langMenu`）加一個 `data-lang` 的選項，`src/options/options.js` 的 `renderLanguagePicker` 加上那個語言的名稱。每一份翻譯檔都加 `lang_name_<語言代碼>`，內容一律寫那個語言自己的寫法，例如 `Français`。
 5. 字型跟繁中不合的語言（例如日文、韓文、泰文），`src/shared/ui.css` 和 `src/content/ui.js` 的 `FONTS` 加上那個語言的字型。
 6. `test/e2e/run.js` 的多國語系案例（`I18N_CASES`）加上那個語言。
 

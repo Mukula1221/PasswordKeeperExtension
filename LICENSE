@@ -26,4 +26,6 @@ src/background/wordlist.js contains the EFF Large Wordlist
 (https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt)
 by the Electronic Frontier Foundation, licensed under CC BY 4.0
 (https://creativecommons.org/licenses/by/4.0/, see https://www.eff.org/copyright).
-Change: the dice numbers at the start of each line were removed.
+Changes: the dice numbers at the start of each line were removed, and so were
+the four words containing a hyphen (drop-down, felt-tip, t-shirt, yo-yo),
+leaving 7772 words.

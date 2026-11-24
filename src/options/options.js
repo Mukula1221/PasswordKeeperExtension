@@ -11,6 +11,10 @@
   const { send, toast } = PK.page.pageHelpers({ noResponse: () => t('opt_no_response'), toastMs: 2500 });
 
   let entries = [];
+  // 檢查新版的狀態，版本分頁和關於分頁都用
+  let updateInfo = null;
+  // 工具鎖定的狀態，renderLock() 讀好放這裡
+  let lockSt = null;
   let settings = { autoFill: true, neverSave: [] };
   let editingId = null;
   // 表格裡勾選的帳號 id，給「匯出勾選的」用
@@ -48,6 +52,7 @@
     const needVerify = lock.ok && lock.data.enabled && lock.data.locked;
     $('lockScreen').hidden = !needVerify;
     $('pageMain').hidden = needVerify;
+    document.body.classList.toggle('locked', needVerify);
     if (needVerify) {
       closeDialogsForLock();
       renderLockScreen(lock.data);
@@ -63,11 +68,57 @@
     if (s.ok) settings = s.data;
     // 被刪掉或復原的帳號，勾選狀態要跟著清掉
     selected = new Set([...selected].filter((id) => entries.some((e) => e.id === id)));
-    renderTable();
     renderHealth();
+    renderList();
+    renderAbout();
     renderSettings();
     renderBackup();
     renderTrash();
+  }
+
+  // 用 createElementNS 建圖示，不用 HTML 字串。d 是一條 path，stroke 用文字顏色
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  function svgIcon(d, className) {
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    for (const [k, v] of [['viewBox', '0 0 24 24'], ['fill', 'none'], ['stroke', 'currentColor'], ['stroke-width', '2'], ['stroke-linecap', 'round'], ['stroke-linejoin', 'round'], ['aria-hidden', 'true']]) svg.setAttribute(k, v);
+    if (className) svg.setAttribute('class', className);
+    const line = document.createElementNS(SVG_NS, 'path');
+    line.setAttribute('d', d);
+    svg.appendChild(line);
+    return svg;
+  }
+
+  function iconBox(d, className) {
+    const box = el('span', className || 'tile-icon');
+    box.appendChild(svgIcon(d));
+    return box;
+  }
+
+  const ICON = {
+    save: 'M5 4h11l3 3v13H5zM8 4v5h7V4M8 14h8',
+    fill: 'M4 7h16M4 12h10M4 17h7M17 14l3 3-3 3',
+    keyboard: 'M3 7h18v10H3zM7 11h.01M11 11h.01M15 11h.01M8 14h8',
+    lock: 'M6 11h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V7a4 4 0 0 1 8 0v4',
+    key: 'M12 15a4 4 0 1 1-8 0a4 4 0 1 1 8 0zM10.8 12.2L20 3m-3 3l3 3m-6 0l2 2',
+    click: 'M9 4v2M4 9h2M5.5 5.5L7 7M12 9l8 3-3.5 1.5L15 17z',
+    history: 'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',
+    shield: 'M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z',
+    shieldOk: 'M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6zM8.5 12l2.5 2.5 4.5-5',
+    backup: 'M4 4h16a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4',
+    computer: 'M4 5h16v11H4zM8 20h8M12 16v4',
+    globe: 'M21 12a9 9 0 1 1-18 0a9 9 0 1 1 18 0zM3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18',
+    code: 'M8 6l-6 6 6 6M16 6l6 6-6 6',
+    chat: 'M4 5h16v11H8l-4 4zM8 9h8M8 12h5',
+    download: 'M12 4v11M7 10l5 5 5-5M4 20h16',
+    warning: 'M12 4l9 16H3zM12 10v4M12 17h.01',
+    doc: 'M5 4h10l4 4v12H5zM9 12h6M9 16h6',
+    external: 'M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5',
+    trash: 'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',
+  };
+
+  // 卡片上、清單上比較短的日期時間，例如 11/25 12:00
+  function fmtShort(ts) {
+    return new Date(ts).toLocaleString(formatLang(), { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   }
 
   function fmtDate(ts) {
@@ -76,144 +127,330 @@
     return d.toLocaleDateString(formatLang()) + ' ' + d.toLocaleTimeString(formatLang(), { hour: '2-digit', minute: '2-digit' });
   }
 
-  function renderTable() {
+  // ---- 密碼分頁：左邊帳號清單，右邊詳細資料 ----
+
+  // 右邊顯示的帳號 id
+  let currentId = null;
+  // 視窗窄於 900px 時一次只顯示一邊：true 是顯示詳細資料，false 是顯示清單
+  let showDetail = false;
+  // 勾選模式：清單每一列前面才出現方框，給「匯出勾選的」用
+  let selecting = false;
+  // 健檢標籤的篩選：null 是不篩，其他是 HEALTH_KINDS 其中一個
+  let healthFilter = null;
+  // 每個帳號的健檢問題：id → [{ kind, text, action }]，renderHealth() 算好
+  let issuesById = new Map();
+
+  const MASK = '••••••••';
+  const narrow = matchMedia('(max-width: 900px)');
+
+  function siteUrl(e) {
+    return e.origin || 'https://' + e.host;
+  }
+
+  // 帳號前面的字首方塊。用 Array.from 拆字，emoji 這種兩個字元的字才不會被切一半
+  function initialOf(text, big) {
+    const box = el('span', big ? 'initial big' : 'initial', Array.from(String(text || '?').trim() || '?')[0]);
+    box.setAttribute('aria-hidden', 'true');
+    return box;
+  }
+
+  async function copyPassword(password) {
+    try {
+      await navigator.clipboard.writeText(password);
+      send({ type: 'clipboard.copied', text: password });
+      toast(t('opt_password_copied'));
+    } catch (err) {
+      toast(t('opt_copy_failed', err.message));
+    }
+  }
+
+  function visibleEntries() {
     const q = $('search').value.trim().toLowerCase();
-    const visible = entries.filter(
-      (e) => !q || e.host.includes(q) || e.username.toLowerCase().includes(q) || (e.note || '').toLowerCase().includes(q)
+    return entries.filter(
+      (e) =>
+        (!q || e.host.includes(q) || e.username.toLowerCase().includes(q) || (e.note || '').toLowerCase().includes(q)) &&
+        (!healthFilter || (issuesById.get(e.id) || []).some((i) => i.kind === healthFilter))
     );
-    const tbody = $('rows');
-    tbody.textContent = '';
+  }
+
+  // 清單上的小標籤，一列最多兩個
+  function healthTag(kind) {
+    const text = {
+      breached: () => t('opt_health_tag_breached'),
+      reused: () => t('opt_health_tag_reused'),
+      weak: () => t('opt_health_tag_weak'),
+      old: () => t('opt_health_tag_old'),
+      http: () => t('opt_health_tag_http'),
+      dup: () => t('opt_health_tag_dup'),
+    }[kind];
+    return el('span', 'tag warn', text());
+  }
+
+  function renderList() {
+    const q = $('search').value.trim();
+    const visible = visibleEntries();
+    const box = $('rows');
+    box.textContent = '';
     $('empty').hidden = entries.length > 0;
+    $('entryCount').textContent = entries.length ? tn('opt_entry_count', entries.length) : '';
     lastVisible = visible.map((e) => e.id);
+    $('selectMode').hidden = selecting || !entries.length;
+    $('selectBar').hidden = !selecting;
     $('checkAll').checked = visible.length > 0 && visible.every((e) => selected.has(e.id));
     updateExportSelected();
+    // 右邊那筆被刪掉、或被搜尋和篩選擋掉時，寬的視窗改顯示清單第一筆。窄的視窗回到清單。
+    if (!visible.some((e) => e.id === currentId)) {
+      currentId = narrow.matches || !visible.length ? null : visible[0].id;
+      showDetail = false;
+    }
 
     for (const e of visible) {
-      const tr = el('tr');
-
-      const chk = el('td', 'chk');
-      const box = el('input');
-      box.type = 'checkbox';
-      box.checked = selected.has(e.id);
-      box.addEventListener('change', () => {
-        if (box.checked) selected.add(e.id);
-        else selected.delete(e.id);
-        $('checkAll').checked = lastVisible.every((id) => selected.has(id));
-        updateExportSelected();
-      });
-      chk.appendChild(box);
-
-      const site = el('td', 'site');
-      const link = el('a', null, e.host);
-      link.href = e.origin || 'https://' + e.host;
-      link.target = '_blank';
-      link.rel = 'noopener';
-      site.appendChild(link);
-      if (e.note) site.appendChild(el('div', 'muted', e.note));
-
-      const user = el('td', null, e.username || t('opt_no_username'));
-
-      // 不能叫 pw：ui.css 的 .pw 是密碼輸入框，裡面的按鈕會被疊到右上角
-      const pw = el('td', 'pwcell');
-      const mask = el('span', null, '••••••••');
-      let shown = false;
-      const eye = el('button', 'link small', t('opt_show'));
-      eye.addEventListener('click', () => {
-        shown = !shown;
-        mask.textContent = shown ? e.password : '••••••••';
-        eye.textContent = shown ? t('opt_hide') : t('opt_show');
-      });
-      const copy = el('button', 'link small', t('opt_copy'));
-      copy.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(e.password);
-          send({ type: 'clipboard.copied', text: e.password });
-          toast(t('opt_password_copied'));
-        } catch (err) {
-          toast(t('opt_copy_failed', err.message));
-        }
-      });
-      pw.appendChild(mask);
-      pw.appendChild(eye);
-      pw.appendChild(copy);
-      // 改過密碼的帳號可以展開看之前的
-      let histRow = null;
-      if (e.history && e.history.length) {
-        const toggle = el('button', 'link small', t('opt_history_toggle', e.history.length));
-        toggle.addEventListener('click', () => {
-          if (histRow) {
-            histRow.remove();
-            histRow = null;
-            return;
-          }
-          histRow = renderHistoryRow(e);
-          tr.after(histRow);
+      const row = el('div', e.id === currentId ? 'entry-row current' : 'entry-row');
+      row.setAttribute('role', 'listitem');
+      if (selecting) {
+        const check = el('input');
+        check.type = 'checkbox';
+        check.checked = selected.has(e.id);
+        check.setAttribute('aria-label', accountLabel(e));
+        check.addEventListener('change', () => {
+          if (check.checked) selected.add(e.id);
+          else selected.delete(e.id);
+          $('checkAll').checked = lastVisible.every((id) => selected.has(id));
+          updateExportSelected();
         });
-        pw.appendChild(toggle);
+        row.appendChild(check);
       }
-
-      const used = el('td', 'muted', fmtDate(e.lastUsedAt));
-
-      const ops = el('td', 'ops');
-      const edit = el('button', 'small', t('opt_edit'));
-      edit.addEventListener('click', () => openDialog(e));
-      const del = el('button', 'small danger', t('opt_delete'));
-      del.addEventListener('click', async () => {
-        if (!confirm(t('opt_confirm_delete', e.host, e.username || t('opt_no_username')))) return;
-        const res = await send({ type: 'entries.delete', id: e.id });
-        if (!res.ok) {
-          toast(t('opt_delete_failed', res.error));
-          return;
+      const open = el('button', 'entry-open');
+      if (e.id === currentId) open.setAttribute('aria-current', 'true');
+      open.appendChild(initialOf(e.host));
+      const texts = el('span', 'texts');
+      texts.appendChild(el('span', 'host', e.host));
+      texts.appendChild(el('span', 'user', e.username || t('opt_no_username')));
+      open.appendChild(texts);
+      const kinds = [...new Set((issuesById.get(e.id) || []).map((i) => i.kind))];
+      if (kinds.length) {
+        const tags = el('span', 'tags');
+        for (const kind of kinds.slice(0, 2)) tags.appendChild(healthTag(kind));
+        open.appendChild(tags);
+      }
+      open.addEventListener('click', () => {
+        currentId = e.id;
+        showDetail = true;
+        renderList();
+        // 窄的視窗整頁換成詳細資料，焦點移到「回到清單」，讀螢幕軟體才知道畫面換了
+        if (narrow.matches) {
+          const back = $('detailPane').querySelector('.back');
+          if (back) back.focus();
         }
-        toast(tn('opt_moved_to_trash', currentTrashDays()));
-        await load();
       });
-      ops.appendChild(edit);
-      ops.appendChild(del);
-
-      tr.appendChild(chk);
-      tr.appendChild(site);
-      tr.appendChild(user);
-      tr.appendChild(pw);
-      tr.appendChild(used);
-      tr.appendChild(ops);
-      tbody.appendChild(tr);
+      row.appendChild(open);
+      box.appendChild(row);
     }
-
-    if (q && !visible.length && entries.length) {
-      const tr = el('tr');
-      const td = el('td', 'empty', t('opt_search_no_match', q));
-      td.colSpan = 6;
-      tr.appendChild(td);
-      tbody.appendChild(tr);
-    }
+    if (q && !visible.length && entries.length) box.appendChild(el('div', 'empty', t('opt_search_no_match', q)));
+    renderDetail();
   }
 
-  function renderHistoryRow(e) {
-    const tr = el('tr', 'hist');
-    const td = el('td');
-    td.colSpan = 6;
-    for (const h of e.history) {
-      const line = el('div', 'old');
-      line.appendChild(el('span', 'muted', t('opt_history_replaced_at', fmtDate(h.changedAt))));
-      const mask = el('span', null, '••••••••');
-      let shown = false;
-      const eye = el('button', 'link small', t('opt_show'));
-      eye.addEventListener('click', () => {
-        shown = !shown;
-        mask.textContent = shown ? h.password : '••••••••';
-        eye.textContent = shown ? t('opt_hide') : t('opt_show');
-      });
-      const copy = el('button', 'link small', t('opt_copy'));
-      copy.addEventListener('click', () => copyText(h.password));
-      line.appendChild(mask);
-      line.appendChild(eye);
-      line.appendChild(copy);
-      td.appendChild(line);
-    }
-    tr.appendChild(td);
-    return tr;
+  // 詳細資料的一列：名稱、值、右邊的按鈕
+  function fieldRow(label, value, className) {
+    const row = el('div', 'field');
+    row.appendChild(el('span', 'label', label));
+    const v = el('span', className ? 'value ' + className : 'value', value);
+    row.appendChild(v);
+    const ops = el('span', 'ops');
+    row.appendChild(ops);
+    return { row, value: v, ops };
   }
+
+  function linkButton(text, onClick) {
+    const btn = el('button', 'link small', text);
+    btn.addEventListener('click', onClick);
+    return btn;
+  }
+
+  // 密碼先遮起來，按「顯示」才看得到
+  function maskToggle(valueEl, secret) {
+    let shown = false;
+    const btn = linkButton(t('opt_show'), () => {
+      shown = !shown;
+      valueEl.textContent = shown ? secret : MASK;
+      btn.textContent = shown ? t('opt_hide') : t('opt_show');
+    });
+    return btn;
+  }
+
+  function switchRow(text, checked, disabled, onChange) {
+    const label = el('label', 'switch-row');
+    label.appendChild(el('span', null, text));
+    const box = el('input', 'switch');
+    box.type = 'checkbox';
+    box.setAttribute('role', 'switch');
+    box.checked = checked;
+    box.disabled = disabled;
+    box.addEventListener('change', () => onChange(box.checked));
+    label.appendChild(box);
+    return label;
+  }
+
+  // 這個網站的自動填入、自動按登入，切了馬上存。設定分頁「各網站」那張表改的是同一個設定
+  async function setSiteSwitch(type, host, enabled) {
+    const res = await send({ type, host, enabled });
+    if (!res.ok) toast(t('opt_setting_failed', res.error));
+    else settings = res.data;
+    renderSites();
+    renderDetail();
+  }
+
+  function renderDetail() {
+    const pane = $('detailPane');
+    pane.textContent = '';
+    $('tab-passwords').classList.toggle('show-detail', showDetail && !!currentId);
+    const e = entries.find((x) => x.id === currentId);
+    if (!e) {
+      if (entries.length) pane.appendChild(el('div', 'detail-empty', t('opt_detail_empty')));
+      return;
+    }
+    const box = el('div', 'detail');
+
+    const back = el('button', 'small back', t('opt_back_to_list'));
+    back.addEventListener('click', () => {
+      showDetail = false;
+      renderList();
+      const row = $('rows').querySelector('.entry-row.current .entry-open');
+      if (row) row.focus();
+    });
+    box.appendChild(back);
+
+    const head = el('div', 'detail-head');
+    head.appendChild(initialOf(e.host, true));
+    const title = el('div', 'grow');
+    title.appendChild(el('h2', null, e.host));
+    title.appendChild(el('div', 'muted', t('opt_detail_dates', fmtDate(e.lastUsedAt), fmtDate(e.createdAt))));
+    head.appendChild(title);
+    const site = el('a', 'button', t('opt_open_site'));
+    site.href = siteUrl(e);
+    site.target = '_blank';
+    site.rel = 'noopener';
+    head.appendChild(site);
+    const edit = el('button', 'primary', t('opt_edit'));
+    edit.addEventListener('click', () => openDialog(e));
+    head.appendChild(edit);
+    box.appendChild(head);
+
+    for (const issue of issuesById.get(e.id) || []) {
+      const div = el('div', 'issue');
+      div.appendChild(el('span', 'grow', issue.text));
+      if (issue.action) div.appendChild(issue.action);
+      box.appendChild(div);
+    }
+
+    const fields = el('div', 'card fields');
+    const user = fieldRow(t('opt_col_username'), e.username || t('opt_no_username'));
+    if (e.username) user.ops.appendChild(linkButton(t('opt_copy'), () => copyText(e.username)));
+    fields.appendChild(user.row);
+    const pw = fieldRow(t('opt_col_password'), MASK, 'mono');
+    pw.ops.appendChild(maskToggle(pw.value, e.password));
+    pw.ops.appendChild(linkButton(t('opt_copy'), () => copyPassword(e.password)));
+    fields.appendChild(pw.row);
+    const url = fieldRow(t('opt_field_url'), siteUrl(e));
+    url.ops.appendChild(linkButton(t('opt_copy'), () => copyText(siteUrl(e))));
+    fields.appendChild(url.row);
+    const note = fieldRow(t('opt_field_note'), e.note || t('opt_note_empty'), e.note ? 'note' : 'note empty');
+    note.ops.appendChild(linkButton(e.note ? t('opt_edit') : t('opt_note_write'), () => editNote(e, note.row)));
+    fields.appendChild(note.row);
+    // 改過密碼的帳號可以展開看之前的
+    if (e.history && e.history.length) {
+      const more = el('div', 'more');
+      const list = el('div');
+      list.hidden = true;
+      for (const h of e.history) {
+        const line = el('div', 'old');
+        line.appendChild(el('span', 'muted', t('opt_history_replaced_at', fmtDate(h.changedAt))));
+        const mask = el('span', null, MASK);
+        line.appendChild(mask);
+        line.appendChild(maskToggle(mask, h.password));
+        line.appendChild(linkButton(t('opt_copy'), () => copyPassword(h.password)));
+        list.appendChild(line);
+      }
+      const toggle = linkButton(t('opt_history_toggle', e.history.length), () => {
+        list.hidden = !list.hidden;
+        toggle.setAttribute('aria-expanded', String(!list.hidden));
+      });
+      toggle.setAttribute('aria-expanded', 'false');
+      more.appendChild(toggle);
+      more.appendChild(list);
+      fields.appendChild(more);
+    }
+    box.appendChild(fields);
+
+    const master = !!settings.autoFill;
+    const fillOn = !(settings.noAutoFillHosts || []).includes(e.host);
+    const submitOn = (settings.autoSubmitHosts || []).includes(e.host);
+    const switches = el('div', 'card switches');
+    switches.appendChild(switchRow(t('opt_site_col_fill'), fillOn, !master, (on) => setSiteSwitch('autoFill.setSite', e.host, on)));
+    switches.appendChild(switchRow(t('opt_site_col_submit'), submitOn, !master || !fillOn, (on) => setSiteSwitch('autoSubmit.set', e.host, on)));
+    if (!master) switches.appendChild(el('div', 'help', t('opt_site_master_off')));
+    box.appendChild(switches);
+
+    const del = el('button', 'danger', t('opt_move_to_trash'));
+    del.style.alignSelf = 'flex-start';
+    del.addEventListener('click', async () => {
+      if (!confirm(t('opt_confirm_delete', e.host, e.username || t('opt_no_username')))) return;
+      const res = await send({ type: 'entries.delete', id: e.id });
+      if (!res.ok) {
+        toast(t('opt_delete_failed', res.error));
+        return;
+      }
+      toast(tn('opt_moved_to_trash', currentTrashDays()));
+      await load();
+    });
+    box.appendChild(del);
+    pane.appendChild(box);
+  }
+
+  // 備註原地改：那一列換成輸入框。Ctrl+Enter 存，Esc 放棄
+  function editNote(e, row) {
+    row.classList.add('editing');
+    row.textContent = '';
+    row.appendChild(el('span', 'label', t('opt_field_note')));
+    const box = el('div', 'note-edit');
+    const area = el('textarea');
+    area.rows = 3;
+    area.value = e.note || '';
+    area.setAttribute('aria-label', t('opt_field_note'));
+    const actions = el('div', 'row end');
+    const cancel = el('button', 'small', t('opt_cancel'));
+    const save = el('button', 'primary small', t('opt_save'));
+    actions.appendChild(cancel);
+    actions.appendChild(save);
+    box.appendChild(area);
+    box.appendChild(actions);
+    row.appendChild(box);
+    area.focus();
+    cancel.addEventListener('click', renderDetail);
+    save.addEventListener('click', () => saveNote(e, area.value));
+    area.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape') {
+        ev.preventDefault();
+        renderDetail();
+      } else if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) {
+        ev.preventDefault();
+        saveNote(e, area.value);
+      }
+    });
+  }
+
+  // 網址、帳號、密碼照舊送回去，只換備註。密碼沒變，背景程式不會多記一筆舊密碼
+  async function saveNote(e, value) {
+    const res = await send({ type: 'entries.save', id: e.id, entry: { url: siteUrl(e), username: e.username, password: e.password, note: value.trim() } });
+    if (!res.ok) {
+      toast(t('opt_note_failed', res.error));
+      return;
+    }
+    toast(t('opt_note_saved'));
+    await load();
+  }
+
+  narrow.addEventListener('change', renderList);
 
   function updateExportSelected() {
     const btn = $('exportSelected');
@@ -226,7 +463,20 @@
       if (e.target.checked) selected.add(id);
       else selected.delete(id);
     }
-    renderTable();
+    renderList();
+  });
+
+  $('selectMode').addEventListener('click', () => {
+    selecting = true;
+    renderList();
+    $('checkAll').focus();
+  });
+
+  $('selectCancel').addEventListener('click', () => {
+    selecting = false;
+    selected.clear();
+    renderList();
+    $('selectMode').focus();
   });
 
   // ---- 密碼健檢 ----
@@ -240,28 +490,24 @@
     return n;
   }
 
-  // 健檢只顯示一行摘要，有問題才給「看詳細」展開清單，不佔版面
   // 外洩檢查的結果：帳號 id → 在外洩名單出現過幾次。只放在這一頁，不存，關掉管理頁就沒了
   let breachCounts = null;
 
   // 重複的項目：網站只差開頭的 www.，帳號和密碼都一樣。jira.example.com 和 gitlab.example.com 是不同系統，不算重複
   const sameSite = (host) => String(host || '').toLowerCase().replace(/^www\./, '');
 
+  // 清單上方是健檢的標籤，只列有問題的項目。點一個標籤，清單只列有那個問題的帳號，再點一次取消。
+  // 每個帳號的問題寫在右邊詳細資料的最上面。
   function renderHealth() {
-    const list = $('healthList');
-    const strip = $('healthStrip');
+    issuesById = new Map();
+    const chips = $('healthChips');
     const summary = $('healthSummary');
-    const toggle = $('healthToggle');
-    // 按「忽略」之後重畫，清單原本開著就維持開著
-    const wasOpen = !list.hidden;
-    list.textContent = '';
-    list.hidden = true;
-    toggle.hidden = true;
-    toggle.textContent = t('opt_health_show');
-    strip.className = 'strip';
+    chips.textContent = '';
+    summary.textContent = '';
+    summary.className = '';
     $('breachWrap').hidden = !entries.length;
     if (!entries.length) {
-      summary.textContent = '';
+      healthFilter = null;
       return;
     }
     const byPassword = new Map();
@@ -287,58 +533,47 @@
     const dups = [...bySite.values()].filter((g) => g.length >= 2);
     const breached = breachCounts ? entries.filter((e) => breachCounts.has(e.id)) : [];
 
-    // 摘要只列有問題的項目
-    const parts = [];
-    if (breached.length) parts.push(tn('opt_health_part_breached', breached.length));
-    if (reused.length) parts.push(tn('opt_health_part_reused', reused.length));
-    if (weak.length) parts.push(tn('opt_health_part_weak', weak.length));
-    if (old.length) parts.push(tn('opt_health_part_old', old.length));
-    if (http.length) parts.push(tn('opt_health_part_http', http.length));
-    if (dups.length) parts.push(tn('opt_health_part_dup', dups.length));
-    strip.className = parts.length ? 'strip warn' : 'strip ok';
-    summary.textContent = parts.length ? t('opt_health_summary', parts.join(t('opt_health_part_sep'))) : t('opt_health_ok');
-    if (!parts.length && !ignoredCount) return;
-    toggle.hidden = false;
-    if (wasOpen) {
-      list.hidden = false;
-      toggle.textContent = t('opt_health_hide');
-    }
-
-    const who = (e) => t('opt_account_label', e.host, e.username || t('opt_no_username'));
-    const addItem = (what, e, extra) => {
-      const div = el('div', 'health-item');
-      const w = el('div', 'what', what);
-      w.appendChild(el('div', 'who', who(e)));
-      div.appendChild(w);
-      if (extra) div.appendChild(extra);
-      const btn = el('button', 'small', t('opt_edit'));
-      btn.addEventListener('click', () => openDialog(e));
-      div.appendChild(btn);
-      list.appendChild(div);
+    const add = (e, kind, text, action) => {
+      if (!issuesById.has(e.id)) issuesById.set(e.id, []);
+      issuesById.get(e.id).push({ kind, text, action });
     };
-    for (const e of breached) addItem(tn('opt_health_breached', breachCounts.get(e.id)), e);
-    reused.forEach((g, i) => {
-      for (const e of g) addItem(t('opt_health_reused', i + 1, g.length), e);
-    });
-    for (const e of weak) {
-      addItem(e.password.length < 8 ? tn('opt_health_weak_short', e.password.length) : t('opt_health_weak_classes'), e);
+    // 同一組裡其他的帳號，例如「gitlab.example.com、mail.example.com」
+    const others = (group, e) =>
+      [...new Set(group.filter((x) => x !== e).map((x) => accountLabel(x)))].join(t('opt_health_part_sep'));
+    for (const e of breached) add(e, 'breached', tn('opt_health_breached', breachCounts.get(e.id)));
+    for (const g of reused) for (const e of g) add(e, 'reused', t('opt_health_reused_with', others(g, e)));
+    for (const e of weak) add(e, 'weak', e.password.length < 8 ? tn('opt_health_weak_short', e.password.length) : t('opt_health_weak_classes'));
+    for (const e of old) add(e, 'old', t('opt_health_old', fmtDate(e.passwordChangedAt || e.createdAt)));
+    for (const e of http) add(e, 'http', t('opt_health_http'), linkButton(t('opt_health_http_ignore'), () => setHttpIgnored([...ignored, e.id])));
+    for (const g of dups) for (const e of g) add(e, 'dup', t('opt_health_dup_with', others(g, e)));
+
+    const parts = [
+      ['breached', breached.length && tn('opt_health_part_breached', breached.length)],
+      ['reused', reused.length && tn('opt_health_part_reused', reused.length)],
+      ['weak', weak.length && tn('opt_health_part_weak', weak.length)],
+      ['old', old.length && tn('opt_health_part_old', old.length)],
+      ['http', http.length && tn('opt_health_part_http', http.length)],
+      ['dup', dups.length && tn('opt_health_part_dup', dups.length)],
+    ].filter(([, text]) => text);
+    if (healthFilter && !parts.some(([kind]) => kind === healthFilter)) healthFilter = null;
+    if (!parts.length) {
+      summary.textContent = t('opt_health_ok');
+      summary.className = 'health-ok';
     }
-    for (const e of old) addItem(t('opt_health_old', fmtDate(e.passwordChangedAt || e.createdAt)), e);
-    for (const e of http) {
-      const ignore = el('button', 'link small', t('opt_health_http_ignore'));
-      ignore.addEventListener('click', () => setHttpIgnored([...ignored, e.id]));
-      addItem(t('opt_health_http'), e, ignore);
+    for (const [kind, text] of parts) {
+      const chip = el('button', 'chip-btn', text);
+      chip.setAttribute('aria-pressed', String(healthFilter === kind));
+      chip.title = t('opt_health_filter_title');
+      chip.addEventListener('click', () => {
+        healthFilter = healthFilter === kind ? null : kind;
+        renderHealth();
+        renderList();
+      });
+      chips.appendChild(chip);
     }
-    dups.forEach((g, i) => {
-      for (const e of g) addItem(t('opt_health_dup', i + 1, g.length), e);
-    });
     if (ignoredCount) {
-      const div = el('div', 'health-item');
-      div.appendChild(el('div', 'what', tn('opt_health_http_ignored', ignoredCount)));
-      const restore = el('button', 'link small', t('opt_health_http_restore'));
-      restore.addEventListener('click', () => setHttpIgnored([]));
-      div.appendChild(restore);
-      list.appendChild(div);
+      chips.appendChild(el('span', 'muted', tn('opt_health_http_ignored', ignoredCount)));
+      chips.appendChild(linkButton(t('opt_health_http_restore'), () => setHttpIgnored([])));
     }
   }
 
@@ -350,13 +585,8 @@
     }
     settings = res.data;
     renderHealth();
+    renderList();
   }
-
-  $('healthToggle').addEventListener('click', () => {
-    const open = $('healthList').hidden;
-    $('healthList').hidden = !open;
-    $('healthToggle').textContent = open ? t('opt_health_hide') : t('opt_health_show');
-  });
 
   // 外洩密碼檢查。Firefox 要先跳同意視窗，permissions.request 要在使用者按的當下叫，前面不能先 await 別的東西
   $('breachCheck').addEventListener('click', () => {
@@ -378,14 +608,12 @@
           return;
         }
         breachCounts = new Map(res.data.found.map((f) => [f.id, f.count]));
+        // 有外洩的話，清單直接只列外洩的帳號
+        healthFilter = res.data.found.length ? 'breached' : healthFilter;
         renderHealth();
-        if (res.data.found.length) {
-          $('healthList').hidden = false;
-          $('healthToggle').textContent = t('opt_health_hide');
-          toast(tn('opt_breach_found', res.data.found.length));
-        } else {
-          toast(tn('opt_breach_none', res.data.checked));
-        }
+        renderList();
+        if (res.data.found.length) toast(tn('opt_breach_found', res.data.found.length));
+        else toast(tn('opt_breach_none', res.data.checked));
       },
       (err) => toast(t('bg_breach_failed', err.message))
     );
@@ -427,26 +655,39 @@
     drawTrash();
   }
 
+  // 剩幾天：快清掉的寫「今天清掉」「明天清掉」，3 天以內用黃色
+  function trashLeft(item) {
+    const left = daysLeft(item.deletedAt);
+    const text = left <= 0 ? t('opt_trash_left_today') : left === 1 ? t('opt_trash_left_tomorrow') : tn('opt_trash_left', left);
+    return el('span', left <= 3 ? 'tag warn' : 'tag plain', text);
+  }
+
   function drawTrash() {
     const box = $('trashList');
     box.textContent = '';
     $('trashCount').textContent = trash.length ? String(trash.length) : '';
+    $('trashTotal').textContent = trash.length ? tn('opt_trash_count', trash.length) : '';
+    $('trashCard').hidden = trash.length === 0;
     $('trashEmpty').hidden = trash.length > 0;
-    $('trashTools').hidden = trash.length === 0;
+    $('trashEmptySub').textContent = tn('opt_trash_empty_sub', currentTrashDays());
     $('purgeAll').disabled = trash.length === 0;
     updateTrashSelection();
     for (const item of trash) {
-      const row = el('div', 'entry');
+      const row = el('div', 'entry trash-row');
       const chk = el('input');
       chk.type = 'checkbox';
       chk.checked = trashSelected.has(item.id);
+      chk.setAttribute('aria-label', accountLabel(item));
       chk.addEventListener('change', () => {
         if (chk.checked) trashSelected.add(item.id);
         else trashSelected.delete(item.id);
         updateTrashSelection();
       });
-      const u = el('div', 'u', accountLabel(item));
-      u.appendChild(el('div', 'h', tn('opt_trash_item_info', daysLeft(item.deletedAt), fmtDate(item.deletedAt))));
+      const texts = el('div', 'texts');
+      texts.appendChild(el('div', 'host', item.host));
+      const age = ageDays(item.deletedAt);
+      const when = age ? tn('opt_trash_deleted_ago', age) : t('opt_trash_deleted_today');
+      texts.appendChild(el('div', 'muted', t('opt_trash_row_info', item.username || t('opt_no_username'), when)));
       const restore = el('button', 'small', t('opt_restore'));
       restore.addEventListener('click', async () => {
         const r = await send({ type: 'trash.restore', id: item.id });
@@ -457,7 +698,10 @@
         toast(t('opt_restored'));
         await load();
       });
-      const purge = el('button', 'small danger', t('opt_purge'));
+      const purge = el('button', 'icon-btn danger');
+      purge.appendChild(svgIcon(ICON.trash));
+      purge.title = t('opt_purge');
+      purge.setAttribute('aria-label', t('opt_purge'));
       purge.addEventListener('click', async () => {
         if (!confirm(t('opt_confirm_purge', item.host, item.username || t('opt_no_username')))) return;
         const r = await send({ type: 'trash.purge', id: item.id });
@@ -468,11 +712,14 @@
         await renderTrash();
       });
       row.appendChild(chk);
-      row.appendChild(u);
+      row.appendChild(initialOf(item.host));
+      row.appendChild(texts);
+      row.appendChild(trashLeft(item));
       row.appendChild(restore);
       row.appendChild(purge);
       box.appendChild(row);
     }
+    renderAbout();
   }
 
   function updateTrashSelection() {
@@ -1106,8 +1353,8 @@
       const tr = el('tr', siteDraft.has(host) ? 'dirty' : null);
       tr.appendChild(el('td', null, host));
       tr.appendChild(el('td', 'center', String(counts.get(host))));
-      tr.appendChild(siteCheckbox(s.fill, !master, (on) => setSiteState(host, { ...s, fill: on })));
-      tr.appendChild(siteCheckbox(s.submit, !master || !s.fill, (on) => setSiteState(host, { ...s, submit: on })));
+      tr.appendChild(siteCheckbox(s.fill, !master, (on) => setSiteState(host, { ...s, fill: on }), host + ' ' + t('opt_site_col_fill')));
+      tr.appendChild(siteCheckbox(s.submit, !master || !s.fill, (on) => setSiteState(host, { ...s, submit: on }), host + ' ' + t('opt_site_col_submit')));
       tbody.appendChild(tr);
     }
     if (q && !siteListed.length && counts.size) {
@@ -1124,10 +1371,12 @@
     $('siteCancel').disabled = !siteDraft.size;
   }
 
-  function siteCheckbox(checked, disabled, onChange) {
+  function siteCheckbox(checked, disabled, onChange, label) {
     const td = el('td', 'center');
-    const box = el('input');
+    const box = el('input', 'switch');
     box.type = 'checkbox';
+    box.setAttribute('role', 'switch');
+    box.setAttribute('aria-label', label);
     box.checked = checked;
     box.disabled = disabled;
     box.addEventListener('change', () => {
@@ -1173,12 +1422,19 @@
 
   $('siteSearch').addEventListener('input', renderSites);
 
+  function openBlock(id) {
+    const block = $(id);
+    block.open = true;
+    block.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  for (const b of document.querySelectorAll('.jump button')) b.addEventListener('click', () => openBlock(b.dataset.jump));
+
   // ---- 工具鎖定：保護方式 ----
   // off 關閉、password 自訂密碼加密、hello 系統驗證加密（Windows Hello、Touch ID、安全金鑰）。
   // screen 只鎖畫面是 1.15.0 以前的設定：舊使用者照常用，但畫面上沒有這個選項，改選別的就回不去。
   // 換方式的規則在背景程式的 setLockMode，這裡負責跳該跳的驗證和對話框。
 
-  let lockSt = null;
   const isEncryptedLock = (mode) => mode === 'password' || mode === 'hello';
 
   function lockModeName(mode, name) {
@@ -1198,6 +1454,8 @@
     const name = pkWebAuthn.label();
     // 區塊預設收合，標題旁邊要看得出用哪種
     $('lockState').textContent = st.mode === 'off' ? t('opt_lock_state_off') : lockModeName(st.mode, name);
+    // 加密的是綠色，舊版的只鎖畫面是黃色，請使用者改選
+    $('lockState').className = 'sec-state' + (isEncryptedLock(st.mode) ? ' ok' : st.mode === 'screen' ? ' warn' : '');
     $('lockModeHello').textContent = lockModeName('hello', name);
     $('lockHowHello').textContent = t('opt_lock_how_hello', name);
     // 舊的只鎖畫面沒有卡片，三張都不會選到，上面多一行請使用者改選
@@ -1220,6 +1478,7 @@
     const ab = isEncryptedLock(st.mode) ? null : await send({ type: 'autoBackup.get' });
     const needsBackup = !!(ab && ab.ok && !ab.data.hasPassword);
     for (const note of document.querySelectorAll('.lock-card-note')) note.hidden = !needsBackup;
+    renderAbout();
   }
 
   // 跟背景程式的 needsProof 一樣：拿掉加密、關掉鎖定、改自訂密碼要再驗一次
@@ -1791,32 +2050,54 @@
     await load();
   });
 
-  $('moveHow').addEventListener('click', () => {
-    const move = $('browserMove');
-    move.open = true;
-    move.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  $('moveHow').addEventListener('click', () => $('browserMove').showModal());
+  $('moveClose').addEventListener('click', () => $('browserMove').close());
+
+  // 「給同事幾筆」直接跳到密碼分頁，打開勾選
+  $('shareGo').addEventListener('click', () => {
+    showTab('passwords');
+    selecting = true;
+    renderList();
+    $('checkAll').focus();
   });
 
   async function renderBackup() {
     const res = await send({ type: 'backup.status' });
-    const box = $('backupStatus');
     if (!res.ok) {
-      box.textContent = t('opt_backup_status_failed', res.error);
+      $('backupHero').className = 'hero warn';
+      $('backupHeroTitle').textContent = t('opt_backup_status_failed', res.error);
+      $('backupHeroSub').textContent = '';
       return;
     }
     const s = res.data;
-    box.classList.toggle('warn', s.count > 0 && (!!s.due || !s.lastBackupAt));
-    if (!s.count) {
-      box.textContent = '';
-    } else if (!s.lastBackupAt) {
-      box.textContent = t('opt_backup_status_never');
-    } else {
-      // 放在標題旁邊，只寫日期。幾點備份的看「備份紀錄」。
-      const last = new Date(s.lastBackupAt).toLocaleDateString(formatLang());
-      box.textContent = s.due ? tn('opt_backup_status_due', s.days, last) : tn('opt_backup_status_last', s.days, last);
-    }
+    renderBackupHero(s);
     renderAutoBackup(s.autoBackup || {});
     renderLog(s.log || []);
+  }
+
+  // 最上面的狀態卡片：上次備份多久前、之後有沒有改過密碼、下次自動備份。
+  // 黃色的判斷跟小視窗的備份提醒一樣：沒備份過，或超過提醒天數之後又改過密碼。
+  function renderBackupHero(s) {
+    const ab = s.autoBackup || {};
+    let kind = '';
+    let title = t('opt_backup_hero_empty');
+    let sub = t('opt_backup_hero_empty_sub');
+    if (s.count && !s.lastBackupAt) {
+      kind = 'warn';
+      title = t('opt_backup_status_never');
+      sub = t('opt_backup_hero_never_sub');
+    } else if (s.count) {
+      kind = s.due ? 'warn' : 'ok';
+      title = s.days ? tn('opt_backup_hero_days', s.days) : t('opt_backup_hero_today');
+      const last = fmtDate(s.lastBackupAt);
+      if (s.due) sub = t('opt_backup_hero_sub_due', last);
+      else sub = ab.enabled ? t('opt_backup_hero_sub_auto', last) : t('opt_backup_hero_sub_manual', last);
+    }
+    $('backupHero').className = kind ? 'hero ' + kind : 'hero';
+    $('backupHeroTitle').textContent = title;
+    $('backupHeroSub').textContent = sub;
+    $('backupStatCount').textContent = String(s.count || 0);
+    $('backupStatNext').textContent = ab.enabled && ab.nextAt ? fmtShort(ab.nextAt) : t('opt_backup_stat_off');
   }
 
   // ---- 自動備份、備份紀錄 ----
@@ -1873,6 +2154,8 @@
   const KIND_CATEGORY = { auto: 'auto', now: 'manual', manual: 'manual', csv: 'manual', selected: 'manual', location: 'location' };
   const CATEGORY_LABEL = { all: t('opt_log_cat_all'), auto: t('opt_log_cat_auto'), manual: t('opt_log_cat_manual'), location: t('opt_log_cat_location') };
 
+  const LOG_TAG = { auto: 'tag', manual: 'tag plain', location: 'tag warn' };
+
   function logCategory(item) {
     return KIND_CATEGORY[item.kind] || 'manual';
   }
@@ -1912,7 +2195,9 @@
       chk.appendChild(box);
       tr.appendChild(chk);
       tr.appendChild(el('td', 'nowrap', fmtDate(item.at)));
-      tr.appendChild(el('td', 'nowrap', KIND_LABEL[item.kind] || item.kind));
+      const kind = el('td', 'nowrap');
+      kind.appendChild(el('span', LOG_TAG[logCategory(item)], KIND_LABEL[item.kind] || item.kind));
+      tr.appendChild(kind);
       tr.appendChild(el('td', null, item.note || item.path || ''));
       tr.appendChild(el('td', 'nowrap', item.kind === 'location' ? '' : String(item.count == null ? '' : item.count)));
       const ops = el('td', 'ops');
@@ -2229,7 +2514,7 @@
     await load();
   });
 
-  $('search').addEventListener('input', renderTable);
+  $('search').addEventListener('input', renderList);
 
   // 依照使用的瀏覽器顯示對應的擴充功能頁面網址
   (function browserHint() {
@@ -2237,18 +2522,104 @@
     $('browserHint').textContent = t('opt_browser_hint', name, extensionsUrl);
   })();
 
+  // 說明分頁的一張卡片。extra 放在說明下面，例如快捷鍵的按鍵、到別的分頁的連結
+  function helpTile(icon, title, body, ...extra) {
+    const tile = el('div', 'tile');
+    const head = el('div', 'tile-head');
+    head.appendChild(iconBox(icon));
+    head.appendChild(el('span', null, title));
+    tile.appendChild(head);
+    tile.appendChild(el('div', 'tile-body', body));
+    for (const node of extra) tile.appendChild(node);
+    return tile;
+  }
+
+  function tileLink(text, onClick) {
+    const foot = el('div', 'tile-foot');
+    foot.appendChild(linkButton(text + ' →', onClick));
+    return foot;
+  }
+
+  // 快捷鍵照瀏覽器實際設定的顯示，使用者改過也對得上
+  async function shortcutKeys() {
+    const box = el('div', 'keys');
+    let shortcut = '';
+    try {
+      const commands = await chrome.commands.getAll();
+      const fill = commands.find((c) => c.name === 'fill-login');
+      shortcut = (fill && fill.shortcut) || '';
+    } catch (err) {
+      console.warn('讀不到快捷鍵', err); // i18n-ignore：給開發者看的
+    }
+    if (!shortcut) box.appendChild(el('span', 'muted', t('opt_help_no_shortcut')));
+    for (const key of shortcut.split('+').filter(Boolean)) box.appendChild(el('kbd', null, key));
+    return box;
+  }
+
+  async function renderHelp() {
+    const cards = $('helpCards');
+    cards.textContent = '';
+    const keys = await shortcutKeys();
+    const changeKeys = PK.platform.can('openExtensionsPage')
+      ? [tileLink(t('opt_help_link_shortcut'), () => chrome.tabs.create({ url: 'chrome://extensions/shortcuts' }))]
+      : [];
+    cards.appendChild(helpTile(ICON.save, t('opt_help_card_1'), t('opt_help_1')));
+    cards.appendChild(helpTile(ICON.fill, t('opt_help_card_2'), t('opt_help_2')));
+    cards.appendChild(helpTile(ICON.keyboard, t('opt_help_card_3'), t('opt_help_3'), keys, ...changeKeys));
+    cards.appendChild(helpTile(ICON.lock, t('opt_help_card_4'), t('opt_help_4')));
+    cards.appendChild(helpTile(ICON.key, t('opt_help_card_5'), t('opt_help_5')));
+    cards.appendChild(
+      helpTile(ICON.click, t('opt_help_card_6'), t('opt_help_6'), tileLink(t('opt_help_link_rules'), () => {
+        showTab('settings');
+        openBlock('clickBlock');
+      }))
+    );
+    cards.appendChild(helpTile(ICON.history, t('opt_help_card_7'), t('opt_help_7')));
+    cards.appendChild(
+      helpTile(ICON.shield, t('opt_help_card_8'), t('opt_help_8'), tileLink(t('opt_help_link_lock'), () => {
+        showTab('settings');
+        openBlock('lockBlock');
+      }))
+    );
+    cards.appendChild(helpTile(ICON.backup, t('opt_help_card_9'), t('opt_help_9'), tileLink(t('opt_help_link_backup'), () => showTab('backup'))));
+
+    const faq = [
+      [t('opt_faq_q1'), [t('opt_faq_a1_1'), t('opt_faq_a1_2'), t('opt_faq_a1_3'), t('opt_faq_a1_4')]],
+      [t('opt_faq_q2'), [t('opt_faq_a2_1'), t('opt_faq_a2_2'), t('opt_faq_a2_3')]],
+      [t('opt_faq_q3'), [t('opt_faq_a3_1'), t('opt_faq_a3_2'), t('opt_faq_a3_3')]],
+      [t('opt_faq_q4'), [t('opt_faq_a4_1'), t('opt_faq_a4_2'), t('opt_faq_a4_3')]],
+      [t('opt_faq_q5'), [t('opt_faq_a5_1'), t('opt_faq_a5_2'), t('opt_faq_a5_3')]],
+    ];
+    const list = $('faqList');
+    list.textContent = '';
+    for (const [question, answers] of faq) {
+      const item = el('details', 'faq-item');
+      item.appendChild(el('summary', null, question));
+      const ul = el('ul');
+      for (const a of answers) ul.appendChild(el('li', null, a));
+      item.appendChild(ul);
+      list.appendChild(item);
+    }
+  }
+
+  renderHelp();
+
   // ---- 分頁：網址後面的 #backup 之類會直接開到那一頁，小視窗的備份提醒就是這樣連過來的 ----
 
-  const TABS = ['passwords', 'backup', 'settings', 'trash', 'help', 'versions'];
+  const TABS = ['passwords', 'backup', 'settings', 'trash', 'help', 'versions', 'about'];
 
   function showTab(name) {
     if (!TABS.includes(name)) name = 'passwords';
     for (const tab of TABS) $('tab-' + tab).hidden = tab !== name;
-    for (const b of document.querySelectorAll('.tab')) b.classList.toggle('active', b.dataset.tab === name);
+    for (const b of document.querySelectorAll('.tab[data-tab]')) {
+      b.classList.toggle('active', b.dataset.tab === name);
+      if (b.dataset.tab === name) b.setAttribute('aria-current', 'page');
+      else b.removeAttribute('aria-current');
+    }
     if (location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
   }
 
-  for (const b of document.querySelectorAll('.tab')) b.addEventListener('click', () => showTab(b.dataset.tab));
+  for (const b of document.querySelectorAll('.tab[data-tab]')) b.addEventListener('click', () => showTab(b.dataset.tab));
   window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
   showTab(location.hash.slice(1));
 
@@ -2262,15 +2633,27 @@
 
   // ---- 版本功能歷程：資料在 changelog.js，目前版本從 manifest 讀 ----
 
+  const RECENT_VERSIONS = 3;
+  let showAllVersions = false;
+
+  function currentVersion() {
+    return (chrome.runtime.getManifest && chrome.runtime.getManifest().version) || '';
+  }
+
   function renderVersions() {
-    const current = (chrome.runtime.getManifest && chrome.runtime.getManifest().version) || '';
+    const current = currentVersion();
     $('versionNow').textContent = current ? t('opt_version_now', current) : '';
     $('headerVersion').textContent = current ? 'v' + current : '';
+    renderVersionList();
+  }
+
+  function renderVersionList() {
+    const current = currentVersion();
     const list = $('versionList');
     list.textContent = '';
-    for (const v of CHANGELOG) {
+    for (const v of showAllVersions ? CHANGELOG : CHANGELOG.slice(0, RECENT_VERSIONS)) {
       const isCurrent = v.version === current;
-      const box = el('div', 'ver');
+      const box = el('div', isCurrent ? 'ver current' : 'ver');
       const h3 = el('h3');
       h3.appendChild(el('span', null, v.version));
       h3.appendChild(el('span', 'date', v.date));
@@ -2282,14 +2665,20 @@
       for (const n of v.notes ? pickLocale(v.notes) : []) box.appendChild(el('div', 'note', t('opt_version_note', n)));
       list.appendChild(box);
     }
+    const older = CHANGELOG.length - RECENT_VERSIONS;
+    $('versionMore').hidden = older <= 0;
+    $('versionMore').textContent = showAllVersions ? t('opt_versions_less') : tn('opt_versions_more', older);
   }
 
-  $('headerVersion').addEventListener('click', () => showTab('versions'));
+  $('versionMore').addEventListener('click', () => {
+    showAllVersions = !showAllVersions;
+    renderVersionList();
+  });
+
   renderVersions();
 
   // ---- 檢查新版：背景程式到 GitHub 問，這裡只負責顯示和按鈕 ----
 
-  let updateInfo = null;
 
   // 標題旁邊寫的版本種類，channel 見 background/update.js 的 releaseChannel()
   function channelName(channel) {
@@ -2350,6 +2739,9 @@
     $('updateFirefox').hidden = !firefox;
     $('headerUpdate').hidden = !available;
     if (available) $('headerUpdate').title = t('opt_header_update_title', latest.version);
+    $('updateCurrent').textContent = 'v' + info.current;
+    $('updateChannel').textContent = channelName(info.channel);
+    renderAbout();
   }
 
   async function loadUpdate() {
@@ -2385,10 +2777,285 @@
   // chrome:// 的頁面網頁連不過去，擴充功能可以用 tabs.create 開。Edge 會自己轉到 edge://extensions。
   $('updateExtensions').addEventListener('click', () => chrome.tabs.create({ url: 'chrome://extensions/?id=' + chrome.runtime.id }));
   $('updatePage').addEventListener('click', () => updateInfo && updateInfo.latest && chrome.tabs.create({ url: updateInfo.latest.pageUrl }));
-  $('headerUpdate').addEventListener('click', () => showTab('versions'));
   loadUpdate();
 
-  // ---- 介面語言：頁首的語言選單 ----
+  // ---- 關於：版本、資料在哪、連結、權限、授權 ----
+
+  // 要跟 background/update.js 的 UPDATE_REPO 一樣，tools/check.js 會比對
+  const REPO_URL = 'https://github.com/Mukula1221/PasswordKeeperExtension';
+
+  // 使用說明照介面語言挑：繁中、台語看 README，日文看日文版，其他看英文版
+  function readmeUrl() {
+    const locale = PK.i18n.uiLocale();
+    if (locale === 'zh_TW' || locale === 'nan_TW') return REPO_URL + '#readme';
+    return REPO_URL + '/blob/main/docs/README.' + (locale === 'ja' ? 'ja' : 'en') + '.md';
+  }
+
+  function outLink(a, url) {
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    return a;
+  }
+
+  $('aboutSource').href = REPO_URL;
+  $('aboutIssues').href = REPO_URL + '/issues';
+
+  // 「你的資料」的一張卡片。kind 是 ok 或 warn，action 是 { text, url } 或 { text, onClick }
+  function factTile({ icon, kind, label, value, lines, action }) {
+    const tile = el('div', kind === 'warn' ? 'tile fact warn' : 'tile fact');
+    tile.appendChild(iconBox(icon, kind ? 'tile-icon ' + kind : 'tile-icon'));
+    tile.appendChild(el('div', 'fact-label', label));
+    tile.appendChild(el('div', 'fact-value', value));
+    for (const line of lines) tile.appendChild(el('div', 'fact-desc', line));
+    if (action) {
+      const foot = el('div', 'tile-foot');
+      if (action.url) foot.appendChild(outLink(el('a', null, action.text + ' →'), action.url));
+      else foot.appendChild(linkButton(action.text + ' →', action.onClick));
+      tile.appendChild(foot);
+    }
+    return tile;
+  }
+
+  function renderAboutFacts() {
+    const box = $('aboutFacts');
+    box.textContent = '';
+    box.appendChild(
+      factTile({
+        icon: ICON.computer,
+        label: t('opt_about_where_label'),
+        value: t('opt_about_where_value'),
+        lines: [t('opt_about_where_counts', entries.length, trash.length), t('opt_about_where_desc')],
+      })
+    );
+
+    const mode = lockSt ? lockSt.mode : '';
+    const name = pkWebAuthn.label();
+    const lockLine = {
+      hello: () => t('opt_about_lock_hello', name),
+      password: () => t('opt_about_lock_password'),
+      screen: () => t('opt_about_lock_screen'),
+      off: () => t('opt_about_lock_off'),
+    }[mode];
+    box.appendChild(
+      factTile({
+        icon: isEncryptedLock(mode) ? ICON.shieldOk : ICON.shield,
+        kind: isEncryptedLock(mode) ? 'ok' : mode ? 'warn' : '',
+        label: t('opt_lock_mode_title'),
+        value: mode ? lockModeName(mode, name) : '…',
+        lines: lockLine ? [lockLine()] : [],
+        action: {
+          text: t('opt_about_lock_action'),
+          onClick: () => {
+            showTab('settings');
+            openBlock('lockBlock');
+          },
+        },
+      })
+    );
+
+    // GitHub 檢查新版：商店版不連，正式版看「每天自動檢查」有沒有開，其他版本按了才連
+    const info = updateInfo;
+    const store = !!info && info.channel === 'store';
+    let github = t('opt_about_net_github_manual');
+    if (store) github = t('opt_about_net_github_store');
+    else if (info && info.release && info.auto) github = t('opt_about_net_github_auto');
+    box.appendChild(
+      factTile({
+        icon: ICON.globe,
+        label: t('opt_about_net_label'),
+        value: store ? t('opt_about_net_hibp_only') : t('opt_about_net_both'),
+        lines: [github, t('opt_about_net_hibp')],
+        action: { text: t('opt_about_privacy'), url: REPO_URL + '/blob/main/PRIVACY.md' },
+      })
+    );
+  }
+
+  function renderAboutLinks() {
+    const box = $('aboutLinks');
+    if (box.childElementCount) return;
+    const links = [
+      [ICON.code, t('opt_about_link_source'), REPO_URL.replace('https://', ''), REPO_URL],
+      [ICON.chat, t('opt_about_issue'), t('opt_about_link_issues_desc'), REPO_URL + '/issues'],
+      [ICON.download, t('opt_about_link_releases'), t('opt_about_link_releases_desc'), REPO_URL + '/releases'],
+      [ICON.shield, t('opt_about_link_privacy'), t('opt_about_link_privacy_desc'), REPO_URL + '/blob/main/PRIVACY.md'],
+      [ICON.warning, t('opt_about_link_security'), t('opt_about_link_security_desc'), REPO_URL + '/blob/main/SECURITY.md'],
+      [ICON.doc, t('opt_about_link_readme'), t('opt_about_link_readme_desc'), readmeUrl()],
+    ];
+    for (const [icon, title, desc, url] of links) {
+      const a = outLink(el('a', 'link-card'), url);
+      a.appendChild(iconBox(icon));
+      const texts = el('span', 'texts');
+      texts.appendChild(el('span', 'title', title));
+      texts.appendChild(el('span', 'desc', desc));
+      a.appendChild(texts);
+      a.appendChild(svgIcon(ICON.external, 'ext'));
+      box.appendChild(a);
+    }
+  }
+
+  // 權限：manifest 裡有的才列，選用的權限問瀏覽器現在有沒有給
+  const PERMISSIONS = [
+    { codes: ['http://*/*', 'https://*/*'], host: true, name: () => t('opt_perm_hosts'), why: () => t('opt_perm_hosts_why') },
+    { codes: ['storage'], name: () => t('opt_perm_storage'), why: () => t('opt_perm_storage_why') },
+    { codes: ['activeTab'], name: () => t('opt_perm_active_tab'), why: () => t('opt_perm_active_tab_why') },
+    { codes: ['downloads'], name: () => t('opt_perm_downloads'), why: () => t('opt_perm_downloads_why') },
+    { codes: ['alarms'], name: () => t('opt_perm_alarms'), why: () => t('opt_perm_alarms_why') },
+    { codes: ['idle'], name: () => t('opt_perm_idle'), why: () => t('opt_perm_idle_why') },
+    { codes: ['webRequest', 'webRequestAuthProvider'], name: () => t('opt_perm_web_request'), why: () => t('opt_perm_web_request_why') },
+    { codes: ['clipboardRead', 'clipboardWrite'], name: () => t('opt_perm_clipboard'), why: () => t('opt_perm_clipboard_why') },
+    { codes: ['offscreen'], name: () => t('opt_perm_offscreen'), why: () => t('opt_perm_offscreen_why') },
+  ];
+
+  async function permissionState(perm, manifest) {
+    const required = manifest.permissions || [];
+    const optional = manifest.optional_permissions || [];
+    if (perm.host) return (manifest.host_permissions || []).length ? 'always' : null;
+    const codes = perm.codes.filter((c) => required.includes(c) || optional.includes(c));
+    if (!codes.length) return null;
+    if (codes.every((c) => required.includes(c))) return 'always';
+    try {
+      return (await chrome.permissions.contains({ permissions: codes })) ? 'granted' : 'unused';
+    } catch {
+      // 瀏覽器不認得這個權限（例如 Firefox 的 offscreen），就是沒用到
+      return 'unused';
+    }
+  }
+
+  async function renderAboutPerms() {
+    const manifest = chrome.runtime.getManifest();
+    const states = await Promise.all(PERMISSIONS.map((perm) => permissionState(perm, manifest)));
+    const box = $('aboutPerms');
+    box.textContent = '';
+    const STATE = {
+      always: ['tag', () => t('opt_perm_always')],
+      granted: ['tag ok', () => t('opt_perm_granted')],
+      unused: ['tag plain', () => t('opt_perm_unused')],
+    };
+    PERMISSIONS.forEach((perm, i) => {
+      const state = states[i];
+      if (!state) return;
+      const row = el('div', 'perm-row');
+      const name = el('span');
+      name.appendChild(el('span', 'name', perm.name()));
+      name.appendChild(el('code', null, perm.codes.join(', ')));
+      row.appendChild(name);
+      row.appendChild(el('span', 'why', perm.why()));
+      row.appendChild(el('span', STATE[state][0], STATE[state][1]()));
+      box.appendChild(row);
+    });
+  }
+
+  function renderAboutCredits() {
+    const box = $('aboutCredits');
+    if (box.childElementCount) return;
+    const credits = [
+      [t('opt_about_mit'), REPO_URL + '/blob/main/LICENSE', 'Copyright (c) 2026 PasswordKeeperExtension contributors'],
+      ['EFF Large Wordlist', 'https://www.eff.org/dice', t('opt_about_credit_eff')],
+      ['Pwned Passwords', 'https://haveibeenpwned.com/Passwords', t('opt_about_credit_hibp')],
+    ];
+    for (const [name, url, desc] of credits) {
+      const line = el('div', 'credit');
+      line.appendChild(outLink(el('a', null, name), url));
+      line.appendChild(el('span', 'muted', desc));
+      box.appendChild(line);
+    }
+  }
+
+  function renderAbout() {
+    const badges = $('aboutBadges');
+    badges.textContent = '';
+    const version = currentVersion();
+    if (version) badges.appendChild(el('span', null, 'v' + version));
+    if (updateInfo) badges.appendChild(el('span', null, channelName(updateInfo.channel)));
+    if (updateInfo && updateInfo.channel !== 'store' && updateInfo.available) badges.appendChild(el('span', null, t('opt_update_summary_available', updateInfo.latest.version)));
+    badges.appendChild(el('span', null, t('opt_about_mit')));
+    renderAboutFacts();
+    renderAboutLinks();
+    renderAboutCredits();
+  }
+
+  renderAboutPerms();
+  // 在設定分頁打開剪貼簿清除，或在瀏覽器的擴充功能頁收回權限，不用重新整理就會更新
+  chrome.permissions.onAdded.addListener(renderAboutPerms);
+  chrome.permissions.onRemoved.addListener(renderAboutPerms);
+
+  // ---- 左側欄最下面的語言、色系選單 ----
+
+  // 每個選單的關閉函式，打開一個選單前先關掉別的
+  const menuClosers = [];
+
+  function closeMenus() {
+    for (const close of menuClosers) close(false);
+  }
+
+  // 按鈕按了打開選單。上下鍵、Home、End 移動，Enter 或空白鍵選，Esc 關掉並回到按鈕，點選單外面也會關。
+  // refresh 在打開前叫，選單上打勾的項目才會是最新的。
+  function setupMenu(button, menu, refresh, onPick) {
+    const items = () => [...menu.querySelectorAll('[role="menuitemradio"]')];
+    // 選單是 position: fixed，放在按鈕右邊；左側欄變成最上面一排時，放在按鈕下面
+    function place() {
+      const r = button.getBoundingClientRect();
+      const gap = 8;
+      if (matchMedia('(max-width: 640px)').matches) {
+        menu.style.left = Math.max(gap, Math.min(r.left, innerWidth - menu.offsetWidth - gap)) + 'px';
+        menu.style.top = r.bottom + 6 + 'px';
+      } else {
+        menu.style.left = r.right + gap + 'px';
+        menu.style.top = Math.max(gap, Math.min(r.top, innerHeight - menu.offsetHeight - gap)) + 'px';
+      }
+    }
+    function close(focusButton) {
+      if (menu.hidden) return;
+      menu.hidden = true;
+      button.setAttribute('aria-expanded', 'false');
+      if (focusButton) button.focus();
+    }
+    function open() {
+      closeMenus();
+      refresh();
+      menu.hidden = false;
+      button.setAttribute('aria-expanded', 'true');
+      place();
+      (items().find((x) => x.getAttribute('aria-checked') === 'true') || items()[0]).focus();
+    }
+    button.addEventListener('click', () => (menu.hidden ? open() : close(true)));
+    menu.addEventListener('keydown', (e) => {
+      const list = items();
+      const i = list.indexOf(document.activeElement);
+      const go = (n) => {
+        e.preventDefault();
+        list[(n + list.length) % list.length].focus();
+      };
+      if (e.key === 'ArrowDown') go(i + 1);
+      else if (e.key === 'ArrowUp') go(i - 1);
+      else if (e.key === 'Home') go(0);
+      else if (e.key === 'End') go(list.length - 1);
+      else if (e.key === 'Escape') {
+        e.preventDefault();
+        close(true);
+      } else if (e.key === 'Tab') close(false);
+    });
+    for (const item of items()) {
+      item.addEventListener('click', () => {
+        close(true);
+        onPick(item);
+      });
+    }
+    menuClosers.push(close);
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.rail-menu')) closeMenus();
+  });
+  window.addEventListener('resize', closeMenus);
+
+  function markChecked(menu, attr, value) {
+    for (const item of menu.querySelectorAll('[role="menuitemradio"]')) item.setAttribute('aria-checked', String(item.getAttribute(attr) === value));
+  }
+
+  // 介面語言。auto 是跟著瀏覽器，旁邊寫出瀏覽器挑的是哪一種
+  let languageNow = 'auto';
 
   async function renderLanguagePicker() {
     const res = await send({ type: 'language.get' });
@@ -2407,23 +3074,49 @@
       th: t('lang_name_th'),
     };
     $('langAuto').textContent = t('opt_lang_auto', names[res.data.browserLocale] || names.en);
-    $('langSelect').value = res.data.language;
+    languageNow = res.data.language;
+    markChecked($('langMenu'), 'data-lang', languageNow);
   }
 
   // 選了就存起來，這一頁重新整理成新的語言。小視窗、解鎖視窗下次打開就是新語言，開著的網頁會收到變更自己換
-  $('langSelect').addEventListener('change', async (e) => {
-    const language = e.target.value;
-    const res = await send({ type: 'language.set', language });
-    if (!res.ok) {
-      toast(t('opt_lang_failed', res.error));
-      await renderLanguagePicker();
-      return;
+  setupMenu(
+    $('langButton'),
+    $('langMenu'),
+    () => markChecked($('langMenu'), 'data-lang', languageNow),
+    async (item) => {
+      const language = item.dataset.lang;
+      if (language === languageNow) return;
+      const res = await send({ type: 'language.set', language });
+      if (!res.ok) {
+        toast(t('opt_lang_failed', res.error));
+        await renderLanguagePicker();
+        return;
+      }
+      rememberLocale(language === 'auto' ? null : language);
+      location.reload();
     }
-    rememberLocale(language === 'auto' ? null : language);
-    location.reload();
-  });
+  );
 
   renderLanguagePicker();
+
+  // 色系。選了先換這一頁，再請背景程式存起來；開著的小視窗、網頁上的提示收到 storage 的變更自己換
+  const renderThemePicker = () => markChecked($('themeMenu'), 'data-theme-choice', PK.theme.currentChoice());
+
+  setupMenu($('themeButton'), $('themeMenu'), renderThemePicker, async (item) => {
+    const choice = item.dataset.themeChoice;
+    const before = PK.theme.currentChoice();
+    if (choice === before) return;
+    PK.theme.useTheme(choice);
+    renderThemePicker();
+    const res = await send({ type: 'theme.set', theme: choice });
+    if (!res.ok) {
+      PK.theme.useTheme(before);
+      renderThemePicker();
+      toast(t('opt_theme_failed', res.error));
+    }
+  });
+
+  renderThemePicker();
 
   load();
 
@@ -2439,6 +3132,12 @@
     renderClickRules,
     renderLock,
     showTab,
+    // 右邊顯示這一筆，窄的視窗會整頁換成詳細資料
+    showEntry(id) {
+      currentId = id;
+      showDetail = true;
+      renderList();
+    },
     // 目前列出的帳號，e2e 拿第一筆開編輯對話框
     get entries() {
       return entries;

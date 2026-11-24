@@ -1,6 +1,6 @@
 'use strict';
 // 介面文字的多國語系：從 _locales/<語言>/messages.json 拿文字。
-// 管理頁右上角可以指定語言，存在 storage 的 uiLanguage。沒指定就照瀏覽器的介面語言，瀏覽器語言不在 i18nLocales() 裡時用英文。
+// 管理頁左側欄最下面可以指定語言，存在 storage 的 uiLanguage。沒指定就照瀏覽器的介面語言，瀏覽器語言不在 i18nLocales() 裡時用英文。
 // 瀏覽器沒有台語介面，台語（nan_TW）只能從語言選單選，Chrome 也不會自己挑 _locales/nan_TW。
 // 小視窗、管理頁、解鎖視窗、網頁裡的 content.js 和背景程式都會載入這個檔。
 //
