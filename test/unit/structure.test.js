@@ -8,7 +8,7 @@ test('背景程式載入後，全域只多了 PK', async () => {
   const bg = loadBackground();
   await bg.settle();
   // 假 chrome API 和 Node 給的那些是測試自己放的，不算
-  const provided = ['chrome', 'console', 'crypto', 'URL', 'TextEncoder', 'TextDecoder', 'atob', 'btoa', 'structuredClone', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'queueMicrotask', 'location', 'fetch', 'self', 'importScripts'];
+  const provided = ['chrome', 'console', 'crypto', 'URL', 'TextEncoder', 'TextDecoder', 'atob', 'btoa', 'structuredClone', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'queueMicrotask', 'AbortController', 'location', 'fetch', 'self', 'importScripts'];
   const added = [...bg.run('Object.keys(globalThis)')].filter((k) => !provided.includes(k));
   assert.deepEqual(added, ['PK']);
 });

@@ -37,6 +37,7 @@
     .strip { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); padding: 0 2px; }
     .strip.warn { color: #92400e; }
     .strip.ok { color: #15803d; }
+    .strip .push { margin-left: auto; display: inline-flex; align-items: center; }
     .sep { width: 1px; height: 22px; background: var(--border); margin: 0 4px; }
     table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
     th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 13px; }
@@ -274,6 +275,9 @@
         <div id="healthStrip" class="strip">
           <span id="healthSummary"></span>
           <button id="healthToggle" class="link small" hidden data-i18n="opt_health_show">看詳細</button>
+          <span id="breachWrap" class="push" hidden><button id="breachCheck" class="small" data-i18n="opt_breach_check">檢查有沒有外洩</button><span class="tip" data-i18n-tip="opt_breach_tip" data-tip="會連到 Have I Been Pwned（api.pwnedpasswords.com），每組密碼只送雜湊值的前 5 碼，對方猜不出是哪組密碼。
+按了才會連，平常不連。
+結果不會存，關掉管理頁要重新檢查。">?</span></span>
         </div>
         <div id="healthList" class="card" hidden></div>
         <div class="table-frame">
@@ -748,6 +752,7 @@ Windows 剪貼簿歷程（Win+V）裡的紀錄清不掉。">?</span>
   <div id="toast" class="toast"></div>
   <script src="../shared/platform.js"></script>
   <script src="../shared/i18n.js"></script>
+  <script src="../shared/domain.js"></script>
   <script src="../shared/page.js"></script>
   <script src="../shared/webauthn-client.js"></script>
   <script src="changelog.js"></script>

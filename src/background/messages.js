@@ -78,6 +78,12 @@
     'clickRules.reorder': { from: 'extension' },
     'clickRules.timing': { from: 'extension' },
     'update.setAuto': { from: 'extension' },
+    // 產生紀錄只有小視窗和管理頁讀得到。網頁上的「產生強密碼」由 password.generate 自己記，不經過這裡
+    'generated.note': { from: 'extension' },
+    'generated.list': { from: 'extension' },
+    'generated.delete': { from: 'extension' },
+    // 外洩密碼檢查會連到外部網站，只收管理頁的要求
+    'breach.check': { from: 'extension' },
   };
 
 
@@ -474,7 +480,29 @@
       const own = PK.callers.fromExtensionPage(sender);
       const result = PK.generator.generatePassword((own && options) || (await PK.settings.getSettings()).generator);
       if (own && save && options) await PK.settings.setSettings({ generator: result.options });
+      // 網頁上的「產生強密碼」一叫就會填進欄位，算用到了，記進產生紀錄。網站用 content.js 所在的網址算。
+      // 鎖著時讀寫不了紀錄，這次就不記
+      if (!own && !(await PK.lock.isLocked())) await PK.generator.noteGenerated(result.password, PK.callers.callerHost('', sender));
       return result;
+    },
+
+    // 小視窗按了「複製」或「填入頁面」，把那組記進產生紀錄
+    async 'generated.note'({ password, host }) {
+      await PK.generator.noteGenerated(String(password || ''), String(host || ''));
+      return true;
+    },
+
+    async 'breach.check'() {
+      return PK.breach.checkBreaches();
+    },
+
+    async 'generated.list'() {
+      return PK.generator.listGenerated();
+    },
+
+    // id 沒給就全部清掉
+    async 'generated.delete'({ id }) {
+      return PK.generator.deleteGenerated(id ? String(id) : '');
     },
 
     async 'backup.export'({ password, ids }) {

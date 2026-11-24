@@ -241,16 +241,25 @@
   }
 
   // 健檢只顯示一行摘要，有問題才給「看詳細」展開清單，不佔版面
+  // 外洩檢查的結果：帳號 id → 在外洩名單出現過幾次。只放在這一頁，不存，關掉管理頁就沒了
+  let breachCounts = null;
+
+  // 重複的項目：網站只差開頭的 www.，帳號和密碼都一樣。jira.example.com 和 gitlab.example.com 是不同系統，不算重複
+  const sameSite = (host) => String(host || '').toLowerCase().replace(/^www\./, '');
+
   function renderHealth() {
     const list = $('healthList');
     const strip = $('healthStrip');
     const summary = $('healthSummary');
     const toggle = $('healthToggle');
+    // 按「忽略」之後重畫，清單原本開著就維持開著
+    const wasOpen = !list.hidden;
     list.textContent = '';
     list.hidden = true;
     toggle.hidden = true;
     toggle.textContent = t('opt_health_show');
     strip.className = 'strip';
+    $('breachWrap').hidden = !entries.length;
     if (!entries.length) {
       summary.textContent = '';
       return;
@@ -264,25 +273,50 @@
     const weak = entries.filter((e) => e.password.length < 8 || charClasses(e.password) < 2);
     const yearAgo = Date.now() - 365 * 24 * 60 * 60 * 1000;
     const old = entries.filter((e) => (e.passwordChangedAt || e.createdAt || 0) < yearAgo);
-    if (!reused.length && !weak.length && !old.length) {
-      strip.className = 'strip ok';
-      summary.textContent = t('opt_health_ok');
-      return;
+    // 還在用 http 的網址。公司內部設備很多只有 http，按過「忽略」的不列
+    const ignored = new Set(settings.healthIgnoreHttp || []);
+    const httpAll = entries.filter((e) => /^http:/i.test(e.origin || ''));
+    const http = httpAll.filter((e) => !ignored.has(e.id));
+    const ignoredCount = httpAll.length - http.length;
+    const bySite = new Map();
+    for (const e of entries) {
+      const key = sameSite(e.host) + '\n' + e.username + '\n' + e.password;
+      if (!bySite.has(key)) bySite.set(key, []);
+      bySite.get(key).push(e);
     }
-    strip.className = 'strip warn';
-    summary.textContent = tn('opt_health_summary', reused.length, weak.length, old.length);
+    const dups = [...bySite.values()].filter((g) => g.length >= 2);
+    const breached = breachCounts ? entries.filter((e) => breachCounts.has(e.id)) : [];
+
+    // 摘要只列有問題的項目
+    const parts = [];
+    if (breached.length) parts.push(tn('opt_health_part_breached', breached.length));
+    if (reused.length) parts.push(tn('opt_health_part_reused', reused.length));
+    if (weak.length) parts.push(tn('opt_health_part_weak', weak.length));
+    if (old.length) parts.push(tn('opt_health_part_old', old.length));
+    if (http.length) parts.push(tn('opt_health_part_http', http.length));
+    if (dups.length) parts.push(tn('opt_health_part_dup', dups.length));
+    strip.className = parts.length ? 'strip warn' : 'strip ok';
+    summary.textContent = parts.length ? t('opt_health_summary', parts.join(t('opt_health_part_sep'))) : t('opt_health_ok');
+    if (!parts.length && !ignoredCount) return;
     toggle.hidden = false;
+    if (wasOpen) {
+      list.hidden = false;
+      toggle.textContent = t('opt_health_hide');
+    }
+
     const who = (e) => t('opt_account_label', e.host, e.username || t('opt_no_username'));
-    const addItem = (what, e) => {
+    const addItem = (what, e, extra) => {
       const div = el('div', 'health-item');
       const w = el('div', 'what', what);
       w.appendChild(el('div', 'who', who(e)));
+      div.appendChild(w);
+      if (extra) div.appendChild(extra);
       const btn = el('button', 'small', t('opt_edit'));
       btn.addEventListener('click', () => openDialog(e));
-      div.appendChild(w);
       div.appendChild(btn);
       list.appendChild(div);
     };
+    for (const e of breached) addItem(tn('opt_health_breached', breachCounts.get(e.id)), e);
     reused.forEach((g, i) => {
       for (const e of g) addItem(t('opt_health_reused', i + 1, g.length), e);
     });
@@ -290,12 +324,71 @@
       addItem(e.password.length < 8 ? tn('opt_health_weak_short', e.password.length) : t('opt_health_weak_classes'), e);
     }
     for (const e of old) addItem(t('opt_health_old', fmtDate(e.passwordChangedAt || e.createdAt)), e);
+    for (const e of http) {
+      const ignore = el('button', 'link small', t('opt_health_http_ignore'));
+      ignore.addEventListener('click', () => setHttpIgnored([...ignored, e.id]));
+      addItem(t('opt_health_http'), e, ignore);
+    }
+    dups.forEach((g, i) => {
+      for (const e of g) addItem(t('opt_health_dup', i + 1, g.length), e);
+    });
+    if (ignoredCount) {
+      const div = el('div', 'health-item');
+      div.appendChild(el('div', 'what', tn('opt_health_http_ignored', ignoredCount)));
+      const restore = el('button', 'link small', t('opt_health_http_restore'));
+      restore.addEventListener('click', () => setHttpIgnored([]));
+      div.appendChild(restore);
+      list.appendChild(div);
+    }
+  }
+
+  async function setHttpIgnored(ids) {
+    const res = await send({ type: 'settings.set', patch: { healthIgnoreHttp: [...new Set(ids)] } });
+    if (!res.ok) {
+      toast(t('opt_setting_failed', res.error));
+      return;
+    }
+    settings = res.data;
+    renderHealth();
   }
 
   $('healthToggle').addEventListener('click', () => {
     const open = $('healthList').hidden;
     $('healthList').hidden = !open;
     $('healthToggle').textContent = open ? t('opt_health_hide') : t('opt_health_show');
+  });
+
+  // 外洩密碼檢查。Firefox 要先跳同意視窗，permissions.request 要在使用者按的當下叫，前面不能先 await 別的東西
+  $('breachCheck').addEventListener('click', () => {
+    const consent = PK.platform.can('dataCollectionConsent') ? chrome.permissions.request({ data_collection: ['authenticationInfo'] }) : Promise.resolve(true);
+    consent.then(
+      async (granted) => {
+        if (!granted) {
+          toast(t('opt_breach_need_consent'));
+          return;
+        }
+        const btn = $('breachCheck');
+        btn.disabled = true;
+        btn.textContent = t('opt_breach_checking');
+        const res = await send({ type: 'breach.check' });
+        btn.disabled = false;
+        btn.textContent = t('opt_breach_check');
+        if (!res.ok) {
+          toast(res.error);
+          return;
+        }
+        breachCounts = new Map(res.data.found.map((f) => [f.id, f.count]));
+        renderHealth();
+        if (res.data.found.length) {
+          $('healthList').hidden = false;
+          $('healthToggle').textContent = t('opt_health_hide');
+          toast(tn('opt_breach_found', res.data.found.length));
+        } else {
+          toast(tn('opt_breach_none', res.data.checked));
+        }
+      },
+      (err) => toast(t('bg_breach_failed', err.message))
+    );
   });
 
   // ---- 回收桶 ----

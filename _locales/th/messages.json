@@ -71,6 +71,44 @@
     "message": "สร้างรหัสผ่าน",
     "description": "Button that opens the password generator, and the title of that panel."
   },
+  "pop_gen_mode_chars": {
+    "message": "อักขระสุ่ม"
+  },
+  "pop_gen_mode_words": {
+    "message": "จำง่าย"
+  },
+  "pop_gen_mode_tip": {
+    "message": "รหัสผ่านแบบจำง่ายคือคำภาษาอังกฤษหลายคำต่อกัน จำและพิมพ์ง่ายกว่าอักขระสุ่ม\nบางเว็บไซต์จำกัดความยาวหรือตัวอักษรของรหัสผ่าน ถ้าไม่ผ่านให้เปลี่ยนกลับเป็นอักขระสุ่ม",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_word_count": {
+    "message": "จำนวนคำ"
+  },
+  "pop_gen_separator": {
+    "message": "ตัวคั่น"
+  },
+  "pop_gen_separator_space": {
+    "message": "เว้นวรรค"
+  },
+  "pop_gen_capitalize": {
+    "message": "ขึ้นต้นด้วยตัวพิมพ์ใหญ่"
+  },
+  "pop_gen_add_number": {
+    "message": "เพิ่มตัวเลขหนึ่งตัว"
+  },
+  "pop_gen_history": {
+    "message": "ที่สร้างล่าสุด"
+  },
+  "pop_gen_history_tip": {
+    "message": "รหัสผ่านจาก \"สร้างรหัสผ่านที่รัดกุม\" บนหน้าเว็บ และที่คัดลอกหรือกรอกในหน้าเว็บจากที่นี่ จะเก็บไว้ที่นี่ สูงสุด 20 รายการ\nถ้าเว็บไซต์ไม่ได้บันทึกรหัสผ่านใหม่ไว้ นำกลับมาจากที่นี่ได้\nไม่รวมอยู่ในไฟล์สำรอง",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_history_clear": {
+    "message": "ล้างทั้งหมด"
+  },
+  "pop_gen_history_delete": {
+    "message": "ลบรายการนี้"
+  },
   "pop_regen_title": {
     "message": "สร้างชุดใหม่"
   },
@@ -598,19 +636,125 @@
   "opt_health_show": {
     "message": "ดูรายละเอียด"
   },
+  "opt_health_summary": {
+    "message": "ตรวจสอบรหัสผ่าน: $1",
+    "description": "$1 = the problems found, joined with opt_health_part_sep."
+  },
+  "opt_health_part_sep": {
+    "message": " · ",
+    "description": "Joins the parts of the health check summary."
+  },
+  "opt_breach_check": {
+    "message": "ตรวจการรั่วไหล"
+  },
+  "opt_breach_checking": {
+    "message": "กำลังตรวจ…"
+  },
+  "opt_breach_tip": {
+    "message": "จะเชื่อมต่อกับ Have I Been Pwned (api.pwnedpasswords.com) โดยส่งเฉพาะ 5 ตัวแรกของค่าแฮชของแต่ละรหัสผ่าน จึงไม่มีใครรู้ว่าเป็นรหัสผ่านใด\nเชื่อมต่อเฉพาะเมื่อกดปุ่มนี้เท่านั้น\nไม่บันทึกผลไว้ เปิดหน้าจัดการใหม่แล้วต้องตรวจอีกครั้ง",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_breach_need_consent": {
+    "message": "ไม่ได้อนุญาตในข้อความของ Firefox จึงไม่ได้ตรวจ"
+  },
+  "opt_breach_found_one": {
+    "message": "มีรหัสผ่าน $1 รายการอยู่ในรายชื่อที่รั่วไหล ควรเปลี่ยนโดยเร็ว",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_found_other": {
+    "message": "มีรหัสผ่าน $1 รายการอยู่ในรายชื่อที่รั่วไหล ควรเปลี่ยนโดยเร็ว",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_none_one": {
+    "message": "ตรวจแล้ว $1 รายการ ไม่มีรายการใดอยู่ในรายชื่อที่รั่วไหล",
+    "description": "$1 = number of accounts checked."
+  },
+  "opt_breach_none_other": {
+    "message": "ตรวจแล้ว $1 รายการ ไม่มีรายการใดอยู่ในรายชื่อที่รั่วไหล",
+    "description": "$1 = number of accounts checked."
+  },
   "opt_health_hide": {
     "message": "ซ่อนรายละเอียด"
   },
   "opt_health_ok": {
-    "message": "ตรวจสอบรหัสผ่าน: ไม่มีรหัสผ่านที่ใช้ซ้ำหรือไม่รัดกุม และทุกรหัสผ่านเปลี่ยนภายในปีที่ผ่านมา"
+    "message": "ตรวจสอบรหัสผ่าน: ไม่มีรหัสผ่านที่ต้องจัดการ"
   },
-  "opt_health_summary_one": {
-    "message": "ตรวจสอบรหัสผ่าน: ใช้ซ้ำ $1 กลุ่ม ไม่รัดกุม $2 รายการ ไม่ได้เปลี่ยนนานกว่าหนึ่งปี $3 รายการ",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_one": {
+    "message": "รั่วไหล $1 รายการ",
+    "description": "$1 = number of accounts. One part of the health check summary."
   },
-  "opt_health_summary_other": {
-    "message": "ตรวจสอบรหัสผ่าน: ใช้ซ้ำ $1 กลุ่ม ไม่รัดกุม $2 รายการ ไม่ได้เปลี่ยนนานกว่าหนึ่งปี $3 รายการ",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_other": {
+    "message": "รั่วไหล $1 รายการ",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_reused_one": {
+    "message": "ใช้ซ้ำ $1 กลุ่ม",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_reused_other": {
+    "message": "ใช้ซ้ำ $1 กลุ่ม",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_weak_one": {
+    "message": "ไม่รัดกุม $1 รายการ",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_weak_other": {
+    "message": "ไม่รัดกุม $1 รายการ",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_one": {
+    "message": "ไม่ได้เปลี่ยนนานกว่าหนึ่งปี $1 รายการ",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_other": {
+    "message": "ไม่ได้เปลี่ยนนานกว่าหนึ่งปี $1 รายการ",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_one": {
+    "message": "ยังใช้ HTTP $1 รายการ",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_other": {
+    "message": "ยังใช้ HTTP $1 รายการ",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_dup_one": {
+    "message": "รายการซ้ำ $1 กลุ่ม",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_part_dup_other": {
+    "message": "รายการซ้ำ $1 กลุ่ม",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_breached_one": {
+    "message": "รั่วไหล: พบในรายชื่อที่รั่วไหล $1 ครั้ง",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_breached_other": {
+    "message": "รั่วไหล: พบในรายชื่อที่รั่วไหล $1 ครั้ง",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_http_ignored_one": {
+    "message": "ไม่สนใจที่อยู่ HTTP $1 รายการ",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http_ignored_other": {
+    "message": "ไม่สนใจที่อยู่ HTTP $1 รายการ",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http": {
+    "message": "ยังใช้ HTTP: ถ้าเว็บไซต์รองรับ https ให้เปลี่ยนเป็นที่อยู่ https"
+  },
+  "opt_health_http_ignore": {
+    "message": "ไม่สนใจ"
+  },
+  "opt_health_http_restore": {
+    "message": "แสดงทั้งหมดอีกครั้ง"
+  },
+  "opt_health_dup": {
+    "message": "รายการซ้ำ: กลุ่มที่ $1 มี $2 บัญชีที่ชื่อผู้ใช้และรหัสผ่านเหมือนกัน",
+    "description": "$1 = group number, $2 = number of accounts in the group."
   },
   "opt_health_reused": {
     "message": "ใช้ซ้ำ: รหัสผ่านกลุ่มที่ $1 ใช้อยู่ $2 แห่ง",
@@ -2288,6 +2432,16 @@
   },
   "bg_none_selected": {
     "message": "ไม่ได้เลือกบัญชีใดเลย"
+  },
+  "bg_breach_no_consent": {
+    "message": "ต้องอนุญาตในข้อความของ Firefox ก่อน จึงจะตรวจการรั่วไหลได้"
+  },
+  "bg_breach_failed": {
+    "message": "ตรวจการรั่วไหลไม่สำเร็จ: $1",
+    "description": "$1 = error message."
+  },
+  "bg_breach_timeout": {
+    "message": "การเชื่อมต่อหมดเวลา"
   },
   "bg_not_backup_file": {
     "message": "ไฟล์นี้ไม่ใช่ไฟล์สำรองของผู้ดูแลรหัสผ่าน"

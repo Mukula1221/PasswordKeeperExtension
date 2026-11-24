@@ -5,7 +5,7 @@
 // 結束代碼：0 全過、1 有案例沒過、2 跑不起來。
 const path = require('path');
 const fs = require('fs');
-const { generateKeyPairSync, randomBytes } = require('crypto');
+const { createHash, generateKeyPairSync, randomBytes } = require('crypto');
 const { findBrowser, copyExtension, startServer, launch, findServiceWorker, openPage, attachFrame, attachWorker, sleep, WORK } = require('./lib');
 
 const PORT = 8770;
@@ -3602,6 +3602,118 @@ test('剪貼簿：鎖定時清掉小管家複製的密碼', async () => {
   await closePage(page);
 });
 
+// ---- 1.21.0：好記的密碼、產生紀錄、健檢、外洩檢查 ----
+
+async function openPopup(waitMs = 1200) {
+  const popup = await openPage(b.cdp, 'about:blank', POPUP_STUB);
+  await popup.send('Emulation.setDeviceMetricsOverride', { width: 360, height: 760, deviceScaleFactor: 1, mobile: false });
+  await popup.goto('chrome-extension://' + extId + '/src/popup/popup.html', waitMs);
+  return popup;
+}
+
+test('產生密碼：小視窗切到好記的密碼，網頁上的「產生強密碼」也照這個模式，用過的記在最近產生的', async () => {
+  const target = await open(T + 'signup.html', 1000);
+  let popup = await openPopup();
+  await popup.click('#genBtn');
+  await sleep(400);
+  await popup.click('#genModeWords');
+  await sleep(500);
+  const view = await popup.eval(`({
+    value: document.getElementById('genOut').value,
+    charsHidden: document.getElementById('genChars').hidden,
+    wordsHidden: document.getElementById('genWords').hidden,
+    historyHidden: document.getElementById('genHistory').hidden,
+  })`);
+  check(view.value.split('-').length === 6, '預設 6 個字、用 - 隔開：' + view.value);
+  check(view.charsHidden && !view.wordsHidden, '只顯示好記的密碼的選項：' + JSON.stringify(view));
+  check(view.historyHidden, '還沒用過，不顯示最近產生的');
+  await closePage(popup);
+
+  await b.cdp.send('Target.activateTarget', { targetId: target.targetId });
+  await target.send('Page.bringToFront');
+  await target.click('#p1');
+  check(await listShown(target, '產生強密碼'), '新密碼欄應該有產生強密碼');
+  await sleep(700);
+  await target.clickShadow('產生強密碼', 'DIV');
+  await sleep(500);
+  const filled = await target.eval(`document.getElementById('p1').value`);
+  check(filled.split('-').length === 6, '網頁上產生的也要是好記的密碼：' + filled);
+  const list = await w.eval(`handlers['generated.list']({}, ${fromOptions})`);
+  check(list.length === 1 && list[0].password === filled && list[0].host === '127.0.0.1', '網頁上產生的要記下來：' + JSON.stringify(list));
+
+  popup = await openPopup();
+  await popup.click('#genBtn');
+  await sleep(500);
+  const history = await popup.eval(`({
+    hidden: document.getElementById('genHistory').hidden,
+    count: document.getElementById('genHistoryCount').textContent,
+    masked: document.querySelector('#genHistoryList .gen-pw').firstChild.nodeValue,
+  })`);
+  check(!history.hidden && history.count === '1', '最近產生的要有 1 組：' + JSON.stringify(history));
+  check(!history.masked.includes(filled), '密碼要先遮起來');
+  await popup.eval(`document.getElementById('genHistory').open = true`);
+  await sleep(200);
+  await popup.screenshot(path.join(SHOTS, 'popup-passphrase.png'));
+  // 改回隨機字元，不影響後面的測試
+  await popup.click('#genModeChars');
+  await sleep(400);
+  await closePage(popup);
+  await closePage(target);
+});
+
+test('健檢：列出還在用 HTTP 的網址和只差 www 的重複項目，HTTP 可以忽略、再恢復', async () => {
+  await w.eval(`(async () => {
+    const save = (entry) => handlers['entries.save']({ entry }, ${fromOptions});
+    await save({ url: 'https://www.dup.example', username: 'u', password: 'Same-pass-123' });
+    await save({ url: 'https://dup.example', username: 'u', password: 'Same-pass-123' });
+    await save({ url: 'http://intranet.example', username: 'admin', password: 'Intranet-pass-456' });
+    return true;
+  })()`);
+  const page = await open('chrome-extension://' + extId + '/src/options/options.html#passwords', 1500);
+  const summary = () => page.eval(`document.getElementById('healthSummary').textContent`);
+  let s = await summary();
+  check(s.includes('還在用 HTTP 1 筆') && s.includes('重複的項目 1 組') && s.includes('重複使用 1 組'), '摘要要列出三種問題：' + s);
+  await page.click('#healthToggle');
+  await sleep(200);
+  const items = () => page.eval(`Array.from(document.querySelectorAll('#healthList .health-item')).map((x) => x.innerText.replace(/\\s+/g, ' '))`);
+  let list = await items();
+  check(list.some((x) => x.includes('還在用 HTTP') && x.includes('intranet.example')), 'HTTP 那筆要列出來：' + JSON.stringify(list));
+  check(list.filter((x) => x.includes('重複的項目')).length === 2, '重複的兩筆都要列：' + JSON.stringify(list));
+  await page.screenshot(path.join(SHOTS, 'options-health.png'));
+  await page.eval(`Array.from(document.querySelectorAll('#healthList button')).find((x) => x.textContent === '忽略').click()`);
+  await sleep(500);
+  s = await summary();
+  list = await items();
+  check(!s.includes('HTTP'), '忽略後摘要不再列 HTTP：' + s);
+  check(list.some((x) => x.includes('已忽略 1 筆')), '要寫忽略了幾筆：' + JSON.stringify(list));
+  check(!(await page.eval(`document.getElementById('healthList').hidden`)), '忽略之後清單維持打開');
+  await page.eval(`Array.from(document.querySelectorAll('#healthList button')).find((x) => x.textContent === '全部恢復').click()`);
+  await sleep(500);
+  check((await summary()).includes('還在用 HTTP 1 筆'), '恢復後要再列出來');
+  await closePage(page);
+});
+
+test('外洩檢查：打開管理頁不連，按了才連，只送雜湊值前 5 碼，結果列在健檢裡', async () => {
+  await seedEntry('right');
+  await w.eval(`useBreachApi(${JSON.stringify(ORIGIN + '/fake-hibp?p=')})`);
+  try {
+    hits.length = 0;
+    const page = await open('chrome-extension://' + extId + '/src/options/options.html#passwords', 1500);
+    check(hitCount('/fake-hibp') === 0, '打開管理頁不能連');
+    await page.click('#breachCheck');
+    const done = await until(() => page.eval(`document.getElementById('healthSummary').textContent.includes('外洩 1 筆')`), 6000);
+    check(done, '摘要要寫外洩 1 筆：' + (await page.eval(`document.getElementById('healthSummary').textContent`)));
+    const asked = hits.filter((h) => h.startsWith('/fake-hibp'));
+    check(asked.length === 1 && asked[0] === '/fake-hibp?p=' + RIGHT_SHA1.slice(0, 5), '只送前 5 碼：' + JSON.stringify(asked));
+    const list = await page.eval(`Array.from(document.querySelectorAll('#healthList .health-item')).map((x) => x.innerText.replace(/\\s+/g, ' '))`);
+    check(list.some((x) => x.includes('在外洩名單出現過 42 次')), '要列出外洩次數：' + JSON.stringify(list));
+    await page.screenshot(path.join(SHOTS, 'options-breach.png'));
+    await closePage(page);
+  } finally {
+    await w.eval(`useBreachApi('')`);
+  }
+});
+
 // ---- 多國語系：另外開繁中以外介面的瀏覽器 ----
 
 // 同一個擴充功能、同一個測試伺服器，只換瀏覽器的介面語言。用完就關。
@@ -4017,7 +4129,16 @@ test('網站存取權：被收回時小視窗提示，按了只要這個網站�
 // ---- 跑 ----
 
 // 只有這份腳本用得到的頁面
+// 測試帳號的密碼 right 的 SHA-1，假的 HIBP 用它決定回什麼
+const RIGHT_SHA1 = createHash('sha1').update('right').digest('hex').toUpperCase();
+
 const ROUTES = {
+  // 假的 HIBP range API：?p= 是雜湊值前 5 碼。right 那段回 42 次，另外補一行次數 0 的假資料，跟 Add-Padding 一樣
+  '/fake-hibp': (url) => {
+    const p = url.searchParams.get('p');
+    const pad = 'F'.repeat(35) + ':0';
+    return p === RIGHT_SHA1.slice(0, 5) ? [RIGHT_SHA1.slice(5) + ':42', pad].join(String.fromCharCode(13, 10)) : pad;
+  },
   // 登入表單包在看不見的外框裡。mode：normal 看得見、opacity 全透明、faint 幾乎透明、offscreen 移到畫面外、fade 0.6 秒後淡入
   '/hidden-login': (url) => {
     const mode = url.searchParams.get('mode');

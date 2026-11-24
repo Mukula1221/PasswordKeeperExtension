@@ -9,6 +9,47 @@
   const PK = (globalThis.PK ??= {});
   PK.changelog = [
     {
+      version: '1.21.0',
+      date: '2026-11-24',
+      items: {
+        zh_TW: [
+          '產生密碼多了「好記的密碼」：用幾個英文單字串成密碼，可以選單字數、分隔符號、字首大寫、加一個數字。網頁上的「產生強密碼」也照小視窗選的模式產生。',
+          '小視窗「產生密碼」底下多了「最近產生的」：網頁上產生的、和小視窗按「複製」「填入頁面」的密碼會留在這裡，最多 20 組，網站沒存成功時拿得回來。紀錄跟密碼一起受工具鎖定保護，不放進備份檔。',
+          '密碼健檢多兩項：還在用 HTTP 的網址，和網站只差 www、帳號密碼都一樣的重複項目。HTTP 那項可以按「忽略」。健檢摘要只列有問題的項目。',
+          '密碼健檢旁邊多了「檢查有沒有外洩」：查密碼有沒有出現在 Have I Been Pwned 的外洩名單。每組密碼只送雜湊值的前 5 碼，按了才連，結果不存。',
+        ],
+        en: [
+          'Generate password now has "Easy to remember": a password made of a few English words. You can choose the number of words, the separator, capitalization, and adding a number. "Generate a strong password" on web pages uses the mode chosen in the popup.',
+          'The popup\'s "Generate password" now has "Recently generated": passwords generated on web pages, and ones you copy or fill on the page from the popup, are kept there, up to 20, so you can get them back if a site didn\'t save them. The history is protected by the app lock along with your passwords and isn\'t included in backups.',
+          'The password health check now also lists addresses still on HTTP, and duplicates whose sites differ only by www and have the same username and password. You can ignore the HTTP ones. The summary lists only the problems found.',
+          '"Check for breaches" next to the health check looks up your passwords in Have I Been Pwned\'s breach lists. Only the first 5 characters of each password\'s hash are sent, it connects only when you click, and results aren\'t saved.',
+        ],
+        ja: [
+          'パスワードの生成に「覚えやすい」を追加しました。英単語をいくつかつないだパスワードで、単語の数、区切り、先頭の大文字、数字の追加を選べます。Web ページの「強力なパスワードを生成」も、ポップアップで選んだ方式で生成します。',
+          'ポップアップの「パスワードを生成」に「最近生成したもの」を追加しました。Web ページで生成したものと、ポップアップで「コピー」「ページに入力」したパスワードが最大 20 件残り、サイトに保存されなかったときも取り出せます。履歴はパスワードと一緒にアプリロックで保護され、バックアップには含まれません。',
+          'パスワード診断に、HTTP のままのアドレスと、www の有無だけが違いユーザー名とパスワードが同じ重複した項目を追加しました。HTTP の項目は「無視」できます。概要には問題があった項目だけを表示します。',
+          'パスワード診断の横に「漏えいを確認」を追加しました。パスワードが Have I Been Pwned の漏えいリストに載っていないか調べます。送るのは各パスワードのハッシュ値の先頭 5 文字だけで、押したときだけ接続し、結果は保存しません。',
+        ],
+      },
+      notes: {
+        zh_TW: [
+          '外洩檢查會連到 api.pwnedpasswords.com，這是 GitHub 以外唯一會連的地方，而且要按了才連。',
+          'Firefox 版第一次按「檢查有沒有外洩」時，Firefox 會先問你同不同意送出這類資料。',
+          '好記的密碼用的單字表是 EFF 的 Large Wordlist（CC BY 4.0）。',
+        ],
+        en: [
+          'The breach check connects to api.pwnedpasswords.com. That\'s the only place besides GitHub the extension connects to, and only when you click.',
+          'In the Firefox version, the first time you click "Check for breaches", Firefox asks whether you agree to send this kind of data.',
+          'The wordlist for easy-to-remember passwords is the EFF Large Wordlist (CC BY 4.0).',
+        ],
+        ja: [
+          '漏えいの確認では api.pwnedpasswords.com に接続します。GitHub 以外に接続するのはここだけで、押したときだけです。',
+          'Firefox 版では、初めて「漏えいを確認」を押したときに、このようなデータの送信に同意するか Firefox が確認します。',
+          '覚えやすいパスワードの単語リストは EFF の Large Wordlist（CC BY 4.0）です。',
+        ],
+      },
+    },
+    {
       version: '1.20.0',
       date: '2026-11-24',
       items: {

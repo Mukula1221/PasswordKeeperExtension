@@ -71,6 +71,44 @@
     "message": "產生密碼",
     "description": "Button that opens the password generator, and the title of that panel."
   },
+  "pop_gen_mode_chars": {
+    "message": "隨機字元"
+  },
+  "pop_gen_mode_words": {
+    "message": "好記的密碼"
+  },
+  "pop_gen_mode_tip": {
+    "message": "好記的密碼是用幾個英文單字串起來的密碼，比亂碼好記、好打。\n有些網站限制密碼長度或字元，不被接受時切回隨機字元。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_word_count": {
+    "message": "單字數"
+  },
+  "pop_gen_separator": {
+    "message": "分隔符號"
+  },
+  "pop_gen_separator_space": {
+    "message": "空白"
+  },
+  "pop_gen_capitalize": {
+    "message": "字首大寫"
+  },
+  "pop_gen_add_number": {
+    "message": "加一個數字"
+  },
+  "pop_gen_history": {
+    "message": "最近產生的"
+  },
+  "pop_gen_history_tip": {
+    "message": "網頁上的「產生強密碼」，和這裡按「複製」「填入頁面」的密碼會留在這裡，最多 20 組。\n網站沒存成功時，可以從這裡拿回來。\n不會放進備份檔。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_history_clear": {
+    "message": "全部清除"
+  },
+  "pop_gen_history_delete": {
+    "message": "刪除這一組"
+  },
   "pop_regen_title": {
     "message": "重新產生一組"
   },
@@ -598,19 +636,125 @@
   "opt_health_show": {
     "message": "看詳細"
   },
+  "opt_health_summary": {
+    "message": "健檢：$1。",
+    "description": "$1 = the problems found, joined with opt_health_part_sep."
+  },
+  "opt_health_part_sep": {
+    "message": "、",
+    "description": "Joins the parts of the health check summary."
+  },
+  "opt_breach_check": {
+    "message": "檢查有沒有外洩"
+  },
+  "opt_breach_checking": {
+    "message": "檢查中…"
+  },
+  "opt_breach_tip": {
+    "message": "會連到 Have I Been Pwned（api.pwnedpasswords.com），每組密碼只送雜湊值的前 5 碼，對方猜不出是哪組密碼。\n按了才會連，平常不連。\n結果不會存，關掉管理頁要重新檢查。",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_breach_need_consent": {
+    "message": "沒有同意 Firefox 的提示，這次不檢查。"
+  },
+  "opt_breach_found_one": {
+    "message": "有 $1 組密碼出現在外洩名單，請盡快改掉。",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_found_other": {
+    "message": "有 $1 組密碼出現在外洩名單，請盡快改掉。",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_none_one": {
+    "message": "檢查了 $1 筆，都沒有出現在外洩名單。",
+    "description": "$1 = number of accounts checked."
+  },
+  "opt_breach_none_other": {
+    "message": "檢查了 $1 筆，都沒有出現在外洩名單。",
+    "description": "$1 = number of accounts checked."
+  },
   "opt_health_hide": {
     "message": "收起"
   },
   "opt_health_ok": {
-    "message": "健檢：沒有重複、沒有太弱、一年內都改過。"
+    "message": "健檢：沒有發現要處理的密碼。"
   },
-  "opt_health_summary_one": {
-    "message": "健檢：重複使用 $1 組、太弱 $2 筆、超過一年沒改 $3 筆。",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_one": {
+    "message": "外洩 $1 筆",
+    "description": "$1 = number of accounts. One part of the health check summary."
   },
-  "opt_health_summary_other": {
-    "message": "健檢：重複使用 $1 組、太弱 $2 筆、超過一年沒改 $3 筆。",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_other": {
+    "message": "外洩 $1 筆",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_reused_one": {
+    "message": "重複使用 $1 組",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_reused_other": {
+    "message": "重複使用 $1 組",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_weak_one": {
+    "message": "太弱 $1 筆",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_weak_other": {
+    "message": "太弱 $1 筆",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_one": {
+    "message": "超過一年沒改 $1 筆",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_other": {
+    "message": "超過一年沒改 $1 筆",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_one": {
+    "message": "還在用 HTTP $1 筆",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_other": {
+    "message": "還在用 HTTP $1 筆",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_dup_one": {
+    "message": "重複的項目 $1 組",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_part_dup_other": {
+    "message": "重複的項目 $1 組",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_breached_one": {
+    "message": "外洩：在外洩名單出現過 $1 次",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_breached_other": {
+    "message": "外洩：在外洩名單出現過 $1 次",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_http_ignored_one": {
+    "message": "已忽略 $1 筆還在用 HTTP 的網址",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http_ignored_other": {
+    "message": "已忽略 $1 筆還在用 HTTP 的網址",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http": {
+    "message": "還在用 HTTP：網站支援 https 的話，改成 https 網址"
+  },
+  "opt_health_http_ignore": {
+    "message": "忽略"
+  },
+  "opt_health_http_restore": {
+    "message": "全部恢復"
+  },
+  "opt_health_dup": {
+    "message": "重複的項目：第 $1 組，$2 筆帳號和密碼都一樣",
+    "description": "$1 = group number, $2 = number of accounts in the group."
   },
   "opt_health_reused": {
     "message": "重複：第 $1 組密碼用在 $2 個地方",
@@ -2288,6 +2432,16 @@
   },
   "bg_none_selected": {
     "message": "沒有勾選任何帳號"
+  },
+  "bg_breach_no_consent": {
+    "message": "要先在 Firefox 的提示按允許，才能檢查外洩。"
+  },
+  "bg_breach_failed": {
+    "message": "外洩檢查失敗：$1",
+    "description": "$1 = error message."
+  },
+  "bg_breach_timeout": {
+    "message": "連線逾時"
   },
   "bg_not_backup_file": {
     "message": "這不是密碼小管家的備份檔"

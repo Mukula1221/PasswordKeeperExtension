@@ -71,6 +71,44 @@
     "message": "Passwort generieren",
     "description": "Button that opens the password generator, and the title of that panel."
   },
+  "pop_gen_mode_chars": {
+    "message": "Zufällige Zeichen"
+  },
+  "pop_gen_mode_words": {
+    "message": "Leicht zu merken"
+  },
+  "pop_gen_mode_tip": {
+    "message": "Ein leicht zu merkendes Passwort besteht aus einigen aneinandergereihten englischen Wörtern. Es ist leichter zu merken und einzugeben als zufällige Zeichen.\nManche Websites begrenzen Länge oder Zeichen von Passwörtern. Wird es nicht akzeptiert, wechseln Sie zurück zu zufälligen Zeichen.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_word_count": {
+    "message": "Wörter"
+  },
+  "pop_gen_separator": {
+    "message": "Trennzeichen"
+  },
+  "pop_gen_separator_space": {
+    "message": "Leerzeichen"
+  },
+  "pop_gen_capitalize": {
+    "message": "Großer Anfangsbuchstabe"
+  },
+  "pop_gen_add_number": {
+    "message": "Eine Zahl hinzufügen"
+  },
+  "pop_gen_history": {
+    "message": "Zuletzt erzeugt"
+  },
+  "pop_gen_history_tip": {
+    "message": "Passwörter aus „Starkes Passwort generieren“ auf Webseiten und hier kopierte oder in die Seite eingefügte Passwörter bleiben hier, höchstens 20.\nWenn eine Website ein neues Passwort nicht gespeichert hat, finden Sie es hier wieder.\nSie sind nicht in Sicherungsdateien enthalten.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_history_clear": {
+    "message": "Alle löschen"
+  },
+  "pop_gen_history_delete": {
+    "message": "Diesen Eintrag löschen"
+  },
   "pop_regen_title": {
     "message": "Ein anderes Passwort generieren"
   },
@@ -598,19 +636,125 @@
   "opt_health_show": {
     "message": "Details anzeigen"
   },
+  "opt_health_summary": {
+    "message": "Passwortcheck: $1.",
+    "description": "$1 = the problems found, joined with opt_health_part_sep."
+  },
+  "opt_health_part_sep": {
+    "message": ", ",
+    "description": "Joins the parts of the health check summary."
+  },
+  "opt_breach_check": {
+    "message": "Auf Datenlecks prüfen"
+  },
+  "opt_breach_checking": {
+    "message": "Wird geprüft…"
+  },
+  "opt_breach_tip": {
+    "message": "Verbindet sich mit Have I Been Pwned (api.pwnedpasswords.com). Von jedem Passwort werden nur die ersten 5 Zeichen des Hashwerts gesendet, daher lässt sich nicht erkennen, um welches Passwort es geht.\nEs wird nur verbunden, wenn Sie hier klicken.\nErgebnisse werden nicht gespeichert. Prüfen Sie nach erneutem Öffnen der Verwaltungsseite noch einmal.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_breach_need_consent": {
+    "message": "Sie haben die Firefox-Abfrage nicht erlaubt, daher wurde nichts geprüft."
+  },
+  "opt_breach_found_one": {
+    "message": "$1 Passwort steht in Datenleck-Listen. Ändern Sie es bald.",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_found_other": {
+    "message": "$1 Passwörter stehen in Datenleck-Listen. Ändern Sie sie bald.",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_none_one": {
+    "message": "$1 Konto geprüft. Es steht in keiner Datenleck-Liste.",
+    "description": "$1 = number of accounts checked."
+  },
+  "opt_breach_none_other": {
+    "message": "$1 Konten geprüft. Keines steht in einer Datenleck-Liste.",
+    "description": "$1 = number of accounts checked."
+  },
   "opt_health_hide": {
     "message": "Details ausblenden"
   },
   "opt_health_ok": {
-    "message": "Passwortcheck: Keine mehrfach verwendeten oder schwachen Passwörter, alle im letzten Jahr geändert."
+    "message": "Passwortcheck: Keine Passwörter brauchen Aufmerksamkeit."
   },
-  "opt_health_summary_one": {
-    "message": "Passwortcheck: $1 Gruppe mehrfach verwendeter Passwörter, $2 schwach, $3 seit über einem Jahr nicht geändert.",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_one": {
+    "message": "$1 in Datenlecks",
+    "description": "$1 = number of accounts. One part of the health check summary."
   },
-  "opt_health_summary_other": {
-    "message": "Passwortcheck: $1 Gruppen mehrfach verwendeter Passwörter, $2 schwach, $3 seit über einem Jahr nicht geändert.",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_other": {
+    "message": "$1 in Datenlecks",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_reused_one": {
+    "message": "$1 Gruppe mehrfach verwendet",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_reused_other": {
+    "message": "$1 Gruppen mehrfach verwendet",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_weak_one": {
+    "message": "$1 schwach",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_weak_other": {
+    "message": "$1 schwach",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_one": {
+    "message": "$1 seit über einem Jahr nicht geändert",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_other": {
+    "message": "$1 seit über einem Jahr nicht geändert",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_one": {
+    "message": "$1 noch mit HTTP",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_other": {
+    "message": "$1 noch mit HTTP",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_dup_one": {
+    "message": "$1 Gruppe doppelter Einträge",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_part_dup_other": {
+    "message": "$1 Gruppen doppelter Einträge",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_breached_one": {
+    "message": "Datenleck: $1-mal in Datenleck-Listen gefunden",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_breached_other": {
+    "message": "Datenleck: $1-mal in Datenleck-Listen gefunden",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_http_ignored_one": {
+    "message": "$1 HTTP-Adresse ignoriert",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http_ignored_other": {
+    "message": "$1 HTTP-Adressen ignoriert",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http": {
+    "message": "Noch HTTP: Wenn die Website https unterstützt, ändern Sie die Adresse auf https"
+  },
+  "opt_health_http_ignore": {
+    "message": "Ignorieren"
+  },
+  "opt_health_http_restore": {
+    "message": "Alle wieder anzeigen"
+  },
+  "opt_health_dup": {
+    "message": "Doppelt: Gruppe $1, $2 Konten mit gleichem Benutzernamen und Passwort",
+    "description": "$1 = group number, $2 = number of accounts in the group."
   },
   "opt_health_reused": {
     "message": "Mehrfach verwendet: Passwortgruppe $1 wird an $2 Stellen verwendet",
@@ -2288,6 +2432,16 @@
   },
   "bg_none_selected": {
     "message": "Keine Konten ausgewählt"
+  },
+  "bg_breach_no_consent": {
+    "message": "Erlauben Sie zuerst die Firefox-Abfrage, um nach Datenlecks zu suchen."
+  },
+  "bg_breach_failed": {
+    "message": "Prüfung auf Datenlecks fehlgeschlagen: $1",
+    "description": "$1 = error message."
+  },
+  "bg_breach_timeout": {
+    "message": "Zeitüberschreitung der Verbindung"
   },
   "bg_not_backup_file": {
     "message": "Dies ist keine Sicherungsdatei von Passwort-Hüter"

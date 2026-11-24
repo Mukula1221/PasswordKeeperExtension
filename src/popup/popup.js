@@ -298,10 +298,11 @@
 
   // ---- 產生密碼 ----
 
-  const GEN_FIELD_IDS = ['genMin', 'genMax', 'genUpper', 'genLower', 'genDigits', 'genSymbols', 'genSymbolSet'];
+  const GEN_FIELD_IDS = ['genMin', 'genMax', 'genUpper', 'genLower', 'genDigits', 'genSymbols', 'genSymbolSet', 'genModeChars', 'genModeWords', 'genWordCount', 'genSeparator', 'genCapitalize', 'genAddNumber'];
 
   function readGenOptions() {
     return {
+      mode: $('genModeWords').checked ? 'words' : 'chars',
       minLength: $('genMin').value,
       maxLength: $('genMax').value,
       upper: $('genUpper').checked,
@@ -309,11 +310,21 @@
       digits: $('genDigits').checked,
       symbols: $('genSymbols').checked,
       symbolSet: $('genSymbolSet').value,
+      words: $('genWordCount').value,
+      separator: $('genSeparator').value,
+      capitalize: $('genCapitalize').checked,
+      addNumber: $('genAddNumber').checked,
     };
   }
 
   function writeGenOptions(o) {
     if (!o) return;
+    const words = o.mode === 'words';
+    $('genModeWords').checked = words;
+    $('genModeChars').checked = !words;
+    // 兩種模式的選項只顯示用得到的那一組
+    $('genChars').hidden = words;
+    $('genWords').hidden = !words;
     $('genMin').value = o.minLength;
     $('genMax').value = o.maxLength;
     $('genUpper').checked = !!o.upper;
@@ -321,6 +332,10 @@
     $('genDigits').checked = !!o.digits;
     $('genSymbols').checked = !!o.symbols;
     $('genSymbolSet').value = o.symbolSet || '';
+    $('genWordCount').value = o.words;
+    $('genSeparator').value = o.separator;
+    $('genCapitalize').checked = !!o.capitalize;
+    $('genAddNumber').checked = !!o.addNumber;
   }
 
   // 每次產生都把選項存回設定，網頁清單裡的「產生強密碼」用的就是這一組
@@ -340,7 +355,69 @@
   function showGenPanel(show) {
     $('genPanel').classList.toggle('show', show);
     $('genBtn').style.display = show ? 'none' : '';
-    if (show) regenerate();
+    if (show) {
+      regenerate();
+      renderGenHistory();
+    }
+  }
+
+  // 按了「複製」或「填入頁面」才算用到，記進最近產生的
+  async function noteGenerated(value) {
+    await send({ type: 'generated.note', password: value, host });
+    await renderGenHistory();
+  }
+
+  function fmtWhen(ts) {
+    const d = new Date(ts);
+    return d.toLocaleDateString(PK.i18n.formatLang(), { month: 'numeric', day: 'numeric' }) + ' ' + d.toLocaleTimeString(PK.i18n.formatLang(), { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // 最近產生的：密碼先遮起來，按「顯示」才看得到
+  async function renderGenHistory() {
+    const res = await send({ type: 'generated.list' });
+    const box = $('genHistory');
+    const list = $('genHistoryList');
+    list.textContent = '';
+    if (!res.ok || !res.data.length) {
+      box.hidden = true;
+      return;
+    }
+    box.hidden = false;
+    $('genHistoryCount').textContent = String(res.data.length);
+    for (const g of res.data) {
+      const row = el('div', 'entry');
+      const pw = el('div', 'gen-pw', '••••••••');
+      pw.appendChild(el('span', 'when', fmtWhen(g.at) + (g.host ? ' · ' + g.host : '')));
+      let shown = false;
+      const eye = el('button', 'link small', t('pop_show'));
+      eye.addEventListener('click', () => {
+        shown = !shown;
+        pw.firstChild.nodeValue = shown ? g.password : '••••••••';
+        eye.textContent = shown ? t('pop_hide') : t('pop_show');
+      });
+      const copy = el('button', 'small', t('pop_copy'));
+      copy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(g.password);
+          send({ type: 'clipboard.copied', text: g.password });
+          toast(t('pop_copied'));
+        } catch (err) {
+          toast(t('pop_copy_failed', err.message));
+        }
+      });
+      const del = el('button', 'link small danger', '×');
+      del.title = t('pop_gen_history_delete');
+      del.setAttribute('aria-label', t('pop_gen_history_delete'));
+      del.addEventListener('click', async () => {
+        await send({ type: 'generated.delete', id: g.id });
+        await renderGenHistory();
+      });
+      row.appendChild(pw);
+      row.appendChild(eye);
+      row.appendChild(copy);
+      row.appendChild(del);
+      list.appendChild(row);
+    }
   }
 
   $('genBtn').addEventListener('click', () => showGenPanel(true));
@@ -356,13 +433,20 @@
       toast(t('pop_copied'));
     } catch (err) {
       toast(t('pop_copy_failed', err.message));
+      return;
     }
+    await noteGenerated(value);
   });
   $('genFill').addEventListener('click', async () => {
     const value = $('genOut').value;
     if (!value) return;
     const r = await sendToPage({ type: 'fill', generatedPassword: value });
     toast(r.ok ? t('pop_gen_filled') : r.error);
+    if (r.ok) await noteGenerated(value);
+  });
+  $('genHistoryClear').addEventListener('click', async () => {
+    await send({ type: 'generated.delete' });
+    await renderGenHistory();
   });
 
   // ---- 備份提醒 ----

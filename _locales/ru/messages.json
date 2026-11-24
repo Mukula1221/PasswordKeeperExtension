@@ -71,6 +71,44 @@
     "message": "Создать пароль",
     "description": "Button that opens the password generator, and the title of that panel."
   },
+  "pop_gen_mode_chars": {
+    "message": "Случайные символы"
+  },
+  "pop_gen_mode_words": {
+    "message": "Легко запомнить"
+  },
+  "pop_gen_mode_tip": {
+    "message": "Легко запоминаемый пароль состоит из нескольких английских слов. Его проще запомнить и ввести, чем случайные символы.\nНекоторые сайты ограничивают длину пароля или символы. Если пароль не подходит, вернитесь к случайным символам.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_word_count": {
+    "message": "Слов"
+  },
+  "pop_gen_separator": {
+    "message": "Разделитель"
+  },
+  "pop_gen_separator_space": {
+    "message": "Пробел"
+  },
+  "pop_gen_capitalize": {
+    "message": "С заглавной буквы"
+  },
+  "pop_gen_add_number": {
+    "message": "Добавить цифру"
+  },
+  "pop_gen_history": {
+    "message": "Недавно созданные"
+  },
+  "pop_gen_history_tip": {
+    "message": "Здесь хранятся пароли из «Создать надёжный пароль» на веб-страницах, а также скопированные или вставленные на страницу отсюда, не больше 20.\nЕсли сайт не сохранил новый пароль, его можно взять здесь.\nВ резервные копии они не попадают.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "pop_gen_history_clear": {
+    "message": "Очистить всё"
+  },
+  "pop_gen_history_delete": {
+    "message": "Удалить этот пароль"
+  },
   "pop_regen_title": {
     "message": "Создать другой пароль"
   },
@@ -638,27 +676,205 @@
   "opt_health_show": {
     "message": "Подробнее"
   },
+  "opt_health_summary": {
+    "message": "Проверка паролей: $1.",
+    "description": "$1 = the problems found, joined with opt_health_part_sep."
+  },
+  "opt_health_part_sep": {
+    "message": ", ",
+    "description": "Joins the parts of the health check summary."
+  },
+  "opt_breach_check": {
+    "message": "Проверить утечки"
+  },
+  "opt_breach_checking": {
+    "message": "Проверка…"
+  },
+  "opt_breach_tip": {
+    "message": "Подключается к Have I Been Pwned (api.pwnedpasswords.com). Для каждого пароля отправляются только первые 5 символов хеша, поэтому узнать сам пароль нельзя.\nПодключение происходит, только когда вы нажимаете эту кнопку.\nРезультаты не сохраняются. После повторного открытия страницы управления проверьте снова.",
+    "description": "Help text of a '?'. Each line is shown on its own line."
+  },
+  "opt_breach_need_consent": {
+    "message": "Вы не разрешили запрос Firefox, поэтому проверка не выполнялась."
+  },
+  "opt_breach_found_one": {
+    "message": "$1 пароль найден в списках утечек. Смените его поскорее.",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_found_other": {
+    "message": "$1 пароля найдены в списках утечек. Смените их поскорее.",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_found_few": {
+    "message": "$1 пароля найдены в списках утечек. Смените их поскорее.",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_found_many": {
+    "message": "$1 паролей найдены в списках утечек. Смените их поскорее.",
+    "description": "$1 = number of breached passwords."
+  },
+  "opt_breach_none_one": {
+    "message": "Проверена $1 учётная запись. В списках утечек её нет.",
+    "description": "$1 = number of accounts checked."
+  },
+  "opt_breach_none_other": {
+    "message": "Проверено $1 учётной записи. В списках утечек их нет.",
+    "description": "$1 = number of accounts checked."
+  },
+  "opt_breach_none_few": {
+    "message": "Проверены $1 учётные записи. В списках утечек их нет.",
+    "description": "$1 = number of accounts checked."
+  },
+  "opt_breach_none_many": {
+    "message": "Проверено $1 учётных записей. В списках утечек их нет.",
+    "description": "$1 = number of accounts checked."
+  },
   "opt_health_hide": {
     "message": "Скрыть подробности"
   },
   "opt_health_ok": {
-    "message": "Проверка паролей: повторяющихся и слабых паролей нет, все менялись в течение последнего года."
+    "message": "Проверка паролей: паролей, требующих внимания, нет."
   },
-  "opt_health_summary_one": {
-    "message": "Проверка паролей: $1 группа повторяющихся паролей, слабых: $2, не менялись больше года: $3.",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_one": {
+    "message": "утечки: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
   },
-  "opt_health_summary_few": {
-    "message": "Проверка паролей: $1 группы повторяющихся паролей, слабых: $2, не менялись больше года: $3.",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_other": {
+    "message": "утечки: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
   },
-  "opt_health_summary_many": {
-    "message": "Проверка паролей: $1 групп повторяющихся паролей, слабых: $2, не менялись больше года: $3.",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_few": {
+    "message": "утечки: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
   },
-  "opt_health_summary_other": {
-    "message": "Проверка паролей: $1 группы повторяющихся паролей, слабых: $2, не менялись больше года: $3.",
-    "description": "$1 = groups of accounts sharing one password, $2 = weak passwords, $3 = passwords older than a year."
+  "opt_health_part_breached_many": {
+    "message": "утечки: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_reused_one": {
+    "message": "повторы: $1",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_reused_other": {
+    "message": "повторы: $1",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_reused_few": {
+    "message": "повторы: $1",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_reused_many": {
+    "message": "повторы: $1",
+    "description": "$1 = number of password groups. One part of the health check summary."
+  },
+  "opt_health_part_weak_one": {
+    "message": "слабых: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_weak_other": {
+    "message": "слабых: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_weak_few": {
+    "message": "слабых: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_weak_many": {
+    "message": "слабых: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_one": {
+    "message": "не менялись больше года: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_other": {
+    "message": "не менялись больше года: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_few": {
+    "message": "не менялись больше года: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_old_many": {
+    "message": "не менялись больше года: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_one": {
+    "message": "HTTP: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_other": {
+    "message": "HTTP: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_few": {
+    "message": "HTTP: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_http_many": {
+    "message": "HTTP: $1",
+    "description": "$1 = number of accounts. One part of the health check summary."
+  },
+  "opt_health_part_dup_one": {
+    "message": "дубликаты: $1",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_part_dup_other": {
+    "message": "дубликаты: $1",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_part_dup_few": {
+    "message": "дубликаты: $1",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_part_dup_many": {
+    "message": "дубликаты: $1",
+    "description": "$1 = number of duplicate groups. One part of the health check summary."
+  },
+  "opt_health_breached_one": {
+    "message": "Утечка: найден в списках утечек $1 раз",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_breached_other": {
+    "message": "Утечка: найден в списках утечек $1 раза",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_breached_few": {
+    "message": "Утечка: найден в списках утечек $1 раза",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_breached_many": {
+    "message": "Утечка: найден в списках утечек $1 раз",
+    "description": "$1 = how many times the password appears in breach lists."
+  },
+  "opt_health_http_ignored_one": {
+    "message": "Скрыт $1 адрес HTTP",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http_ignored_other": {
+    "message": "Скрыто $1 адреса HTTP",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http_ignored_few": {
+    "message": "Скрыто $1 адреса HTTP",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http_ignored_many": {
+    "message": "Скрыто $1 адресов HTTP",
+    "description": "$1 = number of ignored accounts."
+  },
+  "opt_health_http": {
+    "message": "Всё ещё HTTP: если сайт поддерживает https, замените адрес на https"
+  },
+  "opt_health_http_ignore": {
+    "message": "Игнорировать"
+  },
+  "opt_health_http_restore": {
+    "message": "Показать все снова"
+  },
+  "opt_health_dup": {
+    "message": "Дубликат: группа $1, одинаковые логин и пароль у записей: $2",
+    "description": "$1 = group number, $2 = number of accounts in the group."
   },
   "opt_health_reused": {
     "message": "Повтор: группа $1, аккаунтов с этим паролем: $2",
@@ -2572,6 +2788,16 @@
   },
   "bg_none_selected": {
     "message": "Не выбран ни один аккаунт"
+  },
+  "bg_breach_no_consent": {
+    "message": "Чтобы проверить утечки, сначала разрешите запрос Firefox."
+  },
+  "bg_breach_failed": {
+    "message": "Не удалось проверить утечки: $1",
+    "description": "$1 = error message."
+  },
+  "bg_breach_timeout": {
+    "message": "превышено время ожидания соединения"
   },
   "bg_not_backup_file": {
     "message": "Это не файл резервной копии Хранителя паролей"
